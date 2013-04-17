@@ -1,0 +1,7 @@
+C:\Blueprints\blueprints-core\bin\Debug\Newtonsoft.Json.dll
+C:\Blueprints\blueprints-core\bin\Debug\Newtonsoft.Json.xml
+C:\Blueprints\blueprints-core\bin\Debug\Tinkerpop.Blueprints.dll
+C:\Blueprints\blueprints-core\bin\Debug\Tinkerpop.Blueprints.pdb
+C:\Blueprints\blueprints-core\obj\Debug\Tinkerpop.Blueprints.dll
+C:\Blueprints\blueprints-core\obj\Debug\Tinkerpop.Blueprints.pdb
+C:\Blueprints\blueprints-core\obj\Debug\blueprints-core.csprojResolveAssemblyReference.cache

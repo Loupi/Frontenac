@@ -1,0 +1,13 @@
+C:\Blueprints\blueprints-test\bin\Debug\Tinkerpop.Blueprints.Tests.dll
+C:\Blueprints\blueprints-test\bin\Debug\Tinkerpop.Blueprints.Tests.pdb
+C:\Blueprints\blueprints-test\bin\Debug\nunit.framework.dll
+C:\Blueprints\blueprints-test\bin\Debug\Tinkerpop.Blueprints.dll
+C:\Blueprints\blueprints-test\bin\Debug\Newtonsoft.Json.dll
+C:\Blueprints\blueprints-test\bin\Debug\Tinkerpop.Blueprints.pdb
+C:\Blueprints\blueprints-test\bin\Debug\nunit.framework.xml
+C:\Blueprints\blueprints-test\bin\Debug\Newtonsoft.Json.xml
+C:\Blueprints\blueprints-test\obj\Debug\blueprints-test.csprojResolveAssemblyReference.cache
+C:\Blueprints\blueprints-test\obj\Debug\Tinkerpop.Blueprints.Tests.dll
+C:\Blueprints\blueprints-test\obj\Debug\Tinkerpop.Blueprints.Tests.pdb
+C:\Blueprints\blueprints-test\bin\Debug\Tinkerpop.Blueprints.TestSuite.dll
+C:\Blueprints\blueprints-test\bin\Debug\Tinkerpop.Blueprints.TestSuite.pdb

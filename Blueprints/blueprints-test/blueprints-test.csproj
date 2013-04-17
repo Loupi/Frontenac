@@ -1,0 +1,98 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProjectGuid>{CFFA3CED-73DD-4EB3-B464-88534D5CAA1B}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>Frontenac.Blueprints</RootNamespace>
+    <AssemblyName>Frontenac.Blueprints.Tests</AssemblyName>
+    <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
+    <FileAlignment>512</FileAlignment>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup>
+    <SignAssembly>true</SignAssembly>
+  </PropertyGroup>
+  <PropertyGroup>
+    <AssemblyOriginatorKeyFile>key.snk</AssemblyOriginatorKeyFile>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="nunit.framework">
+      <HintPath>..\packages\NUnit.2.6.2\lib\nunit.framework.dll</HintPath>
+    </Reference>
+    <Reference Include="System" />
+    <Reference Include="System.Core" />
+    <Reference Include="System.Xml.Linq" />
+    <Reference Include="System.Data.DataSetExtensions" />
+    <Reference Include="Microsoft.CSharp" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="Impls\TG\IgnoreIdTinkerGraph.cs" />
+    <Compile Include="Impls\TG\MockTransactionalGraph.cs" />
+    <Compile Include="Impls\TG\TinkerGraphTest.cs" />
+    <Compile Include="ParameterTest.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Util\EdgeHelperTest.cs" />
+    <Compile Include="Util\ElementHelperTest.cs" />
+    <Compile Include="Util\GraphHelperTest.cs" />
+    <Compile Include="Util\IndexableGraphHelperTest.cs" />
+    <Compile Include="Util\IO\GML\GMLReaderTest.cs" />
+    <Compile Include="Util\IO\GML\GMLWriterTest.cs" />
+    <Compile Include="Util\KeyIndexableGraphHelperTest.cs" />
+    <Compile Include="Util\MultiIterableTest.cs" />
+    <Compile Include="Util\PropertyFilteredIterableTest.cs" />
+    <Compile Include="Util\VertexHelperTest.cs" />
+    <Compile Include="Util\Wrappers\Batch\BatchGraphTest.cs" />
+    <Compile Include="Util\Wrappers\Batch\WritethroughGraphTest.cs" />
+    <Compile Include="Util\Wrappers\Id\IdGraphTest.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="key.snk" />
+    <None Include="packages.config" />
+    <EmbeddedResource Include="Util\IO\GML\example.gml" />
+    <EmbeddedResource Include="Util\IO\GML\example2.gml" />
+    <EmbeddedResource Include="Util\IO\GML\malformed.gml" />
+    <EmbeddedResource Include="Util\IO\GML\writer.gml" />
+    <EmbeddedResource Include="Util\IO\GML\writer2.gml" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\blueprints-core\blueprints-core.csproj">
+      <Project>{42ed5d37-0e20-4fc3-b6b1-f38a08283c30}</Project>
+      <Name>blueprints-core</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\blueprints-testsuite\blueprints-testsuite.csproj">
+      <Project>{2f1387c2-845b-4d3d-9851-1b67ffd741ac}</Project>
+      <Name>blueprints-testsuite</Name>
+    </ProjectReference>
+  </ItemGroup>
+  <ItemGroup />
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
+  -->
+</Project>
