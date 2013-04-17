@@ -40,8 +40,7 @@ The [Property Graph Model Test Suite](https://github.com/tinkerpop/blueprints/wi
 
 ## What's Next?
 There is still a lot more work that must be done in order to get a full stack implemented in .NET.
-Making sure it's root component is solid is fundamental. This is why, before proceeding further on with the port of other
-libraries, the test suite must be complete and more than the TinkerGraph implementation must pass through it.  
+Making sure it's root component is solid is fundamental. This is why, before proceeding further on with the port of the other APIs, the test suite must be complete and more than the TinkerGraph implementation must pass through it.  
 
 ## Why that name?
 This is in reference to the [Château Frontenac](http://en.wikipedia.org/wiki/Chateau_Frontenac "Title") in Quebec City, Canada, because writing softwares is a bit like building castles.
