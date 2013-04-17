@@ -4,7 +4,7 @@ Frontenac
 A .NET port of the [Tinkerpop Stack](http://www.tinkerpop.com/ "Title").  
 
 ## Credits
-I would like to thank the authors and contributors of the original library:
+Special thanks the authors and contributors of the original library:
 * [alexaverbuch](http://www.github.com/alexaverbuch/ "Title")(Alex Averbuch)
 * [bdeggleston](http://www.github.com/bdeggleston/ "Title")(Blake Eggleston)
 * [BrynCooke](http://www.github.com/BrynCooke/ "Title")(Bryn Cooke)
