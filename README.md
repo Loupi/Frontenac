@@ -36,7 +36,7 @@ For now, blueprints-core 2.3.0 has been ported. It is not production ready yet. 
      * [Partition Implementation](https://github.com/tinkerpop/blueprints/wiki/Partition-Implementation "Title")
      * [Id Implementation](https://github.com/tinkerpop/blueprints/wiki/Id-Implementation "Title")
 
-The [Property Graph Model Test Suite](https://github.com/tinkerpop/blueprints/wiki/Property-Graph-Model-Test-Suite "Title") is currently being ported. As of now, 112 tests are passing. 
+The [Property Graph Model Test Suite](https://github.com/tinkerpop/blueprints/wiki/Property-Graph-Model-Test-Suite "Title") is currently being ported. As of now, 112/112 tests pass. 
 
 ## What's Next?
 There is still a lot more work that must be done in order to get a full stack implemented in .NET.
