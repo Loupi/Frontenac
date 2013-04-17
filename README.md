@@ -23,4 +23,4 @@ I would like to thank the authors and contributors of the original library:
 For now, blueprints-core 2.3.0 has been ported. It is not production ready. It's corresponding tests are currently being ported.  
 
 ## Why that name?
-This is in reference to the [Château Frontenac](http://en.wikipedia.org/wiki/Château_Frontenac/ "Title") in Quebec City, Canada, because writing softwares is a bit like building castles.
+This is in reference to the [Château Frontenac](http://en.wikipedia.org/wiki/Chateau_Frontenac "Title") in Quebec City, Canada, because writing softwares is a bit like building castles.
