@@ -33,7 +33,7 @@ namespace Frontenac.Blueprints.Util.Wrappers.Event.Listener
             Console.WriteLine(string.Concat("Vertex [", vertex, "] property [", key, "] with value of [", removedValue, "] removed in graph [", _graph, "]"));
         }
 
-        public void vertexRemoved(Vertex vertex)
+        public void vertexRemoved(Vertex vertex, IDictionary<string, object> props)
         {
             Console.WriteLine(string.Concat("Vertex [", vertex, "] removed from graph [", _graph, "]"));
         }
@@ -53,7 +53,7 @@ namespace Frontenac.Blueprints.Util.Wrappers.Event.Listener
             Console.WriteLine(string.Concat("Edge [", edge, "] property [", key, "] with value of [", removedValue, "] removed in graph [", _graph, "]"));
         }
 
-        public void edgeRemoved(Edge edge)
+        public void edgeRemoved(Edge edge, IDictionary<string, object> props)
         {
             Console.WriteLine(string.Concat("Edge [", edge, "] removed from graph [", _graph, "]"));
         }

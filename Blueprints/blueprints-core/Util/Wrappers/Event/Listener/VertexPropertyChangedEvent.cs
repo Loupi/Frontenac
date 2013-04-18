@@ -6,6 +6,9 @@ using System.Threading.Tasks;
 
 namespace Frontenac.Blueprints.Util.Wrappers.Event.Listener
 {
+    /// <summary>
+    /// Event that fires when a property changes on a vertex. 
+    /// </summary>
     public class VertexPropertyChangedEvent : VertexPropertyEvent
     {
         public VertexPropertyChangedEvent(Vertex vertex, string key, object oldValue, object newValue)

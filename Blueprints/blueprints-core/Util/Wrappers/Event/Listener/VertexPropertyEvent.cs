@@ -6,6 +6,9 @@ using System.Threading.Tasks;
 
 namespace Frontenac.Blueprints.Util.Wrappers.Event.Listener
 {
+    /// <summary>
+    /// Base class for property changed events. 
+    /// </summary>
     public abstract class VertexPropertyEvent : Event
     {
         readonly Vertex _vertex;

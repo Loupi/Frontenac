@@ -65,9 +65,9 @@ namespace Frontenac.Blueprints.Util.Wrappers.Event
             trigger.addEvent(new VertexAddedEvent(vertex));
         }
 
-        protected void onVertexRemoved(Vertex vertex)
+        protected void onVertexRemoved(Vertex vertex, IDictionary<string, object> props)
         {
-            trigger.addEvent(new VertexRemovedEvent(vertex));
+            trigger.addEvent(new VertexRemovedEvent(vertex, props));
         }
 
         protected void onEdgeAdded(Edge edge)
@@ -75,9 +75,9 @@ namespace Frontenac.Blueprints.Util.Wrappers.Event
             trigger.addEvent(new EdgeAddedEvent(edge));
         }
 
-        protected void onEdgeRemoved(Edge edge)
+        protected void onEdgeRemoved(Edge edge, IDictionary<string, object> props)
         {
-            trigger.addEvent(new EdgeRemovedEvent(edge));
+            trigger.addEvent(new EdgeRemovedEvent(edge, props));
         }
 
         /// <note>
@@ -113,8 +113,9 @@ namespace Frontenac.Blueprints.Util.Wrappers.Event
             if (vertex is EventVertex)
                 vertexToRemove = (vertex as EventVertex).getBaseVertex();
 
+            IDictionary<string, object> props = ElementHelper.getProperties(vertex); 
             this.baseGraph.removeVertex(vertexToRemove);
-            this.onVertexRemoved(vertex);
+            this.onVertexRemoved(vertex, props);
         }
 
         public IEnumerable<Vertex> getVertices()
@@ -168,8 +169,9 @@ namespace Frontenac.Blueprints.Util.Wrappers.Event
             if (edge is EventEdge)
                 edgeToRemove = (edge as EventEdge).getBaseEdge();
 
+            IDictionary<string, object> props = ElementHelper.getProperties(edge); 
             baseGraph.removeEdge(edgeToRemove);
-            this.onEdgeRemoved(edge);
+            this.onEdgeRemoved(edge, props);
         }
 
         public IEnumerable<Edge> getEdges()

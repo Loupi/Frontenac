@@ -6,6 +6,9 @@ using System.Threading.Tasks;
 
 namespace Frontenac.Blueprints.Util.Wrappers.Event.Listener
 {
+    /// <summary>
+    /// Event fired when an edge property is removed. 
+    /// </summary>
     public class EdgePropertyRemovedEvent : EdgePropertyEvent
     {
         public EdgePropertyRemovedEvent(Edge vertex, string key, object oldValue)

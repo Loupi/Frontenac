@@ -9,7 +9,7 @@ namespace Frontenac.Blueprints.Util.Wrappers.Event
     /// <summary>
     /// A sequence of edges that applies the list of listeners into each edge.
     /// </summary>
-    class EventEdgeIterable : CloseableIterable<Edge>
+    public class EventEdgeIterable : CloseableIterable<Edge>
     {
         readonly IEnumerable<Edge> _iterable;
         readonly EventGraph _eventGraph;
