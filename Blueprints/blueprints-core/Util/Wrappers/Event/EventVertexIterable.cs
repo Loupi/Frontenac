@@ -9,7 +9,7 @@ namespace Frontenac.Blueprints.Util.Wrappers.Event
     /// <summary>
     /// A sequence of vertices that applies the list of listeners into each vertex.
     /// </summary>
-    class EventVertexIterable : CloseableIterable<Vertex>
+    public class EventVertexIterable : CloseableIterable<Vertex>
     {
         readonly IEnumerable<Vertex> _iterable;
         readonly EventGraph _eventGraph;

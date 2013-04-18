@@ -6,6 +6,9 @@ using System.Threading.Tasks;
 
 namespace Frontenac.Blueprints.Util.Wrappers.Event.Listener
 {
+    /// <summary>
+    /// Event fired when a vertex property is removed. 
+    /// </summary>
     public class VertexPropertyRemovedEvent : VertexPropertyEvent
     {
         public VertexPropertyRemovedEvent(Vertex vertex, string key, object removedValue)

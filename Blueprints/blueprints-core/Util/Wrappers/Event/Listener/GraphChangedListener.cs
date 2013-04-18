@@ -41,7 +41,7 @@ namespace Frontenac.Blueprints.Util.Wrappers.Event.Listener
         /// Raised after a vertex was removed from the graph.
         /// </summary>
         /// <param name="vertex">the vertex that was removed</param>
-        void vertexRemoved(Vertex vertex);
+        void vertexRemoved(Vertex vertex, IDictionary<string, object> props);
 
         /// <summary>
         /// Raised after a new edge is added.
@@ -70,6 +70,6 @@ namespace Frontenac.Blueprints.Util.Wrappers.Event.Listener
         /// Raised after an edge was removed from the graph.
         /// </summary>
         /// <param name="edge">the edge that was removed</param>
-        void edgeRemoved(Edge edge);
+        void edgeRemoved(Edge edge, IDictionary<string, object> props);
     }
 }

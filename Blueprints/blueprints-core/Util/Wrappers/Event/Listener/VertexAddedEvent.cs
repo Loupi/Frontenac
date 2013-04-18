@@ -6,6 +6,9 @@ using System.Threading.Tasks;
 
 namespace Frontenac.Blueprints.Util.Wrappers.Event.Listener
 {
+    /// <summary>
+    /// Event that fires when a vertex is added to a graph.
+    /// </summary>
     public class VertexAddedEvent : Event
     {
         readonly Vertex _vertex;
