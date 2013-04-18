@@ -12,12 +12,12 @@ namespace Frontenac.Blueprints.Util.Wrappers.Batch.Cache
 
         class NullStringCompression : StringCompression
         {
-            public override string Compress(string input)
+            public override string compress(string input)
             {
                 return input;
             }
         }
 
-        public abstract string Compress(string input);
+        public abstract string compress(string input);
     }
 }

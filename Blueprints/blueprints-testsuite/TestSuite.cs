@@ -10,54 +10,54 @@ namespace Frontenac.Blueprints
 {
     public class TestSuite : BaseTest
     {
-        readonly string _Name;
-        protected GraphTest _GraphTest;
+        readonly string _name;
+        protected GraphTest graphTest;
 
         [TestFixtureSetUp]
-        public virtual void FixtureSetUp()
+        public virtual void fixtureSetUp()
         {
-            this.StopWatch();
+            this.stopWatch();
         }
 
         [TestFixtureTearDown]
-        public virtual void FixtureTearDown()
+        public virtual void fixtureTearDown()
         {
-            PrintTestPerformance(_Name, this.StopWatch());
+            printTestPerformance(_name, this.stopWatch());
         }
 
         public TestSuite(string name, GraphTest graphTest)
         {
-            _Name = name;
-            _GraphTest = graphTest;
+            _name = name;
+            this.graphTest = graphTest;
         }
 
-        protected string ConvertId(Graph graph, string id)
+        protected string convertId(Graph graph, string id)
         {
-            if (graph.GetFeatures().IsRDFModel.Value)
+            if (graph.getFeatures().isRdfModel.Value)
                 return string.Concat("blueprints:", id);
             else
                 return id;
         }
 
-        protected void VertexCount(Graph graph, int expectedCount)
+        protected void vertexCount(Graph graph, int expectedCount)
         {
-            if (graph.GetFeatures().SupportsVertexIteration.Value)
-                Assert.AreEqual(Count(graph.GetVertices()), expectedCount);
+            if (graph.getFeatures().supportsVertexIteration.Value)
+                Assert.AreEqual(count(graph.getVertices()), expectedCount);
         }
 
-        protected void ContainsVertices(Graph graph, IEnumerable<Vertex> vertices)
+        protected void containsVertices(Graph graph, IEnumerable<Vertex> vertices)
         {
             foreach (Vertex v in vertices)
             {
-                Vertex vp = graph.GetVertex(v.GetId());
-                if (vp == null || !vp.GetId().Equals(v.GetId())) Assert.Fail();
+                Vertex vp = graph.getVertex(v.getId());
+                if (vp == null || !vp.getId().Equals(v.getId())) Assert.Fail();
             }
         }
 
-        protected void EdgeCount(Graph graph, int expectedCount)
+        protected void edgeCount(Graph graph, int expectedCount)
         {
-            if (graph.GetFeatures().SupportsEdgeIteration.Value)
-                Assert.AreEqual(Count(graph.GetEdges()), expectedCount);
+            if (graph.getFeatures().supportsEdgeIteration.Value)
+                Assert.AreEqual(count(graph.getEdges()), expectedCount);
         }
     }
 }

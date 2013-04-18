@@ -16,30 +16,30 @@ namespace Frontenac.Blueprints.Util.IO.GraphSON
             INCLUDE, EXCLUDE
         }
 
-        readonly IEnumerable<string> _VertexPropertyKeys;
-        readonly IEnumerable<string> _EdgePropertyKeys;
-        readonly ElementPropertiesRule _VertexPropertiesRule;
-        readonly ElementPropertiesRule _EdgePropertiesRule;
+        readonly IEnumerable<string> _vertexPropertyKeys;
+        readonly IEnumerable<string> _edgePropertyKeys;
+        readonly ElementPropertiesRule _vertexPropertiesRule;
+        readonly ElementPropertiesRule _edgePropertiesRule;
 
         /// <summary>
         /// A configuration that includes all properties of vertices and edges.
         /// </summary>
-        public static readonly ElementPropertyConfig AllProperties = new ElementPropertyConfig(null, null,
+        public static readonly ElementPropertyConfig allProperties = new ElementPropertyConfig(null, null,
             ElementPropertiesRule.INCLUDE, ElementPropertiesRule.INCLUDE);
 
         public ElementPropertyConfig(IEnumerable<string> vertexPropertyKeys, IEnumerable<string> edgePropertyKeys,
                                  ElementPropertiesRule vertexPropertiesRule, ElementPropertiesRule edgePropertiesRule)
         {
-            _VertexPropertiesRule = vertexPropertiesRule;
-            _VertexPropertyKeys = vertexPropertyKeys;
-            _EdgePropertiesRule = edgePropertiesRule;
-            _EdgePropertyKeys = edgePropertyKeys;
+            _vertexPropertiesRule = vertexPropertiesRule;
+            _vertexPropertyKeys = vertexPropertyKeys;
+            _edgePropertiesRule = edgePropertiesRule;
+            _edgePropertyKeys = edgePropertyKeys;
         }
 
         /// <summary>
         /// Construct a configuration that includes the specified properties from both vertices and edges.
         /// </summary>
-        public static ElementPropertyConfig IncludeProperties(IEnumerable<string> vertexPropertyKeys,
+        public static ElementPropertyConfig includeProperties(IEnumerable<string> vertexPropertyKeys,
                                                           IEnumerable<string> edgePropertyKeys)
         {
             return new ElementPropertyConfig(vertexPropertyKeys, edgePropertyKeys, ElementPropertiesRule.INCLUDE,
@@ -49,31 +49,31 @@ namespace Frontenac.Blueprints.Util.IO.GraphSON
         /// <summary>
         /// Construct a configuration that excludes the specified properties from both vertices and edges.
         /// </summary>
-        public static ElementPropertyConfig ExcludeProperties(IEnumerable<string> vertexPropertyKeys,
+        public static ElementPropertyConfig excludeProperties(IEnumerable<string> vertexPropertyKeys,
                                                           IEnumerable<string> edgePropertyKeys)
         {
             return new ElementPropertyConfig(vertexPropertyKeys, edgePropertyKeys, ElementPropertiesRule.EXCLUDE,
                     ElementPropertiesRule.EXCLUDE);
         }
 
-        public IEnumerable<string> GetVertexPropertyKeys()
+        public IEnumerable<string> getVertexPropertyKeys()
         {
-            return _VertexPropertyKeys;
+            return _vertexPropertyKeys;
         }
 
-        public IEnumerable<string> GetEdgePropertyKeys()
+        public IEnumerable<string> getEdgePropertyKeys()
         {
-            return _EdgePropertyKeys;
+            return _edgePropertyKeys;
         }
 
-        public ElementPropertiesRule GetVertexPropertiesRule()
+        public ElementPropertiesRule getVertexPropertiesRule()
         {
-            return _VertexPropertiesRule;
+            return _vertexPropertiesRule;
         }
 
-        public ElementPropertiesRule GetEdgePropertiesRule()
+        public ElementPropertiesRule getEdgePropertiesRule()
         {
-            return _EdgePropertiesRule;
+            return _edgePropertiesRule;
         }
     }
 }

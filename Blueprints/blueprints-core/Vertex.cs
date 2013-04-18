@@ -20,7 +20,7 @@ namespace Frontenac.Blueprints
         /// <param name="direction">the direction of the edges to retrieve</param>
         /// <param name="labels">the labels of the edges to retrieve</param>
         /// <returns>an IEnumerable of incident edges</returns>
-        IEnumerable<Edge> GetEdges(Direction direction, params string[] labels);
+        IEnumerable<Edge> getEdges(Direction direction, params string[] labels);
 
         /// <summary>
         /// Return the vertices adjacent to the vertex according to the provided direction and edge labels.
@@ -29,13 +29,13 @@ namespace Frontenac.Blueprints
         /// <param name="direction">the direction of the edges of the adjacent vertices</param>
         /// <param name="labels">the labels of the edges of the adjacent vertices</param>
         /// <returns>an IEnumerable of adjacent vertices</returns>
-        IEnumerable<Vertex> GetVertices(Direction direction, params string[] labels);
+        IEnumerable<Vertex> getVertices(Direction direction, params string[] labels);
 
         /// <summary>
         /// Generate a query object that can be used to fine tune which edges/vertices are retrieved that are incident/adjacent to this vertex.
         /// </summary>
         /// <returns>a vertex query object with methods for constraining which data is pulled from the underlying graph</returns>
-        VertexQuery Query();
+        VertexQuery query();
 
         /// <summary>
         /// Add a new outgoing edge from this vertex to the parameter vertex with provided edge label.
@@ -43,6 +43,6 @@ namespace Frontenac.Blueprints
         /// <param name="label">the label of the edge</param>
         /// <param name="vertex">the vertex to connect to with an incoming edge </param>
         /// <returns>the newly created edge</returns>
-        Edge AddEdge(string label, Vertex inVertex);
+        Edge addEdge(string label, Vertex inVertex);
     }
 }

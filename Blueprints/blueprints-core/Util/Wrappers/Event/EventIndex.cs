@@ -14,59 +14,59 @@ namespace Frontenac.Blueprints.Util.Wrappers.Event
     /// <typeparam name="T"></typeparam>
     public class EventIndex : Index
     {
-        protected readonly Index _RawIndex;
-        readonly EventGraph _EventGraph;
+        protected readonly Index rawIndex;
+        readonly EventGraph _eventGraph;
 
         public EventIndex(Index rawIndex, EventGraph eventGraph)
         {
-            _RawIndex = rawIndex;
-            _EventGraph = eventGraph;
+            this.rawIndex = rawIndex;
+            _eventGraph = eventGraph;
         }
 
-        public void Remove(string key, object value, Element element)
+        public void remove(string key, object value, Element element)
         {
-            _RawIndex.Remove(key, value, (element as EventElement).GetBaseElement());
+            rawIndex.remove(key, value, (element as EventElement).getBaseElement());
         }
 
-        public void Put(string key, object value, Element element)
+        public void put(string key, object value, Element element)
         {
-            _RawIndex.Put(key, value, (element as EventElement).GetBaseElement());
+            rawIndex.put(key, value, (element as EventElement).getBaseElement());
         }
 
-        public CloseableIterable<Element> Get(string key, object value)
+        public CloseableIterable<Element> get(string key, object value)
         {
-            if (typeof(Vertex).IsAssignableFrom(this.GetIndexClass()))
-                return (CloseableIterable<Element>)new EventVertexIterable((IEnumerable<Vertex>)_RawIndex.Get(key, value), _EventGraph);
+            if (typeof(Vertex).IsAssignableFrom(this.getIndexClass()))
+                return (CloseableIterable<Element>)new EventVertexIterable((IEnumerable<Vertex>)rawIndex.get(key, value), _eventGraph);
             else
-                return (CloseableIterable<Element>)new EventEdgeIterable((IEnumerable<Edge>)_RawIndex.Get(key, value), _EventGraph);
+                return (CloseableIterable<Element>)new EventEdgeIterable((IEnumerable<Edge>)rawIndex.get(key, value), _eventGraph);
         }
 
-        public CloseableIterable<Element> Query(string key, object value)
+        public CloseableIterable<Element> query(string key, object value)
         {
-            if (typeof(Vertex).IsAssignableFrom(this.GetIndexClass()))
-                return (CloseableIterable<Element>)new EventVertexIterable((IEnumerable<Vertex>)_RawIndex.Query(key, value), _EventGraph);
+            if (typeof(Vertex).IsAssignableFrom(this.getIndexClass()))
+                return (CloseableIterable<Element>)new EventVertexIterable((IEnumerable<Vertex>)rawIndex.query(key, value), _eventGraph);
             else
-                return (CloseableIterable<Element>)new EventEdgeIterable((IEnumerable<Edge>)_RawIndex.Query(key, value), _EventGraph);
+                return (CloseableIterable<Element>)new EventEdgeIterable((IEnumerable<Edge>)rawIndex.query(key, value), _eventGraph);
         }
 
-        public long Count(string key, object value)
+        public long count(string key, object value)
         {
-            return _RawIndex.Count(key, value);
+            return rawIndex.count(key, value);
         }
 
-        public string GetIndexName()
+        public string getIndexName()
         {
-            return _RawIndex.GetIndexName();
+            return rawIndex.getIndexName();
         }
 
-        public Type GetIndexClass()
+        public Type getIndexClass()
         {
-            return _RawIndex.GetIndexClass();
+            return rawIndex.getIndexClass();
         }
 
         public override string ToString()
         {
-            return StringFactory.IndexString(this);
+            return StringFactory.indexString(this);
         }
     }
 }

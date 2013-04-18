@@ -8,14 +8,14 @@ namespace Frontenac.Blueprints.Util.Wrappers.Batch.Cache
 {
     public interface VertexCache
     {
-        object GetEntry(object externalId);
+        object getEntry(object externalId);
 
-        void Set(Vertex vertex, object externalId);
+        void set(Vertex vertex, object externalId);
 
-        void SetId(object vertexId, object externalId);
+        void setId(object vertexId, object externalId);
 
-        bool Contains(object externalId);
+        bool contains(object externalId);
 
-        void NewTransaction();
+        void newTransaction();
     }
 }

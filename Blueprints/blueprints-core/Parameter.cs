@@ -8,28 +8,28 @@ namespace Frontenac.Blueprints
 {
     public class Parameter
     {
-        readonly object _Key;
-        object _Value;
+        readonly object _key;
+        object _value;
 
         public Parameter(object key, object value)
         {
-            _Key = key;
-            _Value = value;
+            _key = key;
+            _value = value;
         }
 
-        public object GetKey()
+        public object getKey()
         {
-            return _Key;
+            return _key;
         }
 
-        public object GetValue()
+        public object getValue()
         {
-            return _Value;
+            return _value;
         }
 
-        public object SetValue(object value)
+        public object setValue(object value)
         {
-            _Value = value;
+            _value = value;
             return value;
         }
 
@@ -38,27 +38,27 @@ namespace Frontenac.Blueprints
             if (obj is Parameter)
             {
                 var param = obj as Parameter;
-                object otherKey = param.GetKey();
-                object otherValue = param.GetValue();
+                object otherKey = param.getKey();
+                object otherValue = param.getValue();
                 if (otherKey == null)
                 {
-                    if (_Key != null)
+                    if (_key != null)
                         return false;
                 }
                 else
                 {
-                    if (!otherKey.Equals(_Key))
+                    if (!otherKey.Equals(_key))
                         return false;
                 }
 
                 if (otherValue == null)
                 {
-                    if (_Value != null)
+                    if (_value != null)
                         return false;
                 }
                 else
                 {
-                    if (!otherValue.Equals(_Value))
+                    if (!otherValue.Equals(_value))
                         return false;
                 }
 
@@ -72,14 +72,14 @@ namespace Frontenac.Blueprints
         {
             const int prime = 31;
             int result = 1;
-            result = prime * result + ((_Key == null) ? 0 : _Key.GetHashCode());
-            result = prime * result + ((_Value == null) ? 0 : _Value.GetHashCode());
+            result = prime * result + ((_key == null) ? 0 : _key.GetHashCode());
+            result = prime * result + ((_value == null) ? 0 : _value.GetHashCode());
             return result;
         }
 
         public override string ToString()
         {
-            return string.Format("parameter[{0},{1}]", _Key, _Value);
+            return string.Format("parameter[{0},{1}]", _key, _value);
         }
     }
 
@@ -91,19 +91,19 @@ namespace Frontenac.Blueprints
 
         }
 
-        public new K GetKey()
+        public new K getKey()
         {
-            return (K)base.GetKey();
+            return (K)base.getKey();
         }
 
-        public new V GetValue()
+        public new V getValue()
         {
-            return (V)base.GetValue();
+            return (V)base.getValue();
         }
 
-        public V SetValue(V value)
+        public V setValue(V value)
         {
-            return (V)base.SetValue(value);
+            return (V)base.setValue(value);
         }
     }
 }

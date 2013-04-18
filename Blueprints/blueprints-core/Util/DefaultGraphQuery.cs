@@ -12,84 +12,84 @@ namespace Frontenac.Blueprints.Util
     /// </summary>
     public class DefaultGraphQuery : DefaultQuery, GraphQuery
     {
-        readonly Graph _Graph;
+        readonly Graph _graph;
 
         public DefaultGraphQuery(Graph graph)
         {
-            _Graph = graph;
+            _graph = graph;
         }
 
-        GraphQuery GraphQuery.Has(string key, object value)
+        GraphQuery GraphQuery.has(string key, object value)
         {
-            this.HasContainers.Add(new HasContainer(key, value, Compare.EQUAL));
+            this.hasContainers.Add(new HasContainer(key, value, Compare.EQUAL));
             return this;
         }
 
-        GraphQuery GraphQuery.Has<T>(string key, Compare compare, T value)
+        GraphQuery GraphQuery.has<T>(string key, Compare compare, T value)
         {
-            this.HasContainers.Add(new HasContainer(key, value, compare));
+            this.hasContainers.Add(new HasContainer(key, value, compare));
             return this;
         }
 
-        GraphQuery GraphQuery.Interval<T>(string key, T startValue, T endValue)
+        GraphQuery GraphQuery.interval<T>(string key, T startValue, T endValue)
         {
-            this.HasContainers.Add(new HasContainer(key, startValue, Compare.GREATER_THAN_EQUAL));
-            this.HasContainers.Add(new HasContainer(key, endValue, Compare.LESS_THAN));
+            this.hasContainers.Add(new HasContainer(key, startValue, Compare.GREATER_THAN_EQUAL));
+            this.hasContainers.Add(new HasContainer(key, endValue, Compare.LESS_THAN));
             return this;
         }
 
-        GraphQuery GraphQuery.Limit(long max)
+        GraphQuery GraphQuery.limit(long max)
         {
-            _Limit = max;
+            _limit = max;
             return this;
         }
 
-        public override Query Has(string key, object value)
+        public override Query has(string key, object value)
         {
-            return (this as GraphQuery).Has(key, value);
+            return (this as GraphQuery).has(key, value);
         }
 
-        public override Query Has<T>(string key, Compare compare, T value)
+        public override Query has<T>(string key, Compare compare, T value)
         {
-            return (this as GraphQuery).Has<T>(key, compare, value);
+            return (this as GraphQuery).has<T>(key, compare, value);
         }
 
-        public override Query Interval<T>(string key, T startValue, T endValue)
+        public override Query interval<T>(string key, T startValue, T endValue)
         {
-            return (this as GraphQuery).Interval(key, startValue, endValue);
+            return (this as GraphQuery).interval(key, startValue, endValue);
         }
 
-        public override IEnumerable<Edge> Edges()
+        public override IEnumerable<Edge> edges()
         {
-            return new DefaultGraphQueryIterable<Edge>(this, GetElementIterable<Edge>(typeof(Edge)));
+            return new DefaultGraphQueryIterable<Edge>(this, getElementIterable<Edge>(typeof(Edge)));
         }
 
-        public override IEnumerable<Vertex> Vertices()
+        public override IEnumerable<Vertex> vertices()
         {
-            return new DefaultGraphQueryIterable<Vertex>(this, GetElementIterable<Vertex>(typeof(Vertex)));
+            return new DefaultGraphQueryIterable<Vertex>(this, getElementIterable<Vertex>(typeof(Vertex)));
         }
 
-        public override Query Limit(long max)
+        public override Query limit(long max)
         {
-            return (this as GraphQuery).Limit(max);
+            return (this as GraphQuery).limit(max);
         }
 
         private class DefaultGraphQueryIterable<T> : IEnumerable<T> where T : Element
         {
-            DefaultGraphQuery _DefaultGraphQuery;
-            IEnumerable<T> _Iterable = null;
-            T _NextElement = default(T);
-            long _Count = 0;
+            readonly DefaultGraphQuery _defaultGraphQuery;
+            readonly IEnumerable<T> _iterable = null;
+            T _nextElement = default(T);
+            long _count = 0;
 
             public DefaultGraphQueryIterable(DefaultGraphQuery defaultGraphQuery, IEnumerable<T> iterable)
             {
-                _DefaultGraphQuery = defaultGraphQuery;
-                _Iterable = iterable;
+                _defaultGraphQuery = defaultGraphQuery;
+                _iterable = iterable;
             }
 
             public IEnumerator<T> GetEnumerator()
             {
-                while (this.LoadNext()) yield return _NextElement;
+                while (this.loadNext()) yield return _nextElement;
             }
 
             System.Collections.IEnumerator System.Collections.IEnumerable.GetEnumerator()
@@ -97,19 +97,19 @@ namespace Frontenac.Blueprints.Util
                 return (this as IEnumerable<T>).GetEnumerator();
             }
 
-            private bool LoadNext()
+            private bool loadNext()
             {
-                _NextElement = default(T);
-                if (_Count >= _DefaultGraphQuery._Limit)
+                _nextElement = default(T);
+                if (_count >= _defaultGraphQuery._limit)
                     return false;
 
-                foreach (T element in _Iterable)
+                foreach (T element in _iterable)
                 {
                     bool filter = false;
 
-                    foreach (HasContainer hasContainer in _DefaultGraphQuery.HasContainers)
+                    foreach (HasContainer hasContainer in _defaultGraphQuery.hasContainers)
                     {
-                        if (!hasContainer.IsLegal(element))
+                        if (!hasContainer.isLegal(element))
                         {
                             filter = true;
                             break;
@@ -118,8 +118,8 @@ namespace Frontenac.Blueprints.Util
 
                     if (!filter)
                     {
-                        _NextElement = element;
-                        _Count++;
+                        _nextElement = element;
+                        _count++;
                         return true;
                     }
                 }
@@ -127,38 +127,38 @@ namespace Frontenac.Blueprints.Util
             }
         }
 
-        private IEnumerable<T> GetElementIterable<T>(Type elementClass) where T : Element
+        private IEnumerable<T> getElementIterable<T>(Type elementClass) where T : Element
         {
-            if (_Graph is KeyIndexableGraph)
+            if (_graph is KeyIndexableGraph)
             {
-                IEnumerable<string> keys = (_Graph as KeyIndexableGraph).GetIndexedKeys(elementClass);
-                foreach (HasContainer hasContainer in HasContainers)
+                IEnumerable<string> keys = (_graph as KeyIndexableGraph).getIndexedKeys(elementClass);
+                foreach (HasContainer hasContainer in hasContainers)
                 {
-                    if (hasContainer.Compare == Compare.EQUAL && hasContainer.Value != null && keys.Contains(hasContainer.Key))
+                    if (hasContainer.compare == Compare.EQUAL && hasContainer.value != null && keys.Contains(hasContainer.key))
                     {
                         if (typeof(Vertex).IsAssignableFrom(elementClass))
-                            return (IEnumerable<T>)_Graph.GetVertices(hasContainer.Key, hasContainer.Value);
+                            return (IEnumerable<T>)_graph.getVertices(hasContainer.key, hasContainer.value);
                         else
-                            return (IEnumerable<T>)_Graph.GetEdges(hasContainer.Key, hasContainer.Value);
+                            return (IEnumerable<T>)_graph.getEdges(hasContainer.key, hasContainer.value);
                     }
                 }
             }
 
-            foreach (HasContainer hasContainer in HasContainers)
+            foreach (HasContainer hasContainer in hasContainers)
             {
-                if (hasContainer.Compare == Compare.EQUAL)
+                if (hasContainer.compare == Compare.EQUAL)
                 {
                     if (typeof(Vertex).IsAssignableFrom(elementClass))
-                        return (IEnumerable<T>)_Graph.GetVertices(hasContainer.Key, hasContainer.Value);
+                        return (IEnumerable<T>)_graph.getVertices(hasContainer.key, hasContainer.value);
                     else
-                        return (IEnumerable<T>)_Graph.GetEdges(hasContainer.Key, hasContainer.Value);
+                        return (IEnumerable<T>)_graph.getEdges(hasContainer.key, hasContainer.value);
                 }
             }
 
             if (typeof(Vertex).IsAssignableFrom(elementClass))
-                return (IEnumerable<T>)_Graph.GetVertices();
+                return (IEnumerable<T>)_graph.getVertices();
             else
-                return (IEnumerable<T>)_Graph.GetEdges();
+                return (IEnumerable<T>)_graph.getEdges();
         }
     }
 }

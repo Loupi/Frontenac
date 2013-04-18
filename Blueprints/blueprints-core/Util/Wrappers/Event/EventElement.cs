@@ -13,105 +13,105 @@ namespace Frontenac.Blueprints.Util.Wrappers.Event
     /// </summary>
     public abstract class EventElement : Element
     {
-        protected readonly EventGraph _EventGraph;
-        protected readonly Element _BaseElement;
+        protected readonly EventGraph eventGraph;
+        protected readonly Element baseElement;
 
         protected EventElement(Element baseElement, EventGraph eventGraph)
         {
-            _BaseElement = baseElement;
-            _EventGraph = eventGraph;
+            this.baseElement = baseElement;
+            this.eventGraph = eventGraph;
         }
 
-        protected void OnVertexPropertyChanged(Vertex vertex, string key, object oldValue, object newValue)
+        protected void onVertexPropertyChanged(Vertex vertex, string key, object oldValue, object newValue)
         {
-            _EventGraph.GetTrigger().AddEvent(new VertexPropertyChangedEvent(vertex, key, oldValue, newValue));
+            eventGraph.getTrigger().addEvent(new VertexPropertyChangedEvent(vertex, key, oldValue, newValue));
         }
 
-        protected void OnEdgePropertyChanged(Edge edge, string key, object oldValue, object newValue)
+        protected void onEdgePropertyChanged(Edge edge, string key, object oldValue, object newValue)
         {
-            _EventGraph.GetTrigger().AddEvent(new EdgePropertyChangedEvent(edge, key, oldValue, newValue));
+            eventGraph.getTrigger().addEvent(new EdgePropertyChangedEvent(edge, key, oldValue, newValue));
         }
 
-        protected void OnVertexPropertyRemoved(Vertex vertex, string key, object removedValue)
+        protected void onVertexPropertyRemoved(Vertex vertex, string key, object removedValue)
         {
-            _EventGraph.GetTrigger().AddEvent(new VertexPropertyRemovedEvent(vertex, key, removedValue));
+            eventGraph.getTrigger().addEvent(new VertexPropertyRemovedEvent(vertex, key, removedValue));
         }
 
-        protected void OnEdgePropertyRemoved(Edge edge, string key, object removedValue)
+        protected void onEdgePropertyRemoved(Edge edge, string key, object removedValue)
         {
-            _EventGraph.GetTrigger().AddEvent(new EdgePropertyRemovedEvent(edge, key, removedValue));
+            eventGraph.getTrigger().addEvent(new EdgePropertyRemovedEvent(edge, key, removedValue));
         }
 
-        public IEnumerable<string> GetPropertyKeys()
+        public IEnumerable<string> getPropertyKeys()
         {
-            return _BaseElement.GetPropertyKeys();
+            return baseElement.getPropertyKeys();
         }
 
-        public object GetId()
+        public object getId()
         {
-            return _BaseElement.GetId();
+            return baseElement.getId();
         }
 
         /// <note>
         /// Raises a vertexPropertyRemoved or edgePropertyRemoved event.
         /// </note>
-        public object RemoveProperty(string key)
+        public object removeProperty(string key)
         {
-            object propertyRemoved = _BaseElement.RemoveProperty(key);
+            object propertyRemoved = baseElement.removeProperty(key);
 
             if (this is Vertex)
-                this.OnVertexPropertyRemoved((Vertex)this, key, propertyRemoved);
+                this.onVertexPropertyRemoved((Vertex)this, key, propertyRemoved);
             else if (this is Edge)
-                this.OnEdgePropertyRemoved((Edge)this, key, propertyRemoved);
+                this.onEdgePropertyRemoved((Edge)this, key, propertyRemoved);
 
             return propertyRemoved;
         }
 
-        public object GetProperty(string key)
+        public object getProperty(string key)
         {
-            return _BaseElement.GetProperty(key);
+            return baseElement.getProperty(key);
         }
 
         /// <note>
         /// Raises a vertexPropertyRemoved or edgePropertyChanged event.
         /// </note>
-        public void SetProperty(string key, object value)
+        public void setProperty(string key, object value)
         {
-            object oldValue = _BaseElement.GetProperty(key);
-            _BaseElement.SetProperty(key, value);
+            object oldValue = baseElement.getProperty(key);
+            baseElement.setProperty(key, value);
 
             if (this is Vertex)
-                this.OnVertexPropertyChanged((Vertex)this, key, oldValue, value);
+                this.onVertexPropertyChanged((Vertex)this, key, oldValue, value);
             else if (this is Edge)
-                this.OnEdgePropertyChanged((Edge)this, key, oldValue, value);
+                this.onEdgePropertyChanged((Edge)this, key, oldValue, value);
         }
 
         public override string ToString()
         {
-            return _BaseElement.ToString();
+            return baseElement.ToString();
         }
 
         public override int GetHashCode()
         {
-            return _BaseElement.GetHashCode();
+            return baseElement.GetHashCode();
         }
 
         public override bool Equals(object obj)
         {
-            return ElementHelper.AreEqual(this, obj);
+            return ElementHelper.areEqual(this, obj);
         }
 
-        public Element GetBaseElement()
+        public Element getBaseElement()
         {
-            return _BaseElement;
+            return baseElement;
         }
 
-        public void Remove()
+        public void remove()
         {
             if (this is Vertex)
-                _EventGraph.RemoveVertex((Vertex)this);
+                eventGraph.removeVertex((Vertex)this);
             else
-                _EventGraph.RemoveEdge((Edge)this);
+                eventGraph.removeEdge((Edge)this);
         }
     }
 }

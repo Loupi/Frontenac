@@ -12,23 +12,23 @@ namespace Frontenac.Blueprints.Util
     public class IndexableGraphHelperTest : BaseTest
     {
         [Test]
-        public void TestAddUniqueVertex()
+        public void testAddUniqueVertex()
         {
             IndexableGraph graph = new TinkerGraph();
-            Vertex marko = graph.AddVertex(0);
-            marko.SetProperty("name", "marko");
-            Index index = graph.CreateIndex("txIdx", typeof(Vertex));
-            index.Put("name", "marko", marko);
-            Vertex vertex = IndexableGraphHelper.AddUniqueVertex(graph, null, index, "name", "marko");
-            Assert.AreEqual(vertex.GetProperty("name"), "marko");
-            Assert.AreEqual(vertex, graph.GetVertex(0));
-            Assert.AreEqual(Count(graph.GetVertices()), 1);
-            Assert.AreEqual(Count(graph.GetEdges()), 0);
+            Vertex marko = graph.addVertex(0);
+            marko.setProperty("name", "marko");
+            Index index = graph.createIndex("txIdx", typeof(Vertex));
+            index.put("name", "marko", marko);
+            Vertex vertex = IndexableGraphHelper.addUniqueVertex(graph, null, index, "name", "marko");
+            Assert.AreEqual(vertex.getProperty("name"), "marko");
+            Assert.AreEqual(vertex, graph.getVertex(0));
+            Assert.AreEqual(count(graph.getVertices()), 1);
+            Assert.AreEqual(count(graph.getEdges()), 0);
 
-            vertex = IndexableGraphHelper.AddUniqueVertex(graph, null, index, "name", "darrick");
-            Assert.AreEqual(vertex.GetProperty("name"), "darrick");
-            Assert.AreEqual(Count(graph.GetVertices()), 2);
-            Assert.AreEqual(vertex.GetId(), "1");
+            vertex = IndexableGraphHelper.addUniqueVertex(graph, null, index, "name", "darrick");
+            Assert.AreEqual(vertex.getProperty("name"), "darrick");
+            Assert.AreEqual(count(graph.getVertices()), 2);
+            Assert.AreEqual(vertex.getId(), "1");
         }
     }
 }

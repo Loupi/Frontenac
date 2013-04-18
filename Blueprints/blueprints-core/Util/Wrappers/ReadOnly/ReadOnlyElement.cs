@@ -8,56 +8,56 @@ namespace Frontenac.Blueprints.Util.Wrappers.ReadOnly
 {
     public abstract class ReadOnlyElement : Element
     {
-        protected Element _BaseElement;
+        protected Element baseElement;
 
         protected ReadOnlyElement(Element baseElement)
         {
-            _BaseElement = baseElement;
+            this.baseElement = baseElement;
         }
 
-        public IEnumerable<string> GetPropertyKeys()
+        public IEnumerable<string> getPropertyKeys()
         {
-            return _BaseElement.GetPropertyKeys();
+            return baseElement.getPropertyKeys();
         }
 
-        public object GetId()
+        public object getId()
         {
-            return _BaseElement.GetId();
+            return baseElement.getId();
         }
 
-        public object RemoveProperty(string key)
+        public object removeProperty(string key)
         {
             throw new InvalidOperationException(ReadOnlyTokens.MUTATE_ERROR_MESSAGE);
         }
 
-        public object GetProperty(string key)
+        public object getProperty(string key)
         {
-            return _BaseElement.GetProperty(key);
+            return baseElement.getProperty(key);
         }
 
-        public void SetProperty(string key, object value)
+        public void setProperty(string key, object value)
         {
             throw new InvalidOperationException(ReadOnlyTokens.MUTATE_ERROR_MESSAGE);
         }
 
         public override string ToString()
         {
-            return _BaseElement.ToString();
+            return baseElement.ToString();
         }
 
         public override int GetHashCode()
         {
-            return _BaseElement.GetHashCode();
+            return baseElement.GetHashCode();
         }
 
-        public void Remove()
+        public void remove()
         {
             throw new InvalidOperationException(ReadOnlyTokens.MUTATE_ERROR_MESSAGE);
         }
 
         public override bool Equals(object obj)
         {
-            return ElementHelper.AreEqual(this, obj);
+            return ElementHelper.areEqual(this, obj);
         }
     }
 }

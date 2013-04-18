@@ -17,18 +17,18 @@ namespace Frontenac.Blueprints.Util
         /// <param name="element">the element for the property to be set</param>
         /// <param name="key">the key of the property</param>
         /// <param name="value">the value of the property</param>
-        public static void ValidateProperty(Element element, string key, object value)
+        public static void validateProperty(Element element, string key, object value)
         {
             if (null == value)
-                throw ExceptionFactory.PropertyValueCanNotBeNull();
+                throw ExceptionFactory.propertyValueCanNotBeNull();
             if (null == key)
-                throw ExceptionFactory.PropertyKeyCanNotBeNull();
+                throw ExceptionFactory.propertyKeyCanNotBeNull();
             if (key.Equals(StringFactory.ID))
-                throw ExceptionFactory.PropertyKeyIdIsReserved();
+                throw ExceptionFactory.propertyKeyIdIsReserved();
             if (element is Edge && key.Equals(StringFactory.LABEL))
-                throw ExceptionFactory.PropertyKeyLabelIsReservedForEdges();
+                throw ExceptionFactory.propertyKeyLabelIsReservedForEdges();
             if (string.IsNullOrEmpty(key))
-                throw ExceptionFactory.PropertyKeyCanNotBeEmpty();
+                throw ExceptionFactory.propertyKeyCanNotBeEmpty();
         }
 
         /// <summary>
@@ -38,24 +38,24 @@ namespace Frontenac.Blueprints.Util
         /// </summary>
         /// <param name="from">the element to copy properties from</param>
         /// <param name="to">the element to copy properties to</param>
-        public static void CopyProperties(Element from, Element to)
+        public static void copyProperties(Element from, Element to)
         {
-            foreach (string key in from.GetPropertyKeys())
-                to.SetProperty(key, from.GetProperty(key));
+            foreach (string key in from.getPropertyKeys())
+                to.setProperty(key, from.getProperty(key));
         }
 
         /// <summary>
         /// Clear all the properties from an IEnumerable of elements.
         /// </summary>
         /// <param name="elements">the elements to remove properties from</param>
-        public static void RemoveProperties(IEnumerable<Element> elements)
+        public static void removeProperties(IEnumerable<Element> elements)
         {
             foreach (Element element in elements)
             {
                 List<string> keys = new List<string>();
-                keys.AddRange(element.GetPropertyKeys());
+                keys.AddRange(element.getPropertyKeys());
                 foreach (string key in keys)
-                    element.RemoveProperty(key);
+                    element.removeProperty(key);
             }
         }
 
@@ -64,10 +64,10 @@ namespace Frontenac.Blueprints.Util
         /// </summary>
         /// <param name="key">the property to remove by key</param>
         /// <param name="elements">the elements to remove the property from</param>
-        public static void RemoveProperty(string key, IEnumerable<Element> elements)
+        public static void removeProperty(string key, IEnumerable<Element> elements)
         {
             foreach (Element element in elements)
-                element.RemoveProperty(key);
+                element.removeProperty(key);
         }
 
         /// <summary>
@@ -77,13 +77,13 @@ namespace Frontenac.Blueprints.Util
         /// <param name="oldKey">the key to rename</param>
         /// <param name="newKey">the key to rename to</param>
         /// <param name="elements">the elements to rename</param>
-        public static void RenameProperty(string oldKey, string newKey, IEnumerable<Element> elements)
+        public static void renameProperty(string oldKey, string newKey, IEnumerable<Element> elements)
         {
             foreach (Element element in elements)
             {
-                object value = element.RemoveProperty(oldKey);
+                object value = element.removeProperty(oldKey);
                 if (null != value)
-                    element.SetProperty(newKey, value);
+                    element.setProperty(newKey, value);
             }
         }
 
@@ -94,11 +94,11 @@ namespace Frontenac.Blueprints.Util
         /// <param name="key">the key for the property value to typecast</param>
         /// <param name="classCast">the class to typecast to</param>
         /// <param name="elements">the elements to have their property typecasted</param>
-        public static void TypecastProperty(string key, Type classCast, IEnumerable<Element> elements)
+        public static void typecastProperty(string key, Type classCast, IEnumerable<Element> elements)
         {
             foreach (Element element in elements)
             {
-                object value = element.RemoveProperty(key);
+                object value = element.removeProperty(key);
                 if (null != value)
                 {
                     try
@@ -112,11 +112,11 @@ namespace Frontenac.Blueprints.Util
                         else
                             convertedValue = Activator.CreateInstance(classCast, value.ToString());
 
-                        element.SetProperty(key, convertedValue);
+                        element.setProperty(key, convertedValue);
                     }
                     catch (Exception)
                     {
-                        element.SetProperty(key, value);
+                        element.setProperty(key, value);
                         throw;
                     }
                 }
@@ -130,16 +130,16 @@ namespace Frontenac.Blueprints.Util
         /// <param name="a">an element</param>
         /// <param name="b">an element</param>
         /// <returns>whether the two elements have equal properties</returns>
-        public static bool HaveEqualProperties(Element a, Element b)
+        public static bool haveEqualProperties(Element a, Element b)
         {
-            IEnumerable<string> aKeys = a.GetPropertyKeys();
-            IEnumerable<string> bKeys = b.GetPropertyKeys();
+            IEnumerable<string> aKeys = a.getPropertyKeys();
+            IEnumerable<string> bKeys = b.getPropertyKeys();
 
             if (aKeys.Intersect(bKeys).LongCount() == bKeys.LongCount() && bKeys.Intersect(aKeys).LongCount() == aKeys.LongCount())
             {
                 foreach (string key in aKeys)
                 {
-                    if (!a.GetProperty(key).Equals(b.GetProperty(key)))
+                    if (!a.getProperty(key).Equals(b.getProperty(key)))
                         return false;
                 }
                 return true;
@@ -154,11 +154,11 @@ namespace Frontenac.Blueprints.Util
         /// </summary>
         /// <param name="element">the element to get the properties of</param>
         /// <returns>a clone of the properties of the element</returns>
-        public static IDictionary<string, object> GetProperties(Element element)
+        public static IDictionary<string, object> getProperties(Element element)
         {
             Dictionary<string, object> properties = new Dictionary<string, object>();
-            foreach (string key in element.GetPropertyKeys())
-                properties.Add(key, element.GetProperty(key));
+            foreach (string key in element.getPropertyKeys())
+                properties.Add(key, element.getProperty(key));
             return properties;
         }
 
@@ -167,10 +167,10 @@ namespace Frontenac.Blueprints.Util
         /// </summary>
         /// <param name="element">the element to set the properties of</param>
         /// <param name="properties">the properties to set as a IDictionary<string, object></param>
-        public static void SetProperties(Element element, IDictionary<string, object> properties)
+        public static void setProperties(Element element, IDictionary<string, object> properties)
         {
             foreach (var property in properties)
-                element.SetProperty(property.Key, property.Value);
+                element.setProperty(property.Key, property.Value);
         }
 
         /// <summary>
@@ -179,12 +179,12 @@ namespace Frontenac.Blueprints.Util
         /// </summary>
         /// <param name="element">the element to set the properties of</param>
         /// <param name="keysValues">the key value pairs of the properties</param>
-        public static void SetProperties(Element element, params object[] keysValues)
+        public static void setProperties(Element element, params object[] keysValues)
         {
             if (keysValues.Length % 2 != 0)
                 throw new ArgumentException("The object var args must be divisible by 2");
             for (int i = 0; i < keysValues.Length; i = i + 2)
-                element.SetProperty((string)keysValues[i], keysValues[i + 1]);
+                element.setProperty((string)keysValues[i], keysValues[i + 1]);
         }
 
         /// <summary>
@@ -194,7 +194,7 @@ namespace Frontenac.Blueprints.Util
         /// <param name="a">The first element</param>
         /// <param name="b">The second element (as an object)</param>
         /// <returns>Whether the two elements are equal</returns>
-        public static bool AreEqual(Element a, object b)
+        public static bool areEqual(Element a, object b)
         {
             if (a == b)
                 return true;
@@ -202,7 +202,7 @@ namespace Frontenac.Blueprints.Util
                 return false;
             if (!a.GetType().Equals(b.GetType()))
                 return false;
-            return a.GetId().Equals(((Element)b).GetId());
+            return a.getId().Equals(((Element)b).getId());
         }
 
         /// <summary>
@@ -211,9 +211,9 @@ namespace Frontenac.Blueprints.Util
         /// <param name="a">the first element</param>
         /// <param name="b">the second element</param>
         /// <returns>Whether the two elements have equal ids</returns>
-        public static bool HaveEqualIds(Element a, Element b)
+        public static bool haveEqualIds(Element a, Element b)
         {
-            return a.GetId().Equals(b.GetId());
+            return a.getId().Equals(b.getId());
         }
     }
 }

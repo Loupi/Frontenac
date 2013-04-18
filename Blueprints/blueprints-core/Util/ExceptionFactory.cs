@@ -14,85 +14,85 @@ namespace Frontenac.Blueprints.Util
     {
         // Graph related exceptions
 
-        public static ArgumentException VertexIdCanNotBeNull()
+        public static ArgumentException vertexIdCanNotBeNull()
         {
             return new ArgumentException("Vertex id can not be null");
         }
 
-        public static ArgumentException EdgeIdCanNotBeNull()
+        public static ArgumentException edgeIdCanNotBeNull()
         {
             return new ArgumentException("Edge id can not be null");
         }
 
-        public static ArgumentException VertexWithIdAlreadyExists(object id)
+        public static ArgumentException vertexWithIdAlreadyExists(object id)
         {
             return new ArgumentException(string.Format("Vertex with id already exists: {0}", id));
         }
 
-        public static ArgumentException EdgeWithIdAlreadyExist(object id)
+        public static ArgumentException edgeWithIdAlreadyExist(object id)
         {
             return new ArgumentException(string.Format("Edge with id already exists: {0}", id));
         }
 
-        public static ArgumentException BothIsNotSupported()
+        public static ArgumentException bothIsNotSupported()
         {
             return new ArgumentException("A direction of BOTH is not supported");
         }
 
         // Element related exceptions
 
-        public static ArgumentException PropertyKeyIsReserved(string key)
+        public static ArgumentException propertyKeyIsReserved(string key)
         {
             return new ArgumentException(string.Format("Property key is reserved for all elements: {0}", key));
         }
 
-        public static ArgumentException PropertyKeyIdIsReserved()
+        public static ArgumentException propertyKeyIdIsReserved()
         {
             return new ArgumentException("Property key is reserved for all elements: id");
         }
 
-        public static ArgumentException PropertyKeyLabelIsReservedForEdges()
+        public static ArgumentException propertyKeyLabelIsReservedForEdges()
         {
             return new ArgumentException("Property key is reserved for all edges: label");
         }
 
-        public static ArgumentException PropertyKeyCanNotBeEmpty()
+        public static ArgumentException propertyKeyCanNotBeEmpty()
         {
             return new ArgumentException("Property key can not be the empty string");
         }
 
-        public static ArgumentException PropertyKeyCanNotBeNull()
+        public static ArgumentException propertyKeyCanNotBeNull()
         {
             return new ArgumentException("Property key can not be null");
         }
 
-        public static ArgumentException PropertyValueCanNotBeNull()
+        public static ArgumentException propertyValueCanNotBeNull()
         {
             return new ArgumentException("Property value can not be null");
         }
 
         // IndexableGraph related exceptions
 
-        public static ArgumentException IndexAlreadyExists(string indexName)
+        public static ArgumentException indexAlreadyExists(string indexName)
         {
             return new ArgumentException(string.Format("Index already exists: {0}", indexName));
         }
 
-        public static InvalidOperationException IndexDoesNotSupportClass(string indexName, Type clazz)
+        public static InvalidOperationException indexDoesNotSupportClass(string indexName, Type clazz)
         {
             return new InvalidOperationException(string.Format("{0} does not support class: {1}", indexName, clazz));
         }
 
         // KeyIndexableGraph related exceptions
 
-        public static ArgumentException ClassIsNotIndexable(Type clazz)
+        public static ArgumentException classIsNotIndexable(Type clazz)
         {
             return new ArgumentException(string.Format("Class is not indexable: {0}", clazz));
         }
 
         // TransactionalGraph related exceptions
 
-        public static InvalidOperationException TransactionAlreadyStarted()
+        public static InvalidOperationException transactionAlreadyStarted()
         {
             return new InvalidOperationException("Stop the current transaction before starting another");
         }

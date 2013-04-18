@@ -14,11 +14,11 @@ namespace Frontenac.Blueprints.Util.IO.GraphML
     /// </summary>
     public class GraphMLReader
     {
-        readonly Graph _Graph;
+        readonly Graph _graph;
 
-        string _VertexIdKey = null;
-        string _EdgeIdKey = null;
-        string _EdgeLabelKey = null;
+        string _vertexIdKey = null;
+        string _edgeIdKey = null;
+        string _edgeLabelKey = null;
 
         /// <summary>
         /// 
@@ -26,34 +26,34 @@ namespace Frontenac.Blueprints.Util.IO.GraphML
         /// <param name="graph">the graph to populate with the GraphML data</param>
         public GraphMLReader(Graph graph)
         {
-            _Graph = graph;
+            _graph = graph;
         }
 
         /// <summary>
         /// if the id of a vertex is a &lt;data/&gt; property, fetch it from the data property.
         /// </summary>
         /// <param name="vertexIdKey"></param>
-        public void SetVertexIdKey(string vertexIdKey)
+        public void setVertexIdKey(string vertexIdKey)
         {
-            _VertexIdKey = vertexIdKey;
+            _vertexIdKey = vertexIdKey;
         }
 
         /// <summary>
         /// if the id of an edge is a &lt;data/&gt; property, fetch it from the data property.
         /// </summary>
         /// <param name="edgeIdKey"></param>
-        void SetEdgeIdKey(string edgeIdKey)
+        void setEdgeIdKey(string edgeIdKey)
         {
-            _EdgeIdKey = edgeIdKey;
+            _edgeIdKey = edgeIdKey;
         }
 
         /// <summary>
         /// if the label of an edge is a &lt;data/&gt; property, fetch it from the data property.
         /// </summary>
         /// <param name="edgeLabelKey"></param>
-        public void SetEdgeLabelKey(string edgeLabelKey)
+        public void setEdgeLabelKey(string edgeLabelKey)
         {
-            _EdgeLabelKey = edgeLabelKey;
+            _edgeLabelKey = edgeLabelKey;
         }
 
         /// <summary>
@@ -61,9 +61,9 @@ namespace Frontenac.Blueprints.Util.IO.GraphML
         /// In practice, usually the provided graph is empty.
         /// </summary>
         /// <param name="graphMLInputStream">a Stream of GraphML data</param>
-        void InputGraph(Stream graphMLInputStream)
+        void inputGraph(Stream graphMLInputStream)
         {
-            GraphMLReader.InputGraph(_Graph, graphMLInputStream, 1000, _VertexIdKey, _EdgeIdKey, _EdgeLabelKey);
+            GraphMLReader.inputGraph(_graph, graphMLInputStream, 1000, _vertexIdKey, _edgeIdKey, _edgeLabelKey);
         }
 
         /// <summary>
@@ -71,9 +71,9 @@ namespace Frontenac.Blueprints.Util.IO.GraphML
         /// In practice, usually the provided graph is empty.
         /// </summary>
         /// <param name="filename">name of a file containing GraphML data</param>
-        public void InputGraph(string filename)
+        public void inputGraph(string filename)
         {
-            GraphMLReader.InputGraph(_Graph, filename, 1000, _VertexIdKey, _EdgeIdKey, _EdgeLabelKey);
+            GraphMLReader.inputGraph(_graph, filename, 1000, _vertexIdKey, _edgeIdKey, _edgeLabelKey);
         }
 
         /// <summary>
@@ -82,9 +82,9 @@ namespace Frontenac.Blueprints.Util.IO.GraphML
         /// </summary>
         /// <param name="graphMLInputStream">a Stream of GraphML data</param>
         /// <param name="bufferSize">the amount of elements to hold in memory before committing a transactions (only valid for TransactionalGraphs)</param>
-        public void InputGraph(Stream graphMLInputStream, int bufferSize)
+        public void inputGraph(Stream graphMLInputStream, int bufferSize)
         {
-            GraphMLReader.InputGraph(_Graph, graphMLInputStream, bufferSize, _VertexIdKey, _EdgeIdKey, _EdgeLabelKey);
+            GraphMLReader.inputGraph(_graph, graphMLInputStream, bufferSize, _vertexIdKey, _edgeIdKey, _edgeLabelKey);
         }
 
         /// <summary>
@@ -93,9 +93,9 @@ namespace Frontenac.Blueprints.Util.IO.GraphML
         /// </summary>
         /// <param name="filename">name of a file containing GraphML data</param>
         /// <param name="bufferSize">the amount of elements to hold in memory before committing a transactions (only valid for TransactionalGraphs)</param>
-        public void InputGraph(string filename, int bufferSize)
+        public void inputGraph(string filename, int bufferSize)
         {
-            GraphMLReader.InputGraph(_Graph, filename, bufferSize, _VertexIdKey, _EdgeIdKey, _EdgeLabelKey);
+            GraphMLReader.inputGraph(_graph, filename, bufferSize, _vertexIdKey, _edgeIdKey, _edgeLabelKey);
         }
 
         /// <summary>
@@ -104,9 +104,9 @@ namespace Frontenac.Blueprints.Util.IO.GraphML
         /// </summary>
         /// <param name="inputGraph">the graph to populate with the GraphML data</param>
         /// <param name="graphMLInputStream">a Stream of GraphML data</param>
-        public static void InputGraph(Graph inputGraph, Stream graphMLInputStream)
+        public static void inputGraph(Graph inputGraph, Stream graphMLInputStream)
         {
-            GraphMLReader.InputGraph(inputGraph, graphMLInputStream, 1000, null, null, null);
+            GraphMLReader.inputGraph(inputGraph, graphMLInputStream, 1000, null, null, null);
         }
 
         /// <summary>
@@ -115,9 +115,9 @@ namespace Frontenac.Blueprints.Util.IO.GraphML
         /// </summary>
         /// <param name="inputGraph">the graph to populate with the GraphML data</param>
         /// <param name="filename">name of a file containing GraphML data</param>
-        public static void InputGraph(Graph inputGraph, string filename)
+        public static void inputGraph(Graph inputGraph, string filename)
         {
-            GraphMLReader.InputGraph(inputGraph, filename, 1000, null, null, null);
+            GraphMLReader.inputGraph(inputGraph, filename, 1000, null, null, null);
         }
 
         /// <summary>
@@ -130,11 +130,11 @@ namespace Frontenac.Blueprints.Util.IO.GraphML
         /// <param name="vertexIdKey">if the id of a vertex is a &lt;data/&gt; property, fetch it from the data property.</param>
         /// <param name="edgeIdKey">if the id of an edge is a &lt;data/&gt; property, fetch it from the data property.</param>
         /// <param name="edgeLabelKey">if the label of an edge is a &lt;data/&gt; property, fetch it from the data property.</param>
-        public static void InputGraph(Graph inputGraph, string filename, int bufferSize, string vertexIdKey, string edgeIdKey, string edgeLabelKey)
+        public static void inputGraph(Graph inputGraph, string filename, int bufferSize, string vertexIdKey, string edgeIdKey, string edgeLabelKey)
         {
             using (var fis = File.OpenRead(filename))
             {
-                GraphMLReader.InputGraph(inputGraph, fis, bufferSize, vertexIdKey, edgeIdKey, edgeLabelKey);
+                GraphMLReader.inputGraph(inputGraph, fis, bufferSize, vertexIdKey, edgeIdKey, edgeLabelKey);
             }
         }
 
@@ -148,11 +148,11 @@ namespace Frontenac.Blueprints.Util.IO.GraphML
         /// <param name="vertexIdKey">if the id of a vertex is a &lt;data/&gt; property, fetch it from the data property.</param>
         /// <param name="edgeIdKey">if the id of an edge is a &lt;data/&gt; property, fetch it from the data property.</param>
         /// <param name="edgeLabelKey">if the label of an edge is a &lt;data/&gt; property, fetch it from the data property.</param>
-        public static void InputGraph(Graph inputGraph, Stream graphMLInputStream, int bufferSize, string vertexIdKey, string edgeIdKey, string edgeLabelKey)
+        public static void inputGraph(Graph inputGraph, Stream graphMLInputStream, int bufferSize, string vertexIdKey, string edgeIdKey, string edgeLabelKey)
         {
             using (XmlReader reader = XmlReader.Create(graphMLInputStream))
             {
-                BatchGraph graph = BatchGraph.Wrap(inputGraph, bufferSize);
+                BatchGraph graph = BatchGraph.wrap(inputGraph, bufferSize);
 
                 Dictionary<string, string> keyIdMap = new Dictionary<string, string>();
                 Dictionary<string, string> keyTypesMaps = new Dictionary<string, string>();
@@ -210,16 +210,16 @@ namespace Frontenac.Blueprints.Util.IO.GraphML
                             { //i=0 => outVertex, i=1 => inVertex
                                 if (vertexIdKey == null)
                                 {
-                                    edgeEndVertices[i] = graph.GetVertex(vertexIds[i]);
+                                    edgeEndVertices[i] = graph.getVertex(vertexIds[i]);
                                 }
                                 else
                                 {
-                                    edgeEndVertices[i] = graph.GetVertex(vertexMappedIdMap.Get(vertexIds[i]));
+                                    edgeEndVertices[i] = graph.getVertex(vertexMappedIdMap.get(vertexIds[i]));
                                 }
 
                                 if (null == edgeEndVertices[i])
                                 {
-                                    edgeEndVertices[i] = graph.AddVertex(vertexIds[i]);
+                                    edgeEndVertices[i] = graph.addVertex(vertexIds[i]);
                                     if (vertexIdKey != null)
                                         // Default to standard ID system (in case no mapped
                                         // ID is found later)
@@ -233,7 +233,7 @@ namespace Frontenac.Blueprints.Util.IO.GraphML
                         else if (elementName == GraphMLTokens.DATA)
                         {
                             string key = reader.GetAttribute(null, GraphMLTokens.KEY);
-                            string attributeName = keyIdMap.Get(key);
+                            string attributeName = keyIdMap.get(key);
 
                             if (attributeName != null)
                             {
@@ -249,7 +249,7 @@ namespace Frontenac.Blueprints.Util.IO.GraphML
                                         vertexId = value;
                                     }
                                     else
-                                        vertexProps[attributeName] = TypeCastValue(key, value, keyTypesMaps);
+                                        vertexProps[attributeName] = typeCastValue(key, value, keyTypesMaps);
                                 }
                                 else if (inEdge == true)
                                 {
@@ -258,7 +258,7 @@ namespace Frontenac.Blueprints.Util.IO.GraphML
                                     else if ((edgeIdKey != null) && (key == edgeIdKey))
                                         edgeId = value;
                                     else
-                                        edgeProps[attributeName] = TypeCastValue(key, value, keyTypesMaps);
+                                        edgeProps[attributeName] = typeCastValue(key, value, keyTypesMaps);
                                 }
                             }
                         }
@@ -269,12 +269,12 @@ namespace Frontenac.Blueprints.Util.IO.GraphML
 
                         if (elementName == GraphMLTokens.NODE)
                         {
-                            Vertex currentVertex = graph.GetVertex(vertexId);
+                            Vertex currentVertex = graph.getVertex(vertexId);
                             if (currentVertex == null)
-                                currentVertex = graph.AddVertex(vertexId);
+                                currentVertex = graph.addVertex(vertexId);
 
                             foreach (var prop in vertexProps)
-                                currentVertex.SetProperty(prop.Key, prop.Value);
+                                currentVertex.setProperty(prop.Key, prop.Value);
 
                             vertexId = null;
                             vertexProps = null;
@@ -282,10 +282,10 @@ namespace Frontenac.Blueprints.Util.IO.GraphML
                         }
                         else if (elementName == GraphMLTokens.EDGE)
                         {
-                            Edge currentEdge = graph.AddEdge(edgeId, edgeEndVertices[0], edgeEndVertices[1], edgeLabel);
+                            Edge currentEdge = graph.addEdge(edgeId, edgeEndVertices[0], edgeEndVertices[1], edgeLabel);
 
                             foreach (var prop in edgeProps)
-                                currentEdge.SetProperty(prop.Key, prop.Value);
+                                currentEdge.setProperty(prop.Key, prop.Value);
 
                             edgeId = null;
                             edgeLabel = null;
@@ -296,13 +296,13 @@ namespace Frontenac.Blueprints.Util.IO.GraphML
                     }
                 }
 
-                graph.Commit();
+                graph.commit();
             }
         }
 
-        static object TypeCastValue(string key, string value, Dictionary<string, string> keyTypes)
+        static object typeCastValue(string key, string value, Dictionary<string, string> keyTypes)
         {
-            string type = keyTypes.Get(key);
+            string type = keyTypes.get(key);
             if (null == type || type == GraphMLTokens.STRING)
                 return value;
             else if (type == GraphMLTokens.FLOAT)

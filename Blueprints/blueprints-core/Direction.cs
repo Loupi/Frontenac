@@ -15,13 +15,13 @@ namespace Frontenac.Blueprints
 
     public static class Directions
     {
-        public static readonly Direction[] Proper = new Direction[]
+        public static readonly Direction[] proper = new Direction[]
         {
             Direction.OUT,
             Direction.IN
         };
 
-        public static Direction Opposite(this Direction direction)
+        public static Direction opposite(this Direction direction)
         {
             if (direction == Direction.OUT)
                 return Direction.IN;

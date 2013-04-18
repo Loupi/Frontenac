@@ -10,36 +10,36 @@ namespace Frontenac.Blueprints.Util.Wrappers.Batch.Cache
     {
         const int INITIAL_CAPACITY = 1000;
 
-        Dictionary<object, object> _Map;
+        Dictionary<object, object> _map;
 
         public ObjectIDVertexCache()
         {
-            _Map = new Dictionary<object, object>(INITIAL_CAPACITY);
+            _map = new Dictionary<object, object>(INITIAL_CAPACITY);
         }
 
-        public object GetEntry(object externalId)
+        public object getEntry(object externalId)
         {
-            return _Map.Get(externalId);
+            return _map.get(externalId);
         }
 
-        public void Set(Vertex vertex, object externalId)
+        public void set(Vertex vertex, object externalId)
         {
-            SetId(vertex, externalId);
+            setId(vertex, externalId);
         }
 
-        public void SetId(object vertexId, object externalId)
+        public void setId(object vertexId, object externalId)
         {
-            _Map[externalId] = vertexId;
+            _map[externalId] = vertexId;
         }
 
-        public bool Contains(object externalId)
+        public bool contains(object externalId)
         {
-            return _Map.ContainsKey(externalId);
+            return _map.ContainsKey(externalId);
         }
 
-        public void NewTransaction()
+        public void newTransaction()
         {
-            _Map = _Map.ToDictionary(t => t.Key, t => t.Value is Vertex ? (t.Value as Vertex).GetId() : t.Value);
+            _map = _map.ToDictionary(t => t.Key, t => t.Value is Vertex ? (t.Value as Vertex).getId() : t.Value);
         }
     }
 }

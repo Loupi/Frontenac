@@ -14,9 +14,9 @@ namespace Frontenac.Blueprints.Util.Wrappers.Event.Listener
 
         }
 
-        protected override void Fire(GraphChangedListener listener, Edge edge, string key, object oldValue, object newValue)
+        protected override void fire(GraphChangedListener listener, Edge edge, string key, object oldValue, object newValue)
         {
-            listener.EdgePropertyRemoved(edge, key, oldValue);
+            listener.edgePropertyRemoved(edge, key, oldValue);
         }
     }
 }

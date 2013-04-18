@@ -10,8 +10,8 @@ namespace Frontenac.Blueprints.Impls.TG
     [Serializable]
     class TinkerVertex : TinkerElement, Vertex
     {
-        public Dictionary<string, HashSet<Edge>> _OutEdges = new Dictionary<string, HashSet<Edge>>();
-        public Dictionary<string, HashSet<Edge>> _InEdges = new Dictionary<string, HashSet<Edge>>();
+        public Dictionary<string, HashSet<Edge>> outEdges = new Dictionary<string, HashSet<Edge>>();
+        public Dictionary<string, HashSet<Edge>> inEdges = new Dictionary<string, HashSet<Edge>>();
 
         public TinkerVertex(string id, TinkerGraph graph)
             : base(id, graph)
@@ -19,34 +19,34 @@ namespace Frontenac.Blueprints.Impls.TG
 
         }
 
-        public IEnumerable<Edge> GetEdges(Direction direction, params string[] labels)
+        public IEnumerable<Edge> getEdges(Direction direction, params string[] labels)
         {
             if (direction == Direction.OUT)
-                return GetOutEdges(labels);
+                return getOutEdges(labels);
             else if (direction == Direction.IN)
-                return GetInEdges(labels);
+                return getInEdges(labels);
             else
-                return new MultiIterable<Edge>(new List<IEnumerable<Edge>>() { GetInEdges(labels), GetOutEdges(labels) });
+                return new MultiIterable<Edge>(new List<IEnumerable<Edge>>() { getInEdges(labels), getOutEdges(labels) });
         }
 
-        public IEnumerable<Vertex> GetVertices(Direction direction, params string[] labels)
+        public IEnumerable<Vertex> getVertices(Direction direction, params string[] labels)
         {
             return new VerticesFromEdgesIterable(this, direction, labels);
         }
 
-        IEnumerable<Edge> GetInEdges(params string[] labels)
+        IEnumerable<Edge> getInEdges(params string[] labels)
         {
             if (labels.Length == 0)
             {
                 List<Edge> totalEdges = new List<Edge>();
-                foreach (var edges in _InEdges.Values)
+                foreach (var edges in inEdges.Values)
                     totalEdges.AddRange(edges);
 
                 return totalEdges;
             }
             else if (labels.Length == 1)
             {
-                HashSet<Edge> edges = _InEdges.Get(labels[0]);
+                HashSet<Edge> edges = inEdges.get(labels[0]);
                 if (null == edges)
                     return Enumerable.Empty<Edge>();
                 else
@@ -58,7 +58,7 @@ namespace Frontenac.Blueprints.Impls.TG
                 List<Edge> totalEdges = new List<Edge>();
                 foreach (string label in labels)
                 {
-                    HashSet<Edge> edges = _InEdges.Get(label);
+                    HashSet<Edge> edges = inEdges.get(label);
                     if (null != edges)
                         totalEdges.AddRange(edges);
                 }
@@ -66,19 +66,19 @@ namespace Frontenac.Blueprints.Impls.TG
             }
         }
 
-        IEnumerable<Edge> GetOutEdges(params string[] labels)
+        IEnumerable<Edge> getOutEdges(params string[] labels)
         {
             if (labels.Length == 0)
             {
                 List<Edge> totalEdges = new List<Edge>();
-                foreach (var edges in _OutEdges.Values)
+                foreach (var edges in outEdges.Values)
                     totalEdges.AddRange(edges);
 
                 return totalEdges;
             }
             else if (labels.Length == 1)
             {
-                HashSet<Edge> edges = _OutEdges.Get(labels[0]);
+                HashSet<Edge> edges = outEdges.get(labels[0]);
                 if (null == edges)
                     return Enumerable.Empty<Edge>();
                 else
@@ -89,7 +89,7 @@ namespace Frontenac.Blueprints.Impls.TG
                 List<Edge> totalEdges = new List<Edge>();
                 foreach (string label in labels)
                 {
-                    HashSet<Edge> edges = _OutEdges.Get(label);
+                    HashSet<Edge> edges = outEdges.get(label);
                     if (null != edges)
                         totalEdges.AddRange(edges);
                 }
@@ -97,39 +97,39 @@ namespace Frontenac.Blueprints.Impls.TG
             }
         }
 
-        public VertexQuery Query()
+        public VertexQuery query()
         {
             return new DefaultVertexQuery(this);
         }
 
         public override string ToString()
         {
-            return StringFactory.VertexString(this);
+            return StringFactory.vertexString(this);
         }
 
-        public Edge AddEdge(string label, Vertex inVertex)
+        public Edge addEdge(string label, Vertex inVertex)
         {
-            return _Graph.AddEdge(null, this, inVertex, label);
+            return graph.addEdge(null, this, inVertex, label);
         }
 
-        public void AddOutEdge(string label, Edge edge)
+        public void addOutEdge(string label, Edge edge)
         {
-            HashSet<Edge> edges = _OutEdges.Get(label);
+            HashSet<Edge> edges = outEdges.get(label);
             if (null == edges)
             {
                 edges = new HashSet<Edge>();
-                _OutEdges.Put(label, edges);
+                outEdges.put(label, edges);
             }
             edges.Add(edge);
         }
 
-        public void AddInEdge(string label, Edge edge)
+        public void addInEdge(string label, Edge edge)
         {
-            HashSet<Edge> edges = _InEdges.Get(label);
+            HashSet<Edge> edges = inEdges.get(label);
             if (null == edges)
             {
                 edges = new HashSet<Edge>();
-                _InEdges.Put(label, edges);
+                inEdges.put(label, edges);
             }
             edges.Add(edge);
         }

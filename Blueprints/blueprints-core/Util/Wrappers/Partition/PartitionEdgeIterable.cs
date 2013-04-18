@@ -8,14 +8,14 @@ namespace Frontenac.Blueprints.Util.Wrappers.Partition
 {
     class PartitionEdgeIterable : CloseableIterable<Edge>
     {
-        readonly IEnumerable<Edge> _Iterable;
-        readonly PartitionGraph _Graph;
-        bool _Disposed;
+        readonly IEnumerable<Edge> _iterable;
+        readonly PartitionGraph _graph;
+        bool _disposed;
 
         public PartitionEdgeIterable(IEnumerable<Edge> iterable, PartitionGraph graph)
         {
-            _Iterable = iterable;
-            _Graph = graph;
+            _iterable = iterable;
+            _graph = graph;
         }
 
         ~PartitionEdgeIterable()
@@ -31,16 +31,16 @@ namespace Frontenac.Blueprints.Util.Wrappers.Partition
 
         protected virtual void Dispose(bool disposing)
         {
-            if (_Disposed)
+            if (_disposed)
                 return;
 
             if (disposing)
             {
-                if (_Iterable is IDisposable)
-                    (_Iterable as IDisposable).Dispose();
+                if (_iterable is IDisposable)
+                    (_iterable as IDisposable).Dispose();
             }
 
-            _Disposed = true;
+            _disposed = true;
         }
 
         public IEnumerator<Edge> GetEnumerator()
@@ -50,49 +50,49 @@ namespace Frontenac.Blueprints.Util.Wrappers.Partition
 
         class InnerPartitionEdgeIterable : IEnumerable<Edge>
         {
-            readonly PartitionEdgeIterable _PartitionEdgeIterable;
-            IEnumerator<Edge> _Itty;
-            PartitionEdge _NextEdge;
+            readonly PartitionEdgeIterable _partitionEdgeIterable;
+            readonly IEnumerator<Edge> _itty;
+            PartitionEdge _nextEdge;
 
             public InnerPartitionEdgeIterable(PartitionEdgeIterable partitionEdgeIterable)
             {
-                _PartitionEdgeIterable = partitionEdgeIterable;
-                _Itty = _PartitionEdgeIterable._Iterable.GetEnumerator();
+                _partitionEdgeIterable = partitionEdgeIterable;
+                _itty = _partitionEdgeIterable._iterable.GetEnumerator();
             }
 
             public IEnumerator<Edge> GetEnumerator()
             {
-                while (HasNext())
+                while (hasNext())
                 {
-                    if (null != _NextEdge)
+                    if (null != _nextEdge)
                     {
-                        PartitionEdge temp = _NextEdge;
-                        _NextEdge = null;
+                        PartitionEdge temp = _nextEdge;
+                        _nextEdge = null;
                         yield return temp;
                     }
                     else
                     {
-                        while (_Itty.MoveNext())
+                        while (_itty.MoveNext())
                         {
-                            Edge edge = _Itty.Current;
-                            if (_PartitionEdgeIterable._Graph.IsInPartition(edge))
-                                yield return new PartitionEdge(edge, _PartitionEdgeIterable._Graph);
+                            Edge edge = _itty.Current;
+                            if (_partitionEdgeIterable._graph.isInPartition(edge))
+                                yield return new PartitionEdge(edge, _partitionEdgeIterable._graph);
                         }
                     }
                 }
             }
 
-            bool HasNext()
+            bool hasNext()
             {
-                if (null != _NextEdge)
+                if (null != _nextEdge)
                     return true;
 
-                while (_Itty.MoveNext())
+                while (_itty.MoveNext())
                 {
-                    Edge edge = _Itty.Current;
-                    if (_PartitionEdgeIterable._Graph.IsInPartition(edge))
+                    Edge edge = _itty.Current;
+                    if (_partitionEdgeIterable._graph.isInPartition(edge))
                     {
-                        _NextEdge = new PartitionEdge(edge, _PartitionEdgeIterable._Graph);
+                        _nextEdge = new PartitionEdge(edge, _partitionEdgeIterable._graph);
                         return true;
                     }
                 }

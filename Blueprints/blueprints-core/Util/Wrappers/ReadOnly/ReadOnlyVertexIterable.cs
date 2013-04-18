@@ -8,12 +8,12 @@ namespace Frontenac.Blueprints.Util.Wrappers.ReadOnly
 {
     class ReadOnlyVertexIterable : CloseableIterable<Vertex>
     {
-        readonly IEnumerable<Vertex> _Iterable;
-        bool _Disposed;
+        readonly IEnumerable<Vertex> _iterable;
+        bool _disposed;
 
         public ReadOnlyVertexIterable(IEnumerable<Vertex> iterable)
         {
-            _Iterable = iterable;
+            _iterable = iterable;
         }
 
         ~ReadOnlyVertexIterable()
@@ -29,21 +29,21 @@ namespace Frontenac.Blueprints.Util.Wrappers.ReadOnly
 
         protected virtual void Dispose(bool disposing)
         {
-            if (_Disposed)
+            if (_disposed)
                 return;
 
             if (disposing)
             {
-                if (_Iterable is IDisposable)
-                    (_Iterable as IDisposable).Dispose();
+                if (_iterable is IDisposable)
+                    (_iterable as IDisposable).Dispose();
             }
 
-            _Disposed = true;
+            _disposed = true;
         }
 
         public IEnumerator<Vertex> GetEnumerator()
         {
-            foreach (Vertex v in _Iterable)
+            foreach (Vertex v in _iterable)
                 yield return new ReadOnlyVertex(v);
         }
 

@@ -16,85 +16,85 @@ namespace Frontenac.Blueprints.Util.IO.GML
         const string LABEL = "label";
 
         [Test]
-        public void ExampleGMLGetsCorrectNumberOfElements()
+        public void exampleGmlGetsCorrectNumberOfElements()
         {
             TinkerGraph graph = new TinkerGraph();
             
             using(var stream = typeof(GMLReaderTest).Assembly.GetManifestResourceStream(typeof(GMLReaderTest), "example.gml"))
             {
-                GMLReader.InputGraph(graph, stream);
+                GMLReader.inputGraph(graph, stream);
             }
 
-            Assert.AreEqual(3, graph.GetVertices().Count());
-            Assert.AreEqual(3, graph.GetEdges().Count());
+            Assert.AreEqual(3, graph.getVertices().Count());
+            Assert.AreEqual(3, graph.getEdges().Count());
         }
 
         [Test]
-        public void ExampleGMLGetsCorrectTopology()
+        public void exampleGmlGetsCorrectTopology()
         {
             TinkerGraph graph = new TinkerGraph();
 
             using(var stream = typeof(GMLReaderTest).Assembly.GetManifestResourceStream(typeof(GMLReaderTest), "example.gml"))
             {
-                GMLReader.InputGraph(graph, stream);
+                GMLReader.inputGraph(graph, stream);
             }
 
-            Vertex v1 = graph.GetVertex(1);
-            Vertex v2 = graph.GetVertex(2);
-            Vertex v3 = graph.GetVertex(3);
+            Vertex v1 = graph.getVertex(1);
+            Vertex v2 = graph.getVertex(2);
+            Vertex v3 = graph.getVertex(3);
 
-            IEnumerable<Edge> out1 = v1.GetEdges(Direction.OUT);
+            IEnumerable<Edge> out1 = v1.getEdges(Direction.OUT);
             Edge e1 = out1.First();
-            Assert.AreEqual(v2, e1.GetVertex(Direction.IN));
+            Assert.AreEqual(v2, e1.getVertex(Direction.IN));
 
-            IEnumerable<Edge> out2 = v2.GetEdges(Direction.OUT);
+            IEnumerable<Edge> out2 = v2.getEdges(Direction.OUT);
             Edge e2 = out2.First();
-            Assert.AreEqual(v3, e2.GetVertex(Direction.IN));
+            Assert.AreEqual(v3, e2.getVertex(Direction.IN));
 
-            IEnumerable<Edge> out3 = v3.GetEdges(Direction.OUT);
+            IEnumerable<Edge> out3 = v3.getEdges(Direction.OUT);
             Edge e3 = out3.First();
-            Assert.AreEqual(v1, e3.GetVertex(Direction.IN));
+            Assert.AreEqual(v1, e3.getVertex(Direction.IN));
         }
 
         [Test]
-        public void ExampleGMLGetsCorrectProperties(){
+        public void exampleGmlGetsCorrectProperties(){
             TinkerGraph graph = new TinkerGraph();
 
             using(var stream = typeof(GMLReaderTest).Assembly.GetManifestResourceStream(typeof(GMLReaderTest), "example.gml"))
             {
-                GMLReader.InputGraph(graph, stream);
+                GMLReader.inputGraph(graph, stream);
             }
 
-            Vertex v1 = graph.GetVertex(1);
-            Assert.AreEqual("Node 1", v1.GetProperty(LABEL));
+            Vertex v1 = graph.getVertex(1);
+            Assert.AreEqual("Node 1", v1.getProperty(LABEL));
 
-            Vertex v2 = graph.GetVertex(2);
-            Assert.AreEqual("Node 2", v2.GetProperty(LABEL));
+            Vertex v2 = graph.getVertex(2);
+            Assert.AreEqual("Node 2", v2.getProperty(LABEL));
 
-            Vertex v3 = graph.GetVertex(3);
-            Assert.AreEqual("Node 3", v3.GetProperty(LABEL));
+            Vertex v3 = graph.getVertex(3);
+            Assert.AreEqual("Node 3", v3.getProperty(LABEL));
 
-            IEnumerable<Edge> out1 = v1.GetEdges(Direction.OUT);
+            IEnumerable<Edge> out1 = v1.getEdges(Direction.OUT);
             Edge e1 = out1.First();
-            Assert.AreEqual("Edge from node 1 to node 2", e1.GetLabel());
+            Assert.AreEqual("Edge from node 1 to node 2", e1.getLabel());
 
-            IEnumerable<Edge> out2 = v2.GetEdges(Direction.OUT);
+            IEnumerable<Edge> out2 = v2.getEdges(Direction.OUT);
             Edge e2 = out2.First();
-            Assert.AreEqual("Edge from node 2 to node 3", e2.GetLabel());
+            Assert.AreEqual("Edge from node 2 to node 3", e2.getLabel());
 
-            IEnumerable<Edge> out3 = v3.GetEdges(Direction.OUT);
+            IEnumerable<Edge> out3 = v3.getEdges(Direction.OUT);
             Edge e3 = out3.First();
-            Assert.AreEqual("Edge from node 3 to node 1", e3.GetLabel());
+            Assert.AreEqual("Edge from node 3 to node 1", e3.getLabel());
         }
 
         [Test]
-        public void MalformedThrowsIOException()
+        public void malformedThrowsIoException()
         {
             try
             {
                 using (var stream = typeof(GMLReaderTest).Assembly.GetManifestResourceStream(typeof(GMLReaderTest), "malformed.gml"))
                 {
-                    GMLReader.InputGraph(new TinkerGraph(), stream);
+                    GMLReader.inputGraph(new TinkerGraph(), stream);
                 }
                 Assert.Fail();
             }
@@ -109,29 +109,29 @@ namespace Frontenac.Blueprints.Util.IO.GML
         }
 
         [Test]
-        public void Example2GMLTestingMapParsing()
+        public void example2GmlTestingMapParsing()
         {
             TinkerGraph graph = new TinkerGraph();
 
             using (var stream = typeof(GMLReaderTest).Assembly.GetManifestResourceStream(typeof(GMLReaderTest), "example2.gml"))
             {
-                GMLReader.InputGraph(graph, stream);
+                GMLReader.inputGraph(graph, stream);
             }
 
-            Assert.AreEqual(2, graph.GetVertices().Count());
-            Assert.AreEqual(1, graph.GetEdges().Count());
+            Assert.AreEqual(2, graph.getVertices().Count());
+            Assert.AreEqual(1, graph.getEdges().Count());
 
-            object property = graph.GetVertex(1).GetProperty(GMLTokens.GRAPHICS);
+            object property = graph.getVertex(1).getProperty(GMLTokens.GRAPHICS);
             Assert.True(property is IDictionary);
 
             Dictionary<string, object> map = (Dictionary<string, object>) property;
             Assert.AreEqual(5, map.Count);
-            Assert.AreEqual(0.1f, map.Get("x"));
+            Assert.AreEqual(0.1f, map.get("x"));
             // NB comes back as int
-            Assert.AreEqual(0, map.Get("y"));
-            Assert.AreEqual(0.1f, map.Get("w"));
-            Assert.AreEqual(0.1f, map.Get("h"));
-            Assert.AreEqual("earth.gif", map.Get("bitmap"));
+            Assert.AreEqual(0, map.get("y"));
+            Assert.AreEqual(0.1f, map.get("w"));
+            Assert.AreEqual(0.1f, map.get("h"));
+            Assert.AreEqual("earth.gif", map.get("bitmap"));
         }
 
 

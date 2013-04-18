@@ -13,16 +13,16 @@ namespace Frontenac.Blueprints.Util
     /// <typeparam name="T"></typeparam>
     public class PropertyFilteredIterable<T> : CloseableIterable<T> where T : Element
     {
-        readonly string _Key;
-        readonly object _Value;
-        readonly IEnumerable<T> _Iterable;
-        bool _Disposed;
+        readonly string _key;
+        readonly object _value;
+        readonly IEnumerable<T> _iterable;
+        bool _disposed;
 
         public PropertyFilteredIterable(string key, object value, IEnumerable<T> iterable)
         {
-            _Key = key;
-            _Value = value;
-            _Iterable = iterable;
+            _key = key;
+            _value = value;
+            _iterable = iterable;
         }
 
         ~PropertyFilteredIterable()
@@ -38,16 +38,16 @@ namespace Frontenac.Blueprints.Util
 
         protected virtual void Dispose(bool disposing)
         {
-            if (_Disposed)
+            if (_disposed)
                 return;
 
             if (disposing)
             {
-                if (_Iterable is IDisposable)
-                    (_Iterable as IDisposable).Dispose();
+                if (_iterable is IDisposable)
+                    (_iterable as IDisposable).Dispose();
             }
 
-            _Disposed = true;
+            _disposed = true;
         }
 
         public IEnumerator<T> GetEnumerator()
@@ -62,68 +62,68 @@ namespace Frontenac.Blueprints.Util
 
         class PropertyFilteredIterableIterable<U> : IEnumerable<U> where U : Element
         {
-            readonly PropertyFilteredIterable<U> _PropertyFilteredIterable;
-            readonly IEnumerator<U> _Itty;
-            U _NextElement = default(U);
+            readonly PropertyFilteredIterable<U> _propertyFilteredIterable;
+            readonly IEnumerator<U> _itty;
+            U _nextElement = default(U);
 
             public PropertyFilteredIterableIterable(PropertyFilteredIterable<U> propertyFilteredIterable)
             {
-                _PropertyFilteredIterable = propertyFilteredIterable;
-                _Itty = _PropertyFilteredIterable._Iterable.GetEnumerator();
+                _propertyFilteredIterable = propertyFilteredIterable;
+                _itty = _propertyFilteredIterable._iterable.GetEnumerator();
             }
 
             public IEnumerator<U> GetEnumerator()
             {
-                while (HasNext())
+                while (hasNext())
                 {
-                    if (null != _NextElement)
+                    if (null != _nextElement)
                     {
-                        U temp = _NextElement;
-                        _NextElement = default(U);
+                        U temp = _nextElement;
+                        _nextElement = default(U);
                         yield return temp;
                     }
                     else
                     {
-                        while (_Itty.MoveNext())
+                        while (_itty.MoveNext())
                         {
-                            U element = _Itty.Current;
-                            if (element.GetPropertyKeys().Contains(_PropertyFilteredIterable._Key) &&
-                                element.GetProperty(_PropertyFilteredIterable._Key).Equals(_PropertyFilteredIterable._Value))
+                            U element = _itty.Current;
+                            if (element.getPropertyKeys().Contains(_propertyFilteredIterable._key) &&
+                                element.getProperty(_propertyFilteredIterable._key).Equals(_propertyFilteredIterable._value))
                                 yield return element;
                         }
                     }
                 }
             }
 
-            bool HasNext()
+            bool hasNext()
             {
-                if (null != _NextElement)
+                if (null != _nextElement)
                     return true;
                 else
                 {
-                    while (_Itty.MoveNext())
+                    while (_itty.MoveNext())
                     {
-                        U element = _Itty.Current;
-                        object temp = element.GetProperty(_PropertyFilteredIterable._Key);
+                        U element = _itty.Current;
+                        object temp = element.getProperty(_propertyFilteredIterable._key);
                         if (null != temp)
                         {
-                            if (temp.Equals(_PropertyFilteredIterable._Value))
+                            if (temp.Equals(_propertyFilteredIterable._value))
                             {
-                                _NextElement = element;
+                                _nextElement = element;
                                 return true;
                             }
                         }
                         else
                         {
-                            if (_PropertyFilteredIterable._Value == null)
+                            if (_propertyFilteredIterable._value == null)
                             {
-                                _NextElement = element;
+                                _nextElement = element;
                                 return true;
                             }
                         }
                     }
 
-                    _NextElement = default(U);
+                    _nextElement = default(U);
                     return false;
                 }
             }

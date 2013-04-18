@@ -8,57 +8,57 @@ namespace Frontenac.Blueprints.Util.Wrappers.ReadOnly
 {
     public class ReadOnlyIndex : Index
     {
-        protected Index _RawIndex;
+        protected Index rawIndex;
 
         public ReadOnlyIndex(Index rawIndex)
         {
-            _RawIndex = rawIndex;
+            this.rawIndex = rawIndex;
         }
 
-        public void Remove(string key, object value, Element element)
+        public void remove(string key, object value, Element element)
         {
             throw new InvalidOperationException(ReadOnlyTokens.MUTATE_ERROR_MESSAGE);
         }
 
-        public void Put(string key, object value, Element element)
+        public void put(string key, object value, Element element)
         {
             throw new InvalidOperationException(ReadOnlyTokens.MUTATE_ERROR_MESSAGE);
         }
 
-        public CloseableIterable<Element> Get(string key, object value)
+        public CloseableIterable<Element> get(string key, object value)
         {
-            if (typeof(Vertex).IsAssignableFrom(this.GetIndexClass()))
-                return (CloseableIterable<Element>)new ReadOnlyVertexIterable((IEnumerable<Vertex>)_RawIndex.Get(key, value));
+            if (typeof(Vertex).IsAssignableFrom(this.getIndexClass()))
+                return (CloseableIterable<Element>)new ReadOnlyVertexIterable((IEnumerable<Vertex>)rawIndex.get(key, value));
             else
-                return (CloseableIterable<Element>)new ReadOnlyEdgeIterable((IEnumerable<Edge>)_RawIndex.Get(key, value));
+                return (CloseableIterable<Element>)new ReadOnlyEdgeIterable((IEnumerable<Edge>)rawIndex.get(key, value));
         }
 
-        public CloseableIterable<Element> Query(string key, object value)
+        public CloseableIterable<Element> query(string key, object value)
         {
-            if (typeof(Vertex).IsAssignableFrom(this.GetIndexClass()))
-                return (CloseableIterable<Element>)new ReadOnlyVertexIterable((IEnumerable<Vertex>)_RawIndex.Query(key, value));
+            if (typeof(Vertex).IsAssignableFrom(this.getIndexClass()))
+                return (CloseableIterable<Element>)new ReadOnlyVertexIterable((IEnumerable<Vertex>)rawIndex.query(key, value));
             else
-                return (CloseableIterable<Element>)new ReadOnlyEdgeIterable((IEnumerable<Edge>)_RawIndex.Query(key, value));
+                return (CloseableIterable<Element>)new ReadOnlyEdgeIterable((IEnumerable<Edge>)rawIndex.query(key, value));
         }
 
-        public long Count(string key, object value)
+        public long count(string key, object value)
         {
-            return _RawIndex.Count(key, value);
+            return rawIndex.count(key, value);
         }
 
-        public string GetIndexName()
+        public string getIndexName()
         {
-            return _RawIndex.GetIndexName();
+            return rawIndex.getIndexName();
         }
 
-        public Type GetIndexClass()
+        public Type getIndexClass()
         {
-            return _RawIndex.GetIndexClass();
+            return rawIndex.getIndexClass();
         }
 
         public override string ToString()
         {
-            return StringFactory.IndexString(this);
+            return StringFactory.indexString(this);
         }
     }
 }

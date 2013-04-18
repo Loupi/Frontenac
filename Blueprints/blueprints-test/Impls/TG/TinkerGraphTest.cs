@@ -12,9 +12,9 @@ namespace Frontenac.Blueprints.Impls.TG
     public class TinkerGraphVertexTestSuite : VertexTestSuite
     {
         [SetUp]
-        public void SetUp()
+        public void setUp()
         {
-            DeleteDirectory(TinkerGraphTestImpl.GetThinkerGraphDirectory());
+            deleteDirectory(TinkerGraphTestImpl.getThinkerGraphDirectory());
         }
 
         public TinkerGraphVertexTestSuite()
@@ -27,9 +27,9 @@ namespace Frontenac.Blueprints.Impls.TG
     public class TinkerGraphEdgeTestSuite : EdgeTestSuite
     {
         [SetUp]
-        public void SetUp()
+        public void setUp()
         {
-            DeleteDirectory(TinkerGraphTestImpl.GetThinkerGraphDirectory());
+            deleteDirectory(TinkerGraphTestImpl.getThinkerGraphDirectory());
         }
 
         public TinkerGraphEdgeTestSuite()
@@ -40,26 +40,26 @@ namespace Frontenac.Blueprints.Impls.TG
 
     class TinkerGraphTestImpl : GraphTest
     {
-        public override Graph GenerateGraph()
+        public override Graph generateGraph()
         {
-            return GenerateGraph("graph");
+            return generateGraph("graph");
         }
 
-        public override Graph GenerateGraph(string graphDirectoryName)
+        public override Graph generateGraph(string graphDirectoryName)
         {
-            return new TinkerGraph(GetThinkerGraphDirectory());
+            return new TinkerGraph(getThinkerGraphDirectory());
         }
 
-        public static string GetThinkerGraphDirectory()
+        public static string getThinkerGraphDirectory()
         {
             string directory = System.Environment.GetEnvironmentVariable("tinkerGraphDirectory");
             if (directory == null)
-                directory = GetWorkingDirectory();
+                directory = getWorkingDirectory();
             
             return string.Concat(directory,"/graph");
         }
 
-        static string GetWorkingDirectory()
+        static string getWorkingDirectory()
         {
             return Directory.GetCurrentDirectory();
         }

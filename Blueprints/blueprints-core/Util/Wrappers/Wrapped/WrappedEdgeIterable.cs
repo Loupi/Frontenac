@@ -8,12 +8,12 @@ namespace Frontenac.Blueprints.Util.Wrappers.Wrapped
 {
     class WrappedEdgeIterable : CloseableIterable<Edge>
     {
-        readonly IEnumerable<Edge> _Iterable;
-        bool _Disposed;
+        readonly IEnumerable<Edge> _iterable;
+        bool _disposed;
 
         public WrappedEdgeIterable(IEnumerable<Edge> iterable)
         {
-            _Iterable = iterable;
+            _iterable = iterable;
         }
 
         ~WrappedEdgeIterable()
@@ -29,21 +29,21 @@ namespace Frontenac.Blueprints.Util.Wrappers.Wrapped
 
         protected virtual void Dispose(bool disposing)
         {
-            if (_Disposed)
+            if (_disposed)
                 return;
 
             if (disposing)
             {
-                if (_Iterable is IDisposable)
-                    (_Iterable as IDisposable).Dispose();
+                if (_iterable is IDisposable)
+                    (_iterable as IDisposable).Dispose();
             }
 
-            _Disposed = true;
+            _disposed = true;
         }
 
         public IEnumerator<Edge> GetEnumerator()
         {
-            foreach (Edge edge in _Iterable)
+            foreach (Edge edge in _iterable)
                 yield return new WrappedEdge(edge);
         }
 

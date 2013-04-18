@@ -36,16 +36,16 @@ namespace Frontenac.Blueprints.Util.Wrappers.Batch
         /// </summary>
         public const long DEFAULT_BUFFER_SIZE = 100000;
 
-        readonly TransactionalGraph _BaseGraph;
-        string _VertexIdKey = null;
-        string _EdgeIdKey = null;
-        bool _LoadingFromScratch = true;
-        readonly VertexCache _Cache;
-        long _BufferSize = DEFAULT_BUFFER_SIZE;
-        long _RemainingBufferSize;
-        BatchEdge _CurrentEdge = null;
-        Edge _CurrentEdgeCached = null;
-        object _PreviousOutVertexId = null;
+        readonly TransactionalGraph _baseGraph;
+        string _vertexIdKey = null;
+        string _edgeIdKey = null;
+        bool _loadingFromScratch = true;
+        readonly VertexCache _cache;
+        readonly long _bufferSize = DEFAULT_BUFFER_SIZE;
+        long _remainingBufferSize;
+        BatchEdge _currentEdge = null;
+        Edge _currentEdgeCached = null;
+        object _previousOutVertexId = null;
 
         /// <summary>
         /// Constructs a BatchGraph wrapping the provided baseGraph, using the specified buffer size and expecting vertex ids of
@@ -59,12 +59,12 @@ namespace Frontenac.Blueprints.Util.Wrappers.Batch
             if (graph == null) throw new ArgumentNullException("graph");
             if (bufferSize <= 0) throw new ArgumentException("BufferSize must be positive");
 
-            _BaseGraph = graph;
-            _BufferSize = bufferSize;
-            _VertexIdKey = null;
-            _EdgeIdKey = null;
-            _Cache = type.GetVertexCache();
-            _RemainingBufferSize = _BufferSize;
+            _baseGraph = graph;
+            _bufferSize = bufferSize;
+            _vertexIdKey = null;
+            _edgeIdKey = null;
+            _cache = type.getVertexCache();
+            _remainingBufferSize = _bufferSize;
         }
 
         /// <summary>
@@ -82,7 +82,7 @@ namespace Frontenac.Blueprints.Util.Wrappers.Batch
         /// </summary>
         /// <param name="graph">Graph to be wrapped</param>
         /// <returns>a BatchGraph wrapping the provided baseGraph</returns>
-        public static BatchGraph Wrap(Graph graph)
+        public static BatchGraph wrap(Graph graph)
         {
             if (graph is BatchGraph) return (BatchGraph)graph;
             else if (graph is TransactionalGraph) return new BatchGraph((TransactionalGraph)graph);
@@ -96,7 +96,7 @@ namespace Frontenac.Blueprints.Util.Wrappers.Batch
         /// <param name="graph">Graph to be wrapped</param>
         /// <param name="buffer">Size of the buffer</param>
         /// <returns>a BatchGraph wrapping the provided baseGraph</returns>
-        public static BatchGraph Wrap(Graph graph, long buffer)
+        public static BatchGraph wrap(Graph graph, long buffer)
         {
             if (graph is BatchGraph) return (BatchGraph)graph;
             else if (graph is TransactionalGraph)
@@ -110,11 +110,11 @@ namespace Frontenac.Blueprints.Util.Wrappers.Batch
         /// If the loaded baseGraph should later be wrapped with IdGraph use IdGraph.ID.
         /// </summary>
         /// <param name="key">key Key to be used.</param>
-        public void SetVertexIdKey(string key)
+        public void setVertexIdKey(string key)
         {
-            if (!_LoadingFromScratch && key == null && _BaseGraph.GetFeatures().IgnoresSuppliedIds.Value)
+            if (!_loadingFromScratch && key == null && _baseGraph.getFeatures().ignoresSuppliedIds.Value)
                 throw new InvalidOperationException("Cannot set vertex id key to null when not loading from scratch while ids are ignored.");
-            _VertexIdKey = key;
+            _vertexIdKey = key;
         }
 
         /// <summary>
@@ -122,9 +122,9 @@ namespace Frontenac.Blueprints.Util.Wrappers.Batch
         /// via setVertexIdKey
         /// </summary>
         /// <returns>The key used to set the id on the vertices or null if such has not been set</returns>
-        public string GetVertexIdKey()
+        public string getVertexIdKey()
         {
-            return _VertexIdKey;
+            return _vertexIdKey;
         }
 
         /// <summary>
@@ -133,9 +133,9 @@ namespace Frontenac.Blueprints.Util.Wrappers.Batch
         /// If the loaded baseGraph should later be wrapped with IdGraphuse IdGraph.ID.
         /// </summary>
         /// <param name="key">Key to be used.</param>
-        public void SetEdgeIdKey(string key)
+        public void setEdgeIdKey(string key)
         {
-            _EdgeIdKey = key;
+            _edgeIdKey = key;
         }
 
         /// <summary>
@@ -143,9 +143,9 @@ namespace Frontenac.Blueprints.Util.Wrappers.Batch
         /// via setEdgeIdKey
         /// </summary>
         /// <returns>The key used to set the id on the edges or null if such has not been set</returns>
-        public string GetEdgeIdKey()
+        public string getEdgeIdKey()
         {
-            return _EdgeIdKey;
+            return _edgeIdKey;
         }
 
         /// <summary>
@@ -164,11 +164,11 @@ namespace Frontenac.Blueprints.Util.Wrappers.Batch
         /// setVertexIdKey - otherwise an exception is thrown.
         /// </summary>
         /// <param name="fromScratch">Sets whether the graph loaded through this instance of BatchGraph is loaded from scratch</param>
-        public void SetLoadingFromScratch(bool fromScratch)
+        public void setLoadingFromScratch(bool fromScratch)
         {
-            if (fromScratch == false && _VertexIdKey == null && _BaseGraph.GetFeatures().IgnoresSuppliedIds.Value)
+            if (fromScratch == false && _vertexIdKey == null && _baseGraph.getFeatures().ignoresSuppliedIds.Value)
                 throw new InvalidOperationException("Vertex id key is required to query existing vertices in wrapped graph.");
-            _LoadingFromScratch = fromScratch;
+            _loadingFromScratch = fromScratch;
         }
 
         /// <summary>
@@ -177,86 +177,86 @@ namespace Frontenac.Blueprints.Util.Wrappers.Batch
         /// see setLoadingFromScratch
         /// </summary>
         /// <returns>Whether this BatchGraph is loading data from scratch or incrementally into an existing graph.</returns>
-        public bool IsLoadingFromScratch()
+        public bool isLoadingFromScratch()
         {
-            return _LoadingFromScratch;
+            return _loadingFromScratch;
         }
 
-        void NextElement()
+        void nextElement()
         {
-            _CurrentEdge = null;
-            _CurrentEdgeCached = null;
-            if (_RemainingBufferSize <= 0)
+            _currentEdge = null;
+            _currentEdgeCached = null;
+            if (_remainingBufferSize <= 0)
             {
-                _BaseGraph.Commit();
-                _Cache.NewTransaction();
-                _RemainingBufferSize = _BufferSize;
+                _baseGraph.commit();
+                _cache.newTransaction();
+                _remainingBufferSize = _bufferSize;
             }
-            _RemainingBufferSize--;
+            _remainingBufferSize--;
         }
 
         /// <summary>
         /// Should only be invoked after loading is complete. Committing the transaction before will cause the loading to fail.
         /// </summary>
-        public void Commit()
+        public void commit()
         {
-            _CurrentEdge = null;
-            _CurrentEdgeCached = null;
-            _RemainingBufferSize = 0;
-            _BaseGraph.Commit();
+            _currentEdge = null;
+            _currentEdgeCached = null;
+            _remainingBufferSize = 0;
+            _baseGraph.commit();
         }
 
         /// <summary>
         /// ot supported for batch loading, since data may have already been partially persisted.
         /// </summary>
-        public void Rollback()
+        public void rollback()
         {
             throw new InvalidOperationException("Can not rollback during batch loading");
         }
 
-        public void Shutdown()
+        public void shutdown()
         {
-            _BaseGraph.Commit();
-            _BaseGraph.Shutdown();
-            _CurrentEdge = null;
-            _CurrentEdgeCached = null;
+            _baseGraph.commit();
+            _baseGraph.shutdown();
+            _currentEdge = null;
+            _currentEdgeCached = null;
         }
 
-        public Graph GetBaseGraph()
+        public Graph getBaseGraph()
         {
-            return _BaseGraph;
+            return _baseGraph;
         }
 
-        public Features GetFeatures()
+        public Features getFeatures()
         {
-            Features features = _BaseGraph.GetFeatures().CopyFeatures();
-            features.IgnoresSuppliedIds = false;
-            features.IsWrapper = true;
-            features.SupportsEdgeIteration = false;
-            features.SupportsThreadedTransactions = false;
-            features.SupportsVertexIteration = false;
+            Features features = _baseGraph.getFeatures().copyFeatures();
+            features.ignoresSuppliedIds = false;
+            features.isWrapper = true;
+            features.supportsEdgeIteration = false;
+            features.supportsThreadedTransactions = false;
+            features.supportsVertexIteration = false;
             return features;
         }
 
-        Vertex RetrieveFromCache(object externalID)
+        Vertex retrieveFromCache(object externalID)
         {
-            object internal_ = _Cache.GetEntry(externalID);
+            object internal_ = _cache.getEntry(externalID);
             if (internal_ is Vertex)
                 return (Vertex)internal_;
             else if (internal_ != null)
             {
                 //its an internal id
-                Vertex v = _BaseGraph.GetVertex(internal_);
-                _Cache.Set(v, externalID);
+                Vertex v = _baseGraph.getVertex(internal_);
+                _cache.set(v, externalID);
                 return v;
             }
             else
                 return null;
         }
 
-        Vertex GetCachedVertex(object externalID)
+        Vertex getCachedVertex(object externalID)
         {
-            Vertex v = RetrieveFromCache(externalID);
+            Vertex v = retrieveFromCache(externalID);
             if (v == null) throw new ArgumentException(string.Concat("Vertex for given ID cannot be found: ", externalID));
             return v;
         }
@@ -267,260 +267,260 @@ namespace Frontenac.Blueprints.Util.Wrappers.Batch
         /// This gives a modest performance boost, especially when the cache is large or there are 
         /// on average many edges per vertex.
         /// </note>
-        public Vertex GetVertex(object id)
+        public Vertex getVertex(object id)
         {
-            if ((_PreviousOutVertexId != null) && (_PreviousOutVertexId == id))
-                return new BatchVertex(_PreviousOutVertexId, this);
+            if ((_previousOutVertexId != null) && (_previousOutVertexId == id))
+                return new BatchVertex(_previousOutVertexId, this);
             else
             {
-                Vertex v = RetrieveFromCache(id);
+                Vertex v = retrieveFromCache(id);
                 if (v == null)
                 {
-                    if (_LoadingFromScratch) return null;
+                    if (_loadingFromScratch) return null;
                     else
                     {
-                        if (_BaseGraph.GetFeatures().IgnoresSuppliedIds.Value)
+                        if (_baseGraph.getFeatures().ignoresSuppliedIds.Value)
                         {
-                            System.Diagnostics.Debug.Assert(_VertexIdKey != null);
-                            IEnumerator<Vertex> iter = _BaseGraph.GetVertices(_VertexIdKey, id).GetEnumerator();
+                            System.Diagnostics.Debug.Assert(_vertexIdKey != null);
+                            IEnumerator<Vertex> iter = _baseGraph.getVertices(_vertexIdKey, id).GetEnumerator();
                             if (!iter.MoveNext()) return null;
                             v = iter.Current;
                             if (iter.MoveNext()) throw new ArgumentException(string.Concat("There are multiple vertices with the provided id in the database: ", id));
                         }
                         else
                         {
-                            v = _BaseGraph.GetVertex(id);
+                            v = _baseGraph.getVertex(id);
                             if (v == null) return null;
                         }
-                        _Cache.Set(v, id);
+                        _cache.set(v, id);
                     }
                 }
                 return new BatchVertex(id, this);
             }
         }
 
-        public Vertex AddVertex(object id)
+        public Vertex addVertex(object id)
         {
-            if (id == null) throw ExceptionFactory.VertexIdCanNotBeNull();
-            if (RetrieveFromCache(id) != null) throw ExceptionFactory.VertexWithIdAlreadyExists(id);
-            NextElement();
+            if (id == null) throw ExceptionFactory.vertexIdCanNotBeNull();
+            if (retrieveFromCache(id) != null) throw ExceptionFactory.vertexWithIdAlreadyExists(id);
+            nextElement();
 
-            Vertex v = _BaseGraph.AddVertex(id);
-            if (_VertexIdKey != null)
-                v.SetProperty(_VertexIdKey, id);
+            Vertex v = _baseGraph.addVertex(id);
+            if (_vertexIdKey != null)
+                v.setProperty(_vertexIdKey, id);
 
-            _Cache.Set(v, id);
+            _cache.set(v, id);
             return new BatchVertex(id, this);
         }
 
-        public Edge AddEdge(object id, Vertex outVertex, Vertex inVertex, string label)
+        public Edge addEdge(object id, Vertex outVertex, Vertex inVertex, string label)
         {
             if (!(outVertex is BatchVertex) || !(inVertex is BatchVertex))
                 throw new ArgumentException("Given element was not created in this baseGraph");
-            NextElement();
+            nextElement();
 
-            Vertex ov = GetCachedVertex(outVertex.GetId());
-            Vertex iv = GetCachedVertex(inVertex.GetId());
+            Vertex ov = getCachedVertex(outVertex.getId());
+            Vertex iv = getCachedVertex(inVertex.getId());
 
-            _PreviousOutVertexId = outVertex.GetId(); //keep track of the previous out vertex id
+            _previousOutVertexId = outVertex.getId(); //keep track of the previous out vertex id
 
-            _CurrentEdgeCached = _BaseGraph.AddEdge(id, ov, iv, label);
-            if (_EdgeIdKey != null && id != null)
-                _CurrentEdgeCached.SetProperty(_EdgeIdKey, id);
+            _currentEdgeCached = _baseGraph.addEdge(id, ov, iv, label);
+            if (_edgeIdKey != null && id != null)
+                _currentEdgeCached.setProperty(_edgeIdKey, id);
 
-            _CurrentEdge = new BatchEdge(this);
-            return _CurrentEdge;
+            _currentEdge = new BatchEdge(this);
+            return _currentEdge;
         }
 
-        protected Edge AddEdgeSupport(Vertex outVertex, Vertex inVertex, string label)
+        protected Edge addEdgeSupport(Vertex outVertex, Vertex inVertex, string label)
         {
-            return this.AddEdge(null, outVertex, inVertex, label);
+            return this.addEdge(null, outVertex, inVertex, label);
         }
 
         public override string ToString()
         {
-            return StringFactory.GraphString(this, _BaseGraph.ToString());
+            return StringFactory.graphString(this, _baseGraph.ToString());
         }
 
         // ################### Unsupported Graph Methods ####################
 
-        public Edge GetEdge(object id)
+        public Edge getEdge(object id)
         {
-            throw RetrievalNotSupported();
+            throw retrievalNotSupported();
         }
 
-        public void RemoveVertex(Vertex vertex)
+        public void removeVertex(Vertex vertex)
         {
-            throw RetrievalNotSupported();
+            throw retrievalNotSupported();
         }
 
-        public IEnumerable<Vertex> GetVertices()
+        public IEnumerable<Vertex> getVertices()
         {
-            throw RetrievalNotSupported();
+            throw retrievalNotSupported();
         }
 
-        public IEnumerable<Vertex> GetVertices(string key, object value)
+        public IEnumerable<Vertex> getVertices(string key, object value)
         {
-            throw RetrievalNotSupported();
+            throw retrievalNotSupported();
         }
 
-        public void RemoveEdge(Edge edge)
+        public void removeEdge(Edge edge)
         {
-            throw RetrievalNotSupported();
+            throw retrievalNotSupported();
         }
 
-        public IEnumerable<Edge> GetEdges()
+        public IEnumerable<Edge> getEdges()
         {
-            throw RetrievalNotSupported();
+            throw retrievalNotSupported();
         }
 
-        public IEnumerable<Edge> GetEdges(string key, object value)
+        public IEnumerable<Edge> getEdges(string key, object value)
         {
-            throw RetrievalNotSupported();
+            throw retrievalNotSupported();
         }
 
-        public GraphQuery Query()
+        public GraphQuery query()
         {
-            throw RetrievalNotSupported();
+            throw retrievalNotSupported();
         }
 
         class BatchVertex : Vertex
         {
-            readonly object _ExternalID;
-            readonly BatchGraph _BatchGraph;
+            readonly object _externalId;
+            readonly BatchGraph _batchGraph;
 
             public BatchVertex(object id, BatchGraph batchGraph)
             {
                 if (id == null) throw new ArgumentNullException("id");
-                _ExternalID = id;
-                _BatchGraph = batchGraph;
+                _externalId = id;
+                _batchGraph = batchGraph;
             }
 
-            public IEnumerable<Edge> GetEdges(Direction direction, params string[] labels)
+            public IEnumerable<Edge> getEdges(Direction direction, params string[] labels)
             {
-                throw RetrievalNotSupported();
+                throw retrievalNotSupported();
             }
 
-            public IEnumerable<Vertex> GetVertices(Direction direction, params string[] labels)
+            public IEnumerable<Vertex> getVertices(Direction direction, params string[] labels)
             {
-                throw RetrievalNotSupported();
+                throw retrievalNotSupported();
             }
 
-            public VertexQuery Query()
+            public VertexQuery query()
             {
-                throw RetrievalNotSupported();
+                throw retrievalNotSupported();
             }
 
-            public Edge AddEdge(string label, Vertex inVertex)
+            public Edge addEdge(string label, Vertex inVertex)
             {
-                return _BatchGraph.AddEdgeSupport(this, inVertex, label);
+                return _batchGraph.addEdgeSupport(this, inVertex, label);
             }
 
-            public void SetProperty(string key, object value)
+            public void setProperty(string key, object value)
             {
-                _BatchGraph.GetCachedVertex(_ExternalID).SetProperty(key, value);
+                _batchGraph.getCachedVertex(_externalId).setProperty(key, value);
             }
 
-            public object GetId()
+            public object getId()
             {
-                return _ExternalID;
+                return _externalId;
             }
 
-            public object GetProperty(string key)
+            public object getProperty(string key)
             {
-                return _BatchGraph.GetCachedVertex(_ExternalID).GetProperty(key);
+                return _batchGraph.getCachedVertex(_externalId).getProperty(key);
             }
 
-            public IEnumerable<string> GetPropertyKeys()
+            public IEnumerable<string> getPropertyKeys()
             {
-                return _BatchGraph.GetCachedVertex(_ExternalID).GetPropertyKeys();
+                return _batchGraph.getCachedVertex(_externalId).getPropertyKeys();
             }
 
-            public object RemoveProperty(string key)
+            public object removeProperty(string key)
             {
-                return _BatchGraph.GetCachedVertex(_ExternalID).RemoveProperty(key);
+                return _batchGraph.getCachedVertex(_externalId).removeProperty(key);
             }
 
-            public void Remove()
+            public void remove()
             {
-                _BatchGraph.RemoveVertex(this);
+                _batchGraph.removeVertex(this);
             }
 
             public override string ToString()
             {
-                return string.Concat("v[", _ExternalID, "]");
+                return string.Concat("v[", _externalId, "]");
             }
         }
 
         class BatchEdge : Edge
         {
-            readonly BatchGraph _BatchGraph;
+            readonly BatchGraph _batchGraph;
 
             public BatchEdge(BatchGraph batchGraph)
             {
-                _BatchGraph = batchGraph;
+                _batchGraph = batchGraph;
             }
 
-            public Vertex GetVertex(Direction direction)
+            public Vertex getVertex(Direction direction)
             {
-                return GetWrappedEdge().GetVertex(direction);
+                return getWrappedEdge().getVertex(direction);
             }
 
-            public string GetLabel()
+            public string getLabel()
             {
-                return GetWrappedEdge().GetLabel();
+                return getWrappedEdge().getLabel();
             }
 
-            public void SetProperty(string key, object value)
+            public void setProperty(string key, object value)
             {
-                GetWrappedEdge().SetProperty(key, value);
+                getWrappedEdge().setProperty(key, value);
             }
 
-            public object GetId()
+            public object getId()
             {
-                return GetWrappedEdge().GetId();
+                return getWrappedEdge().getId();
             }
 
-            public object GetProperty(string key)
+            public object getProperty(string key)
             {
-                return GetWrappedEdge().GetProperty(key);
+                return getWrappedEdge().getProperty(key);
             }
 
-            public IEnumerable<string> GetPropertyKeys()
+            public IEnumerable<string> getPropertyKeys()
             {
-                return GetWrappedEdge().GetPropertyKeys();
+                return getWrappedEdge().getPropertyKeys();
             }
 
-            public object RemoveProperty(string key)
+            public object removeProperty(string key)
             {
-                return GetWrappedEdge().RemoveProperty(key);
+                return getWrappedEdge().removeProperty(key);
             }
 
-            Edge GetWrappedEdge()
+            Edge getWrappedEdge()
             {
-                if (this != _BatchGraph._CurrentEdge)
+                if (this != _batchGraph._currentEdge)
                     throw new InvalidOperationException("This edge is no longer in scope");
 
-                return _BatchGraph._CurrentEdgeCached;
+                return _batchGraph._currentEdgeCached;
             }
 
             public override string ToString()
             {
-                return GetWrappedEdge().ToString();
+                return getWrappedEdge().ToString();
             }
 
-            public void Remove()
+            public void remove()
             {
-                _BatchGraph.RemoveEdge(this);
+                _batchGraph.removeEdge(this);
             }
         }
 
-        static InvalidOperationException RetrievalNotSupported()
+        static InvalidOperationException retrievalNotSupported()
         {
             return new InvalidOperationException("Retrieval operations are not supported during batch loading");
         }
 
-        static InvalidOperationException RemovalNotSupported()
+        static InvalidOperationException removalNotSupported()
         {
             return new InvalidOperationException("Removal operations are not supported during batch loading");
         }

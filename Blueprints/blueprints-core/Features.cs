@@ -17,162 +17,162 @@ namespace Frontenac.Blueprints
         /// <summary>
         /// Does the graph allow for two edges with the same vertices and edge label to exist?
         /// </summary>
-        public bool? SupportsDuplicateEdges { get; set; }
+        public bool? supportsDuplicateEdges { get; set; }
 
         /// <summary>
         /// Does the graph allow an edge to have the same out/tail and in/head vertex?
         /// </summary>
-        public bool? SupportsSelfLoops { get; set; }
+        public bool? supportsSelfLoops { get; set; }
 
         /// <summary>
         /// Does the graph allow any serializable object to be used as a property value for a graph element?
         /// </summary>
-        public bool? SupportsSerializableObjectProperty { get; set; }
+        public bool? supportsSerializableObjectProperty { get; set; }
 
         /// <summary>
         /// Does the graph allows boolean to be used as a property value for a graph element?
         /// </summary>
-        public bool? SupportsBooleanProperty { get; set; }
+        public bool? supportsBooleanProperty { get; set; }
 
         /// <summary>
         /// Does the graph allows double to be used as a property value for a graph element?
         /// </summary>
-        public bool? SupportsDoubleProperty { get; set; }
+        public bool? supportsDoubleProperty { get; set; }
 
         /// <summary>
         /// Does the graph allows float to be used as a property value for a graph element?
         /// </summary>
-        public bool? SupportsFloatProperty { get; set; }
+        public bool? supportsFloatProperty { get; set; }
 
         /// <summary>
         /// Does the graph allows integer to be used as a property value for a graph element?
         /// </summary>
-        public bool? SupportsIntegerProperty { get; set; }
+        public bool? supportsIntegerProperty { get; set; }
 
         /// <summary>
         /// Does the graph allows a primitive array to be used as a property value for a graph element?
         /// </summary>
-        public bool? SupportsPrimitiveArrayProperty { get; set; }
+        public bool? supportsPrimitiveArrayProperty { get; set; }
 
         /// <summary>
         /// Does the graph allows list (all objects with the list have the same data types) to be used as a property value for a graph element?
         /// </summary>
-        public bool? SupportsUniformListProperty { get; set; }
+        public bool? supportsUniformListProperty { get; set; }
 
         /// <summary>
         /// Does the graph allows a mixed list (different data types within the same list) to be used as a
         /// property value for a graph element?
         /// </summary>
-        public bool? SupportsMixedListProperty { get; set; }
+        public bool? supportsMixedListProperty { get; set; }
 
         /// <summary>
         /// Does the graph allows long to be used as a property value for a graph element?
         /// </summary>
-        public bool? SupportsLongProperty { get; set; }
+        public bool? supportsLongProperty { get; set; }
 
         /// <summary>
         /// Does the graph allows map to be used as a property value for a graph element?
         /// </summary>
-        public bool? SupportsMapProperty { get; set; }
+        public bool? supportsMapProperty { get; set; }
 
         /// <summary>
         /// Graph allows string to be used as a property value for a graph element.
         /// </summary>
-        public bool? SupportsStringProperty { get; set; }
+        public bool? supportsStringProperty { get; set; }
 
         /// <summary>
         /// Does the graph ignore user provided ids in graph.addVertex(object id)?
         /// </summary>
-        public bool? IgnoresSuppliedIds { get; set; }
+        public bool? ignoresSuppliedIds { get; set; }
 
         /// <summary>
         /// Does the graph persist the graph to disk after shutdown?
         /// </summary>
-        public bool? IsPersistent { get; set; }
+        public bool? isPersistent { get; set; }
 
         /// <summary>
         /// Is the graph an RDF framework?
         /// Deprecated thus far, isRDFModel describes a collection of features. Use actual features to describe your data model.
         /// </summary>
-        public bool? IsRDFModel { get; set; }
+        public bool? isRdfModel { get; set; }
 
         /// <summary>
         /// Does the graph implement WrapperGraph?
         /// </summary>
-        public bool? IsWrapper { get; set; }
+        public bool? isWrapper { get; set; }
 
         /// <summary>
         /// Does the graph implement IndexableGraph?
         /// </summary>
-        public bool? SupportsIndices { get; set; }
+        public bool? supportsIndices { get; set; }
 
         /// <summary>
         /// Does the graph support the indexing of vertices by their properties?
         /// </summary>
-        public bool? SupportsVertexIndex { get; set; }
+        public bool? supportsVertexIndex { get; set; }
 
         /// <summary>
         /// Does the graph support the indexing of edges by their properties?
         /// </summary>
-        public bool? SupportsEdgeIndex { get; set; }
+        public bool? supportsEdgeIndex { get; set; }
 
         /// <summary>
         /// Does the graph implement KeyIndexableGraph?
         /// </summary>
-        public bool? SupportsKeyIndices { get; set; }
+        public bool? supportsKeyIndices { get; set; }
 
         /// <summary>
         /// Does the graph support key indexing on vertices?
         /// </summary>
-        public bool? SupportsVertexKeyIndex { get; set; }
+        public bool? supportsVertexKeyIndex { get; set; }
 
         /// <summary>
         /// Does the graph support key indexing on edges?
         /// </summary>
-        public bool? SupportsEdgeKeyIndex { get; set; }
+        public bool? supportsEdgeKeyIndex { get; set; }
 
         /// <summary>
         /// Does the graph support graph.getEdges()?
         /// </summary>
-        public bool? SupportsEdgeIteration { get; set; }
+        public bool? supportsEdgeIteration { get; set; }
 
         /// <summary>
         /// Does the graph support graph.getVertices()?
         /// </summary>
-        public bool? SupportsVertexIteration { get; set; }
+        public bool? supportsVertexIteration { get; set; }
 
         /// <summary>
         /// Does the graph support retrieving edges by id, i.e. graph.getEdge(object id)?
         /// </summary>
-        public bool? SupportsEdgeRetrieval { get; set; }
+        public bool? supportsEdgeRetrieval { get; set; }
 
         /// <summary>
         /// Does the graph support setting and retrieving properties on vertices?
         /// </summary>
-        public bool? SupportsVertexProperties { get; set; }
+        public bool? supportsVertexProperties { get; set; }
 
         /// <summary>
         /// Does the graph support setting and retrieving properties on edges?
         /// </summary>
-        public bool? SupportsEdgeProperties { get; set; }
+        public bool? supportsEdgeProperties { get; set; }
 
         /// <summary>
         /// Does the graph implement TransactionalGraph?
         /// </summary>
-        public bool? SupportsTransactions { get; set; }
+        public bool? supportsTransactions { get; set; }
 
         /// <summary>
         /// Does the graph implement ThreadedTransactionalGraph?
         /// </summary>
-        public bool? SupportsThreadedTransactions { get; set; }
+        public bool? supportsThreadedTransactions { get; set; }
 
         /// <summary>
         /// Checks whether the graph supports both vertex and edge properties
         /// </summary>
         /// <returns>whether the graph supports both vertex and edge properties</returns>
-        public bool SupportsElementProperties()
+        public bool supportsElementProperties()
         {
-            return SupportsVertexProperties.Value && SupportsEdgeProperties.Value;
+            return supportsVertexProperties.Value && supportsEdgeProperties.Value;
         }
 
         public override string ToString()
@@ -185,7 +185,7 @@ namespace Frontenac.Blueprints
             return string.Join("\n", fields);
         }
 
-        public IDictionary<string, object> ToMap()
+        public IDictionary<string, object> toMap()
         {
             var fields = this
                .GetType()
@@ -200,7 +200,7 @@ namespace Frontenac.Blueprints
         /// This is useful for implementers to ensure that they did not miss specifying a feature.
         /// Throws InvalidOperationException if a feature was not set
         /// </summary>
-        public void CheckCompliance()
+        public void checkCompliance()
         {
             var notCompliant = this
                .GetType()
@@ -215,7 +215,7 @@ namespace Frontenac.Blueprints
         /// This method copies the features in this features object to another feature object.
         /// </summary>
         /// <returns>a feature object with a clone of the features in the prior.</returns>
-        public Features CopyFeatures()
+        public Features copyFeatures()
         {
             return this.MemberwiseClone() as Features;
         }

@@ -10,68 +10,68 @@ namespace Frontenac.Blueprints.Impls.TG
     [Serializable]
     abstract class TinkerElement : Element
     {
-        protected Dictionary<string, object> _Properties = new Dictionary<string, object>();
-        protected readonly string _Id;
-        protected readonly TinkerGraph _Graph;
+        protected Dictionary<string, object> properties = new Dictionary<string, object>();
+        protected readonly string id;
+        protected readonly TinkerGraph graph;
 
         protected TinkerElement(string id, TinkerGraph graph)
         {
-            _Graph = graph;
-            _Id = id;
+            this.graph = graph;
+            this.id = id;
         }
 
-        public IEnumerable<string> GetPropertyKeys()
+        public IEnumerable<string> getPropertyKeys()
         {
-            return new HashSet<string>(_Properties.Keys);
+            return new HashSet<string>(properties.Keys);
         }
 
-        public object GetProperty(string key)
+        public object getProperty(string key)
         {
-            return _Properties.Get(key);
+            return properties.get(key);
         }
 
-        public void SetProperty(string key, object value)
+        public void setProperty(string key, object value)
         {
-            ElementHelper.ValidateProperty(this, key, value);
-            object oldValue = _Properties.Put(key, value);
+            ElementHelper.validateProperty(this, key, value);
+            object oldValue = properties.put(key, value);
             if (this is TinkerVertex)
-                _Graph._VertexKeyIndex.AutoUpdate(key, value, oldValue, (TinkerVertex)this);
+                graph.vertexKeyIndex.autoUpdate(key, value, oldValue, (TinkerVertex)this);
             else
-                _Graph._EdgeKeyIndex.AutoUpdate(key, value, oldValue, (TinkerEdge)this);
+                graph.edgeKeyIndex.autoUpdate(key, value, oldValue, (TinkerEdge)this);
         }
 
-        public object RemoveProperty(string key)
+        public object removeProperty(string key)
         {
-            object oldValue = _Properties.JavaRemove(key);
+            object oldValue = properties.javaRemove(key);
             if (this is TinkerVertex)
-                _Graph._VertexKeyIndex.AutoRemove(key, oldValue, (TinkerVertex)this);
+                graph.vertexKeyIndex.autoRemove(key, oldValue, (TinkerVertex)this);
             else
-                _Graph._EdgeKeyIndex.AutoRemove(key, oldValue, (TinkerEdge)this);
+                graph.edgeKeyIndex.autoRemove(key, oldValue, (TinkerEdge)this);
 
             return oldValue;
         }
 
         public override int GetHashCode()
         {
-            return _Id.GetHashCode();
+            return id.GetHashCode();
         }
 
-        public object GetId()
+        public object getId()
         {
-            return _Id;
+            return id;
         }
 
         public override bool Equals(object obj)
         {
-            return ElementHelper.AreEqual(this, obj);
+            return ElementHelper.areEqual(this, obj);
         }
 
-        public void Remove()
+        public void remove()
         {
             if (this is Vertex)
-                _Graph.RemoveVertex((Vertex)this);
+                graph.removeVertex((Vertex)this);
             else
-                _Graph.RemoveEdge((Edge)this);
+                graph.removeEdge((Edge)this);
         }
     }
 }

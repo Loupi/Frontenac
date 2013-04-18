@@ -22,13 +22,13 @@ namespace Frontenac.Blueprints
         /// </summary>
         /// <param name="key">the key of the key/value property</param>
         /// <returns>the object value related to the string key</returns>
-        object GetProperty(string key);
+        object getProperty(string key);
 
         /// <summary>
         /// Return all the keys associated with the element.
         /// </summary>
         /// <returns>the set of all string keys associated with the element</returns>
-        IEnumerable<string> GetPropertyKeys();
+        IEnumerable<string> getPropertyKeys();
 
         /// <summary>
         /// Assign a key/value property to the element.
@@ -36,7 +36,7 @@ namespace Frontenac.Blueprints
         /// </summary>
         /// <param name="key">the string key of the property</param>
         /// <param name="value">the object value o the property</param>
-        void SetProperty(string key, object value);
+        void setProperty(string key, object value);
 
         /// <summary>
         /// Un-assigns a key/value property from the element.
@@ -44,12 +44,12 @@ namespace Frontenac.Blueprints
         /// </summary>
         /// <param name="key">the key of the property to remove from the element</param>
         /// <returns>the object value associated with that key prior to removal</returns>
-        object RemoveProperty(string key);
+        object removeProperty(string key);
 
         /// <summary>
         /// Remove the element from the graph.
         /// </summary>
-        void Remove();
+        void remove();
 
         /// <summary>
         /// An identifier that is unique to its inheriting class.
@@ -57,6 +57,6 @@ namespace Frontenac.Blueprints
         /// All edges of a graph must have unique identifiers.
         /// </summary>
         /// <returns>the identifier of the element</returns>
-        object GetId();
+        object getId();
     }
 }

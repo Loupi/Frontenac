@@ -22,18 +22,18 @@ namespace Frontenac.Blueprints.Util.IO.GML
         const string NEW_LINE = "\r\n";
         static readonly string OPEN_LIST = string.Concat(" [", NEW_LINE);
         static readonly string CLOSE_LIST = string.Concat("]", NEW_LINE);
-        readonly Graph _Graph;
-        bool _Normalize = false;
-        bool _UseId = false;
-        bool _Strict = false;
-        string _VertexIdKey = GMLTokens.BLUEPRINTS_ID;
-        string _EdgeIdKey = GMLTokens.BLUEPRINTS_ID;
+        readonly Graph _graph;
+        bool _normalize = false;
+        bool _useId = false;
+        bool _strict = false;
+        string _vertexIdKey = GMLTokens.BLUEPRINTS_ID;
+        string _edgeIdKey = GMLTokens.BLUEPRINTS_ID;
 
         /// <note>
         /// Property keys must be alphanumeric and not exceed 254 characters. They must start with an alpha character.
         /// </note>
         const string GML_PROPERTY_KEY_REGEX = "[a-zA-Z][a-zA-Z0-9]{0,253}";
-        static Regex regex = new Regex(GML_PROPERTY_KEY_REGEX, RegexOptions.Compiled);
+        static readonly Regex regex = new Regex(GML_PROPERTY_KEY_REGEX, RegexOptions.Compiled);
 
         /// <summary>
         /// 
@@ -41,7 +41,7 @@ namespace Frontenac.Blueprints.Util.IO.GML
         /// <param name="graph">he Graph to pull the data from</param>
         public GMLWriter(Graph graph)
         {
-            _Graph = graph;
+            _graph = graph;
         }
 
         /// <summary>
@@ -49,9 +49,9 @@ namespace Frontenac.Blueprints.Util.IO.GML
         /// specification are ignored.  By default this value is false.
         /// </summary>
         /// <param name="strict"></param>
-        public void SetStrict(bool strict)
+        public void setStrict(bool strict)
         {
-            _Strict = strict;
+            _strict = strict;
         }
 
         /// <summary>
@@ -60,9 +60,9 @@ namespace Frontenac.Blueprints.Util.IO.GML
         /// such as Git. Note: normalized output is memory-intensive and is not appropriate for very large graphs.
         /// </summary>
         /// <param name="normalize"></param>
-        public void SetNormalize(bool normalize)
+        public void setNormalize(bool normalize)
         {
-            _Normalize = normalize;
+            _normalize = normalize;
         }
 
         /// <summary>
@@ -70,38 +70,38 @@ namespace Frontenac.Blueprints.Util.IO.GML
         /// the blueprints ids must all be Integers of string representations of integers
         /// </summary>
         /// <param name="useId"></param>
-        public void SetUseId(bool useId)
+        public void setUseId(bool useId)
         {
-            _UseId = useId;
+            _useId = useId;
         }
 
         /// <summary>
         /// gml property to use for the blueprints vertex id, defaults to GMLTokens.BLUEPRINTS_ID
         /// </summary>
         /// <param name="vertexIdKey"></param>
-        public void SetVertexIdKey(string vertexIdKey)
+        public void setVertexIdKey(string vertexIdKey)
         {
-            _VertexIdKey = vertexIdKey;
+            _vertexIdKey = vertexIdKey;
         }
 
         /// <summary>
         /// gml property to use for the blueprints edges id, defaults to GMLTokens.BLUEPRINTS_ID
         /// </summary>
         /// <param name="edgeIdKey"></param>
-        public void SetEdgeIdKey(string edgeIdKey)
+        public void setEdgeIdKey(string edgeIdKey)
         {
-            _EdgeIdKey = edgeIdKey;
+            _edgeIdKey = edgeIdKey;
         }
 
         /// <summary>
         /// Write the data in a Graph to a GML OutputStream.
         /// </summary>
         /// <param name="filename">the GML file to write the Graph data to</param>
-        public void OutputGraph(string filename)
+        public void outputGraph(string filename)
         {
             using (var fos = File.Open(filename, FileMode.Create))
             {
-                OutputGraph(fos);
+                outputGraph(fos);
             }
         }
 
@@ -109,7 +109,7 @@ namespace Frontenac.Blueprints.Util.IO.GML
         /// Write the data in a Graph to a GML OutputStream.
         /// </summary>
         /// <param name="gMLOutputStream">the GML OutputStream to write the Graph data to</param>
-        public void OutputGraph(Stream gMLOutputStream)
+        public void outputGraph(Stream gMLOutputStream)
         {
             // ISO 8859-1 as specified in the GML documentation
             using (var writer = new StreamWriter(gMLOutputStream, Encoding.GetEncoding("ISO-8859-1")))
@@ -117,162 +117,162 @@ namespace Frontenac.Blueprints.Util.IO.GML
                 List<Vertex> vertices = new List<Vertex>();
                 List<Edge> edges = new List<Edge>();
 
-                PopulateLists(vertices, edges);
+                populateLists(vertices, edges);
 
-                if (_Normalize)
+                if (_normalize)
                 {
                     LexicographicalElementComparator comparator = new LexicographicalElementComparator();
                     vertices.Sort(comparator);
                     edges.Sort(comparator);
                 }
 
-                WriteGraph(writer, vertices, edges);
+                writeGraph(writer, vertices, edges);
             }
         }
 
-        void WriteGraph(StreamWriter writer, List<Vertex> vertices, List<Edge> edges)
+        void writeGraph(StreamWriter writer, List<Vertex> vertices, List<Edge> edges)
         {
             Dictionary<Vertex, int> ids = new Dictionary<Vertex, int>();
 
             writer.Write(GMLTokens.GRAPH);
             writer.Write(OPEN_LIST);
-            WriteVertices(writer, vertices, ids);
-            WriteEdges(writer, edges, ids);
+            writeVertices(writer, vertices, ids);
+            writeEdges(writer, edges, ids);
             writer.Write(CLOSE_LIST);
         }
 
-        void WriteVertices(StreamWriter writer, List<Vertex> vertices, Dictionary<Vertex, int> ids)
+        void writeVertices(StreamWriter writer, List<Vertex> vertices, Dictionary<Vertex, int> ids)
         {
             int count = 1;
             foreach (Vertex v in vertices)
             {
-                if (_UseId)
+                if (_useId)
                 {
-                    int id = int.Parse(v.GetId().ToString());
-                    WriteVertex(writer, v, id);
+                    int id = int.Parse(v.getId().ToString());
+                    writeVertex(writer, v, id);
                     ids[v] = id;
                 }
                 else
                 {
-                    WriteVertex(writer, v, count);
+                    writeVertex(writer, v, count);
                     ids[v] = count++;
                 }
             }
         }
 
-        void WriteVertex(StreamWriter writer, Vertex v, int id)
+        void writeVertex(StreamWriter writer, Vertex v, int id)
         {
             writer.Write(TAB);
             writer.Write(GMLTokens.NODE);
             writer.Write(OPEN_LIST);
-            WriteKey(writer, GMLTokens.ID);
-            WriteNumberProperty(writer, id);
-            WriteVertexProperties(writer, v);
+            writeKey(writer, GMLTokens.ID);
+            writeNumberProperty(writer, id);
+            writeVertexProperties(writer, v);
             writer.Write(TAB);
             writer.Write(CLOSE_LIST);
         }
 
-        void WriteEdges(StreamWriter writer, List<Edge> edges,
+        void writeEdges(StreamWriter writer, List<Edge> edges,
                         Dictionary<Vertex, int> ids)
         {
             foreach (Edge e in edges)
-                WriteEdgeProperties(writer, e, ids.Get(e.GetVertex(Direction.OUT)), ids.Get(e.GetVertex(Direction.IN)));
+                writeEdgeProperties(writer, e, ids.get(e.getVertex(Direction.OUT)), ids.get(e.getVertex(Direction.IN)));
         }
 
-        void WriteEdgeProperties(StreamWriter writer, Edge e, int source, int target)
+        void writeEdgeProperties(StreamWriter writer, Edge e, int source, int target)
         {
             writer.Write(TAB);
             writer.Write(GMLTokens.EDGE);
             writer.Write(OPEN_LIST);
-            WriteKey(writer, GMLTokens.SOURCE);
-            WriteNumberProperty(writer, source);
-            WriteKey(writer, GMLTokens.TARGET);
-            WriteNumberProperty(writer, target);
-            WriteKey(writer, GMLTokens.LABEL);
-            WriteStringProperty(writer, e.GetLabel());
-            WriteEdgeProperties(writer, e);
+            writeKey(writer, GMLTokens.SOURCE);
+            writeNumberProperty(writer, source);
+            writeKey(writer, GMLTokens.TARGET);
+            writeNumberProperty(writer, target);
+            writeKey(writer, GMLTokens.LABEL);
+            writeStringProperty(writer, e.getLabel());
+            writeEdgeProperties(writer, e);
             writer.Write(TAB);
             writer.Write(CLOSE_LIST);
         }
 
-        void WriteVertexProperties(StreamWriter writer, Vertex e)
+        void writeVertexProperties(StreamWriter writer, Vertex e)
         {
-            object blueprintsId = e.GetId();
-            if (!_UseId)
+            object blueprintsId = e.getId();
+            if (!_useId)
             {
-                WriteKey(writer, _VertexIdKey);
-                if (Portability.IsNumeric(blueprintsId))
-                    WriteNumberProperty(writer, Convert.ToInt64(blueprintsId));
+                writeKey(writer, _vertexIdKey);
+                if (Portability.isNumeric(blueprintsId))
+                    writeNumberProperty(writer, Convert.ToInt64(blueprintsId));
                 else
-                    WriteStringProperty(writer, blueprintsId);
+                    writeStringProperty(writer, blueprintsId);
             }
             WriteProperties(writer, e);
         }
 
-        void WriteEdgeProperties(StreamWriter writer, Edge e)
+        void writeEdgeProperties(StreamWriter writer, Edge e)
         {
-            object blueprintsId = e.GetId();
-            if (!_UseId)
+            object blueprintsId = e.getId();
+            if (!_useId)
             {
-                WriteKey(writer, _EdgeIdKey);
-                if (Portability.IsNumeric(blueprintsId))
-                    WriteNumberProperty(writer, Convert.ToInt64(blueprintsId));
+                writeKey(writer, _edgeIdKey);
+                if (Portability.isNumeric(blueprintsId))
+                    writeNumberProperty(writer, Convert.ToInt64(blueprintsId));
                 else
-                    WriteStringProperty(writer, blueprintsId);
+                    writeStringProperty(writer, blueprintsId);
             }
             WriteProperties(writer, e);
         }
 
         void WriteProperties(StreamWriter writer, Element e)
         {
-            foreach (string key in e.GetPropertyKeys())
+            foreach (string key in e.getPropertyKeys())
             {
-                if (!_Strict || regex.Match(key).Length > 0)
+                if (!_strict || regex.Match(key).Length > 0)
                 {
-                    object property = e.GetProperty(key);
-                    WriteKey(writer, key);
-                    WriteProperty(writer, property, 0);
+                    object property = e.getProperty(key);
+                    writeKey(writer, key);
+                    writeProperty(writer, property, 0);
                 }
             }
         }
 
-        void WriteProperty(StreamWriter writer, object property, int tab)
+        void writeProperty(StreamWriter writer, object property, int tab)
         {
-            if (Portability.IsNumeric(property))
-                WriteNumberProperty(writer, Convert.ToInt64(property));
+            if (Portability.isNumeric(property))
+                writeNumberProperty(writer, Convert.ToInt64(property));
             else if (property is IDictionary)
-                WriteMapProperty(writer, property as IDictionary, tab);
+                writeMapProperty(writer, property as IDictionary, tab);
             else
-                WriteStringProperty(writer, property.ToString());
+                writeStringProperty(writer, property.ToString());
         }
 
-        void WriteMapProperty(StreamWriter writer, IDictionary map, int tabs)
+        void writeMapProperty(StreamWriter writer, IDictionary map, int tabs)
         {
             writer.Write(OPEN_LIST);
             tabs++;
             foreach (DictionaryEntry entry in map)
             {
-                WriteTabs(writer, tabs);
-                WriteKey(writer, entry.Key.ToString());
-                WriteProperty(writer, entry.Value, tabs);
+                writeTabs(writer, tabs);
+                writeKey(writer, entry.Key.ToString());
+                writeProperty(writer, entry.Value, tabs);
             }
-            WriteTabs(writer, tabs - 1);
+            writeTabs(writer, tabs - 1);
             writer.Write(CLOSE_LIST);
         }
 
-        void WriteTabs(StreamWriter writer, int tabs)
+        void writeTabs(StreamWriter writer, int tabs)
         {
             for (int i = 0; i <= tabs; i++)
                 writer.Write(TAB);
         }
 
-        void WriteNumberProperty(StreamWriter writer, long integer)
+        void writeNumberProperty(StreamWriter writer, long integer)
         {
             writer.Write(integer.ToString());
             writer.Write(NEW_LINE);
         }
 
-        void WriteStringProperty(StreamWriter writer, object string_)
+        void writeStringProperty(StreamWriter writer, object string_)
         {
             writer.Write("\"");
             writer.Write(string_.ToString());
@@ -280,7 +280,7 @@ namespace Frontenac.Blueprints.Util.IO.GML
             writer.Write(NEW_LINE);
         }
 
-        void WriteKey(StreamWriter writer, string command)
+        void writeKey(StreamWriter writer, string command)
         {
             writer.Write(TAB);
             writer.Write(TAB);
@@ -288,10 +288,10 @@ namespace Frontenac.Blueprints.Util.IO.GML
             writer.Write(DELIMITER);
         }
 
-        void PopulateLists(List<Vertex> vertices, List<Edge> edges)
+        void populateLists(List<Vertex> vertices, List<Edge> edges)
         {
-            vertices.AddRange(_Graph.GetVertices());
-            edges.AddRange(_Graph.GetEdges());
+            vertices.AddRange(_graph.getVertices());
+            edges.AddRange(_graph.getEdges());
         }
 
         /// <summary>
@@ -299,10 +299,10 @@ namespace Frontenac.Blueprints.Util.IO.GML
         /// </summary>
         /// <param name="graph">the Graph to pull the data from</param>
         /// <param name="graphMLOutputStream">the GML OutputStream to write the Graph data to</param>
-        public static void OutputGraph(Graph graph, Stream graphMLOutputStream)
+        public static void outputGraph(Graph graph, Stream graphMLOutputStream)
         {
             GMLWriter writer = new GMLWriter(graph);
-            writer.OutputGraph(graphMLOutputStream);
+            writer.outputGraph(graphMLOutputStream);
         }
 
         /// <summary>
@@ -310,10 +310,10 @@ namespace Frontenac.Blueprints.Util.IO.GML
         /// </summary>
         /// <param name="graph">the Graph to pull the data from</param>
         /// <param name="filename">the GML file to write the Graph data to</param>
-        public static void OutputGraph(Graph graph, string filename)
+        public static void outputGraph(Graph graph, string filename)
         {
             GMLWriter writer = new GMLWriter(graph);
-            writer.OutputGraph(filename);
+            writer.outputGraph(filename);
         }
     }
 }

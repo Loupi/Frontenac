@@ -8,18 +8,18 @@ namespace Frontenac.Blueprints.Util.Wrappers.Event.Listener
 {
     public class VertexAddedEvent : Event
     {
-        readonly Vertex _Vertex;
+        readonly Vertex _vertex;
 
         public VertexAddedEvent(Vertex vertex)
         {
-            _Vertex = vertex;
+            _vertex = vertex;
         }
 
-        public void FireEvent(IEnumerator<GraphChangedListener> eventListeners)
+        public void fireEvent(IEnumerator<GraphChangedListener> eventListeners)
         {
             while (eventListeners.MoveNext())
             {
-                eventListeners.Current.VertexAdded(_Vertex);
+                eventListeners.Current.vertexAdded(_vertex);
             }
         }
     }

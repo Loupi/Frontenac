@@ -8,36 +8,36 @@ namespace Frontenac.Blueprints.Util.Wrappers.Wrapped
 {
     public class WrappedIndexableGraph : WrappedGraph, IndexableGraph, WrapperGraph
     {
-        readonly IndexableGraph _BaseIndexableGraph;
+        readonly IndexableGraph _baseIndexableGraph;
 
         public WrappedIndexableGraph(IndexableGraph baseIndexableGraph)
             : base(baseIndexableGraph)
         {
-            _BaseIndexableGraph = baseIndexableGraph;
+            _baseIndexableGraph = baseIndexableGraph;
         }
 
-        public void DropIndex(string indexName)
+        public void dropIndex(string indexName)
         {
-            _BaseIndexableGraph.DropIndex(indexName);
+            _baseIndexableGraph.dropIndex(indexName);
         }
 
-        public IEnumerable<Index> GetIndices()
+        public IEnumerable<Index> getIndices()
         {
-            return new WrappedIndexIterable(_BaseIndexableGraph.GetIndices());
+            return new WrappedIndexIterable(_baseIndexableGraph.getIndices());
         }
 
-        public Index GetIndex(string indexName, Type indexClass)
+        public Index getIndex(string indexName, Type indexClass)
         {
-            Index index = _BaseIndexableGraph.GetIndex(indexName, indexClass);
+            Index index = _baseIndexableGraph.getIndex(indexName, indexClass);
             if (null == index)
                 return null;
 
             return new WrappedIndex(index);
         }
 
-        public Index CreateIndex(string indexName, Type indexClass, params Parameter[] indexParameters)
+        public Index createIndex(string indexName, Type indexClass, params Parameter[] indexParameters)
         {
-            return new WrappedIndex(_BaseIndexableGraph.CreateIndex(indexName, indexClass, indexParameters));
+            return new WrappedIndex(_baseIndexableGraph.createIndex(indexName, indexClass, indexParameters));
         }
     }
 }

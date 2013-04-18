@@ -14,9 +14,9 @@ namespace Frontenac.Blueprints.Util.Wrappers.Event.Listener
 
         }
 
-        protected override void Fire(GraphChangedListener listener, Vertex vertex, string key, object oldValue, object newValue)
+        protected override void fire(GraphChangedListener listener, Vertex vertex, string key, object oldValue, object newValue)
         {
-            listener.VertexPropertyRemoved(vertex, key, oldValue);
+            listener.vertexPropertyRemoved(vertex, key, oldValue);
         }
     }
 }

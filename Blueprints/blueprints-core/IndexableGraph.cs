@@ -21,7 +21,7 @@ namespace Frontenac.Blueprints
         /// <param name="indexClass">the element class that this index is indexing (can be base class)</param>
         /// <param name="indexParameters">a collection of parameters for the underlying index implementation</param>
         /// <returns>the index created</returns>
-        Index CreateIndex(string indexName, Type indexClass, params Parameter[] indexParameters);
+        Index createIndex(string indexName, Type indexClass, params Parameter[] indexParameters);
 
         /// <summary>
         /// Get an index from the graph by its name and index class. An index is unique up to name.
@@ -30,19 +30,19 @@ namespace Frontenac.Blueprints
         /// <param name="indexName">the name of the index to retrieve</param>
         /// <param name="indexClass">the class of the elements being indexed (can be base class)</param>
         /// <returns>the retrieved index</returns>
-        Index GetIndex(string indexName, Type indexClass);
+        Index getIndex(string indexName, Type indexClass);
 
         /// <summary>
         /// Get all the indices maintained by the graph.
         /// </summary>
         /// <typeparam name="T"></typeparam>
         /// <returns>the indices associated with the graph</returns>
-        IEnumerable<Index> GetIndices();
+        IEnumerable<Index> getIndices();
 
         /// <summary>
         /// Remove an index associated with the graph.
         /// </summary>
         /// <param name="indexName">the name of the index to drop</param>
-        void DropIndex(string indexName);
+        void dropIndex(string indexName);
     }
 }

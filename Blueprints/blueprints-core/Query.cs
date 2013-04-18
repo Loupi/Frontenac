@@ -14,7 +14,7 @@ namespace Frontenac.Blueprints
         /// <param name="key">the key of the property</param>
         /// <param name="value">the value to check against</param>
         /// <returns>the modified query object</returns>
-        Query Has(string key, object value);
+        Query has(string key, object value);
 
         /// <summary>
         /// Filter out the edge if it does not have a property with a comparable value.
@@ -24,7 +24,7 @@ namespace Frontenac.Blueprints
         /// /// <param name="compare">the comparator to use for comparison</param>
         /// <param name="value">the value to check against</param>
         /// <returns>the modified query object</returns>
-        Query Has<T>(string key, Compare compare, T value) where T : IComparable<T>;
+        Query has<T>(string key, Compare compare, T value) where T : IComparable<T>;
 
         /// <summary>
         /// Filter out the edge of its property value is not within the provided interval.
@@ -34,26 +34,26 @@ namespace Frontenac.Blueprints
         /// <param name="startValue">the inclusive start value of the interval</param>
         /// <param name="endValue">the exclusive end value of the interval</param>
         /// <returns>the modified query object</returns>
-        Query Interval<T>(string key, T startValue, T endValue) where T : IComparable<T>;
+        Query interval<T>(string key, T startValue, T endValue) where T : IComparable<T>;
 
         /// <summary>
         /// Execute the query and return the matching edges.
         /// </summary>
         /// <returns>the unfiltered edges</returns>
-        IEnumerable<Edge> Edges();
+        IEnumerable<Edge> edges();
 
         /// <summary>
         /// Execute the query and return the vertices on the other end of the matching edges.
         /// </summary>
         /// <returns>the unfiltered edge's vertices</returns>
-        IEnumerable<Vertex> Vertices();
+        IEnumerable<Vertex> vertices();
 
         /// <summary>
         /// Filter out the edge if the max number of edges to retrieve has already been reached.
         /// </summary>
         /// <param name="max">the max number of edges to return</param>
         /// <returns>the modified query object</returns>
-        Query Limit(long max);
+        Query limit(long max);
     }
 
     public enum Compare
@@ -68,7 +68,7 @@ namespace Frontenac.Blueprints
 
     public static class CompareHelpers
     {
-        public static Compare Opposite(this Compare compare)
+        public static Compare opposite(this Compare compare)
         {
             if (compare == Compare.EQUAL)
                 return Compare.NOT_EQUAL;

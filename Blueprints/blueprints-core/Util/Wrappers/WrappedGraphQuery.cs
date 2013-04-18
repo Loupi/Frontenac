@@ -8,69 +8,69 @@ namespace Frontenac.Blueprints.Util.Wrappers
 {
     public class WrappedGraphQuery : GraphQuery
     {
-        protected GraphQuery _Query;
-        protected Func<GraphQuery, IEnumerable<Edge>> _EdgesSelector;
-        protected Func<GraphQuery, IEnumerable<Vertex>> _VerticesSelector;
+        protected GraphQuery query;
+        protected Func<GraphQuery, IEnumerable<Edge>> edgesSelector;
+        protected Func<GraphQuery, IEnumerable<Vertex>> verticesSelector;
 
         public WrappedGraphQuery(GraphQuery query, Func<GraphQuery, IEnumerable<Edge>> edgesSelector, Func<GraphQuery, IEnumerable<Vertex>> verticesSelector)
         {
-            _Query = query;
-            _EdgesSelector = edgesSelector;
-            _VerticesSelector = verticesSelector;
+            this.query = query;
+            this.edgesSelector = edgesSelector;
+            this.verticesSelector = verticesSelector;
         }
 
-        public GraphQuery Has(string key, object value)
+        public GraphQuery has(string key, object value)
         {
-            _Query = _Query.Has(key, value);
+            query = query.has(key, value);
             return this;
         }
 
-        public GraphQuery Has<T>(string key, Compare compare, T value) where T : IComparable<T>
+        public GraphQuery has<T>(string key, Compare compare, T value) where T : IComparable<T>
         {
-            _Query = _Query.Has(key, compare, value);
+            query = query.has(key, compare, value);
             return this;
         }
 
-        public GraphQuery Interval<T>(string key, T startValue, T endValue) where T : IComparable<T>
+        public GraphQuery interval<T>(string key, T startValue, T endValue) where T : IComparable<T>
         {
-            _Query = _Query.Interval(key, startValue, endValue);
+            query = query.interval(key, startValue, endValue);
             return this;
         }
 
-        public GraphQuery Limit(long max)
+        public GraphQuery limit(long max)
         {
-            _Query = _Query.Limit(max);
+            query = query.limit(max);
             return this;
         }
 
-        Query Query.Has(string key, object value)
+        Query Query.has(string key, object value)
         {
-            return this.Has(key, value);
+            return this.has(key, value);
         }
 
-        Query Query.Has<T>(string key, Compare compare, T value)
+        Query Query.has<T>(string key, Compare compare, T value)
         {
-            return this.Has(key, compare, value);
+            return this.has(key, compare, value);
         }
 
-        Query Query.Interval<T>(string key, T startValue, T endValue)
+        Query Query.interval<T>(string key, T startValue, T endValue)
         {
-            return this.Interval(key, startValue, endValue);
+            return this.interval(key, startValue, endValue);
         }
 
-        Query Query.Limit(long max)
+        Query Query.limit(long max)
         {
-            return this.Limit(max);
+            return this.limit(max);
         }
 
-        public IEnumerable<Edge> Edges()
+        public IEnumerable<Edge> edges()
         {
-            return _EdgesSelector(_Query);
+            return edgesSelector(query);
         }
 
-        public IEnumerable<Vertex> Vertices()
+        public IEnumerable<Vertex> vertices()
         {
-            return _VerticesSelector(_Query);
+            return verticesSelector(query);
         }
     }
 }

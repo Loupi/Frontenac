@@ -11,9 +11,9 @@ namespace Frontenac.Blueprints
 {
     public abstract class BaseTest
     {
-        Stopwatch _Timer = null;
+        Stopwatch _timer = null;
 
-        public static T GetOnlyElement<T>(IEnumerator<T> iterator)
+        public static T getOnlyElement<T>(IEnumerator<T> iterator)
         {
             if (!iterator.MoveNext()) return default(T);
             T element = iterator.Current;
@@ -21,12 +21,12 @@ namespace Frontenac.Blueprints
             return element;
         }
 
-        public static T GetOnlyElement<T>(IEnumerable<T> iterable)
+        public static T getOnlyElement<T>(IEnumerable<T> iterable)
         {
-            return GetOnlyElement(iterable.GetEnumerator());
+            return getOnlyElement(iterable.GetEnumerator());
         }
 
-        public static int Count(IEnumerator iterator)
+        public static int count(IEnumerator iterator)
         {
             int counter = 0;
             while (iterator.MoveNext())
@@ -35,17 +35,17 @@ namespace Frontenac.Blueprints
             return counter;
         }
 
-        public static int Count(IEnumerable iterable)
+        public static int count(IEnumerable iterable)
         {
-            return Count(iterable.GetEnumerator());
+            return count(iterable.GetEnumerator());
         }
 
-        public static int Count<T>(CloseableIterable<T> iterable)
+        public static int count<T>(CloseableIterable<T> iterable)
         {
-            return Count(iterable.GetEnumerator());
+            return count(iterable.GetEnumerator());
         }
 
-        public static List<T> AsList<T>(IEnumerable<T> iterable)
+        public static List<T> asList<T>(IEnumerable<T> iterable)
         {
             List<T> list = new List<T>();
             foreach (T object_ in iterable)
@@ -54,18 +54,18 @@ namespace Frontenac.Blueprints
             return list;
         }
 
-        public long StopWatch()
+        public long stopWatch()
         {
-            if (_Timer == null)
+            if (_timer == null)
             {
-                _Timer = Stopwatch.StartNew();
+                _timer = Stopwatch.StartNew();
                 return -1;
             }
             else
-                return _Timer.ElapsedMilliseconds;
+                return _timer.ElapsedMilliseconds;
         }
 
-        public static void PrintPerformance(string name, object events, string eventName, long timeInMilliseconds)
+        public static void printPerformance(string name, object events, string eventName, long timeInMilliseconds)
         {
             if (null != events)
                 Console.WriteLine(string.Concat("\t", name, ": ", (int)events, " ", eventName, " in ", timeInMilliseconds, "ms"));
@@ -73,18 +73,18 @@ namespace Frontenac.Blueprints
                 Console.WriteLine(string.Concat("\t", name, ": ", eventName, " in ", timeInMilliseconds, "ms"));
         }
 
-        public static void PrintTestPerformance(string testName, long timeInMilliseconds)
+        public static void printTestPerformance(string testName, long timeInMilliseconds)
         {
             Console.WriteLine(string.Concat("*** TOTAL TIME [", testName, "]: ", timeInMilliseconds, " ***"));
         }
 
-        protected static void DeleteDirectory(string directory)
+        protected static void deleteDirectory(string directory)
         {
             if (Directory.Exists(directory))
                 Directory.Delete(directory, true);
         }
 
-        public string ComputeTestDataRoot()
+        public string computeTestDataRoot()
         {
             return this.GetType().Namespace.Replace('.', '\\');
         }

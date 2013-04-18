@@ -21,83 +21,83 @@ namespace Frontenac.Blueprints.Util.Wrappers.Event
     /// </summary>
     public class EventGraph : Graph, WrapperGraph
     {
-        protected EventTrigger _Trigger;
-        protected Graph _BaseGraph;
-        protected readonly List<GraphChangedListener> _GraphChangedListeners = new List<GraphChangedListener>();
-        readonly Features _Features;
+        protected EventTrigger trigger;
+        protected Graph baseGraph;
+        protected readonly List<GraphChangedListener> graphChangedListeners = new List<GraphChangedListener>();
+        readonly Features _features;
 
         public EventGraph(Graph baseGraph)
         {
-            _BaseGraph = baseGraph;
-            _Features = _BaseGraph.GetFeatures().CopyFeatures();
-            _Features.IsWrapper = true;
+            this.baseGraph = baseGraph;
+            _features = this.baseGraph.getFeatures().copyFeatures();
+            _features.isWrapper = true;
 
-            _Trigger = new EventTrigger(this, false);
+            trigger = new EventTrigger(this, false);
         }
 
-        public void RemoveAllListeners()
+        public void removeAllListeners()
         {
-            _GraphChangedListeners.Clear();
+            graphChangedListeners.Clear();
         }
 
         public void addListener(GraphChangedListener listener)
         {
-            _GraphChangedListeners.Add(listener);
+            graphChangedListeners.Add(listener);
         }
 
-        public IEnumerator<GraphChangedListener> GetListenerIterator()
+        public IEnumerator<GraphChangedListener> getListenerIterator()
         {
-            return _GraphChangedListeners.GetEnumerator();
+            return graphChangedListeners.GetEnumerator();
         }
 
-        public EventTrigger GetTrigger()
+        public EventTrigger getTrigger()
         {
-            return _Trigger;
+            return trigger;
         }
 
-        public void RemoveListener(GraphChangedListener listener)
+        public void removeListener(GraphChangedListener listener)
         {
-            _GraphChangedListeners.Remove(listener);
+            graphChangedListeners.Remove(listener);
         }
 
-        protected void OnVertexAdded(Vertex vertex)
+        protected void onVertexAdded(Vertex vertex)
         {
-            _Trigger.AddEvent(new VertexAddedEvent(vertex));
+            trigger.addEvent(new VertexAddedEvent(vertex));
         }
 
-        protected void OnVertexRemoved(Vertex vertex)
+        protected void onVertexRemoved(Vertex vertex)
         {
-            _Trigger.AddEvent(new VertexRemovedEvent(vertex));
+            trigger.addEvent(new VertexRemovedEvent(vertex));
         }
 
-        protected void OnEdgeAdded(Edge edge)
+        protected void onEdgeAdded(Edge edge)
         {
-            _Trigger.AddEvent(new EdgeAddedEvent(edge));
+            trigger.addEvent(new EdgeAddedEvent(edge));
         }
 
-        protected void OnEdgeRemoved(Edge edge)
+        protected void onEdgeRemoved(Edge edge)
         {
-            _Trigger.AddEvent(new EdgeRemovedEvent(edge));
+            trigger.addEvent(new EdgeRemovedEvent(edge));
         }
 
         /// <note>
         /// Raises a vertexAdded event.
         /// </note>
-        public Vertex AddVertex(object id)
+        public Vertex addVertex(object id)
         {
-            Vertex vertex = _BaseGraph.AddVertex(id);
+            Vertex vertex = baseGraph.addVertex(id);
             if (vertex == null)
                 return null;
             else
             {
-                this.OnVertexAdded(vertex);
+                this.onVertexAdded(vertex);
                 return new EventVertex(vertex, this);
             }
         }
 
-        public Vertex GetVertex(object id)
+        public Vertex getVertex(object id)
         {
-            Vertex vertex = _BaseGraph.GetVertex(id);
+            Vertex vertex = baseGraph.getVertex(id);
             if (null == vertex)
                 return null;
 
@@ -107,52 +107,52 @@ namespace Frontenac.Blueprints.Util.Wrappers.Event
         /// <note>
         /// Raises a vertexRemoved event.
         /// </note>
-        public void RemoveVertex(Vertex vertex)
+        public void removeVertex(Vertex vertex)
         {
             Vertex vertexToRemove = vertex;
             if (vertex is EventVertex)
-                vertexToRemove = (vertex as EventVertex).GetBaseVertex();
+                vertexToRemove = (vertex as EventVertex).getBaseVertex();
 
-            this._BaseGraph.RemoveVertex(vertexToRemove);
-            this.OnVertexRemoved(vertex);
+            this.baseGraph.removeVertex(vertexToRemove);
+            this.onVertexRemoved(vertex);
         }
 
-        public IEnumerable<Vertex> GetVertices()
+        public IEnumerable<Vertex> getVertices()
         {
-            return new EventVertexIterable(_BaseGraph.GetVertices(), this);
+            return new EventVertexIterable(baseGraph.getVertices(), this);
         }
 
-        public IEnumerable<Vertex> GetVertices(string key, object value)
+        public IEnumerable<Vertex> getVertices(string key, object value)
         {
-            return new EventVertexIterable(_BaseGraph.GetVertices(key, value), this);
+            return new EventVertexIterable(baseGraph.getVertices(key, value), this);
         }
 
         /// <note>
         /// Raises an edgeAdded event.
         /// </note>
-        public Edge AddEdge(object id, Vertex outVertex, Vertex inVertex, string label)
+        public Edge addEdge(object id, Vertex outVertex, Vertex inVertex, string label)
         {
             Vertex outVertexToSet = outVertex;
             if (outVertex is EventVertex)
-                outVertexToSet = (outVertex as EventVertex).GetBaseVertex();
+                outVertexToSet = (outVertex as EventVertex).getBaseVertex();
 
             Vertex inVertexToSet = inVertex;
             if (inVertex is EventVertex)
-                inVertexToSet = (inVertex as EventVertex).GetBaseVertex();
+                inVertexToSet = (inVertex as EventVertex).getBaseVertex();
 
-            Edge edge = _BaseGraph.AddEdge(id, outVertexToSet, inVertexToSet, label);
+            Edge edge = baseGraph.addEdge(id, outVertexToSet, inVertexToSet, label);
             if (edge == null)
                 return null;
             else
             {
-                this.OnEdgeAdded(edge);
+                this.onEdgeAdded(edge);
                 return new EventEdge(edge, this);
             }
         }
 
-        public Edge GetEdge(object id)
+        public Edge getEdge(object id)
         {
-            Edge edge = _BaseGraph.GetEdge(id);
+            Edge edge = baseGraph.getEdge(id);
             if (null == edge)
                 return null;
 
@@ -162,42 +162,42 @@ namespace Frontenac.Blueprints.Util.Wrappers.Event
         /// <note>
         /// Raises an edgeRemoved event.
         /// </note>
-        public void RemoveEdge(Edge edge)
+        public void removeEdge(Edge edge)
         {
             Edge edgeToRemove = edge;
             if (edge is EventEdge)
-                edgeToRemove = (edge as EventEdge).GetBaseEdge();
+                edgeToRemove = (edge as EventEdge).getBaseEdge();
 
-            _BaseGraph.RemoveEdge(edgeToRemove);
-            this.OnEdgeRemoved(edge);
+            baseGraph.removeEdge(edgeToRemove);
+            this.onEdgeRemoved(edge);
         }
 
-        public IEnumerable<Edge> GetEdges()
+        public IEnumerable<Edge> getEdges()
         {
-            return new EventEdgeIterable(_BaseGraph.GetEdges(), this);
+            return new EventEdgeIterable(baseGraph.getEdges(), this);
         }
 
-        public IEnumerable<Edge> GetEdges(string key, object value)
+        public IEnumerable<Edge> getEdges(string key, object value)
         {
-            return new EventEdgeIterable(_BaseGraph.GetEdges(key, value), this);
+            return new EventEdgeIterable(baseGraph.getEdges(key, value), this);
         }
 
-        public GraphQuery Query()
+        public GraphQuery query()
         {
-            return new WrappedGraphQuery(_BaseGraph.Query(),
-                t => new EventEdgeIterable(t.Edges(), this),
-                t => new EventVertexIterable(t.Vertices(), this));
+            return new WrappedGraphQuery(baseGraph.query(),
+                t => new EventEdgeIterable(t.edges(), this),
+                t => new EventVertexIterable(t.vertices(), this));
         }
 
-        public void Shutdown()
+        public void shutdown()
         {
             try
             {
-                _BaseGraph.Shutdown();
+                baseGraph.shutdown();
 
                 // TODO: hmmmmmm??
-                _Trigger.FireEventQueue();
-                _Trigger.ResetEventQueue();
+                trigger.fireEventQueue();
+                trigger.resetEventQueue();
             }
             catch (Exception)
             {
@@ -207,17 +207,17 @@ namespace Frontenac.Blueprints.Util.Wrappers.Event
 
         public override string ToString()
         {
-            return StringFactory.GraphString(this, _BaseGraph.ToString());
+            return StringFactory.graphString(this, baseGraph.ToString());
         }
 
-        public Graph GetBaseGraph()
+        public Graph getBaseGraph()
         {
-            return _BaseGraph;
+            return baseGraph;
         }
 
-        public Features GetFeatures()
+        public Features getFeatures()
         {
-            return _Features;
+            return _features;
         }
     }
 }

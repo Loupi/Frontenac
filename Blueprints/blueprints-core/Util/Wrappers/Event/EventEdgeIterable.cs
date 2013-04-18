@@ -11,14 +11,14 @@ namespace Frontenac.Blueprints.Util.Wrappers.Event
     /// </summary>
     class EventEdgeIterable : CloseableIterable<Edge>
     {
-        readonly IEnumerable<Edge> _Iterable;
-        readonly EventGraph _EventGraph;
-        bool _Disposed;
+        readonly IEnumerable<Edge> _iterable;
+        readonly EventGraph _eventGraph;
+        bool _disposed;
 
         public EventEdgeIterable(IEnumerable<Edge> iterable, EventGraph eventGraph)
         {
-            _Iterable = iterable;
-            _EventGraph = eventGraph;
+            _iterable = iterable;
+            _eventGraph = eventGraph;
         }
 
         ~EventEdgeIterable()
@@ -34,22 +34,22 @@ namespace Frontenac.Blueprints.Util.Wrappers.Event
 
         protected virtual void Dispose(bool disposing)
         {
-            if (_Disposed)
+            if (_disposed)
                 return;
 
             if (disposing)
             {
-                if (_Iterable is IDisposable)
-                    (_Iterable as IDisposable).Dispose();
+                if (_iterable is IDisposable)
+                    (_iterable as IDisposable).Dispose();
             }
 
-            _Disposed = true;
+            _disposed = true;
         }
 
         public IEnumerator<Edge> GetEnumerator()
         {
-            foreach (Edge edge in _Iterable)
-                yield return new EventEdge(edge, _EventGraph);
+            foreach (Edge edge in _iterable)
+                yield return new EventEdge(edge, _eventGraph);
         }
 
         System.Collections.IEnumerator System.Collections.IEnumerable.GetEnumerator()

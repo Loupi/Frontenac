@@ -13,19 +13,19 @@ namespace Frontenac.Blueprints.Util.Wrappers.ReadOnly
         {
         }
 
-        public Vertex GetVertex(Direction direction)
+        public Vertex getVertex(Direction direction)
         {
-            return new ReadOnlyVertex(((Edge)_BaseElement).GetVertex(direction));
+            return new ReadOnlyVertex(((Edge)baseElement).getVertex(direction));
         }
 
-        public string GetLabel()
+        public string getLabel()
         {
-            return ((Edge)_BaseElement).GetLabel();
+            return ((Edge)baseElement).getLabel();
         }
 
-        public Edge GetBaseEdge()
+        public Edge getBaseEdge()
         {
-            return (Edge)_BaseElement;
+            return (Edge)baseElement;
         }
     }
 }

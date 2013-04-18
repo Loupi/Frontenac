@@ -14,31 +14,31 @@ namespace Frontenac.Blueprints.Util.Wrappers.Partition
 
         }
 
-        public IEnumerable<Edge> GetEdges(Direction direction, params string[] labels)
+        public IEnumerable<Edge> getEdges(Direction direction, params string[] labels)
         {
-            return new PartitionEdgeIterable((_BaseElement as Vertex).GetEdges(direction, labels), _Graph);
+            return new PartitionEdgeIterable((baseElement as Vertex).getEdges(direction, labels), graph);
         }
 
-        public IEnumerable<Vertex> GetVertices(Direction direction, params string[] labels)
+        public IEnumerable<Vertex> getVertices(Direction direction, params string[] labels)
         {
-            return new PartitionVertexIterable((_BaseElement as Vertex).GetVertices(direction, labels), _Graph);
+            return new PartitionVertexIterable((baseElement as Vertex).getVertices(direction, labels), graph);
         }
 
-        public VertexQuery Query()
+        public VertexQuery query()
         {
-            return new WrapperVertexQuery((_BaseElement as Vertex).Query(),
-                t => new PartitionEdgeIterable(t.Edges(), _Graph),
-                t => new PartitionVertexIterable(t.Vertices(), _Graph));
+            return new WrapperVertexQuery((baseElement as Vertex).query(),
+                t => new PartitionEdgeIterable(t.edges(), graph),
+                t => new PartitionVertexIterable(t.vertices(), graph));
         }
 
-        public Edge AddEdge(string label, Vertex vertex)
+        public Edge addEdge(string label, Vertex vertex)
         {
-            return _Graph.AddEdge(null, this, vertex, label);
+            return graph.addEdge(null, this, vertex, label);
         }
 
-        public Vertex GetBaseVertex()
+        public Vertex getBaseVertex()
         {
-            return this._BaseElement as Vertex;
+            return this.baseElement as Vertex;
         }
     }
 }

@@ -11,33 +11,33 @@ namespace Frontenac.Blueprints.Util
     /// </summary>
     public class VerticesFromEdgesIterable : IEnumerable<Vertex>
     {
-        readonly IEnumerable<Edge> _Iterable;
-        readonly Direction _Direction;
-        readonly Vertex _Vertex;
+        readonly IEnumerable<Edge> _iterable;
+        readonly Direction _direction;
+        readonly Vertex _vertex;
 
         public VerticesFromEdgesIterable(Vertex vertex, Direction direction, params string[] labels)
         {
-            _Direction = direction;
-            _Vertex = vertex;
-            _Iterable = vertex.GetEdges(direction, labels);
+            _direction = direction;
+            _vertex = vertex;
+            _iterable = vertex.getEdges(direction, labels);
         }
 
         public IEnumerator<Vertex> GetEnumerator()
         {
-            foreach (Edge edge in _Iterable)
+            foreach (Edge edge in _iterable)
             {
-                if (_Direction == Direction.OUT)
-                    yield return edge.GetVertex(Direction.IN);
-                else if (_Direction == Direction.IN)
+                if (_direction == Direction.OUT)
+                    yield return edge.getVertex(Direction.IN);
+                else if (_direction == Direction.IN)
                 {
-                    yield return edge.GetVertex(Direction.OUT);
+                    yield return edge.getVertex(Direction.OUT);
                 }
                 else
                 {
-                    if (edge.GetVertex(Direction.IN).Equals(_Vertex))
-                        yield return edge.GetVertex(Direction.OUT);
+                    if (edge.getVertex(Direction.IN).Equals(_vertex))
+                        yield return edge.getVertex(Direction.OUT);
                     else
-                        yield return edge.GetVertex(Direction.IN);
+                        yield return edge.getVertex(Direction.IN);
                 }
             }
         }

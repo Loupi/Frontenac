@@ -8,18 +8,18 @@ namespace Frontenac.Blueprints.Util.Wrappers.Event.Listener
 {
     public class VertexRemovedEvent : Event
     {
-        Vertex _Vertex;
+        readonly Vertex _Vertex;
 
         public VertexRemovedEvent(Vertex vertex)
         {
             _Vertex = vertex;
         }
 
-        public void FireEvent(IEnumerator<GraphChangedListener> eventListeners)
+        public void fireEvent(IEnumerator<GraphChangedListener> eventListeners)
         {
             while (eventListeners.MoveNext())
             {
-                eventListeners.Current.VertexRemoved(_Vertex);
+                eventListeners.Current.vertexRemoved(_Vertex);
             }
         }
     }

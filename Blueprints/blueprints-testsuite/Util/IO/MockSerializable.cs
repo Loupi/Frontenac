@@ -9,16 +9,16 @@ namespace Frontenac.Blueprints.Util.IO
     [Serializable]
     public class MockSerializable
     {
-        string _TestField;
+        string _testField;
 
-        public string GetTestField() 
+        public string getTestField() 
         {
-            return _TestField;
+            return _testField;
         }
 
         public void setTestField(string testField)
         {
-            _TestField = testField;
+            _testField = testField;
         }
 
         public override bool Equals(object obj)
@@ -27,10 +27,10 @@ namespace Frontenac.Blueprints.Util.IO
             else if (obj == null) return false;
             else if (!GetType().IsInstanceOfType(obj)) return false;
             MockSerializable m = (MockSerializable)obj;
-            if (_TestField == null)
-                return (m._TestField == null);
+            if (_testField == null)
+                return (m._testField == null);
             else
-                return _TestField == m._TestField;
+                return _testField == m._testField;
         }
 
         public override int GetHashCode()

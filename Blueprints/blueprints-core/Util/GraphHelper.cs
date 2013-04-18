@@ -15,14 +15,14 @@ namespace Frontenac.Blueprints.Util
         /// <param name="id">the id of the vertex to create</param>
         /// <param name="properties">the properties of the vertex to add (must be string,object,string,object,...)</param>
         /// <returns>the vertex created in the graph with the provided properties set</returns>
-        public static Vertex AddVertex(Graph graph, object id, params object[] properties)
+        public static Vertex addVertex(Graph graph, object id, params object[] properties)
         {
             if ((properties.Length % 2) != 0)
                 throw new ArgumentException("There must be an equal number of keys and values");
 
-            Vertex vertex = graph.AddVertex(id);
+            Vertex vertex = graph.addVertex(id);
             for (int i = 0; i < properties.Length; i = i + 2)
-                vertex.SetProperty((string)properties[i], properties[i + 1]);
+                vertex.setProperty((string)properties[i], properties[i + 1]);
 
             return vertex;
         }
@@ -37,14 +37,14 @@ namespace Frontenac.Blueprints.Util
         /// <param name="label">the label of the edge</param>
         /// <param name="properties">the properties of the edge to add (must be string,object,string,object,...)</param>
         /// <returns>the edge created in the graph with the provided properties set</returns>
-        public static Edge AddEdge(Graph graph, object id, Vertex outVertex, Vertex inVertex, string label, params object[] properties)
+        public static Edge addEdge(Graph graph, object id, Vertex outVertex, Vertex inVertex, string label, params object[] properties)
         {
             if ((properties.Length % 2) != 0)
                 throw new ArgumentException("There must be an equal number of keys and values");
 
-            Edge edge = graph.AddEdge(id, outVertex, inVertex, label);
+            Edge edge = graph.addEdge(id, outVertex, inVertex, label);
             for (int i = 0; i < properties.Length; i = i + 2)
-                edge.SetProperty((string)properties[i], properties[i + 1]);
+                edge.setProperty((string)properties[i], properties[i + 1]);
 
             return edge;
         }
@@ -56,20 +56,20 @@ namespace Frontenac.Blueprints.Util
         /// </summary>
         /// <param name="from">the graph to copy from</param>
         /// <param name="to">the graph to copy to</param>
-        public static void CopyGraph(Graph from, Graph to)
+        public static void copyGraph(Graph from, Graph to)
         {
-            foreach (Vertex fromVertex in from.GetVertices())
+            foreach (Vertex fromVertex in from.getVertices())
             {
-                Vertex toVertex = to.AddVertex(fromVertex.GetId());
-                ElementHelper.CopyProperties(fromVertex, toVertex);
+                Vertex toVertex = to.addVertex(fromVertex.getId());
+                ElementHelper.copyProperties(fromVertex, toVertex);
             }
 
-            foreach (Edge fromEdge in from.GetEdges())
+            foreach (Edge fromEdge in from.getEdges())
             {
-                Vertex outVertex = to.GetVertex(fromEdge.GetVertex(Direction.OUT).GetId());
-                Vertex inVertex = to.GetVertex(fromEdge.GetVertex(Direction.IN).GetId());
-                Edge toEdge = to.AddEdge(fromEdge.GetId(), outVertex, inVertex, fromEdge.GetLabel());
-                ElementHelper.CopyProperties(fromEdge, toEdge);
+                Vertex outVertex = to.getVertex(fromEdge.getVertex(Direction.OUT).getId());
+                Vertex inVertex = to.getVertex(fromEdge.getVertex(Direction.IN).getId());
+                Edge toEdge = to.addEdge(fromEdge.getId(), outVertex, inVertex, fromEdge.getLabel());
+                ElementHelper.copyProperties(fromEdge, toEdge);
             }
         }
     }

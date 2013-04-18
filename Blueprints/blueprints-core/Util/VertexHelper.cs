@@ -15,12 +15,12 @@ namespace Frontenac.Blueprints.Util
         /// <param name="b">the second vertex </param>
         /// <param name="checkIdEquality">whether to check on vertex and edge ids </param>
         /// <returns>whether the two vertices are semantically the same </returns>
-        public static bool HaveEqualNeighborhood(Vertex a, Vertex b, bool checkIdEquality)
+        public static bool haveEqualNeighborhood(Vertex a, Vertex b, bool checkIdEquality)
         {
-            if (checkIdEquality && !ElementHelper.HaveEqualIds(a, b))
+            if (checkIdEquality && !ElementHelper.haveEqualIds(a, b))
                 return false;
 
-            return ElementHelper.HaveEqualProperties(a, b) && HaveEqualEdges(a, b, checkIdEquality);
+            return ElementHelper.haveEqualProperties(a, b) && haveEqualEdges(a, b, checkIdEquality);
         }
 
         /// <summary>
@@ -30,27 +30,27 @@ namespace Frontenac.Blueprints.Util
         /// <param name="b">the second vertex</param>
         /// <param name="checkIdEquality">whether to check on vertex and edge ids</param>
         /// <returns>whether the two vertices have the same edge sets</returns>
-        public static bool HaveEqualEdges(Vertex a, Vertex b, bool checkIdEquality)
+        public static bool haveEqualEdges(Vertex a, Vertex b, bool checkIdEquality)
         {
-            HashSet<Edge> aEdgeSet = new HashSet<Edge>(a.GetEdges(Direction.OUT));
-            HashSet<Edge> bEdgeSet = new HashSet<Edge>(b.GetEdges(Direction.OUT));
+            HashSet<Edge> aEdgeSet = new HashSet<Edge>(a.getEdges(Direction.OUT));
+            HashSet<Edge> bEdgeSet = new HashSet<Edge>(b.getEdges(Direction.OUT));
 
-            if (!HasEqualEdgeSets(aEdgeSet, bEdgeSet, checkIdEquality))
+            if (!hasEqualEdgeSets(aEdgeSet, bEdgeSet, checkIdEquality))
                 return false;
 
             aEdgeSet.Clear();
             bEdgeSet.Clear();
 
-            foreach (Edge edge in a.GetEdges(Direction.IN))
+            foreach (Edge edge in a.getEdges(Direction.IN))
                 aEdgeSet.Add(edge);
 
-            foreach (Edge edge in b.GetEdges(Direction.IN))
+            foreach (Edge edge in b.getEdges(Direction.IN))
                 bEdgeSet.Add(edge);
 
-            return HasEqualEdgeSets(aEdgeSet, bEdgeSet, checkIdEquality);
+            return hasEqualEdgeSets(aEdgeSet, bEdgeSet, checkIdEquality);
         }
 
-        static bool HasEqualEdgeSets(HashSet<Edge> aEdgeSet, HashSet<Edge> bEdgeSet, bool checkIdEquality)
+        static bool hasEqualEdgeSets(HashSet<Edge> aEdgeSet, HashSet<Edge> bEdgeSet, bool checkIdEquality)
         {
             if (aEdgeSet.Count != bEdgeSet.Count)
                 return false;
@@ -60,20 +60,20 @@ namespace Frontenac.Blueprints.Util
                 Edge tempEdge = null;
                 foreach (Edge bEdge in bEdgeSet)
                 {
-                    if (bEdge.GetLabel() == aEdge.GetLabel())
+                    if (bEdge.getLabel() == aEdge.getLabel())
                     {
                         if (checkIdEquality)
                         {
-                            if (ElementHelper.HaveEqualIds(aEdge, bEdge) &&
-                                ElementHelper.HaveEqualIds(aEdge.GetVertex(Direction.IN), bEdge.GetVertex(Direction.IN)) &&
-                                ElementHelper.HaveEqualIds(aEdge.GetVertex(Direction.OUT), bEdge.GetVertex(Direction.OUT)) &&
-                                ElementHelper.HaveEqualProperties(aEdge, bEdge))
+                            if (ElementHelper.haveEqualIds(aEdge, bEdge) &&
+                                ElementHelper.haveEqualIds(aEdge.getVertex(Direction.IN), bEdge.getVertex(Direction.IN)) &&
+                                ElementHelper.haveEqualIds(aEdge.getVertex(Direction.OUT), bEdge.getVertex(Direction.OUT)) &&
+                                ElementHelper.haveEqualProperties(aEdge, bEdge))
                             {
                                 tempEdge = bEdge;
                                 break;
                             }
                         }
-                        else if (ElementHelper.HaveEqualProperties(aEdge, bEdge))
+                        else if (ElementHelper.haveEqualProperties(aEdge, bEdge))
                         {
                             tempEdge = bEdge;
                             break;

@@ -18,13 +18,13 @@ namespace Frontenac.Blueprints.Util
         /// <param name="uniqueKey">the key to check on for uniqueness of the vertex</param>
         /// <param name="uniqueValue">the value to check on for uniqueness of the vertex</param>
         /// <returns>the newly created vertex or the vertex that satisfies the uniqueness criteria</returns>
-        public static Vertex AddUniqueVertex(IndexableGraph graph, object id, Index index, string uniqueKey, object uniqueValue)
+        public static Vertex addUniqueVertex(IndexableGraph graph, object id, Index index, string uniqueKey, object uniqueValue)
         {
-            Vertex result = (Vertex)index.Get(uniqueKey, uniqueValue).FirstOrDefault();
+            Vertex result = (Vertex)index.get(uniqueKey, uniqueValue).FirstOrDefault();
             if (result == null)
             {
-                result = graph.AddVertex(id);
-                result.SetProperty(uniqueKey, uniqueValue);
+                result = graph.addVertex(id);
+                result.setProperty(uniqueKey, uniqueValue);
             }
             return result;
         }

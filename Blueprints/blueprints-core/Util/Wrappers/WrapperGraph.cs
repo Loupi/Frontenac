@@ -16,6 +16,6 @@ namespace Frontenac.Blueprints.Util.Wrappers
         /// Get the graph this wrapper delegates to.
         /// </summary>
         /// <returns>the underlying graph that this WrapperGraph delegates its operations to.</returns>
-        Graph GetBaseGraph();
+        Graph getBaseGraph();
     }
 }

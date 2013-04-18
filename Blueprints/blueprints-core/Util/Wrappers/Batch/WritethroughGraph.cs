@@ -18,22 +18,22 @@ namespace Frontenac.Blueprints.Util.Wrappers.Batch
     /// </summary>
     public class WritethroughGraph : WrapperGraph, TransactionalGraph
     {
-        readonly Graph _Graph;
+        readonly Graph _graph;
 
         public WritethroughGraph(Graph graph)
         {
             if (graph == null) throw new ArgumentException("Graph expected");
             if (graph is TransactionalGraph)
                 throw new ArgumentException("Can only wrap non-transactional graphs");
-            _Graph = graph;
+            _graph = graph;
         }
 
-        public void Rollback()
+        public void rollback()
         {
             throw new InvalidOperationException("Transactions can not be rolled back");
         }
 
-        public void Commit()
+        public void commit()
         {
 
         }
@@ -42,82 +42,82 @@ namespace Frontenac.Blueprints.Util.Wrappers.Batch
         /// Returns the features of the underlying graph but with transactions supported.
         /// </summary>
         /// <returns>The features of the underlying graph but with transactions supported</returns>
-        public Features GetFeatures()
+        public Features getFeatures()
         {
-            Features f = _Graph.GetFeatures().CopyFeatures();
-            f.IsWrapper = true;
-            f.SupportsTransactions = true;
+            Features f = _graph.getFeatures().copyFeatures();
+            f.isWrapper = true;
+            f.supportsTransactions = true;
             return f;
         }
 
-        public Vertex AddVertex(object id)
+        public Vertex addVertex(object id)
         {
-            return _Graph.AddVertex(id);
+            return _graph.addVertex(id);
         }
 
-        public Vertex GetVertex(object id)
+        public Vertex getVertex(object id)
         {
-            return _Graph.GetVertex(id);
+            return _graph.getVertex(id);
         }
 
-        public void RemoveVertex(Vertex vertex)
+        public void removeVertex(Vertex vertex)
         {
-            _Graph.RemoveVertex(vertex);
+            _graph.removeVertex(vertex);
         }
 
-        public IEnumerable<Vertex> GetVertices()
+        public IEnumerable<Vertex> getVertices()
         {
-            return _Graph.GetVertices();
+            return _graph.getVertices();
         }
 
-        public IEnumerable<Vertex> GetVertices(string key, object value)
+        public IEnumerable<Vertex> getVertices(string key, object value)
         {
-            return _Graph.GetVertices(key, value);
+            return _graph.getVertices(key, value);
         }
 
-        public Edge AddEdge(object id, Vertex outVertex, Vertex inVertex, string label)
+        public Edge addEdge(object id, Vertex outVertex, Vertex inVertex, string label)
         {
-            return _Graph.AddEdge(id, outVertex, inVertex, label);
+            return _graph.addEdge(id, outVertex, inVertex, label);
         }
 
-        public Edge GetEdge(object id)
+        public Edge getEdge(object id)
         {
-            return _Graph.GetEdge(id);
+            return _graph.getEdge(id);
         }
 
-        public void RemoveEdge(Edge edge)
+        public void removeEdge(Edge edge)
         {
-            _Graph.RemoveEdge(edge);
+            _graph.removeEdge(edge);
         }
 
-        public IEnumerable<Edge> GetEdges()
+        public IEnumerable<Edge> getEdges()
         {
-            return _Graph.GetEdges();
+            return _graph.getEdges();
         }
 
-        public GraphQuery Query()
+        public GraphQuery query()
         {
-            return _Graph.Query();
+            return _graph.query();
         }
 
-        public IEnumerable<Edge> GetEdges(string key, object value)
+        public IEnumerable<Edge> getEdges(string key, object value)
         {
-            return _Graph.GetEdges(key, value);
+            return _graph.getEdges(key, value);
         }
 
-        public void Shutdown()
+        public void shutdown()
         {
-            _Graph.Shutdown();
+            _graph.shutdown();
         }
 
-        public Graph GetBaseGraph()
+        public Graph getBaseGraph()
         {
-            return _Graph;
+            return _graph;
         }
 
         public override string ToString()
         {
-            return StringFactory.GraphString(this, _Graph.ToString());
+            return StringFactory.graphString(this, _graph.ToString());
         }
     }
 }

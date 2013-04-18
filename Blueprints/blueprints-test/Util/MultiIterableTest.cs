@@ -11,7 +11,7 @@ namespace Frontenac.Blueprints.Util
     public class MultiIterableTest
     {
         [Test]
-        public void TestBasicFunctionality()
+        public void testBasicFunctionality()
         {
             MultiIterable<int> itty = new MultiIterable<int>(new List<IEnumerable<int>>{new int[]{1, 2, 3}, new int[]{4, 5}, new int[]{6, 7, 8}});
             int counter = 0;

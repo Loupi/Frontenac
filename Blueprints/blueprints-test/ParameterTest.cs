@@ -11,7 +11,7 @@ namespace Frontenac.Blueprints
     public class ParameterTest
     {
         [Test]
-        public void TestEquality()
+        public void testEquality()
         {
             Parameter<string, long> a = new Parameter<string, long>("blah", 7L);
             Parameter<string, long> b = new Parameter<string, long>("blah", 7L);

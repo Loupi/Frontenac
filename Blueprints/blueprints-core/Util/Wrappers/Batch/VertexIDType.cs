@@ -21,7 +21,7 @@ namespace Frontenac.Blueprints.Util.Wrappers.Batch
 
     public static class VertexIDTypes
     {
-        public static VertexCache GetVertexCache(this VertexIDType vertexIDType)
+        public static VertexCache getVertexCache(this VertexIDType vertexIDType)
         {
             switch (vertexIDType)
             {

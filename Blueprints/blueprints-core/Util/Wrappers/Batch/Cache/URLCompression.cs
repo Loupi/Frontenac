@@ -11,26 +11,26 @@ namespace Frontenac.Blueprints.Util.Wrappers.Batch.Cache
         const string DELIMITER = "$";
         static readonly char[] urlDelimiters = new char[] { '/', '#', ':' };
 
-        int _PrefixCounter = 0;
+        int _prefixCounter = 0;
 
-        readonly Dictionary<string, string> _UrlPrefix = new Dictionary<string, string>();
+        readonly Dictionary<string, string> _urlPrefix = new Dictionary<string, string>();
 
-        public override string Compress(string input)
+        public override string compress(string input)
         {
-            string[] url = SplitURL(input);
+            string[] url = splitUrl(input);
             string prefix = null;
-            _UrlPrefix.TryGetValue(url[0], out prefix);
+            _urlPrefix.TryGetValue(url[0], out prefix);
             if (prefix == null)
             {
                 //New Prefix
-                prefix = string.Concat(IntToBase36String(_PrefixCounter) + DELIMITER);
-                _PrefixCounter++;
-                _UrlPrefix[url[0]] = prefix;
+                prefix = string.Concat(intToBase36String(_prefixCounter) + DELIMITER);
+                _prefixCounter++;
+                _urlPrefix[url[0]] = prefix;
             }
             return prefix + url[1];
         }
 
-        static string[] SplitURL(string url)
+        static string[] splitUrl(string url)
         {
             string[] res = new string[2];
             int pos = -1;
@@ -59,15 +59,15 @@ namespace Frontenac.Blueprints.Util.Wrappers.Batch.Cache
         //const int MAX_RADIX = 36;
         static readonly char[] BASE36_CHARS = new char[] { '0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z' };
 
-        static string IntToBase36String(int value)
+        static string intToBase36String(int value)
         {
-            return IntToStringFast(value, BASE36_CHARS);
+            return intToStringFast(value, BASE36_CHARS);
         }
 
         /// <summary>
         /// http://stackoverflow.com/questions/923771/quickest-way-to-convert-a-base-10-number-to-any-base-in-net
         /// </summary>
-        static string IntToStringFast(int value, char[] baseChars)
+        static string intToStringFast(int value, char[] baseChars)
         {
             // 32 is the worst cast buffer size for base 2 and int.MaxValue
             int i = 32;

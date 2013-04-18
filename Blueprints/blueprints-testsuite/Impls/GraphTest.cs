@@ -8,8 +8,8 @@ namespace Frontenac.Blueprints.Impls
 {
     public abstract class GraphTest : BaseTest
     {
-        public abstract Graph GenerateGraph();
+        public abstract Graph generateGraph();
 
-        public abstract Graph GenerateGraph(string graphDirectoryName);
+        public abstract Graph generateGraph(string graphDirectoryName);
     }
 }

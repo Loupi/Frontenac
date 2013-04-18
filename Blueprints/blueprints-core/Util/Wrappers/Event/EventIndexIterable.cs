@@ -12,19 +12,19 @@ namespace Frontenac.Blueprints.Util.Wrappers.Event
     /// <typeparam name="T"></typeparam>
     class EventIndexIterable : IEnumerable<Index>
     {
-        readonly IEnumerable<Index> _Iterable;
-        readonly EventGraph _EventGraph;
+        readonly IEnumerable<Index> _iterable;
+        readonly EventGraph _eventGraph;
 
         public EventIndexIterable(IEnumerable<Index> iterable, EventGraph eventGraph)
         {
-            _Iterable = iterable;
-            _EventGraph = eventGraph;
+            _iterable = iterable;
+            _eventGraph = eventGraph;
         }
 
         public IEnumerator<Index> GetEnumerator()
         {
-            foreach (Index index in _Iterable)
-                yield return new EventIndex(index, _EventGraph);
+            foreach (Index index in _iterable)
+                yield return new EventIndex(index, _eventGraph);
         }
 
         System.Collections.IEnumerator System.Collections.IEnumerable.GetEnumerator()

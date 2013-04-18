@@ -11,7 +11,7 @@ namespace Frontenac.Blueprints.Impls.TG
     /// </summary>
     interface TinkerStorage
     {
-        TinkerGraph Load(string directory);
-        void Save(TinkerGraph graph, string directory);
+        TinkerGraph load(string directory);
+        void save(TinkerGraph graph, string directory);
     }
 }

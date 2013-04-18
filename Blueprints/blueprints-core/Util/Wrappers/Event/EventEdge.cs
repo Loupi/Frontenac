@@ -17,19 +17,19 @@ namespace Frontenac.Blueprints.Util.Wrappers.Event
         {
         }
 
-        public Vertex GetVertex(Direction direction)
+        public Vertex getVertex(Direction direction)
         {
-            return new EventVertex(this.GetBaseEdge().GetVertex(direction), _EventGraph);
+            return new EventVertex(this.getBaseEdge().getVertex(direction), eventGraph);
         }
 
-        public string GetLabel()
+        public string getLabel()
         {
-            return ((Edge)_BaseElement).GetLabel();
+            return ((Edge)baseElement).getLabel();
         }
 
-        public Edge GetBaseEdge()
+        public Edge getBaseEdge()
         {
-            return (Edge)_BaseElement;
+            return (Edge)baseElement;
         }
     }
 }

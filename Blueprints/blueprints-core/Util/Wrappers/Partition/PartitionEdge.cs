@@ -13,19 +13,19 @@ namespace Frontenac.Blueprints.Util.Wrappers.Partition
         {
         }
 
-        public Vertex GetVertex(Direction direction)
+        public Vertex getVertex(Direction direction)
         {
-            return new PartitionVertex(((Edge)_BaseElement).GetVertex(direction), _Graph);
+            return new PartitionVertex(((Edge)baseElement).getVertex(direction), graph);
         }
 
-        public string GetLabel()
+        public string getLabel()
         {
-            return ((Edge)_BaseElement).GetLabel();
+            return ((Edge)baseElement).getLabel();
         }
 
-        public Edge GetBaseEdge()
+        public Edge getBaseEdge()
         {
-            return (Edge)_BaseElement;
+            return (Edge)baseElement;
         }
     }
 }

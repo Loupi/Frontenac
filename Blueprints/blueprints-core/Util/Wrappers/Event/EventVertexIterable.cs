@@ -11,14 +11,14 @@ namespace Frontenac.Blueprints.Util.Wrappers.Event
     /// </summary>
     class EventVertexIterable : CloseableIterable<Vertex>
     {
-        readonly IEnumerable<Vertex> _Iterable;
-        readonly EventGraph _EventGraph;
-        bool _Disposed;
+        readonly IEnumerable<Vertex> _iterable;
+        readonly EventGraph _eventGraph;
+        bool _disposed;
 
         public EventVertexIterable(IEnumerable<Vertex> iterable, EventGraph eventGraph)
         {
-            _Iterable = iterable;
-            _EventGraph = eventGraph;
+            _iterable = iterable;
+            _eventGraph = eventGraph;
         }
 
         ~EventVertexIterable()
@@ -34,22 +34,22 @@ namespace Frontenac.Blueprints.Util.Wrappers.Event
 
         protected virtual void Dispose(bool disposing)
         {
-            if (_Disposed)
+            if (_disposed)
                 return;
 
             if (disposing)
             {
-                if (_Iterable is IDisposable)
-                    (_Iterable as IDisposable).Dispose();
+                if (_iterable is IDisposable)
+                    (_iterable as IDisposable).Dispose();
             }
 
-            _Disposed = true;
+            _disposed = true;
         }
 
         public IEnumerator<Vertex> GetEnumerator()
         {
-            foreach (Vertex v in _Iterable)
-                yield return new EventVertex(v, _EventGraph);
+            foreach (Vertex v in _iterable)
+                yield return new EventVertex(v, _eventGraph);
         }
 
         System.Collections.IEnumerator System.Collections.IEnumerable.GetEnumerator()

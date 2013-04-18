@@ -13,13 +13,13 @@ namespace Frontenac.Blueprints.Util.IO.GraphML
     /// </summary>
     public class GraphMLWriter
     {
-        readonly Graph _Graph;
-        bool _Normalize = false;
-        Dictionary<string, string> _VertexKeyTypes = null;
-        Dictionary<string, string> _EdgeKeyTypes = null;
+        readonly Graph _graph;
+        bool _normalize = false;
+        Dictionary<string, string> _vertexKeyTypes = null;
+        Dictionary<string, string> _edgeKeyTypes = null;
 
-        string _XmlSchemaLocation = null;
-        string _EdgeLabelKey = null;
+        string _xmlSchemaLocation = null;
+        string _edgeLabelKey = null;
 
         /// <summary>
         /// 
@@ -27,16 +27,16 @@ namespace Frontenac.Blueprints.Util.IO.GraphML
         /// <param name="graph">the Graph to pull the data from</param>
         public GraphMLWriter(Graph graph)
         {
-            _Graph = graph;
+            _graph = graph;
         }
 
         /// <summary>
         /// the location of the GraphML XML Schema instance
         /// </summary>
         /// <param name="xmlSchemaLocation"></param>
-        public void SetXmlSchemaLocation(string xmlSchemaLocation)
+        public void setXmlSchemaLocation(string xmlSchemaLocation)
         {
-            _XmlSchemaLocation = xmlSchemaLocation;
+            _xmlSchemaLocation = xmlSchemaLocation;
         }
 
         /// <summary>
@@ -46,9 +46,9 @@ namespace Frontenac.Blueprints.Util.IO.GraphML
         /// the appropriate key element is added to define it in the GraphML
         /// </summary>
         /// <param name="edgeLabelKey">if the label of an edge will be handled by the data property.</param>
-        public void SetEdgeLabelKey(string edgeLabelKey)
+        public void setEdgeLabelKey(string edgeLabelKey)
         {
-            _EdgeLabelKey = edgeLabelKey;
+            _edgeLabelKey = edgeLabelKey;
         }
 
         /// <summary>
@@ -57,38 +57,38 @@ namespace Frontenac.Blueprints.Util.IO.GraphML
         /// such as Git. Note: normalized output is memory-intensive and is not appropriate for very large graphs.
         /// </summary>
         /// <param name="normalize"></param>
-        public void SetNormalize(bool normalize)
+        public void setNormalize(bool normalize)
         {
-            _Normalize = normalize;
+            _normalize = normalize;
         }
 
         /// <summary>
         /// a IDictionary<string, string> of the data types of the vertex keys
         /// </summary>
         /// <param name="vertexKeyTypes"></param>
-        public void SetVertexKeyTypes(Dictionary<string, string> vertexKeyTypes)
+        public void setVertexKeyTypes(Dictionary<string, string> vertexKeyTypes)
         {
-            _VertexKeyTypes = vertexKeyTypes;
+            _vertexKeyTypes = vertexKeyTypes;
         }
 
         /// <summary>
         /// a IDictionary<string, string> of the data types of the edge keys
         /// </summary>
         /// <param name="edgeKeyTypes"></param>
-        public void SetEdgeKeyTypes(Dictionary<string, string> edgeKeyTypes)
+        public void setEdgeKeyTypes(Dictionary<string, string> edgeKeyTypes)
         {
-            _EdgeKeyTypes = edgeKeyTypes;
+            _edgeKeyTypes = edgeKeyTypes;
         }
 
         /// <summary>
         /// Write the data in a Graph to a GraphML file.
         /// </summary>
         /// <param name="filename">the name of the file write the Graph data (as GraphML) to</param>
-        public void OutputGraph(string filename)
+        public void outputGraph(string filename)
         {
             using (var fos = File.Open(filename, FileMode.Create))
             {
-                OutputGraph(fos);
+                outputGraph(fos);
             }
         }
 
@@ -100,45 +100,45 @@ namespace Frontenac.Blueprints.Util.IO.GraphML
         /// Write the data in a Graph to a GraphML OutputStream.
         /// </summary>
         /// <param name="graphMLOutputStream">the GraphML OutputStream to write the Graph data to</param>
-        public void OutputGraph(Stream graphMLOutputStream)
+        public void outputGraph(Stream graphMLOutputStream)
         {
-            if (null == _VertexKeyTypes || null == _EdgeKeyTypes)
+            if (null == _vertexKeyTypes || null == _edgeKeyTypes)
             {
                 Dictionary<string, string> vertexKeyTypes = new Dictionary<string, string>();
                 Dictionary<string, string> edgeKeyTypes = new Dictionary<string, string>();
 
-                foreach (Vertex vertex in _Graph.GetVertices())
+                foreach (Vertex vertex in _graph.getVertices())
                 {
-                    foreach (string key in vertex.GetPropertyKeys())
+                    foreach (string key in vertex.getPropertyKeys())
                     {
                         if (!vertexKeyTypes.ContainsKey(key))
-                            vertexKeyTypes[key] = GraphMLWriter.GetStringType(vertex.GetProperty(key));
+                            vertexKeyTypes[key] = GraphMLWriter.getStringType(vertex.getProperty(key));
                     }
-                    foreach (Edge edge in vertex.GetEdges(Direction.OUT))
+                    foreach (Edge edge in vertex.getEdges(Direction.OUT))
                     {
-                        foreach (string key in edge.GetPropertyKeys())
+                        foreach (string key in edge.getPropertyKeys())
                         {
                             if (!edgeKeyTypes.ContainsKey(key))
-                                edgeKeyTypes[key] = GraphMLWriter.GetStringType(edge.GetProperty(key));
+                                edgeKeyTypes[key] = GraphMLWriter.getStringType(edge.getProperty(key));
                         }
                     }
                 }
 
-                if (null == _VertexKeyTypes)
-                    _VertexKeyTypes = vertexKeyTypes;
+                if (null == _vertexKeyTypes)
+                    _vertexKeyTypes = vertexKeyTypes;
 
-                if (null == _EdgeKeyTypes)
-                    _EdgeKeyTypes = edgeKeyTypes;
+                if (null == _edgeKeyTypes)
+                    _edgeKeyTypes = edgeKeyTypes;
             }
 
             // adding the edge label key will push the label into the data portion of the graphml otherwise it
             // will live with the edge data itself (which won't validate against the graphml schema)
-            if (null != _EdgeLabelKey && null != _EdgeKeyTypes && null == _EdgeKeyTypes.Get(_EdgeLabelKey))
-                _EdgeKeyTypes[_EdgeLabelKey] = GraphMLTokens.STRING;
+            if (null != _edgeLabelKey && null != _edgeKeyTypes && null == _edgeKeyTypes.get(_edgeLabelKey))
+                _edgeKeyTypes[_edgeLabelKey] = GraphMLTokens.STRING;
 
             using (XmlTextWriter writer = new XmlTextWriter(graphMLOutputStream, Encoding.UTF8))
             {
-                if (_Normalize)
+                if (_normalize)
                 {
                     writer.Formatting = Formatting.Indented;
                     writer.Indentation = 4;
@@ -153,20 +153,20 @@ namespace Frontenac.Blueprints.Util.IO.GraphML
 
                 //XML Schema location
                 writer.WriteAttributeString(string.Concat(GraphMLTokens.XML_SCHEMA_NAMESPACE_TAG, ":", GraphMLTokens.XML_SCHEMA_LOCATION_ATTRIBUTE),
-                        string.Concat(GraphMLTokens.GRAPHML_XMLNS, " ", (_XmlSchemaLocation == null ?
-                                GraphMLTokens.DEFAULT_GRAPHML_SCHEMA_LOCATION : _XmlSchemaLocation)));
+                        string.Concat(GraphMLTokens.GRAPHML_XMLNS, " ", (_xmlSchemaLocation == null ?
+                                GraphMLTokens.DEFAULT_GRAPHML_SCHEMA_LOCATION : _xmlSchemaLocation)));
 
                 // <key id="weight" for="edge" attr.name="weight" attr.type="float"/>
                 IEnumerable<string> keyset;
 
-                if (_Normalize)
+                if (_normalize)
                 {
-                    List<string> sortedKeyset = new List<string>(_VertexKeyTypes.Keys);
+                    List<string> sortedKeyset = new List<string>(_vertexKeyTypes.Keys);
                     sortedKeyset.Sort();
                     keyset = sortedKeyset;
                 }
                 else
-                    keyset = _VertexKeyTypes.Keys.ToList();
+                    keyset = _vertexKeyTypes.Keys.ToList();
 
                 foreach (string key in keyset)
                 {
@@ -174,18 +174,18 @@ namespace Frontenac.Blueprints.Util.IO.GraphML
                     writer.WriteAttributeString(GraphMLTokens.ID, key);
                     writer.WriteAttributeString(GraphMLTokens.FOR, GraphMLTokens.NODE);
                     writer.WriteAttributeString(GraphMLTokens.ATTR_NAME, key);
-                    writer.WriteAttributeString(GraphMLTokens.ATTR_TYPE, _VertexKeyTypes.Get(key));
+                    writer.WriteAttributeString(GraphMLTokens.ATTR_TYPE, _vertexKeyTypes.get(key));
                     writer.WriteEndElement();
                 }
 
-                if (_Normalize)
+                if (_normalize)
                 {
-                    List<string> sortedKeyset = new List<string>(_EdgeKeyTypes.Keys);
+                    List<string> sortedKeyset = new List<string>(_edgeKeyTypes.Keys);
                     sortedKeyset.Sort();
                     keyset = sortedKeyset;
                 }
                 else
-                    keyset = _EdgeKeyTypes.Keys;
+                    keyset = _edgeKeyTypes.Keys;
 
                 foreach (string key in keyset)
                 {
@@ -193,7 +193,7 @@ namespace Frontenac.Blueprints.Util.IO.GraphML
                     writer.WriteAttributeString(GraphMLTokens.ID, key);
                     writer.WriteAttributeString(GraphMLTokens.FOR, GraphMLTokens.EDGE);
                     writer.WriteAttributeString(GraphMLTokens.ATTR_NAME, key);
-                    writer.WriteAttributeString(GraphMLTokens.ATTR_TYPE, _EdgeKeyTypes.Get(key));
+                    writer.WriteAttributeString(GraphMLTokens.ATTR_TYPE, _edgeKeyTypes.get(key));
                     writer.WriteEndElement();
                 }
 
@@ -202,34 +202,34 @@ namespace Frontenac.Blueprints.Util.IO.GraphML
                 writer.WriteAttributeString(GraphMLTokens.EDGEDEFAULT, GraphMLTokens.DIRECTED);
 
                 IEnumerable<Vertex> vertices;
-                if (_Normalize)
+                if (_normalize)
                 {
-                    List<Vertex> sortedVertices = new List<Vertex>(_Graph.GetVertices());
+                    List<Vertex> sortedVertices = new List<Vertex>(_graph.getVertices());
                     sortedVertices.Sort(new LexicographicalElementComparator());
                     vertices = sortedVertices;
                 }
                 else
-                    vertices = _Graph.GetVertices();
+                    vertices = _graph.getVertices();
 
                 foreach (Vertex vertex in vertices)
                 {
                     writer.WriteStartElement(GraphMLTokens.NODE);
-                    writer.WriteAttributeString(GraphMLTokens.ID, vertex.GetId().ToString());
+                    writer.WriteAttributeString(GraphMLTokens.ID, vertex.getId().ToString());
                     IEnumerable<string> keys;
-                    if (_Normalize)
+                    if (_normalize)
                     {
-                        List<string> sortedKeys = new List<string>(vertex.GetPropertyKeys());
+                        List<string> sortedKeys = new List<string>(vertex.getPropertyKeys());
                         sortedKeys.Sort();
                         keys = sortedKeys;
                     }
                     else
-                        keys = vertex.GetPropertyKeys();
+                        keys = vertex.getPropertyKeys();
 
                     foreach (string key in keys)
                     {
                         writer.WriteStartElement(GraphMLTokens.DATA);
                         writer.WriteAttributeString(GraphMLTokens.KEY, key);
-                        object value = vertex.GetProperty(key);
+                        object value = vertex.getProperty(key);
                         if (null != value)
                             writer.WriteString(value.ToString());
 
@@ -238,42 +238,42 @@ namespace Frontenac.Blueprints.Util.IO.GraphML
                     writer.WriteEndElement();
                 }
 
-                if (_Normalize)
+                if (_normalize)
                 {
                     List<Edge> edges = new List<Edge>();
-                    foreach (Vertex vertex in _Graph.GetVertices())
-                        edges.AddRange(vertex.GetEdges(Direction.OUT));
+                    foreach (Vertex vertex in _graph.getVertices())
+                        edges.AddRange(vertex.getEdges(Direction.OUT));
                     edges.Sort(new LexicographicalElementComparator());
 
                     foreach (Edge edge in edges)
                     {
                         writer.WriteStartElement(GraphMLTokens.EDGE);
-                        writer.WriteAttributeString(GraphMLTokens.ID, edge.GetId().ToString());
-                        writer.WriteAttributeString(GraphMLTokens.SOURCE, edge.GetVertex(Direction.OUT).GetId().ToString());
-                        writer.WriteAttributeString(GraphMLTokens.TARGET, edge.GetVertex(Direction.IN).GetId().ToString());
+                        writer.WriteAttributeString(GraphMLTokens.ID, edge.getId().ToString());
+                        writer.WriteAttributeString(GraphMLTokens.SOURCE, edge.getVertex(Direction.OUT).getId().ToString());
+                        writer.WriteAttributeString(GraphMLTokens.TARGET, edge.getVertex(Direction.IN).getId().ToString());
 
-                        if (_EdgeLabelKey == null)
+                        if (_edgeLabelKey == null)
                         {
                             // this will not comply with the graphml schema but is here so that the label is not
                             // mixed up with properties.
-                            writer.WriteAttributeString(GraphMLTokens.LABEL, edge.GetLabel());
+                            writer.WriteAttributeString(GraphMLTokens.LABEL, edge.getLabel());
                         }
                         else
                         {
                             writer.WriteStartElement(GraphMLTokens.DATA);
-                            writer.WriteAttributeString(GraphMLTokens.KEY, _EdgeLabelKey);
-                            writer.WriteString(edge.GetLabel());
+                            writer.WriteAttributeString(GraphMLTokens.KEY, _edgeLabelKey);
+                            writer.WriteString(edge.getLabel());
                             writer.WriteEndElement();
                         }
 
-                        List<string> keys = new List<string>(edge.GetPropertyKeys());
+                        List<string> keys = new List<string>(edge.getPropertyKeys());
                         keys.Sort();
 
                         foreach (string key in keys)
                         {
                             writer.WriteStartElement(GraphMLTokens.DATA);
                             writer.WriteAttributeString(GraphMLTokens.KEY, key);
-                            object value = edge.GetProperty(key);
+                            object value = edge.getProperty(key);
                             if (null != value)
                                 writer.WriteString(value.ToString());
 
@@ -284,21 +284,21 @@ namespace Frontenac.Blueprints.Util.IO.GraphML
                 }
                 else
                 {
-                    foreach (Vertex vertex in _Graph.GetVertices())
+                    foreach (Vertex vertex in _graph.getVertices())
                     {
-                        foreach (Edge edge in vertex.GetEdges(Direction.OUT))
+                        foreach (Edge edge in vertex.getEdges(Direction.OUT))
                         {
                             writer.WriteStartElement(GraphMLTokens.EDGE);
-                            writer.WriteAttributeString(GraphMLTokens.ID, edge.GetId().ToString());
-                            writer.WriteAttributeString(GraphMLTokens.SOURCE, edge.GetVertex(Direction.OUT).GetId().ToString());
-                            writer.WriteAttributeString(GraphMLTokens.TARGET, edge.GetVertex(Direction.IN).GetId().ToString());
-                            writer.WriteAttributeString(GraphMLTokens.LABEL, edge.GetLabel());
+                            writer.WriteAttributeString(GraphMLTokens.ID, edge.getId().ToString());
+                            writer.WriteAttributeString(GraphMLTokens.SOURCE, edge.getVertex(Direction.OUT).getId().ToString());
+                            writer.WriteAttributeString(GraphMLTokens.TARGET, edge.getVertex(Direction.IN).getId().ToString());
+                            writer.WriteAttributeString(GraphMLTokens.LABEL, edge.getLabel());
 
-                            foreach (string key in edge.GetPropertyKeys())
+                            foreach (string key in edge.getPropertyKeys())
                             {
                                 writer.WriteStartElement(GraphMLTokens.DATA);
                                 writer.WriteAttributeString(GraphMLTokens.KEY, key);
-                                object value = edge.GetProperty(key);
+                                object value = edge.getProperty(key);
                                 if (null != value)
                                     writer.WriteString(value.ToString());
 
@@ -320,10 +320,10 @@ namespace Frontenac.Blueprints.Util.IO.GraphML
         /// </summary>
         /// <param name="graph">the Graph to pull the data from</param>
         /// <param name="graphMLOutputStream">the GraphML OutputStream to write the Graph data to</param>
-        public static void OutputGraph(Graph graph, Stream graphMLOutputStream)
+        public static void outputGraph(Graph graph, Stream graphMLOutputStream)
         {
             GraphMLWriter writer = new GraphMLWriter(graph);
-            writer.OutputGraph(graphMLOutputStream);
+            writer.outputGraph(graphMLOutputStream);
         }
 
         /// <summary>
@@ -331,10 +331,10 @@ namespace Frontenac.Blueprints.Util.IO.GraphML
         /// </summary>
         /// <param name="graph">the Graph to pull the data from</param>
         /// <param name="filename">the name of the file write the Graph data (as GraphML) to</param>
-        public static void OutputGraph(Graph graph, string filename)
+        public static void outputGraph(Graph graph, string filename)
         {
             GraphMLWriter writer = new GraphMLWriter(graph);
-            writer.OutputGraph(filename);
+            writer.outputGraph(filename);
         }
 
         /// <summary>
@@ -344,13 +344,13 @@ namespace Frontenac.Blueprints.Util.IO.GraphML
         /// <param name="filename">the name of the file write the Graph data (as GraphML) to</param>
         /// <param name="vertexKeyTypes">a IDictionary<string, string> of the data types of the vertex keys</param>
         /// <param name="edgeKeyTypes">a IDictionary<string, string> of the data types of the edge keys</param>
-        public static void OutputGraph(Graph graph, string filename,
+        public static void outputGraph(Graph graph, string filename,
                                    Dictionary<string, string> vertexKeyTypes, Dictionary<string, string> edgeKeyTypes)
         {
             GraphMLWriter writer = new GraphMLWriter(graph);
-            writer.SetVertexKeyTypes(vertexKeyTypes);
-            writer.SetEdgeKeyTypes(edgeKeyTypes);
-            writer.OutputGraph(filename);
+            writer.setVertexKeyTypes(vertexKeyTypes);
+            writer.setEdgeKeyTypes(edgeKeyTypes);
+            writer.outputGraph(filename);
         }
 
         /// <summary>
@@ -360,16 +360,16 @@ namespace Frontenac.Blueprints.Util.IO.GraphML
         /// <param name="graphMLOutputStream">the GraphML OutputStream to write the Graph data to</param>
         /// <param name="vertexKeyTypes">a IDictionary<string, string> of the data types of the vertex keys</param>
         /// <param name="edgeKeyTypes">a IDictionary<string, string> of the data types of the edge keys</param>
-        public static void OutputGraph(Graph graph, Stream graphMLOutputStream,
+        public static void outputGraph(Graph graph, Stream graphMLOutputStream,
                                    Dictionary<string, string> vertexKeyTypes, Dictionary<string, string> edgeKeyTypes)
         {
             GraphMLWriter writer = new GraphMLWriter(graph);
-            writer.SetVertexKeyTypes(vertexKeyTypes);
-            writer.SetEdgeKeyTypes(edgeKeyTypes);
-            writer.OutputGraph(graphMLOutputStream);
+            writer.setVertexKeyTypes(vertexKeyTypes);
+            writer.setEdgeKeyTypes(edgeKeyTypes);
+            writer.outputGraph(graphMLOutputStream);
         }
 
-        static string GetStringType(object object_)
+        static string getStringType(object object_)
         {
             if (object_ is string)
                 return GraphMLTokens.STRING;

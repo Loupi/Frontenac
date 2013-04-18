@@ -22,7 +22,7 @@ namespace Frontenac.Blueprints.Impls.TG
         {
         }
 
-        public static TinkerStorageFactory GetInstance()
+        public static TinkerStorageFactory getInstance()
         {
             if (factory == null)
                 factory = new TinkerStorageFactory();
@@ -30,7 +30,7 @@ namespace Frontenac.Blueprints.Impls.TG
             return factory;
         }
 
-        public TinkerStorage GetTinkerStorage(TinkerGraph.FileType fileType)
+        public TinkerStorage getTinkerStorage(TinkerGraph.FileType fileType)
         {
             switch (fileType)
             {
@@ -56,14 +56,14 @@ namespace Frontenac.Blueprints.Impls.TG
             /// Clean up the directory that houses the TinkerGraph.
             /// </summary>
             /// <param name="path"></param>
-            protected void DeleteFile(string path)
+            protected void deleteFile(string path)
             {
                 if (File.Exists(path))
                     File.Delete(path);
             }
 
-            public abstract TinkerGraph Load(string directory);
-            public abstract void Save(TinkerGraph graph, string directory);
+            public abstract TinkerGraph load(string directory);
+            public abstract void save(TinkerGraph graph, string directory);
         }
 
         /// <summary>
@@ -77,37 +77,37 @@ namespace Frontenac.Blueprints.Impls.TG
             /// <summary>
             /// Save the data of the graph with the specific file format of the implementation.
             /// </summary>
-            public abstract void SaveGraphData(TinkerGraph graph, string directory);
+            public abstract void saveGraphData(TinkerGraph graph, string directory);
 
             /// <summary>
             /// Load the data from the graph with the specific file format of the implementation.
             /// </summary>
-            public abstract void LoadGraphData(TinkerGraph graph, string directory);
+            public abstract void loadGraphData(TinkerGraph graph, string directory);
 
-            public override TinkerGraph Load(string directory)
+            public override TinkerGraph load(string directory)
             {
                 if (!Directory.Exists(directory))
                     throw new Exception(string.Concat("Directory ", directory, " does not exist"));
 
                 TinkerGraph graph = new TinkerGraph();
-                LoadGraphData(graph, directory);
+                loadGraphData(graph, directory);
 
                 string filePath = string.Concat(directory, GRAPH_FILE_METADATA);
                 if (File.Exists(filePath))
-                    TinkerMetadataReader.Load(graph, filePath);
+                    TinkerMetadataReader.load(graph, filePath);
 
                 return graph;
             }
 
-            public override void Save(TinkerGraph graph, string directory)
+            public override void save(TinkerGraph graph, string directory)
             {
                 if (!Directory.Exists(directory))
                     Directory.CreateDirectory(directory);
 
-                SaveGraphData(graph, directory);
+                saveGraphData(graph, directory);
                 string filePath = string.Concat(directory, GRAPH_FILE_METADATA);
-                DeleteFile(filePath);
-                TinkerMetadataWriter.Save(graph, filePath);
+                deleteFile(filePath);
+                TinkerMetadataWriter.save(graph, filePath);
             }
         }
 
@@ -118,16 +118,16 @@ namespace Frontenac.Blueprints.Impls.TG
         {
             const string GRAPH_FILE_GML = "/tinkergraph.gml";
 
-            public override void LoadGraphData(TinkerGraph graph, string directory)
+            public override void loadGraphData(TinkerGraph graph, string directory)
             {
-                GMLReader.InputGraph(graph, string.Concat(directory + GRAPH_FILE_GML));
+                GMLReader.inputGraph(graph, string.Concat(directory, GRAPH_FILE_GML));
             }
 
-            public override void SaveGraphData(TinkerGraph graph, string directory)
+            public override void saveGraphData(TinkerGraph graph, string directory)
             {
                 string filePath = string.Concat(directory, GRAPH_FILE_GML);
-                DeleteFile(filePath);
-                GMLWriter.OutputGraph(graph, filePath);
+                deleteFile(filePath);
+                GMLWriter.outputGraph(graph, filePath);
             }
         }
 
@@ -138,16 +138,16 @@ namespace Frontenac.Blueprints.Impls.TG
         {
             const string GRAPH_FILE_GRAPHSON = "/tinkergraph.json";
 
-            public override void LoadGraphData(TinkerGraph graph, string directory)
+            public override void loadGraphData(TinkerGraph graph, string directory)
             {
-                GraphSONReader.InputGraph(graph, string.Concat(directory + GRAPH_FILE_GRAPHSON));
+                GraphSONReader.inputGraph(graph, string.Concat(directory, GRAPH_FILE_GRAPHSON));
             }
 
-            public override void SaveGraphData(TinkerGraph graph, string directory)
+            public override void saveGraphData(TinkerGraph graph, string directory)
             {
                 string filePath = string.Concat(directory, GRAPH_FILE_GRAPHSON);
-                DeleteFile(filePath);
-                GraphSONWriter.OutputGraph(graph, filePath, GraphSONMode.EXTENDED);
+                deleteFile(filePath);
+                GraphSONWriter.outputGraph(graph, filePath, GraphSONMode.EXTENDED);
             }
         }
 
@@ -158,16 +158,16 @@ namespace Frontenac.Blueprints.Impls.TG
         {
             const string GRAPH_FILE_GRAPHML = "/tinkergraph.xml";
 
-            public override void LoadGraphData(TinkerGraph graph, string directory)
+            public override void loadGraphData(TinkerGraph graph, string directory)
             {
-                GraphMLReader.InputGraph(graph, string.Concat(directory, GRAPH_FILE_GRAPHML));
+                GraphMLReader.inputGraph(graph, string.Concat(directory, GRAPH_FILE_GRAPHML));
             }
 
-            public override void SaveGraphData(TinkerGraph graph, string directory)
+            public override void saveGraphData(TinkerGraph graph, string directory)
             {
                 string filePath = string.Concat(directory, GRAPH_FILE_GRAPHML);
-                DeleteFile(filePath);
-                GraphMLWriter.OutputGraph(graph, filePath);
+                deleteFile(filePath);
+                GraphMLWriter.outputGraph(graph, filePath);
             }
         }
 
@@ -178,7 +178,7 @@ namespace Frontenac.Blueprints.Impls.TG
         {
             const string GRAPH_FILE_JAVA = "/tinkergraph.dat";
 
-            public override TinkerGraph Load(string directory)
+            public override TinkerGraph load(string directory)
             {
                 using (var stream = File.OpenRead(string.Concat(directory, GRAPH_FILE_JAVA)))
                 {
@@ -187,10 +187,10 @@ namespace Frontenac.Blueprints.Impls.TG
                 }
             }
 
-            public override void Save(TinkerGraph graph, string directory)
+            public override void save(TinkerGraph graph, string directory)
             {
                 string filePath = string.Concat(directory, GRAPH_FILE_JAVA);
-                DeleteFile(filePath);
+                deleteFile(filePath);
                 using (var stream = File.Create(string.Concat(directory, GRAPH_FILE_JAVA)))
                 {
                     BinaryFormatter formatter = new BinaryFormatter();

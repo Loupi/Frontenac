@@ -23,11 +23,11 @@ namespace Frontenac.Blueprints
         /// <summary>
         /// Stop the current transaction and successfully apply mutations to the graph.
         /// </summary>
-        void Commit();
+        void commit();
 
         /// <summary>
         /// Stop the current transaction and drop any mutations applied since the last transaction.
         /// </summary>
-        void Rollback();
+        void rollback();
     }
 }

@@ -21,6 +21,6 @@ namespace Frontenac.Blueprints
         /// Returns a TransactionalGraph that represents a transactional context independent of the executing transaction.
         /// </summary>
         /// <returns>A transactional context. Invoking TransactionalGraph.shutdown() successfully commits the transaction.</returns>
-        TransactionalGraph NewTransaction();
+        TransactionalGraph newTransaction();
     }
 }

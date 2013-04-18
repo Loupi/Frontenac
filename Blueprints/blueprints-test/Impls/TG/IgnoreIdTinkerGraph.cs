@@ -24,21 +24,21 @@ namespace Frontenac.Blueprints.Impls.TG
 
         }
 
-        public override Features GetFeatures()
+        public override Features getFeatures()
         {
-            Features f = base.GetFeatures().CopyFeatures();
-            f.IgnoresSuppliedIds = true;
+            Features f = base.getFeatures().copyFeatures();
+            f.ignoresSuppliedIds = true;
             return f;
         }
 
-        public override Vertex AddVertex(object id)
+        public override Vertex addVertex(object id)
         {
-            return base.AddVertex(null);
+            return base.addVertex(null);
         }
 
-        public override Edge AddEdge(object id, Vertex outVertex, Vertex inVertex, string label)
+        public override Edge addEdge(object id, Vertex outVertex, Vertex inVertex, string label)
         {
-            return base.AddEdge(null, outVertex, inVertex, label);
+            return base.addEdge(null, outVertex, inVertex, label);
         }
     }
 }

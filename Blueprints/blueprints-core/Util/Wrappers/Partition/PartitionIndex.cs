@@ -8,59 +8,59 @@ namespace Frontenac.Blueprints.Util.Wrappers.Partition
 {
     public class PartitionIndex : Index
     {
-        protected Index _RawIndex;
-        protected PartitionGraph _Graph;
+        protected Index rawIndex;
+        protected PartitionGraph graph;
 
         public PartitionIndex(Index rawIndex, PartitionGraph graph)
         {
-            _RawIndex = rawIndex;
-            _Graph = graph;
+            this.rawIndex = rawIndex;
+            this.graph = graph;
         }
 
-        public string GetIndexName()
+        public string getIndexName()
         {
-            return _RawIndex.GetIndexName();
+            return rawIndex.getIndexName();
         }
 
-        public Type GetIndexClass()
+        public Type getIndexClass()
         {
-            return _RawIndex.GetIndexClass();
+            return rawIndex.getIndexClass();
         }
 
-        public long Count(string key, object value)
+        public long count(string key, object value)
         {
-            return this.Get(key, value).LongCount();
+            return this.get(key, value).LongCount();
         }
 
-        public void Remove(string key, object value, Element element)
+        public void remove(string key, object value, Element element)
         {
-            _RawIndex.Remove(key, value, (element as PartitionElement).GetBaseElement());
+            rawIndex.remove(key, value, (element as PartitionElement).getBaseElement());
         }
 
-        public void Put(string key, object value, Element element)
+        public void put(string key, object value, Element element)
         {
-            _RawIndex.Put(key, value, (element as PartitionElement).GetBaseElement());
+            rawIndex.put(key, value, (element as PartitionElement).getBaseElement());
         }
 
-        public CloseableIterable<Element> Get(string key, object value)
+        public CloseableIterable<Element> get(string key, object value)
         {
-            if (typeof(Vertex).IsAssignableFrom(this.GetIndexClass()))
-                return (CloseableIterable<Element>)new PartitionVertexIterable((IEnumerable<Vertex>)_RawIndex.Get(key, value), _Graph);
+            if (typeof(Vertex).IsAssignableFrom(this.getIndexClass()))
+                return (CloseableIterable<Element>)new PartitionVertexIterable((IEnumerable<Vertex>)rawIndex.get(key, value), graph);
             else
-                return (CloseableIterable<Element>)new PartitionEdgeIterable((IEnumerable<Edge>)_RawIndex.Get(key, value), _Graph);
+                return (CloseableIterable<Element>)new PartitionEdgeIterable((IEnumerable<Edge>)rawIndex.get(key, value), graph);
         }
 
-        public CloseableIterable<Element> Query(string key, object value)
+        public CloseableIterable<Element> query(string key, object value)
         {
-            if (typeof(Vertex).IsAssignableFrom(this.GetIndexClass()))
-                return (CloseableIterable<Element>)new PartitionVertexIterable((IEnumerable<Vertex>)_RawIndex.Query(key, value), _Graph);
+            if (typeof(Vertex).IsAssignableFrom(this.getIndexClass()))
+                return (CloseableIterable<Element>)new PartitionVertexIterable((IEnumerable<Vertex>)rawIndex.query(key, value), graph);
             else
-                return (CloseableIterable<Element>)new PartitionEdgeIterable((IEnumerable<Edge>)_RawIndex.Query(key, value), _Graph);
+                return (CloseableIterable<Element>)new PartitionEdgeIterable((IEnumerable<Edge>)rawIndex.query(key, value), graph);
         }
 
         public override string ToString()
         {
-            return StringFactory.IndexString(this);
+            return StringFactory.indexString(this);
         }
     }
 }

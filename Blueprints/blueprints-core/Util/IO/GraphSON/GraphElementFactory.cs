@@ -12,21 +12,21 @@ namespace Frontenac.Blueprints.Util.IO.GraphSON
     /// </summary>
     public class GraphElementFactory : ElementFactory
     {
-        readonly Graph _Graph;
+        readonly Graph _graph;
 
         public GraphElementFactory(Graph g)
         {
-            _Graph = g;
+            _graph = g;
         }
 
-        public Edge CreateEdge(object id, Vertex out_, Vertex in_, string label)
+        public Edge createEdge(object id, Vertex out_, Vertex in_, string label)
         {
-            return _Graph.AddEdge(id, out_, in_, label);
+            return _graph.addEdge(id, out_, in_, label);
         }
 
-        public Vertex CreateVertex(object id)
+        public Vertex createVertex(object id)
         {
-            return _Graph.AddVertex(id);
+            return _graph.addVertex(id);
         }
     }
 }

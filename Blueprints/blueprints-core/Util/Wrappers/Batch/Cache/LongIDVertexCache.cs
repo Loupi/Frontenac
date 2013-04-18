@@ -11,44 +11,44 @@ namespace Frontenac.Blueprints.Util.Wrappers.Batch.Cache
     {
         const int INITIAL_CAPACITY = 1000;
 
-        IDictionary<long, object> _Map;
+        IDictionary<long, object> _map;
 
         public LongIDVertexCache()
         {
-            _Map = new Dictionary<long, object>(INITIAL_CAPACITY);
+            _map = new Dictionary<long, object>(INITIAL_CAPACITY);
         }
 
-        static long GetID(object externalID)
+        static long getId(object externalID)
         {
-            if (!(Portability.IsNumeric(externalID))) throw new ArgumentException("Number expected.");
+            if (!(Portability.isNumeric(externalID))) throw new ArgumentException("Number expected.");
             return Convert.ToInt64(externalID);
         }
 
-        public object GetEntry(object externalId)
+        public object getEntry(object externalId)
         {
-            long id = GetID(externalId);
-            return _Map.Get(id);
+            long id = getId(externalId);
+            return _map.get(id);
         }
 
-        public void Set(Vertex vertex, object externalId)
+        public void set(Vertex vertex, object externalId)
         {
-            SetId(vertex, externalId);
+            setId(vertex, externalId);
         }
 
-        public void SetId(object vertexId, object externalId)
+        public void setId(object vertexId, object externalId)
         {
-            long id = GetID(externalId);
-            _Map[id] = vertexId;
+            long id = getId(externalId);
+            _map[id] = vertexId;
         }
 
-        public bool Contains(object externalId)
+        public bool contains(object externalId)
         {
-            return _Map.ContainsKey(GetID(externalId));
+            return _map.ContainsKey(getId(externalId));
         }
 
-        public void NewTransaction()
+        public void newTransaction()
         {
-            _Map = _Map.ToDictionary(t => t.Key, t => t.Value is Vertex ? (t.Value as Vertex).GetId() : t.Value);
+            _map = _map.ToDictionary(t => t.Key, t => t.Value is Vertex ? (t.Value as Vertex).getId() : t.Value);
         }
     }
 }

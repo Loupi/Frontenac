@@ -13,153 +13,153 @@ namespace Frontenac.Blueprints.Util
     public class ElementHelperTest : BaseTest
     {
         [Test]
-        public void TestCopyElementProperties()
+        public void testCopyElementProperties()
         {
             Graph graph = new TinkerGraph();
-            Vertex v = graph.AddVertex(null);
-            v.SetProperty("name", "marko");
-            v.SetProperty("age", 31);
-            Vertex u = graph.AddVertex(null);
-            Assert.AreEqual(u.GetPropertyKeys().Count(), 0);
-            ElementHelper.CopyProperties(v, u);
-            Assert.AreEqual(u.GetPropertyKeys().Count(), 2);
-            Assert.AreEqual(u.GetProperty("name"), "marko");
-            Assert.AreEqual(u.GetProperty("age"), 31);
+            Vertex v = graph.addVertex(null);
+            v.setProperty("name", "marko");
+            v.setProperty("age", 31);
+            Vertex u = graph.addVertex(null);
+            Assert.AreEqual(u.getPropertyKeys().Count(), 0);
+            ElementHelper.copyProperties(v, u);
+            Assert.AreEqual(u.getPropertyKeys().Count(), 2);
+            Assert.AreEqual(u.getProperty("name"), "marko");
+            Assert.AreEqual(u.getProperty("age"), 31);
         }
 
         [Test]
-        public void TestRemoveProperties()
+        public void testRemoveProperties()
         {
-            Graph graph = TinkerGraphFactory.CreateTinkerGraph();
-            Vertex vertex = graph.GetVertex(1);
-            Assert.AreEqual(vertex.GetProperty("name"), "marko");
-            Assert.AreEqual(vertex.GetProperty("age"), 29);
-            Assert.AreEqual(vertex.GetPropertyKeys().Count(), 2);
+            Graph graph = TinkerGraphFactory.createTinkerGraph();
+            Vertex vertex = graph.getVertex(1);
+            Assert.AreEqual(vertex.getProperty("name"), "marko");
+            Assert.AreEqual(vertex.getProperty("age"), 29);
+            Assert.AreEqual(vertex.getPropertyKeys().Count(), 2);
 
-            ElementHelper.RemoveProperties(new Element[]{vertex});
-            Assert.IsNull(vertex.GetProperty("name"));
-            Assert.IsNull(vertex.GetProperty("age"));
-            Assert.AreEqual(vertex.GetPropertyKeys().Count(), 0);
+            ElementHelper.removeProperties(new Element[]{vertex});
+            Assert.IsNull(vertex.getProperty("name"));
+            Assert.IsNull(vertex.getProperty("age"));
+            Assert.AreEqual(vertex.getPropertyKeys().Count(), 0);
 
-            ElementHelper.RemoveProperties(new Element[]{vertex});
-            Assert.IsNull(vertex.GetProperty("name"));
-            Assert.IsNull(vertex.GetProperty("age"));
-            Assert.AreEqual(vertex.GetPropertyKeys().Count(), 0);
+            ElementHelper.removeProperties(new Element[]{vertex});
+            Assert.IsNull(vertex.getProperty("name"));
+            Assert.IsNull(vertex.getProperty("age"));
+            Assert.AreEqual(vertex.getPropertyKeys().Count(), 0);
         }
 
         [Test]
-        public void TestRemoveProperty()
+        public void testRemoveProperty()
         {
-            Graph graph = TinkerGraphFactory.CreateTinkerGraph();
-            ElementHelper.RemoveProperty("name", graph.GetVertices());
-            foreach (Vertex v in graph.GetVertices())
-                Assert.IsNull(v.GetProperty("name"));
+            Graph graph = TinkerGraphFactory.createTinkerGraph();
+            ElementHelper.removeProperty("name", graph.getVertices());
+            foreach (Vertex v in graph.getVertices())
+                Assert.IsNull(v.getProperty("name"));
         }
 
         [Test]
-        public void TestRenameProperty()
+        public void testRenameProperty()
         {
-            Graph graph = TinkerGraphFactory.CreateTinkerGraph();
-            ElementHelper.RenameProperty("name", "name2", graph.GetVertices());
-            foreach (Vertex v in graph.GetVertices())
+            Graph graph = TinkerGraphFactory.createTinkerGraph();
+            ElementHelper.renameProperty("name", "name2", graph.getVertices());
+            foreach (Vertex v in graph.getVertices())
             {
-                Assert.IsNull(v.GetProperty("name"));
-                Assert.IsNotNull(v.GetProperty("name2"));
-                string name2 = (string) v.GetProperty("name2");
+                Assert.IsNull(v.getProperty("name"));
+                Assert.IsNotNull(v.getProperty("name2"));
+                string name2 = (string) v.getProperty("name2");
                 Assert.True(name2 == "marko" || name2 == "josh" || name2 == "vadas" || name2 == "ripple" || name2 == "lop" || name2 == "peter" || name2 == "loupi");
             }
         }
 
         [Test]
-        public void TestTypecastProperty()
+        public void testTypecastProperty()
         {
-            Graph graph = TinkerGraphFactory.CreateTinkerGraph();
-            foreach (Edge e in graph.GetEdges())
-                Assert.True(e.GetProperty("weight") is float);
+            Graph graph = TinkerGraphFactory.createTinkerGraph();
+            foreach (Edge e in graph.getEdges())
+                Assert.True(e.getProperty("weight") is float);
             
-            ElementHelper.TypecastProperty("weight", typeof(double), graph.GetEdges());
-            foreach (Edge e in graph.GetEdges())
-                Assert.True(e.GetProperty("weight") is double);
+            ElementHelper.typecastProperty("weight", typeof(double), graph.getEdges());
+            foreach (Edge e in graph.getEdges())
+                Assert.True(e.getProperty("weight") is double);
         }
 
         [Test]
-        public void TestHaveEqualProperties()
+        public void testHaveEqualProperties()
         {
             Graph graph = new TinkerGraph();
-            Vertex a = graph.AddVertex(null);
-            Vertex b = graph.AddVertex(null);
-            Vertex c = graph.AddVertex(null);
-            Vertex d = graph.AddVertex(null);
+            Vertex a = graph.addVertex(null);
+            Vertex b = graph.addVertex(null);
+            Vertex c = graph.addVertex(null);
+            Vertex d = graph.addVertex(null);
 
-            a.SetProperty("name", "marko");
-            a.SetProperty("age", 31);
-            b.SetProperty("name", "marko");
-            b.SetProperty("age", 31);
-            c.SetProperty("name", "marko");
-            d.SetProperty("name", "pavel");
-            d.SetProperty("age", 31);
+            a.setProperty("name", "marko");
+            a.setProperty("age", 31);
+            b.setProperty("name", "marko");
+            b.setProperty("age", 31);
+            c.setProperty("name", "marko");
+            d.setProperty("name", "pavel");
+            d.setProperty("age", 31);
 
-            Assert.True(ElementHelper.HaveEqualProperties(a, b));
-            Assert.True(ElementHelper.HaveEqualProperties(a, a));
-            Assert.False(ElementHelper.HaveEqualProperties(a, c));
-            Assert.False(ElementHelper.HaveEqualProperties(c, a));
-            Assert.False(ElementHelper.HaveEqualProperties(a, d));
-            Assert.False(ElementHelper.HaveEqualProperties(a, c));
+            Assert.True(ElementHelper.haveEqualProperties(a, b));
+            Assert.True(ElementHelper.haveEqualProperties(a, a));
+            Assert.False(ElementHelper.haveEqualProperties(a, c));
+            Assert.False(ElementHelper.haveEqualProperties(c, a));
+            Assert.False(ElementHelper.haveEqualProperties(a, d));
+            Assert.False(ElementHelper.haveEqualProperties(a, c));
         }
 
         [Test]
-        public void TestGetProperties()
+        public void testGetProperties()
         {
-            Graph graph = TinkerGraphFactory.CreateTinkerGraph();
-            Vertex vertex = graph.GetVertex(1);
-            IDictionary<string, object> map = ElementHelper.GetProperties(vertex);
+            Graph graph = TinkerGraphFactory.createTinkerGraph();
+            Vertex vertex = graph.getVertex(1);
+            IDictionary<string, object> map = ElementHelper.getProperties(vertex);
             Assert.AreEqual(map.Count, 2);
-            Assert.AreEqual(map.Get("name"), "marko");
-            Assert.AreEqual(map.Get("age"), 29);
+            Assert.AreEqual(map.get("name"), "marko");
+            Assert.AreEqual(map.get("age"), 29);
 
-            map.Put("name", "pavel");
-            Assert.AreEqual(map.Get("name"), "pavel");
+            map.put("name", "pavel");
+            Assert.AreEqual(map.get("name"), "pavel");
 
-            Assert.AreEqual(vertex.GetProperty("name"), "marko");
+            Assert.AreEqual(vertex.getProperty("name"), "marko");
         }
 
         [Test]
-        public void TestSetProperties()
+        public void testSetProperties()
         {
             Graph graph = new TinkerGraph();
-            Vertex vertex = graph.AddVertex(null);
+            Vertex vertex = graph.addVertex(null);
             IDictionary<string, object> map = new Dictionary<string, object>();
-            map.Put("name", "pierre");
-            ElementHelper.SetProperties(vertex, map);
-            Assert.AreEqual(vertex.GetPropertyKeys().Count(), 1);
-            Assert.AreEqual(vertex.GetProperty("name"), "pierre");
+            map.put("name", "pierre");
+            ElementHelper.setProperties(vertex, map);
+            Assert.AreEqual(vertex.getPropertyKeys().Count(), 1);
+            Assert.AreEqual(vertex.getProperty("name"), "pierre");
 
-            map.Put("name", "dewilde");
-            map.Put("country", "belgium");
-            ElementHelper.SetProperties(vertex, map);
-            Assert.AreEqual(vertex.GetPropertyKeys().Count(), 2);
-            Assert.AreEqual(vertex.GetProperty("name"), "dewilde");
-            Assert.AreEqual(vertex.GetProperty("country"), "belgium");
+            map.put("name", "dewilde");
+            map.put("country", "belgium");
+            ElementHelper.setProperties(vertex, map);
+            Assert.AreEqual(vertex.getPropertyKeys().Count(), 2);
+            Assert.AreEqual(vertex.getProperty("name"), "dewilde");
+            Assert.AreEqual(vertex.getProperty("country"), "belgium");
         }
 
         [Test]
-        public void TestSetPropertiesVarArgs()
+        public void testSetPropertiesVarArgs()
         {
             Graph graph = new TinkerGraph();
-            Vertex vertex = graph.AddVertex(null);
-            ElementHelper.SetProperties(vertex, "name", "pierre");
-            Assert.AreEqual(vertex.GetPropertyKeys().Count(), 1);
-            Assert.AreEqual(vertex.GetProperty("name"), "pierre");
+            Vertex vertex = graph.addVertex(null);
+            ElementHelper.setProperties(vertex, "name", "pierre");
+            Assert.AreEqual(vertex.getPropertyKeys().Count(), 1);
+            Assert.AreEqual(vertex.getProperty("name"), "pierre");
 
-            ElementHelper.SetProperties(vertex, "name", "dewilde", "country", "belgium", "age", 50);
-            Assert.AreEqual(vertex.GetPropertyKeys().Count(), 3);
-            Assert.AreEqual(vertex.GetProperty("name"), "dewilde");
-            Assert.AreEqual(vertex.GetProperty("country"), "belgium");
-            Assert.AreEqual(vertex.GetProperty("age"), 50);
+            ElementHelper.setProperties(vertex, "name", "dewilde", "country", "belgium", "age", 50);
+            Assert.AreEqual(vertex.getPropertyKeys().Count(), 3);
+            Assert.AreEqual(vertex.getProperty("name"), "dewilde");
+            Assert.AreEqual(vertex.getProperty("country"), "belgium");
+            Assert.AreEqual(vertex.getProperty("age"), 50);
 
             try
             {
-                ElementHelper.SetProperties(vertex, "a", 12, "b");
+                ElementHelper.setProperties(vertex, "a", 12, "b");
                 Assert.True(false);
             }
             catch (ArgumentException)

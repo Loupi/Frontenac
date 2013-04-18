@@ -8,122 +8,122 @@ namespace Frontenac.Blueprints.Util.Wrappers.Event.Listener
 {
     public class StubGraphChangedListener : GraphChangedListener
     {
-        int _AddEdgeEvent = 0;
-        int _AddVertexEvent = 0;
-        int _VertexPropertyChangedEvent = 0;
-        int _VertexPropertyRemovedEvent = 0;
-        int _VertexRemovedEvent = 0;
-        int _EdgePropertyChangedEvent = 0;
-        int _EdgePropertyRemovedEvent = 0;
-        int _EdgeRemovedEvent = 0;
+        int _addEdgeEvent = 0;
+        int _addVertexEvent = 0;
+        int _vertexPropertyChangedEvent = 0;
+        int _vertexPropertyRemovedEvent = 0;
+        int _vertexRemovedEvent = 0;
+        int _edgePropertyChangedEvent = 0;
+        int _edgePropertyRemovedEvent = 0;
+        int _edgeRemovedEvent = 0;
 
-        readonly List<string> _Order = new List<string>();
+        readonly List<string> _order = new List<string>();
 
-        public void Reset()
+        public void reset()
         {
-            _AddEdgeEvent = 0;
-            _AddVertexEvent = 0;
-            _VertexPropertyChangedEvent = 0;
-            _VertexPropertyRemovedEvent = 0;
-            _VertexRemovedEvent = 0;
-            _EdgePropertyChangedEvent = 0;
-            _EdgePropertyRemovedEvent = 0;
-            _EdgeRemovedEvent = 0;
+            _addEdgeEvent = 0;
+            _addVertexEvent = 0;
+            _vertexPropertyChangedEvent = 0;
+            _vertexPropertyRemovedEvent = 0;
+            _vertexRemovedEvent = 0;
+            _edgePropertyChangedEvent = 0;
+            _edgePropertyRemovedEvent = 0;
+            _edgeRemovedEvent = 0;
 
-            _Order.Clear();
+            _order.Clear();
         }
 
-        public List<string> GetOrder()
+        public List<string> getOrder()
         {
-            return this._Order;
+            return this._order;
         }
 
-        public void VertexAdded(Vertex vertex)
+        public void vertexAdded(Vertex vertex)
         {
-            _AddVertexEvent++;
-            _Order.Add(string.Concat("v-added-", vertex.GetId()));
+            _addVertexEvent++;
+            _order.Add(string.Concat("v-added-", vertex.getId()));
         }
 
-        public void VertexPropertyChanged(Vertex vertex, string s, object o, object n)
+        public void vertexPropertyChanged(Vertex vertex, string s, object o, object n)
         {
-            _VertexPropertyChangedEvent++;
-            _Order.Add(string.Concat("v-property-changed-", vertex.GetId(), "-", s, ":", o, "->", n));
+            _vertexPropertyChangedEvent++;
+            _order.Add(string.Concat("v-property-changed-", vertex.getId(), "-", s, ":", o, "->", n));
         }
 
-        public void VertexPropertyRemoved(Vertex vertex, string s, object o)
+        public void vertexPropertyRemoved(Vertex vertex, string s, object o)
         {
-            _VertexPropertyRemovedEvent++;
-            _Order.Add(string.Concat("v-property-removed-", vertex.GetId(), "-", s, ":", o));
+            _vertexPropertyRemovedEvent++;
+            _order.Add(string.Concat("v-property-removed-", vertex.getId(), "-", s, ":", o));
         }
 
-        public void VertexRemoved(Vertex vertex)
+        public void vertexRemoved(Vertex vertex)
         {
-            _VertexRemovedEvent++;
-            _Order.Add(string.Concat("v-removed-", vertex.GetId()));
+            _vertexRemovedEvent++;
+            _order.Add(string.Concat("v-removed-", vertex.getId()));
         }
 
-        public void EdgeAdded(Edge edge)
+        public void edgeAdded(Edge edge)
         {
-            _AddEdgeEvent++;
-            _Order.Add(string.Concat("e-added-", edge.GetId()));
+            _addEdgeEvent++;
+            _order.Add(string.Concat("e-added-", edge.getId()));
         }
 
-        public void EdgePropertyChanged(Edge edge, string s, object o, object n)
+        public void edgePropertyChanged(Edge edge, string s, object o, object n)
         {
-            _EdgePropertyChangedEvent++;
-            _Order.Add(string.Concat("e-property-changed-", edge.GetId(), "-", s, ":", o, "->", n));
+            _edgePropertyChangedEvent++;
+            _order.Add(string.Concat("e-property-changed-", edge.getId(), "-", s, ":", o, "->", n));
         }
 
-        public void EdgePropertyRemoved(Edge edge, string s, object o)
+        public void edgePropertyRemoved(Edge edge, string s, object o)
         {
-            _EdgePropertyRemovedEvent++;
-            _Order.Add(string.Concat("e-property-removed-", edge.GetId(), "-", s, ":", o));
+            _edgePropertyRemovedEvent++;
+            _order.Add(string.Concat("e-property-removed-", edge.getId(), "-", s, ":", o));
         }
 
-        public void EdgeRemoved(Edge edge)
+        public void edgeRemoved(Edge edge)
         {
-            _EdgeRemovedEvent++;
-            _Order.Add(string.Concat("e-removed-", edge.GetId()));
+            _edgeRemovedEvent++;
+            _order.Add(string.Concat("e-removed-", edge.getId()));
         }
 
-        public int AddEdgeEventRecorded()
+        public int addEdgeEventRecorded()
         {
-            return _AddEdgeEvent;
+            return _addEdgeEvent;
         }
 
-        public int AddVertexEventRecorded()
+        public int addVertexEventRecorded()
         {
-            return _AddVertexEvent;
+            return _addVertexEvent;
         }
 
-        public int VertexPropertyChangedEventRecorded()
+        public int vertexPropertyChangedEventRecorded()
         {
-            return _VertexPropertyChangedEvent;
+            return _vertexPropertyChangedEvent;
         }
 
-        public int VertexPropertyRemovedEventRecorded()
+        public int vertexPropertyRemovedEventRecorded()
         {
-            return _VertexPropertyRemovedEvent;
+            return _vertexPropertyRemovedEvent;
         }
 
-        public int VertexRemovedEventRecorded()
+        public int vertexRemovedEventRecorded()
         {
-            return _VertexRemovedEvent;
+            return _vertexRemovedEvent;
         }
 
-        public int EdgePropertyChangedEventRecorded()
+        public int edgePropertyChangedEventRecorded()
         {
-            return _EdgePropertyChangedEvent;
+            return _edgePropertyChangedEvent;
         }
 
         public int edgePropertyRemovedEventRecorded()
         {
-            return _EdgePropertyRemovedEvent;
+            return _edgePropertyRemovedEvent;
         }
 
         public int edgeRemovedEventRecorded()
         {
-            return _EdgeRemovedEvent;
+            return _edgeRemovedEvent;
         }
     }
 }

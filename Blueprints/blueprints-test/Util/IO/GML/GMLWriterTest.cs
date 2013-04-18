@@ -13,19 +13,19 @@ namespace Frontenac.Blueprints.Util.IO.GML
     public class GMLWriterTest
     {
         [Test]
-        public void TestNormal()
+        public void testNormal()
         {
             TinkerGraph g = new TinkerGraph();
             using(var stream = typeof(GMLReaderTest).Assembly.GetManifestResourceStream(typeof(GMLReaderTest), "example.gml"))
             {
-                GMLReader.InputGraph(g, stream);
+                GMLReader.inputGraph(g, stream);
             }
 
             using(MemoryStream bos = new MemoryStream())
             {
                 GMLWriter w = new GMLWriter(g);
-                w.SetNormalize(true);
-                w.OutputGraph(bos);
+                w.setNormalize(true);
+                w.outputGraph(bos);
 
                 string actual = Encoding.GetEncoding("ISO-8859-1").GetString(bos.ToArray());
                 using(var stream = typeof(GMLWriterTest).Assembly.GetManifestResourceStream(typeof(GMLReaderTest), "writer.gml"))

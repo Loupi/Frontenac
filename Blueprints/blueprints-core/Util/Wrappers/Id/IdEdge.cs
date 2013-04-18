@@ -9,28 +9,28 @@ namespace Frontenac.Blueprints.Util.Wrappers.Id
     public class IdEdge : IdElement, Edge
     {
         public IdEdge(Edge baseEdge, IdGraph idGraph)
-            : base(baseEdge, idGraph, idGraph.GetSupportEdgeIds())
+            : base(baseEdge, idGraph, idGraph.getSupportEdgeIds())
         {
         }
 
-        public Edge GetBaseEdge()
+        public Edge getBaseEdge()
         {
-            return (Edge)_BaseElement;
+            return (Edge)baseElement;
         }
 
-        public Vertex GetVertex(Direction direction)
+        public Vertex getVertex(Direction direction)
         {
-            return new IdVertex(((Edge)_BaseElement).GetVertex(direction), _IdGraph);
+            return new IdVertex(((Edge)baseElement).getVertex(direction), idGraph);
         }
 
-        public string GetLabel()
+        public string getLabel()
         {
-            return ((Edge)_BaseElement).GetLabel();
+            return ((Edge)baseElement).getLabel();
         }
 
         public override string ToString()
         {
-            return StringFactory.EdgeString(this);
+            return StringFactory.edgeString(this);
         }
     }
 }

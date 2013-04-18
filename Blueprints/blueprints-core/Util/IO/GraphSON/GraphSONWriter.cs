@@ -13,7 +13,7 @@ namespace Frontenac.Blueprints.Util.IO.GraphSON
     /// </summary>
     public class GraphSONWriter
     {
-        readonly Graph _Graph;
+        readonly Graph _graph;
 
         /// <summary>
         /// 
@@ -21,7 +21,7 @@ namespace Frontenac.Blueprints.Util.IO.GraphSON
         /// <param name="graph">the Graph to pull the data from</param>
         public GraphSONWriter(Graph graph)
         {
-            _Graph = graph;
+            _graph = graph;
         }
 
         /// <summary>
@@ -31,12 +31,12 @@ namespace Frontenac.Blueprints.Util.IO.GraphSON
         /// <param name="vertexPropertyKeys">the keys of the vertex elements to write to JSON</param>
         /// <param name="edgePropertyKeys">the keys of the edge elements to write to JSON</param>
         /// <param name="mode">determines the format of the GraphSON</param>
-        public void OutputGraph(string filename, IEnumerable<string> vertexPropertyKeys,
+        public void outputGraph(string filename, IEnumerable<string> vertexPropertyKeys,
                             IEnumerable<string> edgePropertyKeys, GraphSONMode mode)
         {
             using (FileStream fos = File.Open(filename, FileMode.Create))
             {
-                OutputGraph(fos, vertexPropertyKeys, edgePropertyKeys, mode);
+                outputGraph(fos, vertexPropertyKeys, edgePropertyKeys, mode);
             }
         }
 
@@ -47,7 +47,7 @@ namespace Frontenac.Blueprints.Util.IO.GraphSON
         /// <param name="vertexPropertyKeys">the keys of the vertex elements to write to JSON</param>
         /// <param name="edgePropertyKeys">the keys of the edge elements to write to JSON</param>
         /// <param name="mode">determines the format of the GraphSON</param>
-        public void OutputGraph(Stream jsonOutputStream, IEnumerable<string> vertexPropertyKeys,
+        public void outputGraph(Stream jsonOutputStream, IEnumerable<string> vertexPropertyKeys,
                             IEnumerable<string> edgePropertyKeys, GraphSONMode mode)
         {
             using (StreamWriter sw = new StreamWriter(jsonOutputStream))
@@ -63,15 +63,15 @@ namespace Frontenac.Blueprints.Util.IO.GraphSON
 
                     jg.WritePropertyName(GraphSONTokens.VERTICES);
                     jg.WriteStartArray();
-                    foreach (Vertex v in _Graph.GetVertices())
-                        jg.WriteRawValue(graphson.ObjectNodeFromElement(v).ToString());
+                    foreach (Vertex v in _graph.getVertices())
+                        jg.WriteRawValue(graphson.objectNodeFromElement(v).ToString());
 
                     jg.WriteEndArray();
 
                     jg.WritePropertyName(GraphSONTokens.EDGES);
                     jg.WriteStartArray();
-                    foreach (Edge e in _Graph.GetEdges())
-                        jg.WriteRawValue(graphson.ObjectNodeFromElement(e).ToString());
+                    foreach (Edge e in _graph.getEdges())
+                        jg.WriteRawValue(graphson.objectNodeFromElement(e).ToString());
 
                     jg.WriteEndArray();
 
@@ -86,10 +86,10 @@ namespace Frontenac.Blueprints.Util.IO.GraphSON
         /// </summary>
         /// <param name="graph">the graph to serialize to JSON</param>
         /// <param name="jsonOutputStream">the JSON OutputStream to write the Graph data to</param>
-        public static void OutputGraph(Graph graph, Stream jsonOutputStream)
+        public static void outputGraph(Graph graph, Stream jsonOutputStream)
         {
             GraphSONWriter writer = new GraphSONWriter(graph);
-            writer.OutputGraph(jsonOutputStream, null, null, GraphSONMode.NORMAL);
+            writer.outputGraph(jsonOutputStream, null, null, GraphSONMode.NORMAL);
         }
 
         /// <summary>
@@ -98,10 +98,10 @@ namespace Frontenac.Blueprints.Util.IO.GraphSON
         /// </summary>
         /// <param name="graph">the graph to serialize to JSON</param>
         /// <param name="filename">the JSON file to write the Graph data to</param>
-        public static void OutputGraph(Graph graph, string filename)
+        public static void outputGraph(Graph graph, string filename)
         {
             GraphSONWriter writer = new GraphSONWriter(graph);
-            writer.OutputGraph(filename, null, null, GraphSONMode.NORMAL);
+            writer.outputGraph(filename, null, null, GraphSONMode.NORMAL);
         }
 
         /// <summary>
@@ -110,10 +110,10 @@ namespace Frontenac.Blueprints.Util.IO.GraphSON
         /// <param name="graph">the graph to serialize to JSON</param>
         /// <param name="jsonOutputStream">the JSON OutputStream to write the Graph data to</param>
         /// <param name="mode">determines the format of the GraphSON</param>
-        public static void OutputGraph(Graph graph, Stream jsonOutputStream, GraphSONMode mode)
+        public static void outputGraph(Graph graph, Stream jsonOutputStream, GraphSONMode mode)
         {
             GraphSONWriter writer = new GraphSONWriter(graph);
-            writer.OutputGraph(jsonOutputStream, null, null, mode);
+            writer.outputGraph(jsonOutputStream, null, null, mode);
         }
 
         /// <summary>
@@ -122,10 +122,10 @@ namespace Frontenac.Blueprints.Util.IO.GraphSON
         /// <param name="graph">the graph to serialize to JSON</param>
         /// <param name="filename">the JSON file to write the Graph data to</param>
         /// <param name="mode">determines the format of the GraphSON</param>
-        public static void OutputGraph(Graph graph, string filename, GraphSONMode mode)
+        public static void outputGraph(Graph graph, string filename, GraphSONMode mode)
         {
             GraphSONWriter writer = new GraphSONWriter(graph);
-            writer.OutputGraph(filename, null, null, mode);
+            writer.outputGraph(filename, null, null, mode);
         }
 
         /// <summary>
@@ -136,12 +136,12 @@ namespace Frontenac.Blueprints.Util.IO.GraphSON
         /// <param name="vertexPropertyKeys">the keys of the vertex elements to write to JSON</param>
         /// <param name="edgePropertyKeys">the keys of the edge elements to write to JSON</param>
         /// <param name="mode">determines the format of the GraphSON</param>
-        public static void OutputGraph(Graph graph, Stream jsonOutputStream,
+        public static void outputGraph(Graph graph, Stream jsonOutputStream,
                                    IEnumerable<string> vertexPropertyKeys, IEnumerable<string> edgePropertyKeys,
                                    GraphSONMode mode)
         {
             GraphSONWriter writer = new GraphSONWriter(graph);
-            writer.OutputGraph(jsonOutputStream, vertexPropertyKeys, edgePropertyKeys, mode);
+            writer.outputGraph(jsonOutputStream, vertexPropertyKeys, edgePropertyKeys, mode);
         }
 
         /// <summary>
@@ -152,12 +152,12 @@ namespace Frontenac.Blueprints.Util.IO.GraphSON
         /// <param name="vertexPropertyKeys">the keys of the vertex elements to write to JSON</param>
         /// <param name="edgePropertyKeys">the keys of the edge elements to write to JSON</param>
         /// <param name="mode">determines the format of the GraphSON</param>
-        public static void OutputGraph(Graph graph, string filename,
+        public static void outputGraph(Graph graph, string filename,
                                    IEnumerable<string> vertexPropertyKeys, IEnumerable<string> edgePropertyKeys,
                                    GraphSONMode mode)
         {
             GraphSONWriter writer = new GraphSONWriter(graph);
-            writer.OutputGraph(filename, vertexPropertyKeys, edgePropertyKeys, mode);
+            writer.outputGraph(filename, vertexPropertyKeys, edgePropertyKeys, mode);
         }
     }
 }

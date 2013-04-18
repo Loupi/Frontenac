@@ -31,12 +31,12 @@ namespace Frontenac.Blueprints.Util.Wrappers.Batch
 
     class WritethroughGraphTestImpl : GraphTest
     {
-        public override Graph GenerateGraph()
+        public override Graph generateGraph()
         {
-            return GenerateGraph("");
+            return generateGraph("");
         }
 
-        public override Graph GenerateGraph(string graphDirectoryName)
+        public override Graph generateGraph(string graphDirectoryName)
         {
             return new WritethroughGraph(new TinkerGraph());
         }

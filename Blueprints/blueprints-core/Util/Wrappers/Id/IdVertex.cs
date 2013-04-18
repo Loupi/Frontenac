@@ -9,41 +9,41 @@ namespace Frontenac.Blueprints.Util.Wrappers.Id
     public class IdVertex : IdElement, Vertex
     {
         public IdVertex(Vertex baseVertex, IdGraph idGraph)
-            : base(baseVertex, idGraph, idGraph.GetSupportVertexIds())
+            : base(baseVertex, idGraph, idGraph.getSupportVertexIds())
         {
 
         }
 
-        public Vertex GetBaseVertex()
+        public Vertex getBaseVertex()
         {
-            return this._BaseElement as Vertex;
+            return this.baseElement as Vertex;
         }
 
-        public IEnumerable<Edge> GetEdges(Direction direction, params string[] labels)
+        public IEnumerable<Edge> getEdges(Direction direction, params string[] labels)
         {
-            return new IdEdgeIterable((_BaseElement as Vertex).GetEdges(direction, labels), _IdGraph);
+            return new IdEdgeIterable((baseElement as Vertex).getEdges(direction, labels), idGraph);
         }
 
-        public IEnumerable<Vertex> GetVertices(Direction direction, params string[] labels)
+        public IEnumerable<Vertex> getVertices(Direction direction, params string[] labels)
         {
-            return new IdVertexIterable((_BaseElement as Vertex).GetVertices(direction, labels), _IdGraph);
+            return new IdVertexIterable((baseElement as Vertex).getVertices(direction, labels), idGraph);
         }
 
-        public VertexQuery Query()
+        public VertexQuery query()
         {
-            return new WrapperVertexQuery((_BaseElement as Vertex).Query(),
-                t => new IdEdgeIterable(t.Edges(), _IdGraph),
-                t => new IdVertexIterable(t.Vertices(), _IdGraph));
+            return new WrapperVertexQuery((baseElement as Vertex).query(),
+                t => new IdEdgeIterable(t.edges(), idGraph),
+                t => new IdVertexIterable(t.vertices(), idGraph));
         }
 
-        public Edge AddEdge(string label, Vertex vertex)
+        public Edge addEdge(string label, Vertex vertex)
         {
-            return _IdGraph.AddEdge(null, this, vertex, label);
+            return idGraph.addEdge(null, this, vertex, label);
         }
 
         public override string ToString()
         {
-            return StringFactory.VertexString(this);
+            return StringFactory.vertexString(this);
         }
     }
 }

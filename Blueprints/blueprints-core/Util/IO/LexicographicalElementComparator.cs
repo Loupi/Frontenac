@@ -13,7 +13,7 @@ namespace Frontenac.Blueprints.Util.IO
     {
         public int Compare(Element a, Element b)
         {
-            return a.GetId().ToString().CompareTo(b.GetId().ToString());
+            return a.getId().ToString().CompareTo(b.getId().ToString());
         }
     }
 }

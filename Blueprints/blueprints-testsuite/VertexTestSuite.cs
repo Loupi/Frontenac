@@ -19,451 +19,451 @@ namespace Frontenac.Blueprints
         }
 
         [Test]
-        public void TestVertexEquality()
+        public void testVertexEquality()
         {
             Vertex v;
             Vertex u;
-            Graph graph = _GraphTest.GenerateGraph();
+            Graph graph = graphTest.generateGraph();
 
-            if (!graph.GetFeatures().IgnoresSuppliedIds.Value)
+            if (!graph.getFeatures().ignoresSuppliedIds.Value)
             {
-                v = graph.AddVertex(ConvertId(graph, "1"));
-                u = graph.GetVertex(ConvertId(graph, "1"));
+                v = graph.addVertex(convertId(graph, "1"));
+                u = graph.getVertex(convertId(graph, "1"));
                 Assert.AreEqual(v, u);
             }
 
-            this.StopWatch();
-            v = graph.AddVertex(null);
+            this.stopWatch();
+            v = graph.addVertex(null);
             Assert.False(v == null);
-            u = graph.GetVertex(v.GetId());
+            u = graph.getVertex(v.getId());
             Assert.AreEqual(v, u);
-            PrintPerformance(graph.ToString(), 1, "vertex added and retrieved", this.StopWatch());
+            printPerformance(graph.ToString(), 1, "vertex added and retrieved", this.stopWatch());
 
-            Assert.AreEqual(graph.GetVertex(u.GetId()), graph.GetVertex(u.GetId()));
-            Assert.AreEqual(graph.GetVertex(v.GetId()), graph.GetVertex(u.GetId()));
-            Assert.AreEqual(graph.GetVertex(v.GetId()), graph.GetVertex(v.GetId()));
+            Assert.AreEqual(graph.getVertex(u.getId()), graph.getVertex(u.getId()));
+            Assert.AreEqual(graph.getVertex(v.getId()), graph.getVertex(u.getId()));
+            Assert.AreEqual(graph.getVertex(v.getId()), graph.getVertex(v.getId()));
 
-            graph.Shutdown();
+            graph.shutdown();
         }
 
         [Test]
-        public void TestVertexEqualityForSuppliedIdsAndHashCode()
+        public void testVertexEqualityForSuppliedIdsAndHashCode()
         {
-            Graph graph = _GraphTest.GenerateGraph();
-            if (!graph.GetFeatures().IgnoresSuppliedIds.Value)
+            Graph graph = graphTest.generateGraph();
+            if (!graph.getFeatures().ignoresSuppliedIds.Value)
             {
-                Vertex v = graph.AddVertex(ConvertId(graph, "1"));
-                Vertex u = graph.GetVertex(ConvertId(graph, "1"));
+                Vertex v = graph.addVertex(convertId(graph, "1"));
+                Vertex u = graph.getVertex(convertId(graph, "1"));
                 HashSet<Vertex> set = new HashSet<Vertex>();
                 set.Add(v);
                 set.Add(v);
                 set.Add(u);
                 set.Add(u);
-                set.Add(graph.GetVertex(ConvertId(graph, "1")));
-                set.Add(graph.GetVertex(ConvertId(graph, "1")));
-                if (graph.GetFeatures().SupportsVertexIndex.Value)
-                    set.Add(graph.GetVertices().First());
+                set.Add(graph.getVertex(convertId(graph, "1")));
+                set.Add(graph.getVertex(convertId(graph, "1")));
+                if (graph.getFeatures().supportsVertexIndex.Value)
+                    set.Add(graph.getVertices().First());
                 Assert.AreEqual(1, set.Count());
                 Assert.AreEqual(v.GetHashCode(), u.GetHashCode());
             }
-            graph.Shutdown();
+            graph.shutdown();
         }
 
         [Test]
-        public void TestBasicAddVertex()
+        public void testBasicAddVertex()
         {
-            Graph graph = _GraphTest.GenerateGraph();
-            if (graph.GetFeatures().SupportsVertexIteration.Value)
+            Graph graph = graphTest.generateGraph();
+            if (graph.getFeatures().supportsVertexIteration.Value)
             {
-                graph.AddVertex(ConvertId(graph, "1"));
-                graph.AddVertex(ConvertId(graph, "2"));
-                Assert.AreEqual(2, Count(graph.GetVertices()));
-                graph.AddVertex(ConvertId(graph, "3"));
-                Assert.AreEqual(3, Count(graph.GetVertices()));
+                graph.addVertex(convertId(graph, "1"));
+                graph.addVertex(convertId(graph, "2"));
+                Assert.AreEqual(2, count(graph.getVertices()));
+                graph.addVertex(convertId(graph, "3"));
+                Assert.AreEqual(3, count(graph.getVertices()));
             }
 
-            if (graph.GetFeatures().IsRDFModel.Value)
+            if (graph.getFeatures().isRdfModel.Value)
             {
-                Vertex v1 = graph.AddVertex("http://tinkerpop.com#marko");
-                Assert.AreEqual("http://tinkerpop.com#marko", v1.GetId());
-                Vertex v2 = graph.AddVertex("\"1\"^^<datatype:int>");
-                Assert.AreEqual("\"1\"^^<datatype:int>", v2.GetId());
-                Vertex v3 = graph.AddVertex("_:ABLANKNODE");
-                Assert.AreEqual(v3.GetId(), "_:ABLANKNODE");
-                Vertex v4 = graph.AddVertex("\"2.24\"^^<http://www.w3.org/2001/XMLSchema#double>");
-                Assert.AreEqual("\"2.24\"^^<http://www.w3.org/2001/XMLSchema#double>", v4.GetId());
+                Vertex v1 = graph.addVertex("http://tinkerpop.com#marko");
+                Assert.AreEqual("http://tinkerpop.com#marko", v1.getId());
+                Vertex v2 = graph.addVertex("\"1\"^^<datatype:int>");
+                Assert.AreEqual("\"1\"^^<datatype:int>", v2.getId());
+                Vertex v3 = graph.addVertex("_:ABLANKNODE");
+                Assert.AreEqual(v3.getId(), "_:ABLANKNODE");
+                Vertex v4 = graph.addVertex("\"2.24\"^^<http://www.w3.org/2001/XMLSchema#double>");
+                Assert.AreEqual("\"2.24\"^^<http://www.w3.org/2001/XMLSchema#double>", v4.getId());
             }
-            graph.Shutdown();
+            graph.shutdown();
         }
 
         [Test]
-        public void TestGetVertexWithNull()
+        public void testGetVertexWithNull()
         {
-            Graph graph = _GraphTest.GenerateGraph();
+            Graph graph = graphTest.generateGraph();
             try
             {
-                graph.GetVertex(null);
+                graph.getVertex(null);
                 Assert.False(true);
             }
             catch (ArgumentException)
             {
                 Assert.True(true);
             }
-            graph.Shutdown();
+            graph.shutdown();
         }
 
         [Test]
-        public void TestRemoveVertex()
+        public void testRemoveVertex()
         {
-            Graph graph = _GraphTest.GenerateGraph();
+            Graph graph = graphTest.generateGraph();
 
-            Vertex v1 = graph.AddVertex(ConvertId(graph, "1"));
-            if (!graph.GetFeatures().IgnoresSuppliedIds.Value)
-                Assert.AreEqual(graph.GetVertex(ConvertId(graph, "1")), v1);
+            Vertex v1 = graph.addVertex(convertId(graph, "1"));
+            if (!graph.getFeatures().ignoresSuppliedIds.Value)
+                Assert.AreEqual(graph.getVertex(convertId(graph, "1")), v1);
 
-            if (graph.GetFeatures().SupportsVertexIteration.Value)
-                Assert.AreEqual(1, Count(graph.GetVertices()));
-            if (graph.GetFeatures().SupportsEdgeIteration.Value)
-                Assert.AreEqual(0, Count(graph.GetEdges()));
+            if (graph.getFeatures().supportsVertexIteration.Value)
+                Assert.AreEqual(1, count(graph.getVertices()));
+            if (graph.getFeatures().supportsEdgeIteration.Value)
+                Assert.AreEqual(0, count(graph.getEdges()));
 
-            graph.RemoveVertex(v1);
-            if (graph.GetFeatures().SupportsVertexIteration.Value)
-                Assert.AreEqual(0, Count(graph.GetVertices()));
-            if (graph.GetFeatures().SupportsEdgeIteration.Value)
-                Assert.AreEqual(0, Count(graph.GetEdges()));
+            graph.removeVertex(v1);
+            if (graph.getFeatures().supportsVertexIteration.Value)
+                Assert.AreEqual(0, count(graph.getVertices()));
+            if (graph.getFeatures().supportsEdgeIteration.Value)
+                Assert.AreEqual(0, count(graph.getEdges()));
 
             HashSet<Vertex> vertices = new HashSet<Vertex>();
             for (int i = 0; i < 100; i++)
-                vertices.Add(graph.AddVertex(null));
+                vertices.Add(graph.addVertex(null));
 
             Assert.AreEqual(vertices.Count(), 100);
-            if (graph.GetFeatures().SupportsVertexIteration.Value)
-                Assert.AreEqual(100, Count(graph.GetVertices()));
-            if (graph.GetFeatures().SupportsEdgeIteration.Value)
-                Assert.AreEqual(0, Count(graph.GetEdges()));
+            if (graph.getFeatures().supportsVertexIteration.Value)
+                Assert.AreEqual(100, count(graph.getVertices()));
+            if (graph.getFeatures().supportsEdgeIteration.Value)
+                Assert.AreEqual(0, count(graph.getEdges()));
 
             foreach (Vertex v in vertices)
-                graph.RemoveVertex(v);
+                graph.removeVertex(v);
 
-            if (graph.GetFeatures().SupportsVertexIteration.Value)
-                Assert.AreEqual(0, Count(graph.GetVertices()));
-            if (graph.GetFeatures().SupportsEdgeIteration.Value)
-                Assert.AreEqual(0, Count(graph.GetEdges()));
+            if (graph.getFeatures().supportsVertexIteration.Value)
+                Assert.AreEqual(0, count(graph.getVertices()));
+            if (graph.getFeatures().supportsEdgeIteration.Value)
+                Assert.AreEqual(0, count(graph.getEdges()));
 
-            graph.Shutdown();
+            graph.shutdown();
         }
 
         [Test]
-        public void TestRemoveVertexWithEdges()
+        public void testRemoveVertexWithEdges()
         {
-            Graph graph = _GraphTest.GenerateGraph();
-            Vertex v1 = graph.AddVertex(ConvertId(graph, "1"));
-            Vertex v2 = graph.AddVertex(ConvertId(graph, "2"));
-            graph.AddEdge(null, v1, v2, ConvertId(graph, "knows"));
-            if (graph.GetFeatures().SupportsVertexIteration.Value)
-                Assert.AreEqual(2, Count(graph.GetVertices()));
-            if (graph.GetFeatures().SupportsEdgeIteration.Value)
-                Assert.AreEqual(1, Count(graph.GetEdges()));
+            Graph graph = graphTest.generateGraph();
+            Vertex v1 = graph.addVertex(convertId(graph, "1"));
+            Vertex v2 = graph.addVertex(convertId(graph, "2"));
+            graph.addEdge(null, v1, v2, convertId(graph, "knows"));
+            if (graph.getFeatures().supportsVertexIteration.Value)
+                Assert.AreEqual(2, count(graph.getVertices()));
+            if (graph.getFeatures().supportsEdgeIteration.Value)
+                Assert.AreEqual(1, count(graph.getEdges()));
 
-            graph.RemoveVertex(v1);
-            if (graph.GetFeatures().SupportsVertexIteration.Value)
-                Assert.AreEqual(1, Count(graph.GetVertices()));
-            if (graph.GetFeatures().SupportsEdgeIteration.Value)
-                Assert.AreEqual(0, Count(graph.GetEdges()));
+            graph.removeVertex(v1);
+            if (graph.getFeatures().supportsVertexIteration.Value)
+                Assert.AreEqual(1, count(graph.getVertices()));
+            if (graph.getFeatures().supportsEdgeIteration.Value)
+                Assert.AreEqual(0, count(graph.getEdges()));
 
-            graph.RemoveVertex(v2);
-            if (graph.GetFeatures().SupportsVertexIteration.Value)
-                Assert.AreEqual(0, Count(graph.GetVertices()));
-            if (graph.GetFeatures().SupportsEdgeIteration.Value)
-                Assert.AreEqual(0, Count(graph.GetEdges()));
-            graph.Shutdown();
+            graph.removeVertex(v2);
+            if (graph.getFeatures().supportsVertexIteration.Value)
+                Assert.AreEqual(0, count(graph.getVertices()));
+            if (graph.getFeatures().supportsEdgeIteration.Value)
+                Assert.AreEqual(0, count(graph.getEdges()));
+            graph.shutdown();
         }
 
         [Test]
-        public void TestGetNonExistantVertices()
+        public void testGetNonExistantVertices()
         {
-            Graph graph = _GraphTest.GenerateGraph();
-            Assert.Null(graph.GetVertex("asbv"));
-            Assert.Null(graph.GetVertex(12.0d));
-            graph.Shutdown();
+            Graph graph = graphTest.generateGraph();
+            Assert.Null(graph.getVertex("asbv"));
+            Assert.Null(graph.getVertex(12.0d));
+            graph.shutdown();
         }
 
         [Test]
-        public void TestRemoveVertexNullId()
+        public void testRemoveVertexNullId()
         {
-            Graph graph = _GraphTest.GenerateGraph();
+            Graph graph = graphTest.generateGraph();
 
-            Vertex v1 = graph.AddVertex(null);
-            if (graph.GetFeatures().SupportsVertexIteration.Value)
-                Assert.AreEqual(1, Count(graph.GetVertices()));
-            graph.RemoveVertex(v1);
-            if (graph.GetFeatures().SupportsVertexIteration.Value)
-                Assert.AreEqual(0, Count(graph.GetVertices()));
+            Vertex v1 = graph.addVertex(null);
+            if (graph.getFeatures().supportsVertexIteration.Value)
+                Assert.AreEqual(1, count(graph.getVertices()));
+            graph.removeVertex(v1);
+            if (graph.getFeatures().supportsVertexIteration.Value)
+                Assert.AreEqual(0, count(graph.getVertices()));
 
             HashSet<Vertex> vertices = new HashSet<Vertex>();
 
-            this.StopWatch();
+            this.stopWatch();
             int vertexCount = 100;
             for (int i = 0; i < vertexCount; i++)
-                vertices.Add(graph.AddVertex(null));
+                vertices.Add(graph.addVertex(null));
 
-            PrintPerformance(graph.ToString(), vertexCount, "vertices added", this.StopWatch());
-            if (graph.GetFeatures().SupportsVertexIteration.Value)
-                Assert.AreEqual(vertexCount, Count(graph.GetVertices()));
+            printPerformance(graph.ToString(), vertexCount, "vertices added", this.stopWatch());
+            if (graph.getFeatures().supportsVertexIteration.Value)
+                Assert.AreEqual(vertexCount, count(graph.getVertices()));
 
-            this.StopWatch();
+            this.stopWatch();
             foreach (Vertex v in vertices)
-                graph.RemoveVertex(v);
+                graph.removeVertex(v);
 
-            PrintPerformance(graph.ToString(), vertexCount, "vertices removed", this.StopWatch());
-            if (graph.GetFeatures().SupportsVertexIteration.Value)
-                Assert.AreEqual(0, Count(graph.GetVertices()));
-            graph.Shutdown();
+            printPerformance(graph.ToString(), vertexCount, "vertices removed", this.stopWatch());
+            if (graph.getFeatures().supportsVertexIteration.Value)
+                Assert.AreEqual(0, count(graph.getVertices()));
+            graph.shutdown();
         }
 
         [Test]
-        public void TestVertexIterator()
+        public void testVertexIterator()
         {
-            Graph graph = _GraphTest.GenerateGraph();
-            if (graph.GetFeatures().SupportsVertexIteration.Value)
+            Graph graph = graphTest.generateGraph();
+            if (graph.getFeatures().supportsVertexIteration.Value)
             {
-                this.StopWatch();
+                this.stopWatch();
                 int vertexCount = 1000;
                 HashSet<object> ids = new HashSet<object>();
                 for (int i = 0; i < vertexCount; i++)
-                    ids.Add(graph.AddVertex(null).GetId());
+                    ids.Add(graph.addVertex(null).getId());
 
-                PrintPerformance(graph.ToString(), vertexCount, "vertices added", this.StopWatch());
-                this.StopWatch();
-                Assert.AreEqual(vertexCount, Count(graph.GetVertices()));
-                PrintPerformance(graph.ToString(), vertexCount, "vertices Counted", this.StopWatch());
+                printPerformance(graph.ToString(), vertexCount, "vertices added", this.stopWatch());
+                this.stopWatch();
+                Assert.AreEqual(vertexCount, count(graph.getVertices()));
+                printPerformance(graph.ToString(), vertexCount, "vertices Counted", this.stopWatch());
                 // must create unique ids
                 Assert.AreEqual(vertexCount, ids.Count());
             }
-            graph.Shutdown();
+            graph.shutdown();
         }
 
         [Test]
-        public void TestLegalVertexEdgeIterables()
+        public void testLegalVertexEdgeIterables()
         {
-            Graph graph = _GraphTest.GenerateGraph();
-            Vertex v1 = graph.AddVertex(null);
+            Graph graph = graphTest.generateGraph();
+            Vertex v1 = graph.addVertex(null);
             for (int i = 0; i < 10; i++)
-                graph.AddEdge(null, v1, graph.AddVertex(null), ConvertId(graph, "knows"));
+                graph.addEdge(null, v1, graph.addVertex(null), convertId(graph, "knows"));
 
-            IEnumerable<Edge> edges = v1.GetEdges(Direction.OUT, ConvertId(graph, "knows"));
-            Assert.AreEqual(Count(edges), 10);
-            Assert.AreEqual(Count(edges), 10);
-            Assert.AreEqual(Count(edges), 10);
-            graph.Shutdown();
+            IEnumerable<Edge> edges = v1.getEdges(Direction.OUT, convertId(graph, "knows"));
+            Assert.AreEqual(count(edges), 10);
+            Assert.AreEqual(count(edges), 10);
+            Assert.AreEqual(count(edges), 10);
+            graph.shutdown();
         }
 
         [Test]
-        public void TestAddVertexProperties()
+        public void testAddVertexProperties()
         {
-            Graph graph = _GraphTest.GenerateGraph();
-            if (graph.GetFeatures().SupportsVertexProperties.Value)
+            Graph graph = graphTest.generateGraph();
+            if (graph.getFeatures().supportsVertexProperties.Value)
             {
-                Vertex v1 = graph.AddVertex(ConvertId(graph, "1"));
-                Vertex v2 = graph.AddVertex(ConvertId(graph, "2"));
+                Vertex v1 = graph.addVertex(convertId(graph, "1"));
+                Vertex v2 = graph.addVertex(convertId(graph, "2"));
 
-                if (graph.GetFeatures().SupportsStringProperty.Value)
+                if (graph.getFeatures().supportsStringProperty.Value)
                 {
-                    v1.SetProperty("key1", "value1");
-                    Assert.AreEqual("value1", v1.GetProperty("key1"));
+                    v1.setProperty("key1", "value1");
+                    Assert.AreEqual("value1", v1.getProperty("key1"));
                 }
 
-                if (graph.GetFeatures().SupportsIntegerProperty.Value)
+                if (graph.getFeatures().supportsIntegerProperty.Value)
                 {
-                    v1.SetProperty("key2", 10);
-                    v2.SetProperty("key2", 20);
+                    v1.setProperty("key2", 10);
+                    v2.setProperty("key2", 20);
 
-                    Assert.AreEqual(10, v1.GetProperty("key2"));
-                    Assert.AreEqual(20, v2.GetProperty("key2"));
+                    Assert.AreEqual(10, v1.getProperty("key2"));
+                    Assert.AreEqual(20, v2.getProperty("key2"));
                 }
 
             }
-            else if (graph.GetFeatures().IsRDFModel.Value)
+            else if (graph.getFeatures().isRdfModel.Value)
             {
-                Vertex v1 = graph.AddVertex("\"1\"^^<http://www.w3.org/2001/XMLSchema#int>");
-                Assert.AreEqual("http://www.w3.org/2001/XMLSchema#int", v1.GetProperty(SailTokens.DATATYPE));
-                Assert.AreEqual(1, v1.GetProperty(SailTokens.VALUE));
-                Assert.Null(v1.GetProperty(SailTokens.LANGUAGE));
-                Assert.Null(v1.GetProperty("random something"));
+                Vertex v1 = graph.addVertex("\"1\"^^<http://www.w3.org/2001/XMLSchema#int>");
+                Assert.AreEqual("http://www.w3.org/2001/XMLSchema#int", v1.getProperty(SailTokens.DATATYPE));
+                Assert.AreEqual(1, v1.getProperty(SailTokens.VALUE));
+                Assert.Null(v1.getProperty(SailTokens.LANGUAGE));
+                Assert.Null(v1.getProperty("random something"));
 
-                Vertex v2 = graph.AddVertex("\"hello\"@en");
-                Assert.AreEqual("en", v2.GetProperty(SailTokens.LANGUAGE));
-                Assert.AreEqual("hello", v2.GetProperty(SailTokens.VALUE));
-                Assert.Null(v2.GetProperty(SailTokens.DATATYPE));
-                Assert.Null(v2.GetProperty("random something"));
+                Vertex v2 = graph.addVertex("\"hello\"@en");
+                Assert.AreEqual("en", v2.getProperty(SailTokens.LANGUAGE));
+                Assert.AreEqual("hello", v2.getProperty(SailTokens.VALUE));
+                Assert.Null(v2.getProperty(SailTokens.DATATYPE));
+                Assert.Null(v2.getProperty("random something"));
             }
-            graph.Shutdown();
+            graph.shutdown();
         }
 
         [Test]
-        public void TestAddManyVertexProperties()
+        public void testAddManyVertexProperties()
         {
-            Graph graph = _GraphTest.GenerateGraph();
-            if (graph.GetFeatures().SupportsVertexProperties.Value && graph.GetFeatures().SupportsStringProperty.Value)
+            Graph graph = graphTest.generateGraph();
+            if (graph.getFeatures().supportsVertexProperties.Value && graph.getFeatures().supportsStringProperty.Value)
             {
                 HashSet<Vertex> vertices = new HashSet<Vertex>();
-                this.StopWatch();
+                this.stopWatch();
                 for (int i = 0; i < 50; i++)
                 {
-                    Vertex vertex = graph.AddVertex(null);
+                    Vertex vertex = graph.addVertex(null);
                     for (int j = 0; j < 15; j++)
-                        vertex.SetProperty(Guid.NewGuid().ToString(), Guid.NewGuid().ToString());
+                        vertex.setProperty(Guid.NewGuid().ToString(), Guid.NewGuid().ToString());
 
                     vertices.Add(vertex);
                 }
-                PrintPerformance(graph.ToString(), 15 * 50, "vertex properties added (with vertices being added too)", this.StopWatch());
+                printPerformance(graph.ToString(), 15 * 50, "vertex properties added (with vertices being added too)", this.stopWatch());
 
-                if (graph.GetFeatures().SupportsVertexIteration.Value)
-                    Assert.AreEqual(50, Count(graph.GetVertices()));
+                if (graph.getFeatures().supportsVertexIteration.Value)
+                    Assert.AreEqual(50, count(graph.getVertices()));
                 Assert.AreEqual(50, vertices.Count());
                 foreach (Vertex vertex in vertices)
-                    Assert.AreEqual(15, vertex.GetPropertyKeys().Count());
+                    Assert.AreEqual(15, vertex.getPropertyKeys().Count());
 
             }
-            else if (graph.GetFeatures().IsRDFModel.Value)
+            else if (graph.getFeatures().isRdfModel.Value)
             {
                 HashSet<Vertex> vertices = new HashSet<Vertex>();
-                this.StopWatch();
+                this.stopWatch();
                 for (int i = 0; i < 50; i++)
                 {
-                    Vertex vertex = graph.AddVertex(string.Concat("\"", Guid.NewGuid().ToString(), "\""));
+                    Vertex vertex = graph.addVertex(string.Concat("\"", Guid.NewGuid().ToString(), "\""));
                     for (int j = 0; j < 15; j++)
-                        vertex.SetProperty(SailTokens.DATATYPE, "http://www.w3.org/2001/XMLSchema#anyURI");
+                        vertex.setProperty(SailTokens.DATATYPE, "http://www.w3.org/2001/XMLSchema#anyURI");
 
                     vertices.Add(vertex);
                 }
-                PrintPerformance(graph.ToString(), 15 * 50, "vertex properties added (with vertices being added too)", this.StopWatch());
-                if (graph.GetFeatures().SupportsVertexIteration.Value)
-                    Assert.AreEqual(Count(graph.GetVertices()), 50);
+                printPerformance(graph.ToString(), 15 * 50, "vertex properties added (with vertices being added too)", this.stopWatch());
+                if (graph.getFeatures().supportsVertexIteration.Value)
+                    Assert.AreEqual(count(graph.getVertices()), 50);
                 Assert.AreEqual(vertices.Count(), 50);
                 foreach (Vertex vertex in vertices)
                 {
-                    Assert.AreEqual(3, vertex.GetPropertyKeys().Count());
-                    Assert.True(vertex.GetPropertyKeys().Contains(SailTokens.DATATYPE));
-                    Assert.AreEqual("http://www.w3.org/2001/XMLSchema#anyURI", vertex.GetProperty(SailTokens.DATATYPE));
-                    Assert.True(vertex.GetPropertyKeys().Contains(SailTokens.VALUE));
-                    Assert.AreEqual("literal", vertex.GetProperty(SailTokens.KIND));
+                    Assert.AreEqual(3, vertex.getPropertyKeys().Count());
+                    Assert.True(vertex.getPropertyKeys().Contains(SailTokens.DATATYPE));
+                    Assert.AreEqual("http://www.w3.org/2001/XMLSchema#anyURI", vertex.getProperty(SailTokens.DATATYPE));
+                    Assert.True(vertex.getPropertyKeys().Contains(SailTokens.VALUE));
+                    Assert.AreEqual("literal", vertex.getProperty(SailTokens.KIND));
 
                 }
             }
-            graph.Shutdown();
+            graph.shutdown();
         }
 
         [Test]
-        public void TestRemoveVertexProperties()
+        public void testRemoveVertexProperties()
         {
-            Graph graph = _GraphTest.GenerateGraph();
-            if (graph.GetFeatures().SupportsVertexProperties.Value)
+            Graph graph = graphTest.generateGraph();
+            if (graph.getFeatures().supportsVertexProperties.Value)
             {
 
-                Vertex v1 = graph.AddVertex("1");
-                Vertex v2 = graph.AddVertex("2");
+                Vertex v1 = graph.addVertex("1");
+                Vertex v2 = graph.addVertex("2");
 
-                Assert.Null(v1.RemoveProperty("key1"));
-                Assert.Null(v1.RemoveProperty("key2"));
-                Assert.Null(v2.RemoveProperty("key2"));
+                Assert.Null(v1.removeProperty("key1"));
+                Assert.Null(v1.removeProperty("key2"));
+                Assert.Null(v2.removeProperty("key2"));
 
-                if (graph.GetFeatures().SupportsStringProperty.Value)
+                if (graph.getFeatures().supportsStringProperty.Value)
                 {
-                    v1.SetProperty("key1", "value1");
-                    Assert.AreEqual("value1", v1.RemoveProperty("key1"));
+                    v1.setProperty("key1", "value1");
+                    Assert.AreEqual("value1", v1.removeProperty("key1"));
                 }
 
-                if (graph.GetFeatures().SupportsIntegerProperty.Value)
+                if (graph.getFeatures().supportsIntegerProperty.Value)
                 {
-                    v1.SetProperty("key2", 10);
-                    v2.SetProperty("key2", 20);
+                    v1.setProperty("key2", 10);
+                    v2.setProperty("key2", 20);
 
-                    Assert.AreEqual(10, v1.RemoveProperty("key2"));
-                    Assert.AreEqual(20, v2.RemoveProperty("key2"));
+                    Assert.AreEqual(10, v1.removeProperty("key2"));
+                    Assert.AreEqual(20, v2.removeProperty("key2"));
                 }
 
-                Assert.Null(v1.RemoveProperty("key1"));
-                Assert.Null(v1.RemoveProperty("key2"));
-                Assert.Null(v2.RemoveProperty("key2"));
+                Assert.Null(v1.removeProperty("key1"));
+                Assert.Null(v1.removeProperty("key2"));
+                Assert.Null(v2.removeProperty("key2"));
 
-                if (graph.GetFeatures().SupportsStringProperty.Value)
-                    v1.SetProperty("key1", "value1");
+                if (graph.getFeatures().supportsStringProperty.Value)
+                    v1.setProperty("key1", "value1");
 
-                if (graph.GetFeatures().SupportsIntegerProperty.Value)
+                if (graph.getFeatures().supportsIntegerProperty.Value)
                 {
-                    v1.SetProperty("key2", 10);
-                    v2.SetProperty("key2", 20);
+                    v1.setProperty("key2", 10);
+                    v2.setProperty("key2", 20);
                 }
 
-                if (!graph.GetFeatures().IgnoresSuppliedIds.Value)
+                if (!graph.getFeatures().ignoresSuppliedIds.Value)
                 {
-                    v1 = graph.GetVertex("1");
-                    v2 = graph.GetVertex("2");
+                    v1 = graph.getVertex("1");
+                    v2 = graph.getVertex("2");
 
-                    if (graph.GetFeatures().SupportsStringProperty.Value)
-                        Assert.AreEqual("value1", v1.RemoveProperty("key1"));
+                    if (graph.getFeatures().supportsStringProperty.Value)
+                        Assert.AreEqual("value1", v1.removeProperty("key1"));
 
-                    if (graph.GetFeatures().SupportsIntegerProperty.Value)
+                    if (graph.getFeatures().supportsIntegerProperty.Value)
                     {
-                        Assert.AreEqual(10, v1.RemoveProperty("key2"));
-                        Assert.AreEqual(20, v2.RemoveProperty("key2"));
+                        Assert.AreEqual(10, v1.removeProperty("key2"));
+                        Assert.AreEqual(20, v2.removeProperty("key2"));
                     }
 
-                    Assert.Null(v1.RemoveProperty("key1"));
-                    Assert.Null(v1.RemoveProperty("key2"));
-                    Assert.Null(v2.RemoveProperty("key2"));
+                    Assert.Null(v1.removeProperty("key1"));
+                    Assert.Null(v1.removeProperty("key2"));
+                    Assert.Null(v2.removeProperty("key2"));
 
-                    v1 = graph.GetVertex("1");
-                    v2 = graph.GetVertex("2");
+                    v1 = graph.getVertex("1");
+                    v2 = graph.getVertex("2");
 
-                    if (graph.GetFeatures().SupportsStringProperty.Value)
+                    if (graph.getFeatures().supportsStringProperty.Value)
                     {
-                        v1.SetProperty("key1", "value2");
-                        Assert.AreEqual("value2", v1.RemoveProperty("key1"));
+                        v1.setProperty("key1", "value2");
+                        Assert.AreEqual("value2", v1.removeProperty("key1"));
                     }
 
-                    if (graph.GetFeatures().SupportsIntegerProperty.Value)
+                    if (graph.getFeatures().supportsIntegerProperty.Value)
                     {
-                        v1.SetProperty("key2", 20);
-                        v2.SetProperty("key2", 30);
+                        v1.setProperty("key2", 20);
+                        v2.setProperty("key2", 30);
 
-                        Assert.AreEqual(20, v1.RemoveProperty("key2"));
-                        Assert.AreEqual(30, v2.RemoveProperty("key2"));
+                        Assert.AreEqual(20, v1.removeProperty("key2"));
+                        Assert.AreEqual(30, v2.removeProperty("key2"));
                     }
 
-                    Assert.Null(v1.RemoveProperty("key1"));
-                    Assert.Null(v1.RemoveProperty("key2"));
-                    Assert.Null(v2.RemoveProperty("key2"));
+                    Assert.Null(v1.removeProperty("key1"));
+                    Assert.Null(v1.removeProperty("key2"));
+                    Assert.Null(v2.removeProperty("key2"));
                 }
             }
-            else if (graph.GetFeatures().IsRDFModel.Value)
+            else if (graph.getFeatures().isRdfModel.Value)
             {
-                Vertex v1 = graph.AddVertex("\"1\"^^<http://www.w3.org/2001/XMLSchema#int>");
-                Assert.AreEqual("http://www.w3.org/2001/XMLSchema#int", v1.RemoveProperty("type"));
-                Assert.AreEqual("1", v1.GetProperty("value"));
-                Assert.Null(v1.GetProperty("lang"));
-                Assert.Null(v1.GetProperty("random something"));
+                Vertex v1 = graph.addVertex("\"1\"^^<http://www.w3.org/2001/XMLSchema#int>");
+                Assert.AreEqual("http://www.w3.org/2001/XMLSchema#int", v1.removeProperty("type"));
+                Assert.AreEqual("1", v1.getProperty("value"));
+                Assert.Null(v1.getProperty("lang"));
+                Assert.Null(v1.getProperty("random something"));
 
-                Vertex v2 = graph.AddVertex("\"hello\"@en");
-                Assert.AreEqual("en", v2.RemoveProperty("lang"));
-                Assert.AreEqual("hello", v2.GetProperty("value"));
-                Assert.Null(v2.GetProperty("type"));
-                Assert.Null(v2.GetProperty("random something"));
+                Vertex v2 = graph.addVertex("\"hello\"@en");
+                Assert.AreEqual("en", v2.removeProperty("lang"));
+                Assert.AreEqual("hello", v2.getProperty("value"));
+                Assert.Null(v2.getProperty("type"));
+                Assert.Null(v2.getProperty("random something"));
             }
-            graph.Shutdown();
+            graph.shutdown();
         }
 
         [Test]
-        public void TestAddingIdProperty()
+        public void testAddingIdProperty()
         {
-            Graph graph = _GraphTest.GenerateGraph();
-            if (graph.GetFeatures().SupportsVertexProperties.Value)
+            Graph graph = graphTest.generateGraph();
+            if (graph.getFeatures().supportsVertexProperties.Value)
             {
-                Vertex vertex = graph.AddVertex(null);
+                Vertex vertex = graph.addVertex(null);
                 try
                 {
-                    vertex.SetProperty("id", "123");
+                    vertex.setProperty("id", "123");
                     Assert.True(false);
                 }
                 catch (ArgumentException)
@@ -471,95 +471,95 @@ namespace Frontenac.Blueprints
                     Assert.True(true);
                 }
             }
-            graph.Shutdown();
+            graph.shutdown();
         }
 
         [Test]
-        public void TestNoConcurrentModificationException()
+        public void testNoConcurrentModificationException()
         {
-            Graph graph = _GraphTest.GenerateGraph();
-            if (graph.GetFeatures().SupportsVertexIteration.Value)
+            Graph graph = graphTest.generateGraph();
+            if (graph.getFeatures().supportsVertexIteration.Value)
             {
                 for (int i = 0; i < 25; i++)
-                    graph.AddVertex(null);
+                    graph.addVertex(null);
 
-                Assert.AreEqual(Count(graph.GetVertices()), 25);
-                foreach (Vertex vertex in graph.GetVertices())
-                    graph.RemoveVertex(vertex);
+                Assert.AreEqual(count(graph.getVertices()), 25);
+                foreach (Vertex vertex in graph.getVertices())
+                    graph.removeVertex(vertex);
 
-                Assert.AreEqual(Count(graph.GetVertices()), 0);
+                Assert.AreEqual(count(graph.getVertices()), 0);
             }
-            graph.Shutdown();
+            graph.shutdown();
         }
 
         [Test]
-        public void TestGettingEdgesAndVertices()
+        public void testGettingEdgesAndVertices()
         {
-            Graph graph = _GraphTest.GenerateGraph();
-            Vertex a = graph.AddVertex(null);
-            Vertex b = graph.AddVertex(null);
-            Vertex c = graph.AddVertex(null);
-            Edge w = graph.AddEdge(null, a, b, ConvertId(graph, "knows"));
-            Edge x = graph.AddEdge(null, b, c, ConvertId(graph, "knows"));
-            Edge y = graph.AddEdge(null, a, c, ConvertId(graph, "hates"));
-            Edge z = graph.AddEdge(null, a, b, ConvertId(graph, "hates"));
-            Edge zz = graph.AddEdge(null, c, c, ConvertId(graph, "hates"));
+            Graph graph = graphTest.generateGraph();
+            Vertex a = graph.addVertex(null);
+            Vertex b = graph.addVertex(null);
+            Vertex c = graph.addVertex(null);
+            Edge w = graph.addEdge(null, a, b, convertId(graph, "knows"));
+            Edge x = graph.addEdge(null, b, c, convertId(graph, "knows"));
+            Edge y = graph.addEdge(null, a, c, convertId(graph, "hates"));
+            Edge z = graph.addEdge(null, a, b, convertId(graph, "hates"));
+            Edge zz = graph.addEdge(null, c, c, convertId(graph, "hates"));
 
-            Assert.AreEqual(Count(a.GetEdges(Direction.OUT)), 3);
-            Assert.AreEqual(Count(a.GetEdges(Direction.OUT, ConvertId(graph, "hates"))), 2);
-            Assert.AreEqual(Count(a.GetEdges(Direction.OUT, ConvertId(graph, "knows"))), 1);
-            Assert.AreEqual(Count(a.GetVertices(Direction.OUT)), 3);
-            Assert.AreEqual(Count(a.GetVertices(Direction.OUT, ConvertId(graph, "hates"))), 2);
-            Assert.AreEqual(Count(a.GetVertices(Direction.OUT, ConvertId(graph, "knows"))), 1);
-            Assert.AreEqual(Count(a.GetVertices(Direction.BOTH)), 3);
-            Assert.AreEqual(Count(a.GetVertices(Direction.BOTH, ConvertId(graph, "hates"))), 2);
-            Assert.AreEqual(Count(a.GetVertices(Direction.BOTH, ConvertId(graph, "knows"))), 1);
+            Assert.AreEqual(count(a.getEdges(Direction.OUT)), 3);
+            Assert.AreEqual(count(a.getEdges(Direction.OUT, convertId(graph, "hates"))), 2);
+            Assert.AreEqual(count(a.getEdges(Direction.OUT, convertId(graph, "knows"))), 1);
+            Assert.AreEqual(count(a.getVertices(Direction.OUT)), 3);
+            Assert.AreEqual(count(a.getVertices(Direction.OUT, convertId(graph, "hates"))), 2);
+            Assert.AreEqual(count(a.getVertices(Direction.OUT, convertId(graph, "knows"))), 1);
+            Assert.AreEqual(count(a.getVertices(Direction.BOTH)), 3);
+            Assert.AreEqual(count(a.getVertices(Direction.BOTH, convertId(graph, "hates"))), 2);
+            Assert.AreEqual(count(a.getVertices(Direction.BOTH, convertId(graph, "knows"))), 1);
 
-            Assert.True(a.GetEdges(Direction.OUT).Contains(w));
-            Assert.True(a.GetEdges(Direction.OUT).Contains(y));
-            Assert.True(a.GetEdges(Direction.OUT).Contains(z));
-            Assert.True(a.GetVertices(Direction.OUT).Contains(b));
-            Assert.True(a.GetVertices(Direction.OUT).Contains(c));
+            Assert.True(a.getEdges(Direction.OUT).Contains(w));
+            Assert.True(a.getEdges(Direction.OUT).Contains(y));
+            Assert.True(a.getEdges(Direction.OUT).Contains(z));
+            Assert.True(a.getVertices(Direction.OUT).Contains(b));
+            Assert.True(a.getVertices(Direction.OUT).Contains(c));
 
-            Assert.True(a.GetEdges(Direction.OUT, ConvertId(graph, "knows")).Contains(w));
-            Assert.False(a.GetEdges(Direction.OUT, ConvertId(graph, "knows")).Contains(y));
-            Assert.False(a.GetEdges(Direction.OUT, ConvertId(graph, "knows")).Contains(z));
-            Assert.True(a.GetVertices(Direction.OUT, ConvertId(graph, "knows")).Contains(b));
-            Assert.False(a.GetVertices(Direction.OUT, ConvertId(graph, "knows")).Contains(c));
+            Assert.True(a.getEdges(Direction.OUT, convertId(graph, "knows")).Contains(w));
+            Assert.False(a.getEdges(Direction.OUT, convertId(graph, "knows")).Contains(y));
+            Assert.False(a.getEdges(Direction.OUT, convertId(graph, "knows")).Contains(z));
+            Assert.True(a.getVertices(Direction.OUT, convertId(graph, "knows")).Contains(b));
+            Assert.False(a.getVertices(Direction.OUT, convertId(graph, "knows")).Contains(c));
 
-            Assert.False(a.GetEdges(Direction.OUT, ConvertId(graph, "hates")).Contains(w));
-            Assert.True(a.GetEdges(Direction.OUT, ConvertId(graph, "hates")).Contains(y));
-            Assert.True(a.GetEdges(Direction.OUT, ConvertId(graph, "hates")).Contains(z));
-            Assert.True(a.GetVertices(Direction.OUT, ConvertId(graph, "hates")).Contains(b));
-            Assert.True(a.GetVertices(Direction.OUT, ConvertId(graph, "hates")).Contains(c));
+            Assert.False(a.getEdges(Direction.OUT, convertId(graph, "hates")).Contains(w));
+            Assert.True(a.getEdges(Direction.OUT, convertId(graph, "hates")).Contains(y));
+            Assert.True(a.getEdges(Direction.OUT, convertId(graph, "hates")).Contains(z));
+            Assert.True(a.getVertices(Direction.OUT, convertId(graph, "hates")).Contains(b));
+            Assert.True(a.getVertices(Direction.OUT, convertId(graph, "hates")).Contains(c));
 
-            Assert.AreEqual(Count(a.GetVertices(Direction.IN)), 0);
-            Assert.AreEqual(Count(a.GetVertices(Direction.IN, ConvertId(graph, "knows"))), 0);
-            Assert.AreEqual(Count(a.GetVertices(Direction.IN, ConvertId(graph, "hates"))), 0);
-            Assert.True(a.GetEdges(Direction.OUT).Contains(w));
-            Assert.True(a.GetEdges(Direction.OUT).Contains(y));
-            Assert.True(a.GetEdges(Direction.OUT).Contains(z));
+            Assert.AreEqual(count(a.getVertices(Direction.IN)), 0);
+            Assert.AreEqual(count(a.getVertices(Direction.IN, convertId(graph, "knows"))), 0);
+            Assert.AreEqual(count(a.getVertices(Direction.IN, convertId(graph, "hates"))), 0);
+            Assert.True(a.getEdges(Direction.OUT).Contains(w));
+            Assert.True(a.getEdges(Direction.OUT).Contains(y));
+            Assert.True(a.getEdges(Direction.OUT).Contains(z));
 
-            Assert.AreEqual(Count(b.GetEdges(Direction.BOTH)), 3);
-            Assert.AreEqual(Count(b.GetEdges(Direction.BOTH, ConvertId(graph, "knows"))), 2);
-            Assert.True(b.GetEdges(Direction.BOTH, ConvertId(graph, "knows")).Contains(x));
-            Assert.True(b.GetEdges(Direction.BOTH, ConvertId(graph, "knows")).Contains(w));
-            Assert.True(b.GetVertices(Direction.BOTH, ConvertId(graph, "knows")).Contains(a));
-            Assert.True(b.GetVertices(Direction.BOTH, ConvertId(graph, "knows")).Contains(c));
+            Assert.AreEqual(count(b.getEdges(Direction.BOTH)), 3);
+            Assert.AreEqual(count(b.getEdges(Direction.BOTH, convertId(graph, "knows"))), 2);
+            Assert.True(b.getEdges(Direction.BOTH, convertId(graph, "knows")).Contains(x));
+            Assert.True(b.getEdges(Direction.BOTH, convertId(graph, "knows")).Contains(w));
+            Assert.True(b.getVertices(Direction.BOTH, convertId(graph, "knows")).Contains(a));
+            Assert.True(b.getVertices(Direction.BOTH, convertId(graph, "knows")).Contains(c));
 
-            Assert.AreEqual(Count(c.GetEdges(Direction.BOTH, ConvertId(graph, "hates"))), 3);
-            Assert.AreEqual(Count(c.GetVertices(Direction.BOTH, ConvertId(graph, "hates"))), 3);
-            Assert.AreEqual(Count(c.GetEdges(Direction.BOTH, ConvertId(graph, "knows"))), 1);
-            Assert.True(c.GetEdges(Direction.BOTH, ConvertId(graph, "hates")).Contains(y));
-            Assert.True(c.GetEdges(Direction.BOTH, ConvertId(graph, "hates")).Contains(zz));
-            Assert.True(c.GetVertices(Direction.BOTH, ConvertId(graph, "hates")).Contains(a));
-            Assert.True(c.GetVertices(Direction.BOTH, ConvertId(graph, "hates")).Contains(c));
-            Assert.AreEqual(Count(c.GetEdges(Direction.IN, ConvertId(graph, "hates"))), 2);
-            Assert.AreEqual(Count(c.GetEdges(Direction.OUT, ConvertId(graph, "hates"))), 1);
+            Assert.AreEqual(count(c.getEdges(Direction.BOTH, convertId(graph, "hates"))), 3);
+            Assert.AreEqual(count(c.getVertices(Direction.BOTH, convertId(graph, "hates"))), 3);
+            Assert.AreEqual(count(c.getEdges(Direction.BOTH, convertId(graph, "knows"))), 1);
+            Assert.True(c.getEdges(Direction.BOTH, convertId(graph, "hates")).Contains(y));
+            Assert.True(c.getEdges(Direction.BOTH, convertId(graph, "hates")).Contains(zz));
+            Assert.True(c.getVertices(Direction.BOTH, convertId(graph, "hates")).Contains(a));
+            Assert.True(c.getVertices(Direction.BOTH, convertId(graph, "hates")).Contains(c));
+            Assert.AreEqual(count(c.getEdges(Direction.IN, convertId(graph, "hates"))), 2);
+            Assert.AreEqual(count(c.getEdges(Direction.OUT, convertId(graph, "hates"))), 1);
 
             try
             {
-                x.GetVertex(Direction.BOTH);
+                x.getVertex(Direction.BOTH);
                 Assert.True(false);
             }
             catch (ArgumentException)
@@ -567,22 +567,22 @@ namespace Frontenac.Blueprints
                 Assert.True(true);
             }
 
-            graph.Shutdown();
+            graph.shutdown();
         }
 
         [Test]
-        public void TestEmptyKeyProperty()
+        public void testEmptyKeyProperty()
         {
-            Graph graph = _GraphTest.GenerateGraph();
+            Graph graph = graphTest.generateGraph();
 
             // no point in testing graph features for setting string properties because the intent is for it to
             // fail based on the empty key.
-            if (graph.GetFeatures().SupportsVertexProperties.Value)
+            if (graph.getFeatures().supportsVertexProperties.Value)
             {
-                Vertex v = graph.AddVertex(null);
+                Vertex v = graph.addVertex(null);
                 try
                 {
-                    v.SetProperty("", "value");
+                    v.setProperty("", "value");
                     Assert.Fail();
                 }
                 catch (ArgumentException)
@@ -590,88 +590,88 @@ namespace Frontenac.Blueprints
                     Assert.True(true);
                 }
             }
-            graph.Shutdown();
+            graph.shutdown();
         }
 
         [Test]
-        public void TestVertexCentricLinking()
+        public void testVertexCentricLinking()
         {
-            Graph graph = _GraphTest.GenerateGraph();
+            Graph graph = graphTest.generateGraph();
 
-            Vertex v = graph.AddVertex(null);
-            Vertex a = graph.AddVertex(null);
-            Vertex b = graph.AddVertex(null);
+            Vertex v = graph.addVertex(null);
+            Vertex a = graph.addVertex(null);
+            Vertex b = graph.addVertex(null);
 
-            v.AddEdge(ConvertId(graph, "knows"), a);
-            v.AddEdge(ConvertId(graph, "knows"), b);
+            v.addEdge(convertId(graph, "knows"), a);
+            v.addEdge(convertId(graph, "knows"), b);
 
-            if (graph.GetFeatures().SupportsVertexIteration.Value)
-                Assert.AreEqual(Count(graph.GetVertices()), 3);
-            if (graph.GetFeatures().SupportsEdgeIteration.Value)
-                Assert.AreEqual(Count(graph.GetEdges()), 2);
+            if (graph.getFeatures().supportsVertexIteration.Value)
+                Assert.AreEqual(count(graph.getVertices()), 3);
+            if (graph.getFeatures().supportsEdgeIteration.Value)
+                Assert.AreEqual(count(graph.getEdges()), 2);
 
-            Assert.AreEqual(Count(v.GetEdges(Direction.OUT, ConvertId(graph, "knows"))), 2);
-            Assert.AreEqual(Count(a.GetEdges(Direction.OUT, ConvertId(graph, "knows"))), 0);
-            Assert.AreEqual(Count(a.GetEdges(Direction.IN, ConvertId(graph, "knows"))), 1);
+            Assert.AreEqual(count(v.getEdges(Direction.OUT, convertId(graph, "knows"))), 2);
+            Assert.AreEqual(count(a.getEdges(Direction.OUT, convertId(graph, "knows"))), 0);
+            Assert.AreEqual(count(a.getEdges(Direction.IN, convertId(graph, "knows"))), 1);
 
-            Assert.AreEqual(Count(b.GetEdges(Direction.OUT, ConvertId(graph, "knows"))), 0);
-            Assert.AreEqual(Count(b.GetEdges(Direction.IN, ConvertId(graph, "knows"))), 1);
+            Assert.AreEqual(count(b.getEdges(Direction.OUT, convertId(graph, "knows"))), 0);
+            Assert.AreEqual(count(b.getEdges(Direction.IN, convertId(graph, "knows"))), 1);
 
-            graph.Shutdown();
+            graph.shutdown();
         }
 
         [Test]
-        public void TestVertexCentricRemoving()
+        public void testVertexCentricRemoving()
         {
-            Graph graph = _GraphTest.GenerateGraph();
+            Graph graph = graphTest.generateGraph();
 
-            Vertex a = graph.AddVertex(null);
-            Vertex b = graph.AddVertex(null);
-            Vertex c = graph.AddVertex(null);
+            Vertex a = graph.addVertex(null);
+            Vertex b = graph.addVertex(null);
+            Vertex c = graph.addVertex(null);
 
-            object cId = c.GetId();
+            object cId = c.getId();
 
-            if (graph.GetFeatures().SupportsVertexIteration.Value)
-                Assert.AreEqual(Count(graph.GetVertices()), 3);
+            if (graph.getFeatures().supportsVertexIteration.Value)
+                Assert.AreEqual(count(graph.getVertices()), 3);
 
-            a.Remove();
-            b.Remove();
+            a.remove();
+            b.remove();
 
-            Assert.NotNull(graph.GetVertex(cId));
+            Assert.NotNull(graph.getVertex(cId));
 
-            if (graph.GetFeatures().SupportsVertexIteration.Value)
-                Assert.AreEqual(Count(graph.GetVertices()), 1);
+            if (graph.getFeatures().supportsVertexIteration.Value)
+                Assert.AreEqual(count(graph.getVertices()), 1);
 
-            graph.Shutdown();
+            graph.shutdown();
         }
 
         [Test]
-        public void TestConcurrentModificationOnProperties()
+        public void testConcurrentModificationOnProperties()
         {
-            Graph graph = _GraphTest.GenerateGraph();
-            if (graph.GetFeatures().SupportsVertexProperties.Value)
+            Graph graph = graphTest.generateGraph();
+            if (graph.getFeatures().supportsVertexProperties.Value)
             {
-                Vertex a = graph.AddVertex(null);
-                a.SetProperty("test1", 1);
-                a.SetProperty("test2", 2);
-                a.SetProperty("test3", 3);
-                a.SetProperty("test4", 4);
-                foreach (string key in a.GetPropertyKeys())
-                    a.RemoveProperty(key);
+                Vertex a = graph.addVertex(null);
+                a.setProperty("test1", 1);
+                a.setProperty("test2", 2);
+                a.setProperty("test3", 3);
+                a.setProperty("test4", 4);
+                foreach (string key in a.getPropertyKeys())
+                    a.removeProperty(key);
             }
-            graph.Shutdown();
+            graph.shutdown();
         }
 
         [Test]
-        public void TestSettingBadVertexProperties()
+        public void testSettingBadVertexProperties()
         {
-            Graph graph = _GraphTest.GenerateGraph();
-            if (graph.GetFeatures().SupportsVertexProperties.Value)
+            Graph graph = graphTest.generateGraph();
+            if (graph.getFeatures().supportsVertexProperties.Value)
             {
-                Vertex v = graph.AddVertex(null);
+                Vertex v = graph.addVertex(null);
                 try
                 {
-                    v.SetProperty(null, -1);
+                    v.setProperty(null, -1);
                     Assert.False(true);
                 }
                 catch (Exception)
@@ -681,7 +681,7 @@ namespace Frontenac.Blueprints
 
                 try
                 {
-                    v.SetProperty("", -1);
+                    v.setProperty("", -1);
                     Assert.False(true);
                 }
                 catch (Exception)
@@ -691,7 +691,7 @@ namespace Frontenac.Blueprints
 
                 try
                 {
-                    v.SetProperty(StringFactory.ID, -1);
+                    v.setProperty(StringFactory.ID, -1);
                     Assert.False(true);
                 }
                 catch (Exception)
@@ -701,7 +701,7 @@ namespace Frontenac.Blueprints
 
                 try
                 {
-                    v.SetProperty(ConvertId(graph, "good"), null);
+                    v.setProperty(convertId(graph, "good"), null);
                     Assert.False(true);
                 }
                 catch (Exception)
@@ -709,7 +709,7 @@ namespace Frontenac.Blueprints
                     Assert.True(true);
                 }
             }
-            graph.Shutdown();
+            graph.shutdown();
         }
     }
 }

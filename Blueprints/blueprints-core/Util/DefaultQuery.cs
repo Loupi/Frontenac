@@ -8,62 +8,62 @@ namespace Frontenac.Blueprints.Util
 {
     public abstract class DefaultQuery : Query
     {
-        public abstract Query Has(string key, object value);
-        public abstract Query Has<T>(string key, Compare compare, T value) where T : IComparable<T>;
-        public abstract Query Interval<T>(string key, T startValue, T endValue) where T : IComparable<T>;
-        public abstract IEnumerable<Edge> Edges();
-        public abstract IEnumerable<Vertex> Vertices();
-        public abstract Query Limit(long max);
+        public abstract Query has(string key, object value);
+        public abstract Query has<T>(string key, Compare compare, T value) where T : IComparable<T>;
+        public abstract Query interval<T>(string key, T startValue, T endValue) where T : IComparable<T>;
+        public abstract IEnumerable<Edge> edges();
+        public abstract IEnumerable<Vertex> vertices();
+        public abstract Query limit(long max);
 
         static readonly string[] EMPTY_LABELS = new string[] { };
 
-        public Direction _Direction = Direction.BOTH;
-        public string[] _Labels = DefaultQuery.EMPTY_LABELS;
-        public long _Limit = long.MaxValue;
-        public List<HasContainer> HasContainers = new List<HasContainer>();
+        public Direction direction = Direction.BOTH;
+        public string[] _labels = DefaultQuery.EMPTY_LABELS;
+        public long _limit = long.MaxValue;
+        public List<HasContainer> hasContainers = new List<HasContainer>();
 
         public class HasContainer
         {
-            public string Key;
-            public object Value;
-            public Compare Compare;
+            public string key;
+            public object value;
+            public Compare compare;
 
             public HasContainer(string key, object value, Compare compare)
             {
-                this.Key = key;
-                this.Value = value;
-                this.Compare = compare;
+                this.key = key;
+                this.value = value;
+                this.compare = compare;
             }
 
-            public bool IsLegal(Element element)
+            public bool isLegal(Element element)
             {
-                object elementValue = element.GetProperty(Key);
-                switch (Compare)
+                object elementValue = element.getProperty(key);
+                switch (compare)
                 {
                     case Compare.EQUAL:
                         if (null == elementValue)
-                            return Value == null;
-                        return elementValue.Equals(Value);
+                            return value == null;
+                        return elementValue.Equals(value);
                     case Compare.NOT_EQUAL:
                         if (null == elementValue)
-                            return Value != null;
-                        return !elementValue.Equals(Value);
+                            return value != null;
+                        return !elementValue.Equals(value);
                     case Compare.GREATER_THAN:
-                        if (null == elementValue || Value == null)
+                        if (null == elementValue || value == null)
                             return false;
-                        return ((IComparable)elementValue).CompareTo(Value) >= 1;
+                        return ((IComparable)elementValue).CompareTo(value) >= 1;
                     case Compare.LESS_THAN:
-                        if (null == elementValue || Value == null)
+                        if (null == elementValue || value == null)
                             return false;
-                        return ((IComparable)elementValue).CompareTo(Value) <= -1;
+                        return ((IComparable)elementValue).CompareTo(value) <= -1;
                     case Compare.GREATER_THAN_EQUAL:
-                        if (null == elementValue || Value == null)
+                        if (null == elementValue || value == null)
                             return false;
-                        return ((IComparable)elementValue).CompareTo(Value) >= 0;
+                        return ((IComparable)elementValue).CompareTo(value) >= 0;
                     case Compare.LESS_THAN_EQUAL:
-                        if (null == elementValue || Value == null)
+                        if (null == elementValue || value == null)
                             return false;
-                        return ((IComparable)elementValue).CompareTo(Value) <= 0;
+                        return ((IComparable)elementValue).CompareTo(value) <= 0;
                     default:
                         throw new ArgumentException("Invalid state as no valid filter was provided");
                 }

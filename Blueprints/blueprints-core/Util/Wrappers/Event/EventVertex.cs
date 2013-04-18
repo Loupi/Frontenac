@@ -18,31 +18,31 @@ namespace Frontenac.Blueprints.Util.Wrappers.Event
 
         }
 
-        public IEnumerable<Edge> GetEdges(Direction direction, params string[] labels)
+        public IEnumerable<Edge> getEdges(Direction direction, params string[] labels)
         {
-            return new EventEdgeIterable((_BaseElement as Vertex).GetEdges(direction, labels), _EventGraph);
+            return new EventEdgeIterable((baseElement as Vertex).getEdges(direction, labels), eventGraph);
         }
 
-        public IEnumerable<Vertex> GetVertices(Direction direction, params string[] labels)
+        public IEnumerable<Vertex> getVertices(Direction direction, params string[] labels)
         {
-            return new EventVertexIterable((_BaseElement as Vertex).GetVertices(direction, labels), _EventGraph);
+            return new EventVertexIterable((baseElement as Vertex).getVertices(direction, labels), eventGraph);
         }
 
-        public VertexQuery Query()
+        public VertexQuery query()
         {
-            return new WrapperVertexQuery((_BaseElement as Vertex).Query(),
-                t => new EventEdgeIterable(t.Edges(), _EventGraph),
-                t => new EventVertexIterable(t.Vertices(), _EventGraph));
+            return new WrapperVertexQuery((baseElement as Vertex).query(),
+                t => new EventEdgeIterable(t.edges(), eventGraph),
+                t => new EventVertexIterable(t.vertices(), eventGraph));
         }
 
-        public Edge AddEdge(string label, Vertex vertex)
+        public Edge addEdge(string label, Vertex vertex)
         {
-            return _EventGraph.AddEdge(null, this, vertex, label);
+            return eventGraph.addEdge(null, this, vertex, label);
         }
 
-        public Vertex GetBaseVertex()
+        public Vertex getBaseVertex()
         {
-            return this._BaseElement as Vertex;
+            return this.baseElement as Vertex;
         }
     }
 }

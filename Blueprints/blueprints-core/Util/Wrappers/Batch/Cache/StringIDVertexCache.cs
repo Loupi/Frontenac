@@ -10,14 +10,14 @@ namespace Frontenac.Blueprints.Util.Wrappers.Batch.Cache
     {
         const int INITIAL_CAPACITY = 1000;
 
-        Dictionary<string, object> _Map;
-        readonly StringCompression _Compression;
+        Dictionary<string, object> _map;
+        readonly StringCompression _compression;
 
         public StringIDVertexCache(StringCompression compression)
         {
             if (compression == null) throw new ArgumentNullException("compression");
-            _Compression = compression;
-            _Map = new Dictionary<string, object>(INITIAL_CAPACITY);
+            _compression = compression;
+            _map = new Dictionary<string, object>(INITIAL_CAPACITY);
         }
 
         public StringIDVertexCache()
@@ -26,31 +26,31 @@ namespace Frontenac.Blueprints.Util.Wrappers.Batch.Cache
 
         }
 
-        public object GetEntry(object externalId)
+        public object getEntry(object externalId)
         {
-            string id = _Compression.Compress(externalId.ToString());
-            return _Map.Get(id);
+            string id = _compression.compress(externalId.ToString());
+            return _map.get(id);
         }
 
-        public void Set(Vertex vertex, object externalId)
+        public void set(Vertex vertex, object externalId)
         {
-            SetId(vertex, externalId);
+            setId(vertex, externalId);
         }
 
-        public void SetId(object vertexId, object externalId)
+        public void setId(object vertexId, object externalId)
         {
-            string id = _Compression.Compress(externalId.ToString());
-            _Map[id] = vertexId;
+            string id = _compression.compress(externalId.ToString());
+            _map[id] = vertexId;
         }
 
-        public bool Contains(object externalId)
+        public bool contains(object externalId)
         {
-            return _Map.ContainsKey(_Compression.Compress(externalId.ToString()));
+            return _map.ContainsKey(_compression.compress(externalId.ToString()));
         }
 
-        public void NewTransaction()
+        public void newTransaction()
         {
-            _Map = _Map.ToDictionary(t => t.Key, t => t.Value is Vertex ? (t.Value as Vertex).GetId() : t.Value);
+            _map = _map.ToDictionary(t => t.Key, t => t.Value is Vertex ? (t.Value as Vertex).getId() : t.Value);
         }
     }
 }

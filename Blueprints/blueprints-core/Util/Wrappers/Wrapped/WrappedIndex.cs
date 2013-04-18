@@ -8,57 +8,57 @@ namespace Frontenac.Blueprints.Util.Wrappers.Wrapped
 {
     public class WrappedIndex : Index
     {
-        protected Index _RawIndex;
+        protected Index rawIndex;
 
         public WrappedIndex(Index rawIndex)
         {
-            _RawIndex = rawIndex;
+            this.rawIndex = rawIndex;
         }
 
-        public string GetIndexName()
+        public string getIndexName()
         {
-            return _RawIndex.GetIndexName();
+            return rawIndex.getIndexName();
         }
 
-        public Type GetIndexClass()
+        public Type getIndexClass()
         {
-            return _RawIndex.GetIndexClass();
+            return rawIndex.getIndexClass();
         }
 
-        public long Count(string key, object value)
+        public long count(string key, object value)
         {
-            return _RawIndex.Count(key, value);
+            return rawIndex.count(key, value);
         }
 
-        public void Remove(string key, object value, Element element)
+        public void remove(string key, object value, Element element)
         {
-            _RawIndex.Remove(key, value, (element as WrappedElement).GetBaseElement());
+            rawIndex.remove(key, value, (element as WrappedElement).getBaseElement());
         }
 
-        public void Put(string key, object value, Element element)
+        public void put(string key, object value, Element element)
         {
-            _RawIndex.Put(key, value, (element as WrappedElement).GetBaseElement());
+            rawIndex.put(key, value, (element as WrappedElement).getBaseElement());
         }
 
-        public CloseableIterable<Element> Get(string key, object value)
+        public CloseableIterable<Element> get(string key, object value)
         {
-            if (typeof(Vertex).IsAssignableFrom(this.GetIndexClass()))
-                return (CloseableIterable<Element>)new WrappedVertexIterable((IEnumerable<Vertex>)_RawIndex.Get(key, value));
+            if (typeof(Vertex).IsAssignableFrom(this.getIndexClass()))
+                return (CloseableIterable<Element>)new WrappedVertexIterable((IEnumerable<Vertex>)rawIndex.get(key, value));
             else
-                return (CloseableIterable<Element>)new WrappedEdgeIterable((IEnumerable<Edge>)_RawIndex.Get(key, value));
+                return (CloseableIterable<Element>)new WrappedEdgeIterable((IEnumerable<Edge>)rawIndex.get(key, value));
         }
 
-        public CloseableIterable<Element> Query(string key, object value)
+        public CloseableIterable<Element> query(string key, object value)
         {
-            if (typeof(Vertex).IsAssignableFrom(this.GetIndexClass()))
-                return (CloseableIterable<Element>)new WrappedVertexIterable((IEnumerable<Vertex>)_RawIndex.Query(key, value));
+            if (typeof(Vertex).IsAssignableFrom(this.getIndexClass()))
+                return (CloseableIterable<Element>)new WrappedVertexIterable((IEnumerable<Vertex>)rawIndex.query(key, value));
             else
-                return (CloseableIterable<Element>)new WrappedEdgeIterable((IEnumerable<Edge>)_RawIndex.Query(key, value));
+                return (CloseableIterable<Element>)new WrappedEdgeIterable((IEnumerable<Edge>)rawIndex.query(key, value));
         }
 
         public override string ToString()
         {
-            return StringFactory.IndexString(this);
+            return StringFactory.indexString(this);
         }
     }
 }

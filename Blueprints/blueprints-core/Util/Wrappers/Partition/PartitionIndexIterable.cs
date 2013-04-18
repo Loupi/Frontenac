@@ -8,19 +8,19 @@ namespace Frontenac.Blueprints.Util.Wrappers.Partition
 {
     class PartitionIndexIterable : IEnumerable<Index>
     {
-        readonly IEnumerable<Index> _Iterable;
-        readonly PartitionGraph _Graph;
+        readonly IEnumerable<Index> _iterable;
+        readonly PartitionGraph _graph;
 
         public PartitionIndexIterable(IEnumerable<Index> iterable, PartitionGraph graph)
         {
-            _Iterable = iterable;
-            _Graph = graph;
+            _iterable = iterable;
+            _graph = graph;
         }
 
         public IEnumerator<Index> GetEnumerator()
         {
-            foreach (Index index in _Iterable)
-                yield return new PartitionIndex(index, _Graph);
+            foreach (Index index in _iterable)
+                yield return new PartitionIndex(index, _graph);
         }
 
         System.Collections.IEnumerator System.Collections.IEnumerable.GetEnumerator()

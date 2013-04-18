@@ -8,26 +8,26 @@ namespace Frontenac.Blueprints.Util.Wrappers.Event.Listener
 {
     public abstract class VertexPropertyEvent : Event
     {
-        readonly Vertex _Vertex;
-        readonly string _Key;
-        readonly object _OldValue;
-        readonly object _NewValue;
+        readonly Vertex _vertex;
+        readonly string _key;
+        readonly object _oldValue;
+        readonly object _newValue;
 
-        public VertexPropertyEvent(Vertex vertex, string key, object oldValue, object newValue)
+        protected VertexPropertyEvent(Vertex vertex, string key, object oldValue, object newValue)
         {
-            _Vertex = vertex;
-            _Key = key;
-            _OldValue = oldValue;
-            _NewValue = newValue;
+            _vertex = vertex;
+            _key = key;
+            _oldValue = oldValue;
+            _newValue = newValue;
         }
 
-        protected abstract void Fire(GraphChangedListener listener, Vertex vertex, string key, object oldValue, object newValue);
+        protected abstract void fire(GraphChangedListener listener, Vertex vertex, string key, object oldValue, object newValue);
 
-        public void FireEvent(IEnumerator<GraphChangedListener> eventListeners)
+        public void fireEvent(IEnumerator<GraphChangedListener> eventListeners)
         {
             while (eventListeners.MoveNext())
             {
-                Fire(eventListeners.Current, _Vertex, _Key, _OldValue, _NewValue);
+                fire(eventListeners.Current, _vertex, _key, _oldValue, _newValue);
             }
         }
     }

@@ -12,23 +12,23 @@ namespace Frontenac.Blueprints.Util
     public class VertexHelperTest : BaseTest
     {
         [Test]
-        public void TestEdgeSetEquality()
+        public void testEdgeSetEquality()
         {
-            Graph graph = TinkerGraphFactory.CreateTinkerGraph();
+            Graph graph = TinkerGraphFactory.createTinkerGraph();
 
-            foreach (Vertex v in graph.GetVertices())
+            foreach (Vertex v in graph.getVertices())
             {
-                foreach (Vertex u in graph.GetVertices())
+                foreach (Vertex u in graph.getVertices())
                 {
-                    if (ElementHelper.AreEqual(v, u))
+                    if (ElementHelper.areEqual(v, u))
                     {
-                        Assert.True(VertexHelper.HaveEqualEdges(v, u, true));
-                        Assert.True(VertexHelper.HaveEqualEdges(v, u, false));
+                        Assert.True(VertexHelper.haveEqualEdges(v, u, true));
+                        Assert.True(VertexHelper.haveEqualEdges(v, u, false));
                     }
                     else
                     {
-                        Assert.False(VertexHelper.HaveEqualEdges(v, u, true));
-                        Assert.False(VertexHelper.HaveEqualEdges(v, u, false));
+                        Assert.False(VertexHelper.haveEqualEdges(v, u, true));
+                        Assert.False(VertexHelper.haveEqualEdges(v, u, false));
                     }
 
                 }
@@ -36,21 +36,21 @@ namespace Frontenac.Blueprints.Util
         }
 
         [Test]
-        public void TestNeighborhoodEquality()
+        public void testNeighborhoodEquality()
         {
-            Graph graph = TinkerGraphFactory.CreateTinkerGraph();
+            Graph graph = TinkerGraphFactory.createTinkerGraph();
 
-            foreach (Vertex v in graph.GetVertices())
+            foreach (Vertex v in graph.getVertices())
             {
-                foreach (Vertex u in graph.GetVertices())
+                foreach (Vertex u in graph.getVertices())
                 {
-                    if (ElementHelper.AreEqual(v, u))
+                    if (ElementHelper.areEqual(v, u))
                     {
-                        Assert.True(VertexHelper.HaveEqualNeighborhood(v, u, true));
-                        Assert.True(VertexHelper.HaveEqualNeighborhood(v, u, false));
+                        Assert.True(VertexHelper.haveEqualNeighborhood(v, u, true));
+                        Assert.True(VertexHelper.haveEqualNeighborhood(v, u, false));
                     } else {
-                        Assert.False(VertexHelper.HaveEqualNeighborhood(v, u, true));
-                        Assert.False(VertexHelper.HaveEqualNeighborhood(v, u, false));
+                        Assert.False(VertexHelper.haveEqualNeighborhood(v, u, true));
+                        Assert.False(VertexHelper.haveEqualNeighborhood(v, u, false));
                     }
                 }
             }

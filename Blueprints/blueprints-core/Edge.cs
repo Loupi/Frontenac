@@ -20,12 +20,12 @@ namespace Frontenac.Blueprints
         /// </summary>
         /// <param name="direction">whether to return the tail/out or head/in vertex</param>
         /// <returns>the tail/out or head/in vertex</returns>
-        Vertex GetVertex(Direction direction);
+        Vertex getVertex(Direction direction);
 
         /// <summary>
         /// Return the label associated with the edge.
         /// </summary>
         /// <returns>the edge label</returns>
-        string GetLabel();
+        string getLabel();
     }
 }

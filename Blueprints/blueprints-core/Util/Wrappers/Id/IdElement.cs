@@ -8,82 +8,82 @@ namespace Frontenac.Blueprints.Util.Wrappers.Id
 {
     public abstract class IdElement : Element
     {
-        protected readonly Element _BaseElement;
-        protected readonly IdGraph _IdGraph;
-        protected readonly bool _PropertyBased;
+        protected readonly Element baseElement;
+        protected readonly IdGraph idGraph;
+        protected readonly bool propertyBased;
 
         protected IdElement(Element baseElement, IdGraph idGraph, bool propertyBased)
         {
-            _BaseElement = baseElement;
-            _IdGraph = idGraph;
-            _PropertyBased = propertyBased;
+            this.baseElement = baseElement;
+            this.idGraph = idGraph;
+            this.propertyBased = propertyBased;
         }
 
-        public object GetProperty(string key)
+        public object getProperty(string key)
         {
-            if (_PropertyBased && key == IdGraph.ID)
+            if (propertyBased && key == IdGraph.ID)
                 return null;
 
-            return _BaseElement.GetProperty(key);
+            return baseElement.getProperty(key);
         }
 
-        public IEnumerable<string> GetPropertyKeys()
+        public IEnumerable<string> getPropertyKeys()
         {
-            if (_PropertyBased)
+            if (propertyBased)
             {
-                IEnumerable<string> keys = _BaseElement.GetPropertyKeys();
+                IEnumerable<string> keys = baseElement.getPropertyKeys();
                 HashSet<string> s = new HashSet<string>(keys);
                 s.Remove(IdGraph.ID);
                 return s;
             }
 
-            return _BaseElement.GetPropertyKeys();
+            return baseElement.getPropertyKeys();
         }
 
-        public void SetProperty(string key, object value)
+        public void setProperty(string key, object value)
         {
-            if (_PropertyBased && key == IdGraph.ID)
+            if (propertyBased && key == IdGraph.ID)
                 throw new ArgumentException(string.Concat("Unable to set value for reserved property ", IdGraph.ID));
 
-            _BaseElement.SetProperty(key, value);
+            baseElement.setProperty(key, value);
         }
 
-        public object RemoveProperty(string key)
+        public object removeProperty(string key)
         {
-            if (_PropertyBased && key == IdGraph.ID)
+            if (propertyBased && key == IdGraph.ID)
                 throw new ArgumentException(string.Concat("Unable to remove value for reserved property ", IdGraph.ID));
 
-            return _BaseElement.RemoveProperty(key);
+            return baseElement.removeProperty(key);
         }
 
-        public object GetId()
+        public object getId()
         {
-            return _PropertyBased
-                ? _BaseElement.GetProperty(IdGraph.ID)
-                : _BaseElement.GetId();
+            return propertyBased
+                ? baseElement.getProperty(IdGraph.ID)
+                : baseElement.getId();
         }
 
         public override int GetHashCode()
         {
-            return _BaseElement.GetHashCode();
+            return baseElement.GetHashCode();
         }
 
         public override bool Equals(object obj)
         {
-            return ElementHelper.AreEqual(this, obj);
+            return ElementHelper.areEqual(this, obj);
         }
 
-        public void Remove()
+        public void remove()
         {
             if (this is Vertex)
-                _IdGraph.RemoveVertex((Vertex)this);
+                idGraph.removeVertex((Vertex)this);
             else
-                _IdGraph.RemoveEdge((Edge)this);
+                idGraph.removeEdge((Edge)this);
         }
 
         public override string ToString()
         {
-            return _BaseElement.ToString();
+            return baseElement.ToString();
         }
     }
 }

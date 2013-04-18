@@ -8,26 +8,26 @@ namespace Frontenac.Blueprints.Util.Wrappers.Event.Listener
 {
     public abstract class EdgePropertyEvent : Event
     {
-        readonly Edge _Edge;
-        readonly string _Key;
-        readonly object _OldValue;
-        readonly object _NewValue;
+        readonly Edge _edge;
+        readonly string _key;
+        readonly object _oldValue;
+        readonly object _newValue;
 
-        public EdgePropertyEvent(Edge edge, string key, object oldValue, object newValue)
+        protected EdgePropertyEvent(Edge edge, string key, object oldValue, object newValue)
         {
-            _Edge = edge;
-            _Key = key;
-            _OldValue = oldValue;
-            _NewValue = newValue;
+            _edge = edge;
+            _key = key;
+            _oldValue = oldValue;
+            _newValue = newValue;
         }
 
-        protected abstract void Fire(GraphChangedListener listener, Edge edge, string key, object oldValue, object newValue);
+        protected abstract void fire(GraphChangedListener listener, Edge edge, string key, object oldValue, object newValue);
 
-        public void FireEvent(IEnumerator<GraphChangedListener> eventListeners)
+        public void fireEvent(IEnumerator<GraphChangedListener> eventListeners)
         {
             while (eventListeners.MoveNext())
             {
-                Fire(eventListeners.Current, _Edge, _Key, _OldValue, _NewValue);
+                fire(eventListeners.Current, _edge, _key, _oldValue, _newValue);
             }
         }
     }

@@ -13,99 +13,99 @@ namespace Frontenac.Blueprints.Util.Wrappers.Wrapped
     /// <typeparam name="T"></typeparam>
     public class WrappedGraph : Graph, WrapperGraph
     {
-        protected Graph _BaseGraph;
-        readonly Features _Features;
+        protected Graph baseGraph;
+        readonly Features _features;
 
         public WrappedGraph(Graph baseGraph)
         {
-            _BaseGraph = baseGraph;
-            _Features = _BaseGraph.GetFeatures().CopyFeatures();
-            _Features.IsWrapper = true;
+            this.baseGraph = baseGraph;
+            _features = this.baseGraph.getFeatures().copyFeatures();
+            _features.isWrapper = true;
         }
 
-        public void Shutdown()
+        public void shutdown()
         {
-            _BaseGraph.Shutdown();
+            baseGraph.shutdown();
         }
 
-        public Vertex AddVertex(object id)
+        public Vertex addVertex(object id)
         {
-            return new WrappedVertex(_BaseGraph.AddVertex(id));
+            return new WrappedVertex(baseGraph.addVertex(id));
         }
 
-        public Vertex GetVertex(object id)
+        public Vertex getVertex(object id)
         {
-            Vertex vertex = _BaseGraph.GetVertex(id);
+            Vertex vertex = baseGraph.getVertex(id);
             if (null == vertex)
                 return null;
 
             return new WrappedVertex(vertex);
         }
 
-        public IEnumerable<Vertex> GetVertices()
+        public IEnumerable<Vertex> getVertices()
         {
-            return new WrappedVertexIterable(_BaseGraph.GetVertices());
+            return new WrappedVertexIterable(baseGraph.getVertices());
         }
 
-        public IEnumerable<Vertex> GetVertices(string key, object value)
+        public IEnumerable<Vertex> getVertices(string key, object value)
         {
-            return new WrappedVertexIterable(_BaseGraph.GetVertices(key, value));
+            return new WrappedVertexIterable(baseGraph.getVertices(key, value));
         }
 
-        public Edge AddEdge(object id, Vertex outVertex, Vertex inVertex, string label)
+        public Edge addEdge(object id, Vertex outVertex, Vertex inVertex, string label)
         {
-            return new WrappedEdge(_BaseGraph.AddEdge(id, ((WrappedVertex)outVertex).GetBaseVertex(), ((WrappedVertex)inVertex).GetBaseVertex(), label));
+            return new WrappedEdge(baseGraph.addEdge(id, ((WrappedVertex)outVertex).getBaseVertex(), ((WrappedVertex)inVertex).getBaseVertex(), label));
         }
 
-        public Edge GetEdge(object id)
+        public Edge getEdge(object id)
         {
-            Edge edge = _BaseGraph.GetEdge(id);
+            Edge edge = baseGraph.getEdge(id);
             if (null == edge)
                 return null;
 
             return new WrappedEdge(edge);
         }
 
-        public IEnumerable<Edge> GetEdges()
+        public IEnumerable<Edge> getEdges()
         {
-            return new WrappedEdgeIterable(_BaseGraph.GetEdges());
+            return new WrappedEdgeIterable(baseGraph.getEdges());
         }
 
-        public IEnumerable<Edge> GetEdges(string key, object value)
+        public IEnumerable<Edge> getEdges(string key, object value)
         {
-            return new WrappedEdgeIterable(_BaseGraph.GetEdges(key, value));
+            return new WrappedEdgeIterable(baseGraph.getEdges(key, value));
         }
 
-        public void RemoveEdge(Edge edge)
+        public void removeEdge(Edge edge)
         {
-            _BaseGraph.RemoveEdge(((WrappedEdge)edge).GetBaseEdge());
+            baseGraph.removeEdge(((WrappedEdge)edge).getBaseEdge());
         }
 
-        public void RemoveVertex(Vertex vertex)
+        public void removeVertex(Vertex vertex)
         {
-            _BaseGraph.RemoveVertex(((WrappedVertex)vertex).GetBaseVertex());
+            baseGraph.removeVertex(((WrappedVertex)vertex).getBaseVertex());
         }
 
-        public Graph GetBaseGraph()
+        public Graph getBaseGraph()
         {
-            return _BaseGraph;
+            return baseGraph;
         }
 
-        public GraphQuery Query()
+        public GraphQuery query()
         {
-            return new WrappedGraphQuery(_BaseGraph.Query(),
-                t => new WrappedEdgeIterable(t.Edges()),
-                t => new WrappedVertexIterable(t.Vertices()));
+            return new WrappedGraphQuery(baseGraph.query(),
+                t => new WrappedEdgeIterable(t.edges()),
+                t => new WrappedVertexIterable(t.vertices()));
         }
 
         public override string ToString()
         {
-            return StringFactory.GraphString(this, _BaseGraph.ToString());
+            return StringFactory.graphString(this, baseGraph.ToString());
         }
 
-        public Features GetFeatures()
+        public Features getFeatures()
         {
-            return _Features;
+            return _features;
         }
     }
 }

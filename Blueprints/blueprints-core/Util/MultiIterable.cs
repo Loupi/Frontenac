@@ -12,12 +12,12 @@ namespace Frontenac.Blueprints.Util
     /// <typeparam name="S"></typeparam>
     public class MultiIterable<S> : CloseableIterable<S>
     {
-        readonly List<IEnumerable<S>> _Iterables;
-        bool _Disposed;
+        readonly List<IEnumerable<S>> _iterables;
+        bool _disposed;
 
         public MultiIterable(List<IEnumerable<S>> iterables)
         {
-            _Iterables = iterables;
+            _iterables = iterables;
         }
 
         ~MultiIterable()
@@ -33,24 +33,24 @@ namespace Frontenac.Blueprints.Util
 
         protected virtual void Dispose(bool disposing)
         {
-            if (_Disposed)
+            if (_disposed)
                 return;
 
             if (disposing)
             {
-                foreach (IEnumerable<S> itty in _Iterables)
+                foreach (IEnumerable<S> itty in _iterables)
                 {
                     if (itty is IDisposable)
                         (itty as IDisposable).Dispose();
                 }
             }
 
-            _Disposed = true;
+            _disposed = true;
         }
 
         public IEnumerator<S> GetEnumerator()
         {
-            return new MultiIterableIterable<S>(_Iterables).GetEnumerator();
+            return new MultiIterableIterable<S>(_iterables).GetEnumerator();
         }
 
         System.Collections.IEnumerator System.Collections.IEnumerable.GetEnumerator()
@@ -60,55 +60,55 @@ namespace Frontenac.Blueprints.Util
 
         class MultiIterableIterable<T> : IEnumerable<T>
         {
-            readonly List<IEnumerable<T>> _Iterables;
-            IEnumerator<T> _CurrentIterator;
-            int _Current = 0;
+            readonly List<IEnumerable<T>> _iterables;
+            IEnumerator<T> _currentIterator;
+            int _current = 0;
 
             public MultiIterableIterable(List<IEnumerable<T>> iterables)
             {
-                _Iterables = iterables;
-                _CurrentIterator = iterables[0].GetEnumerator();
+                _iterables = iterables;
+                _currentIterator = iterables[0].GetEnumerator();
             }
 
             public IEnumerator<T> GetEnumerator()
             {
-                if (_Iterables.Count > 0)
+                if (_iterables.Count > 0)
                 {
-                    while (HasNext())
+                    while (hasNext())
                     {
                         while (true)
                         {
-                            if (_CurrentIterator.MoveNext())
+                            if (_currentIterator.MoveNext())
                             {
-                                yield return _CurrentIterator.Current;
+                                yield return _currentIterator.Current;
                             }
                             else
                             {
-                                _Current++;
-                                if (_Current >= _Iterables.Count)
+                                _current++;
+                                if (_current >= _iterables.Count)
                                     break;
-                                _CurrentIterator = _Iterables[_Current].GetEnumerator();
+                                _currentIterator = _iterables[_current].GetEnumerator();
                             }
                         }
                     }
                 }
             }
 
-            bool HasNext()
+            bool hasNext()
             {
                 while (true)
                 {
-                    if (_CurrentIterator.MoveNext())
+                    if (_currentIterator.MoveNext())
                     {
-                        _CurrentIterator.Reset();
+                        _currentIterator.Reset();
                         return true;
                     }
                     else
                     {
-                        _Current++;
-                        if (_Current >= _Iterables.Count)
+                        _current++;
+                        if (_current >= _iterables.Count)
                             break;
-                        _CurrentIterator = _Iterables[_Current].GetEnumerator();
+                        _currentIterator = _iterables[_current].GetEnumerator();
                     }
                 }
                 return false;

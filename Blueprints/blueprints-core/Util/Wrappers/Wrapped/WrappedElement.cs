@@ -8,61 +8,61 @@ namespace Frontenac.Blueprints.Util.Wrappers.Wrapped
 {
     public abstract class WrappedElement : Element
     {
-        protected Element _BaseElement;
+        protected Element baseElement;
 
         protected WrappedElement(Element baseElement)
         {
-            _BaseElement = baseElement;
+            this.baseElement = baseElement;
         }
 
-        public void SetProperty(string key, object value)
+        public void setProperty(string key, object value)
         {
-            _BaseElement.SetProperty(key, value);
+            baseElement.setProperty(key, value);
         }
 
-        public object GetProperty(string key)
+        public object getProperty(string key)
         {
-            return _BaseElement.GetProperty(key);
+            return baseElement.getProperty(key);
         }
 
-        public object RemoveProperty(string key)
+        public object removeProperty(string key)
         {
-            return _BaseElement.RemoveProperty(key);
+            return baseElement.removeProperty(key);
         }
 
-        public IEnumerable<string> GetPropertyKeys()
+        public IEnumerable<string> getPropertyKeys()
         {
-            return _BaseElement.GetPropertyKeys();
+            return baseElement.getPropertyKeys();
         }
 
-        public object GetId()
+        public object getId()
         {
-            return _BaseElement.GetId();
+            return baseElement.getId();
         }
 
         public override bool Equals(object obj)
         {
-            return ElementHelper.AreEqual(this, obj);
+            return ElementHelper.areEqual(this, obj);
         }
 
         public override int GetHashCode()
         {
-            return _BaseElement.GetHashCode();
+            return baseElement.GetHashCode();
         }
 
-        public Element GetBaseElement()
+        public Element getBaseElement()
         {
-            return _BaseElement;
+            return baseElement;
         }
 
-        public void Remove()
+        public void remove()
         {
-            _BaseElement.Remove();
+            baseElement.remove();
         }
 
         public override string ToString()
         {
-            return _BaseElement.ToString();
+            return baseElement.ToString();
         }
     }
 }

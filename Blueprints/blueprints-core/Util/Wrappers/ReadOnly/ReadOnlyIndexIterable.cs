@@ -8,16 +8,16 @@ namespace Frontenac.Blueprints.Util.Wrappers.ReadOnly
 {
     class ReadOnlyIndexIterable : IEnumerable<Index>
     {
-        readonly IEnumerable<Index> _Iterable;
+        readonly IEnumerable<Index> _iterable;
 
         public ReadOnlyIndexIterable(IEnumerable<Index> iterable)
         {
-            _Iterable = iterable;
+            _iterable = iterable;
         }
 
         public IEnumerator<Index> GetEnumerator()
         {
-            foreach (Index index in _Iterable)
+            foreach (Index index in _iterable)
                 yield return new ReadOnlyIndex(index);
         }
 

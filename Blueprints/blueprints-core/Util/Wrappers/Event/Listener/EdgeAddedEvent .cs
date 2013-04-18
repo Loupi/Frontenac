@@ -8,18 +8,18 @@ namespace Frontenac.Blueprints.Util.Wrappers.Event.Listener
 {
     public class EdgeAddedEvent : Event
     {
-        readonly Edge _Edge;
+        readonly Edge _edge;
 
         public EdgeAddedEvent(Edge edge)
         {
-            _Edge = edge;
+            _edge = edge;
         }
 
-        public void FireEvent(IEnumerator<GraphChangedListener> eventListeners)
+        public void fireEvent(IEnumerator<GraphChangedListener> eventListeners)
         {
             while (eventListeners.MoveNext())
             {
-                eventListeners.Current.EdgeAdded(_Edge);
+                eventListeners.Current.edgeAdded(_edge);
             }
         }
     }

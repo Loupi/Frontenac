@@ -8,12 +8,12 @@ namespace Frontenac.Blueprints.Util
 {
     public class WrappingCloseableIterable<T> : CloseableIterable<T>
     {
-        readonly IEnumerable<T> _Iterable;
-        bool _Disposed;
+        readonly IEnumerable<T> _iterable;
+        bool _disposed;
 
         public WrappingCloseableIterable(IEnumerable<T> iterable)
         {
-            _Iterable = iterable;
+            _iterable = iterable;
         }
 
         ~WrappingCloseableIterable()
@@ -29,21 +29,21 @@ namespace Frontenac.Blueprints.Util
 
         protected virtual void Dispose(bool disposing)
         {
-            if (_Disposed)
+            if (_disposed)
                 return;
 
             if (disposing)
             {
-                if (_Iterable is IDisposable)
-                    (_Iterable as IDisposable).Dispose();
+                if (_iterable is IDisposable)
+                    (_iterable as IDisposable).Dispose();
             }
 
-            _Disposed = true;
+            _disposed = true;
         }
 
         public IEnumerator<T> GetEnumerator()
         {
-            foreach (T t in _Iterable)
+            foreach (T t in _iterable)
                 yield return t;
         }
 
@@ -54,7 +54,7 @@ namespace Frontenac.Blueprints.Util
 
         public override string ToString()
         {
-            return _Iterable.ToString();
+            return _iterable.ToString();
         }
     }
 }

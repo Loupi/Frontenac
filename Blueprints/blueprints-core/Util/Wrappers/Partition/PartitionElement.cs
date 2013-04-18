@@ -8,85 +8,85 @@ namespace Frontenac.Blueprints.Util.Wrappers.Partition
 {
     public abstract class PartitionElement : Element
     {
-        protected Element _BaseElement;
-        protected PartitionGraph _Graph;
+        protected Element baseElement;
+        protected PartitionGraph graph;
 
         protected PartitionElement(Element baseElement, PartitionGraph partitionGraph)
         {
-            _BaseElement = baseElement;
-            _Graph = partitionGraph;
+            this.baseElement = baseElement;
+            graph = partitionGraph;
         }
 
-        public void SetProperty(string key, object value)
+        public void setProperty(string key, object value)
         {
-            if (!key.Equals(_Graph.GetPartitionKey()))
-                _BaseElement.SetProperty(key, value);
+            if (!key.Equals(graph.getPartitionKey()))
+                baseElement.setProperty(key, value);
         }
 
-        public object GetProperty(string key)
+        public object getProperty(string key)
         {
-            if (key.Equals(_Graph.GetPartitionKey()))
+            if (key.Equals(graph.getPartitionKey()))
                 return null;
 
-            return _BaseElement.GetProperty(key);
+            return baseElement.getProperty(key);
         }
 
-        public object RemoveProperty(string key)
+        public object removeProperty(string key)
         {
-            if (key.Equals(_Graph.GetPartitionKey()))
+            if (key.Equals(graph.getPartitionKey()))
                 return null;
 
-            return _BaseElement.RemoveProperty(key);
+            return baseElement.removeProperty(key);
         }
 
-        public IEnumerable<string> GetPropertyKeys()
+        public IEnumerable<string> getPropertyKeys()
         {
-            ISet<string> keys = new HashSet<string>(_BaseElement.GetPropertyKeys());
-            keys.Remove(_Graph.GetPartitionKey());
+            ISet<string> keys = new HashSet<string>(baseElement.getPropertyKeys());
+            keys.Remove(graph.getPartitionKey());
             return keys;
         }
 
-        public object GetId()
+        public object getId()
         {
-            return _BaseElement.GetId();
+            return baseElement.getId();
         }
 
         public override bool Equals(object obj)
         {
-            return ElementHelper.AreEqual(this, obj);
+            return ElementHelper.areEqual(this, obj);
         }
 
         public override int GetHashCode()
         {
-            return _BaseElement.GetHashCode();
+            return baseElement.GetHashCode();
         }
 
-        public Element GetBaseElement()
+        public Element getBaseElement()
         {
-            return _BaseElement;
+            return baseElement;
         }
 
-        public string GetPartition()
+        public string getPartition()
         {
-            return (string)_BaseElement.GetProperty(_Graph.GetPartitionKey());
+            return (string)baseElement.getProperty(graph.getPartitionKey());
         }
 
-        public void SetPartition(string partition)
+        public void setPartition(string partition)
         {
-            _BaseElement.SetProperty(_Graph.GetPartitionKey(), partition);
+            baseElement.setProperty(graph.getPartitionKey(), partition);
         }
 
-        public void Remove()
+        public void remove()
         {
             if (this is Vertex)
-                _Graph.RemoveVertex(this as Vertex);
+                graph.removeVertex(this as Vertex);
             else
-                _Graph.RemoveEdge(this as Edge);
+                graph.removeEdge(this as Edge);
         }
 
         public override string ToString()
         {
-            return _BaseElement.ToString();
+            return baseElement.ToString();
         }
     }
 }

@@ -18,19 +18,19 @@ namespace Frontenac.Blueprints.Util.Wrappers.ReadOnly
         {
         }
 
-        public void DropKeyIndex(string key, Type elementClass)
+        public void dropKeyIndex(string key, Type elementClass)
         {
             throw new InvalidOperationException(ReadOnlyTokens.MUTATE_ERROR_MESSAGE);
         }
 
-        public void CreateKeyIndex(string key, Type elementClass, params Parameter[] indexParameters)
+        public void createKeyIndex(string key, Type elementClass, params Parameter[] indexParameters)
         {
             throw new InvalidOperationException(ReadOnlyTokens.MUTATE_ERROR_MESSAGE);
         }
 
-        public IEnumerable<string> GetIndexedKeys(Type elementClass)
+        public IEnumerable<string> getIndexedKeys(Type elementClass)
         {
-            return ((KeyIndexableGraph)_BaseGraph).GetIndexedKeys(elementClass);
+            return ((KeyIndexableGraph)baseGraph).getIndexedKeys(elementClass);
         }
     }
 }

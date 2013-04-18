@@ -11,51 +11,51 @@ namespace Frontenac.Blueprints.Util.Wrappers.Event.Listener
     /// </summary>
     public class ConsoleGraphChangedListener : GraphChangedListener
     {
-        readonly Graph _Graph;
+        readonly Graph _graph;
 
         public ConsoleGraphChangedListener(Graph graph)
         {
-            _Graph = graph;
+            _graph = graph;
         }
 
-        public void VertexAdded(Vertex vertex)
+        public void vertexAdded(Vertex vertex)
         {
-            Console.WriteLine(string.Concat("Vertex [", vertex, "] added to graph [", _Graph, "]"));
+            Console.WriteLine(string.Concat("Vertex [", vertex, "] added to graph [", _graph, "]"));
         }
 
-        public void VertexPropertyChanged(Vertex vertex, string key, object oldValue, object newValue)
+        public void vertexPropertyChanged(Vertex vertex, string key, object oldValue, object newValue)
         {
-            Console.WriteLine(string.Concat("Vertex [", vertex, "] property [", key, "] change value from [", oldValue, "] to [", newValue, "] in graph [", _Graph, "]"));
+            Console.WriteLine(string.Concat("Vertex [", vertex, "] property [", key, "] change value from [", oldValue, "] to [", newValue, "] in graph [", _graph, "]"));
         }
 
-        public void VertexPropertyRemoved(Vertex vertex, string key, object removedValue)
+        public void vertexPropertyRemoved(Vertex vertex, string key, object removedValue)
         {
-            Console.WriteLine(string.Concat("Vertex [", vertex, "] property [", key, "] with value of [", removedValue, "] removed in graph [", _Graph, "]"));
+            Console.WriteLine(string.Concat("Vertex [", vertex, "] property [", key, "] with value of [", removedValue, "] removed in graph [", _graph, "]"));
         }
 
-        public void VertexRemoved(Vertex vertex)
+        public void vertexRemoved(Vertex vertex)
         {
-            Console.WriteLine(string.Concat("Vertex [", vertex, "] removed from graph [", _Graph, "]"));
+            Console.WriteLine(string.Concat("Vertex [", vertex, "] removed from graph [", _graph, "]"));
         }
 
-        public void EdgeAdded(Edge edge)
+        public void edgeAdded(Edge edge)
         {
-            Console.WriteLine(string.Concat("Edge [", edge, "] added to graph [", _Graph, "]"));
+            Console.WriteLine(string.Concat("Edge [", edge, "] added to graph [", _graph, "]"));
         }
 
-        public void EdgePropertyChanged(Edge edge, string key, object oldValue, object newValue)
+        public void edgePropertyChanged(Edge edge, string key, object oldValue, object newValue)
         {
-            Console.WriteLine(string.Concat("Edge [", edge, "] property [", key, "] change value from [", oldValue, "] to [", newValue, "] in graph [", _Graph, "]"));
+            Console.WriteLine(string.Concat("Edge [", edge, "] property [", key, "] change value from [", oldValue, "] to [", newValue, "] in graph [", _graph, "]"));
         }
 
-        public void EdgePropertyRemoved(Edge edge, string key, object removedValue)
+        public void edgePropertyRemoved(Edge edge, string key, object removedValue)
         {
-            Console.WriteLine(string.Concat("Edge [", edge, "] property [", key, "] with value of [", removedValue, "] removed in graph [", _Graph, "]"));
+            Console.WriteLine(string.Concat("Edge [", edge, "] property [", key, "] with value of [", removedValue, "] removed in graph [", _graph, "]"));
         }
 
-        public void EdgeRemoved(Edge edge)
+        public void edgeRemoved(Edge edge)
         {
-            Console.WriteLine(string.Concat("Edge [", edge, "] removed from graph [", _Graph, "]"));
+            Console.WriteLine(string.Concat("Edge [", edge, "] removed from graph [", _graph, "]"));
         }
     }
 }

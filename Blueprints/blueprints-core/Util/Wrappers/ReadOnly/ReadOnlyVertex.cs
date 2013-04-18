@@ -14,26 +14,26 @@ namespace Frontenac.Blueprints.Util.Wrappers.ReadOnly
 
         }
 
-        public IEnumerable<Edge> GetEdges(Direction direction, params string[] labels)
+        public IEnumerable<Edge> getEdges(Direction direction, params string[] labels)
         {
-            return new ReadOnlyEdgeIterable((_BaseElement as Vertex).GetEdges(direction, labels));
+            return new ReadOnlyEdgeIterable((baseElement as Vertex).getEdges(direction, labels));
         }
 
-        public IEnumerable<Vertex> GetVertices(Direction direction, params string[] labels)
+        public IEnumerable<Vertex> getVertices(Direction direction, params string[] labels)
         {
-            return new ReadOnlyVertexIterable((_BaseElement as Vertex).GetVertices(direction, labels));
+            return new ReadOnlyVertexIterable((baseElement as Vertex).getVertices(direction, labels));
         }
 
-        public Edge AddEdge(string label, Vertex vertex)
+        public Edge addEdge(string label, Vertex vertex)
         {
             throw new InvalidOperationException(ReadOnlyTokens.MUTATE_ERROR_MESSAGE);
         }
 
-        public VertexQuery Query()
+        public VertexQuery query()
         {
-            return new WrapperVertexQuery((_BaseElement as Vertex).Query(),
-                t => new ReadOnlyEdgeIterable(t.Edges()),
-                t => new ReadOnlyVertexIterable(t.Vertices()));
+            return new WrapperVertexQuery((baseElement as Vertex).query(),
+                t => new ReadOnlyEdgeIterable(t.edges()),
+                t => new ReadOnlyVertexIterable(t.vertices()));
         }
     }
 }

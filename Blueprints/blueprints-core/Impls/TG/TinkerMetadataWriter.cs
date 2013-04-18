@@ -12,7 +12,7 @@ namespace Frontenac.Blueprints.Impls.TG
     /// </summary>
     class TinkerMetadataWriter
     {
-        readonly TinkerGraph _Graph;
+        readonly TinkerGraph _graph;
 
         /// <summary>
         /// the TinkerGraph to pull the data from
@@ -20,18 +20,18 @@ namespace Frontenac.Blueprints.Impls.TG
         /// <param name="graph"></param>
         public TinkerMetadataWriter(TinkerGraph graph)
         {
-            _Graph = graph;
+            _graph = graph;
         }
 
         /// <summary>
         /// Write TinkerGraph metadata to a file.
         /// </summary>
         /// <param name="filename">the name of the file to write the TinkerGraph metadata to</param>
-        public void Save(string filename)
+        public void save(string filename)
         {
             using (var fos = File.Create(filename))
             {
-                Save(fos);
+                save(fos);
             }
         }
 
@@ -39,14 +39,14 @@ namespace Frontenac.Blueprints.Impls.TG
         /// Write TinkerGraph metadata to an OutputStream.
         /// </summary>
         /// <param name="outputStream">the OutputStream to write the TinkerGraph metadata to</param>
-        public void Save(Stream outputStream)
+        public void save(Stream outputStream)
         {
             using (BinaryWriter writer = new BinaryWriter(outputStream))
             {
-                writer.Write(this._Graph._CurrentId);
-                WriteIndices(writer, _Graph);
-                WriteVertexKeyIndices(writer, _Graph);
-                WriteEdgeKeyIndices(writer, _Graph);
+                writer.Write(this._graph.currentId);
+                writeIndices(writer, _graph);
+                writeVertexKeyIndices(writer, _graph);
+                writeEdgeKeyIndices(writer, _graph);
             }
         }
 
@@ -55,10 +55,10 @@ namespace Frontenac.Blueprints.Impls.TG
         /// </summary>
         /// <param name="graph">the TinkerGraph to pull the metadata from</param>
         /// <param name="outputStream">the OutputStream to write the TinkerGraph metadata to</param>
-        public static void Save(TinkerGraph graph, Stream outputStream)
+        public static void save(TinkerGraph graph, Stream outputStream)
         {
             TinkerMetadataWriter writer = new TinkerMetadataWriter(graph);
-            writer.Save(outputStream);
+            writer.save(outputStream);
         }
 
         /// <summary>
@@ -66,31 +66,31 @@ namespace Frontenac.Blueprints.Impls.TG
         /// </summary>
         /// <param name="graph">the TinkerGraph to pull the data from</param>
         /// <param name="filename">the name of the file to write the TinkerGraph metadata to</param>
-        public static void Save(TinkerGraph graph, string filename)
+        public static void save(TinkerGraph graph, string filename)
         {
             TinkerMetadataWriter writer = new TinkerMetadataWriter(graph);
-            writer.Save(filename);
+            writer.save(filename);
         }
 
-        void WriteIndices(BinaryWriter writer, TinkerGraph graph)
+        void writeIndices(BinaryWriter writer, TinkerGraph graph)
         {
             // Write the number of indices
-            writer.Write(graph._Indices.Count);
+            writer.Write(graph.indices.Count);
 
-            foreach (var index in graph._Indices)
+            foreach (var index in graph.indices)
             {
                 // Write the index name
                 writer.Write(index.Key);
 
                 TinkerIndex tinkerIndex = index.Value;
-                Type indexClass = tinkerIndex.GetIndexClass();
+                Type indexClass = tinkerIndex.getIndexClass();
 
                 // Write the index type
                 writer.Write((byte)(indexClass == typeof(Vertex) ? 1 : 2));
 
                 // Write the number of items associated with this index name
-                writer.Write(tinkerIndex._Index.Count);
-                foreach (var tinkerIndexItem in tinkerIndex._Index)
+                writer.Write(tinkerIndex.index.Count);
+                foreach (var tinkerIndexItem in tinkerIndex.index)
                 {
                     // Write the item key
                     writer.Write(tinkerIndexItem.Key);
@@ -110,7 +110,7 @@ namespace Frontenac.Blueprints.Impls.TG
                             foreach (Vertex v in vertices)
                             {
                                 // Write the vertex identifier
-                                WriteTypedData(writer, v.GetId());
+                                writeTypedData(writer, v.getId());
                             }
                         }
                         else if (indexClass == typeof(Edge))
@@ -122,7 +122,7 @@ namespace Frontenac.Blueprints.Impls.TG
                             foreach (Edge e in edges)
                             {
                                 // Write the edge identifier
-                                WriteTypedData(writer, e.GetId());
+                                writeTypedData(writer, e.getId());
                             }
                         }
                     }
@@ -130,12 +130,12 @@ namespace Frontenac.Blueprints.Impls.TG
             }
         }
 
-        void WriteVertexKeyIndices(BinaryWriter writer, TinkerGraph graph)
+        void writeVertexKeyIndices(BinaryWriter writer, TinkerGraph graph)
         {
             // Write the number of vertex key indices
-            writer.Write(graph._VertexKeyIndex._Index.Count);
+            writer.Write(graph.vertexKeyIndex.index.Count);
 
-            foreach (var index in graph._VertexKeyIndex._Index)
+            foreach (var index in graph.vertexKeyIndex.index)
             {
                 // Write the key index name
                 writer.Write(index.Key);
@@ -145,25 +145,25 @@ namespace Frontenac.Blueprints.Impls.TG
                 foreach (var item in index.Value)
                 {
                     // Write the item key
-                    WriteTypedData(writer, item.Key);
+                    writeTypedData(writer, item.Key);
 
                     // Write the number of vertices in this item
                     writer.Write(item.Value.Count);
                     foreach (Vertex v in item.Value)
                     {
                         // Write the vertex identifier
-                        WriteTypedData(writer, v.GetId());
+                        writeTypedData(writer, v.getId());
                     }
                 }
             }
         }
 
-        void WriteEdgeKeyIndices(BinaryWriter writer, TinkerGraph graph)
+        void writeEdgeKeyIndices(BinaryWriter writer, TinkerGraph graph)
         {
             // Write the number of edge key indices
-            writer.Write(graph._EdgeKeyIndex._Index.Count);
+            writer.Write(graph.edgeKeyIndex.index.Count);
 
-            foreach (var index in graph._EdgeKeyIndex._Index)
+            foreach (var index in graph.edgeKeyIndex.index)
             {
                 // Write the key index name
                 writer.Write(index.Key);
@@ -173,20 +173,20 @@ namespace Frontenac.Blueprints.Impls.TG
                 foreach (var item in index.Value)
                 {
                     // Write the item key
-                    WriteTypedData(writer, item.Key);
+                    writeTypedData(writer, item.Key);
 
                     // Write the number of edges in this item
                     writer.Write(item.Value.Count);
                     foreach (Edge e in item.Value)
                     {
                         // Write the edge identifier
-                        WriteTypedData(writer, e.GetId());
+                        writeTypedData(writer, e.getId());
                     }
                 }
             }
         }
 
-        void WriteTypedData(BinaryWriter writer, object data)
+        void writeTypedData(BinaryWriter writer, object data)
         {
             if (data is string)
             {

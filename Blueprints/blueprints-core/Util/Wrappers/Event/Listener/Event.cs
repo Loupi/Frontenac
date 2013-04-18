@@ -11,6 +11,6 @@ namespace Frontenac.Blueprints.Util.Wrappers.Event.Listener
     /// </summary>
     public interface Event
     {
-        void FireEvent(IEnumerator<GraphChangedListener> eventListeners);
+        void fireEvent(IEnumerator<GraphChangedListener> eventListeners);
     }
 }

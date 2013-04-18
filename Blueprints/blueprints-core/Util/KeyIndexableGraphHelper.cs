@@ -19,7 +19,7 @@ namespace Frontenac.Blueprints.Util
         /// <param name="elements">the elements to index into the key indices</param>
         /// <param name="keys">the keys of the key indices</param>
         /// <returns>the number of element properties that were indexed</returns>
-        public static long ReIndexElements<T>(Graph graph, IEnumerable<T> elements, IEnumerable<string> keys) where T : Element
+        public static long reIndexElements<T>(Graph graph, IEnumerable<T> elements, IEnumerable<string> keys) where T : Element
         {
             bool isTransactional = graph is TransactionalGraph;
             long counter = 0;
@@ -27,14 +27,14 @@ namespace Frontenac.Blueprints.Util
             {
                 foreach (string key in keys)
                 {
-                    object value = element.RemoveProperty(key);
+                    object value = element.removeProperty(key);
                     if (null != value)
                     {
                         counter++;
-                        element.SetProperty(key, value);
+                        element.setProperty(key, value);
 
                         if (isTransactional && (counter % 1000 == 0))
-                            ((TransactionalGraph)graph).Commit();
+                            ((TransactionalGraph)graph).commit();
                     }
                 }
             }

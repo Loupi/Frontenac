@@ -23,24 +23,24 @@ namespace Frontenac.Blueprints.Util
         public const string LABEL = "label";
         public const string EMPTY_STRING = "";
 
-        public static string VertexString(Vertex vertex)
+        public static string vertexString(Vertex vertex)
         {
-            return string.Concat(V, L_BRACKET, vertex.GetId(), R_BRACKET);
+            return string.Concat(V, L_BRACKET, vertex.getId(), R_BRACKET);
         }
 
-        public static string EdgeString(Edge edge)
+        public static string edgeString(Edge edge)
         {
-            return string.Concat(E, L_BRACKET, edge.GetId(), R_BRACKET, L_BRACKET, edge.GetVertex(Direction.OUT).GetId(), DASH, edge.GetLabel(), ARROW, edge.GetVertex(Direction.IN).GetId(), R_BRACKET);
+            return string.Concat(E, L_BRACKET, edge.getId(), R_BRACKET, L_BRACKET, edge.getVertex(Direction.OUT).getId(), DASH, edge.getLabel(), ARROW, edge.getVertex(Direction.IN).getId(), R_BRACKET);
         }
 
-        public static string GraphString(Graph graph, string internalString)
+        public static string graphString(Graph graph, string internalString)
         {
             return string.Concat(graph.GetType().Name.ToLower(), L_BRACKET, internalString, R_BRACKET);
         }
 
-        public static string IndexString(Index index)
+        public static string indexString(Index index)
         {
-            return string.Concat("index", L_BRACKET, index.GetIndexName(), COLON, index.GetIndexClass().Name, R_BRACKET);
+            return string.Concat("index", L_BRACKET, index.getIndexName(), COLON, index.getIndexClass().Name, R_BRACKET);
         }
     }
 }

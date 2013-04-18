@@ -10,51 +10,51 @@ namespace Frontenac.Blueprints.Impls.TG
     [Serializable]
     class TinkerIndex : Index
     {
-        internal Dictionary<string, Dictionary<object, HashSet<Element>>> _Index = new Dictionary<string, Dictionary<object, HashSet<Element>>>();
-        protected readonly string _IndexName;
-        protected readonly Type _IndexClass;
+        internal Dictionary<string, Dictionary<object, HashSet<Element>>> index = new Dictionary<string, Dictionary<object, HashSet<Element>>>();
+        protected readonly string indexName;
+        protected readonly Type indexClass;
 
         public TinkerIndex(string indexName, Type indexClass)
         {
-            _IndexName = indexName;
-            _IndexClass = indexClass;
+            this.indexName = indexName;
+            this.indexClass = indexClass;
         }
 
-        public string GetIndexName()
+        public string getIndexName()
         {
-            return _IndexName;
+            return indexName;
         }
 
-        public Type GetIndexClass()
+        public Type getIndexClass()
         {
-            return _IndexClass;
+            return indexClass;
         }
 
-        public void Put(string key, object value, Element element)
+        public void put(string key, object value, Element element)
         {
-            var keyMap = _Index.Get(key);
+            var keyMap = index.get(key);
             if (keyMap == null)
             {
                 keyMap = new Dictionary<object, HashSet<Element>>();
-                _Index.Put(key, keyMap);
+                index.put(key, keyMap);
             }
-            HashSet<Element> objects = keyMap.Get(value);
+            HashSet<Element> objects = Portability.get(keyMap, value);
             if (null == objects)
             {
                 objects = new HashSet<Element>();
-                keyMap.Put(value, objects);
+                keyMap.put(value, objects);
             }
             objects.Add(element);
         }
 
-        public CloseableIterable<Element> Get(string key, object value)
+        public CloseableIterable<Element> get(string key, object value)
         {
-            var keyMap = _Index.Get(key);
+            var keyMap = index.get(key);
             if (null == keyMap)
                 return new WrappingCloseableIterable<Element>(Enumerable.Empty<Element>());
             else
             {
-                HashSet<Element> set = keyMap.Get(value);
+                HashSet<Element> set = Portability.get(keyMap, value);
                 if (null == set)
                     return new WrappingCloseableIterable<Element>(Enumerable.Empty<Element>());
                 else
@@ -62,19 +62,19 @@ namespace Frontenac.Blueprints.Impls.TG
             }
         }
 
-        public CloseableIterable<Element> Query(string key, object query)
+        public CloseableIterable<Element> query(string key, object query)
         {
             throw new NotImplementedException();
         }
 
-        public long Count(string key, object value)
+        public long count(string key, object value)
         {
-            var keyMap = _Index.Get(key);
+            var keyMap = index.get(key);
             if (null == keyMap)
                 return 0;
             else
             {
-                HashSet<Element> set = keyMap.Get(value);
+                HashSet<Element> set = keyMap.get(value);
                 if (null == set)
                     return 0;
                 else
@@ -82,12 +82,12 @@ namespace Frontenac.Blueprints.Impls.TG
             }
         }
 
-        public void Remove(string key, object value, Element element)
+        public void remove(string key, object value, Element element)
         {
-            var keyMap = _Index.Get(key);
+            var keyMap = index.get(key);
             if (null != keyMap)
             {
-                HashSet<Element> objects = keyMap.Get(value);
+                HashSet<Element> objects = Portability.get(keyMap, value);
                 if (null != objects)
                 {
                     objects.Remove(element);
@@ -97,11 +97,11 @@ namespace Frontenac.Blueprints.Impls.TG
             }
         }
 
-        public void RemoveElement(Element element)
+        public void removeElement(Element element)
         {
-            if (_IndexClass.IsAssignableFrom(element.GetType()))
+            if (indexClass.IsInstanceOfType(element))
             {
-                foreach (var map in _Index.Values)
+                foreach (var map in index.Values)
                 {
                     foreach (HashSet<Element> set in map.Values)
                         set.Remove(element);
@@ -111,7 +111,7 @@ namespace Frontenac.Blueprints.Impls.TG
 
         public override string ToString()
         {
-            return StringFactory.IndexString(this);
+            return StringFactory.indexString(this);
         }
     }
 }

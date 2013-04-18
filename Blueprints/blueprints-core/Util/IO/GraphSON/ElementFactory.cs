@@ -16,11 +16,11 @@ namespace Frontenac.Blueprints.Util.IO.GraphSON
         /// <summary>
         /// Creates a new Edge instance.
         /// </summary>
-        Edge CreateEdge(object id, Vertex out_, Vertex in_, string label);
+        Edge createEdge(object id, Vertex out_, Vertex in_, string label);
 
         /// <summary>
         /// reates a new Vertex instance.
         /// </summary>
-        Vertex CreateVertex(object id);
+        Vertex createVertex(object id);
     }
 }

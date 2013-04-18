@@ -12,71 +12,71 @@ namespace Frontenac.Blueprints.Util.Wrappers
     /// </summary>
     public class WrapperVertexQuery : VertexQuery
     {
-        protected VertexQuery _Query;
-        protected Func<VertexQuery, IEnumerable<Edge>> _EdgesSelector;
-        protected Func<VertexQuery, IEnumerable<Vertex>> _VerticesSelector;
+        protected VertexQuery query;
+        protected Func<VertexQuery, IEnumerable<Edge>> edgesSelector;
+        protected Func<VertexQuery, IEnumerable<Vertex>> verticesSelector;
 
         public WrapperVertexQuery(VertexQuery query, Func<VertexQuery, IEnumerable<Edge>> edgesSelector, Func<VertexQuery, IEnumerable<Vertex>> verticesSelector)
         {
-            _Query = query;
-            _EdgesSelector = edgesSelector;
-            _VerticesSelector = verticesSelector;
+            this.query = query;
+            this.edgesSelector = edgesSelector;
+            this.verticesSelector = verticesSelector;
         }
 
-        public VertexQuery Direction(Direction direction)
+        public VertexQuery direction(Direction direction)
         {
-            _Query = _Query.Direction(direction);
+            query = query.direction(direction);
             return this;
         }
 
-        public VertexQuery Labels(params string[] labels)
+        public VertexQuery labels(params string[] labels)
         {
-            _Query = _Query.Labels(labels);
+            query = query.labels(labels);
             return this;
         }
 
-        public long Count()
+        public long count()
         {
-            return _Query.Count();
+            return query.count();
         }
 
-        public object VertexIds()
+        public object vertexIds()
         {
-            return _Query.VertexIds();
+            return query.vertexIds();
         }
 
-        public Query Has(string key, object value)
+        public Query has(string key, object value)
         {
-            _Query = _Query.Has(key, value) as VertexQuery;
+            query = query.has(key, value) as VertexQuery;
             return this;
         }
 
-        public Query Has<T>(string key, Compare compare, T value) where T : IComparable<T>
+        public Query has<T>(string key, Compare compare, T value) where T : IComparable<T>
         {
-            _Query = _Query.Has(key, compare, value) as VertexQuery;
+            query = query.has(key, compare, value) as VertexQuery;
             return this;
         }
 
-        public Query Interval<T>(string key, T startValue, T endValue) where T : IComparable<T>
+        public Query interval<T>(string key, T startValue, T endValue) where T : IComparable<T>
         {
-            _Query = _Query.Interval(key, startValue, endValue) as VertexQuery;
+            query = query.interval(key, startValue, endValue) as VertexQuery;
             return this;
         }
 
-        public Query Limit(long max)
+        public Query limit(long max)
         {
-            _Query = _Query.Limit(max) as VertexQuery;
+            query = query.limit(max) as VertexQuery;
             return this;
         }
 
-        public IEnumerable<Edge> Edges()
+        public IEnumerable<Edge> edges()
         {
-            return _EdgesSelector(_Query);
+            return edgesSelector(query);
         }
 
-        public IEnumerable<Vertex> Vertices()
+        public IEnumerable<Vertex> vertices()
         {
-            return _VerticesSelector(_Query);
+            return verticesSelector(query);
         }
     }
 }

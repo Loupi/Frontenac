@@ -18,7 +18,7 @@ namespace Frontenac.Blueprints.Util.IO.GraphML
         /// </summary>
         /// <param name="fromGraph">the graph to take data from</param>
         /// <param name="toGraph">the graph to take data to</param>
-        public static void MigrateGraph(Graph fromGraph, Graph toGraph)
+        public static void migrateGraph(Graph fromGraph, Graph toGraph)
         {
             const int PIPE_SIZE = 1024;
             AnonymousPipeServerStream outPipe = new AnonymousPipeServerStream(PipeDirection.Out, HandleInheritability.Inheritable, PIPE_SIZE);
@@ -29,12 +29,12 @@ namespace Frontenac.Blueprints.Util.IO.GraphML
 
                 Task.Factory.StartNew(() =>
                 {
-                    GraphMLWriter.OutputGraph(fromGraph, outPipe);
+                    GraphMLWriter.outputGraph(fromGraph, outPipe);
                     outPipe.Flush();
                     outPipe.Close();
                 });
 
-                GraphMLReader.InputGraph(toGraph, inPipe);
+                GraphMLReader.inputGraph(toGraph, inPipe);
             }
         }
     }

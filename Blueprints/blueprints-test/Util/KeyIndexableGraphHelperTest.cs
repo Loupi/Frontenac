@@ -12,17 +12,17 @@ namespace Frontenac.Blueprints.Util
     public class KeyIndexableGraphHelperTest : BaseTest
     {
         [Test]
-        public void TestReIndexElements()
+        public void testReIndexElements()
         {
-            TinkerGraph graph = TinkerGraphFactory.CreateTinkerGraph();
-            Assert.True(graph.GetVertices("name", "marko") is PropertyFilteredIterable<Vertex>);
-            Assert.AreEqual(Count(graph.GetVertices("name", "marko")), 1);
-            Assert.AreEqual(graph.GetVertices("name", "marko").First(), graph.GetVertex(1));
-            graph.CreateKeyIndex("name", typeof(Vertex));
+            TinkerGraph graph = TinkerGraphFactory.createTinkerGraph();
+            Assert.True(graph.getVertices("name", "marko") is PropertyFilteredIterable<Vertex>);
+            Assert.AreEqual(count(graph.getVertices("name", "marko")), 1);
+            Assert.AreEqual(graph.getVertices("name", "marko").First(), graph.getVertex(1));
+            graph.createKeyIndex("name", typeof(Vertex));
             //KeyIndexableGraphHelper.reIndexElements(graph, graph.getVertices(), new HashSet<string>(Arrays.asList("name")));
-            Assert.False(graph.GetVertices("name", "marko") is PropertyFilteredIterable<Vertex>);
-            Assert.AreEqual(Count(graph.GetVertices("name", "marko")), 1);
-            Assert.AreEqual(graph.GetVertices("name", "marko").First(), graph.GetVertex(1));
+            Assert.False(graph.getVertices("name", "marko") is PropertyFilteredIterable<Vertex>);
+            Assert.AreEqual(count(graph.getVertices("name", "marko")), 1);
+            Assert.AreEqual(graph.getVertices("name", "marko").First(), graph.getVertex(1));
         }
     }
 }

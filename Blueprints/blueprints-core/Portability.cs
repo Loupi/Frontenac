@@ -10,14 +10,14 @@ namespace Frontenac.Blueprints
 {
     public static class Portability
     {
-        public static TValue Get<TKey, TValue>(this IDictionary<TKey, TValue> dictionary, TKey key)
+        public static TValue get<TKey, TValue>(this IDictionary<TKey, TValue> dictionary, TKey key)
         {
             TValue ret;
             dictionary.TryGetValue(key, out ret);
             return ret;
         }
 
-        public static TValue JavaRemove<TKey, TValue>(this IDictionary<TKey, TValue> dictionary, TKey key)
+        public static TValue javaRemove<TKey, TValue>(this IDictionary<TKey, TValue> dictionary, TKey key)
         {
             TValue ret = default(TValue);
             if (key != null)
@@ -28,7 +28,7 @@ namespace Frontenac.Blueprints
             return ret;
         }
 
-        public static TValue Put<TKey, TValue>(this IDictionary<TKey, TValue> dictionary, TKey key, TValue value)
+        public static TValue put<TKey, TValue>(this IDictionary<TKey, TValue> dictionary, TKey key, TValue value)
         {
             TValue ret;
             if (dictionary.TryGetValue(key, out ret))
@@ -38,7 +38,7 @@ namespace Frontenac.Blueprints
             return ret;
         }
 
-        public static bool IsNumeric(object expression)
+        public static bool isNumeric(object expression)
         {
             return expression is byte ||
                    expression is sbyte ||

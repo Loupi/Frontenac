@@ -13,54 +13,54 @@ namespace Frontenac.Blueprints.Util.Wrappers.Batch
     {
         const string _UID = "uid";
 
-        const string _VertexIDKey = "vid";
-        const string _EdgeIDKey = "eid";
-        bool _AssignKeys = false;
-        bool _IgnoreIDs = false;
+        const string vertexIdKey = "vid";
+        const string edgeIdKey = "eid";
+        bool _assignKeys = false;
+        bool _ignoreIDs = false;
 
         [Test]
-        public void TestNumberIdLoading()
+        public void testNumberIdLoading()
         {
-            LoadingTest(5000, 100, VertexIDType.NUMBER, new NumberLoadingFactory());
-            LoadingTest(200000, 10000, VertexIDType.NUMBER, new NumberLoadingFactory());
+            loadingTest(5000, 100, VertexIDType.NUMBER, new NumberLoadingFactory());
+            loadingTest(200000, 10000, VertexIDType.NUMBER, new NumberLoadingFactory());
 
-            _AssignKeys = true;
-            LoadingTest(5000, 100, VertexIDType.NUMBER, new NumberLoadingFactory());
-            LoadingTest(50000, 10000, VertexIDType.NUMBER, new NumberLoadingFactory());
-            _AssignKeys = false;
+            _assignKeys = true;
+            loadingTest(5000, 100, VertexIDType.NUMBER, new NumberLoadingFactory());
+            loadingTest(50000, 10000, VertexIDType.NUMBER, new NumberLoadingFactory());
+            _assignKeys = false;
 
-            _IgnoreIDs = true;
-            LoadingTest(5000, 100, VertexIDType.NUMBER, new NumberLoadingFactory());
-            LoadingTest(50000, 10000, VertexIDType.NUMBER, new NumberLoadingFactory());
-            _IgnoreIDs = false;
+            _ignoreIDs = true;
+            loadingTest(5000, 100, VertexIDType.NUMBER, new NumberLoadingFactory());
+            loadingTest(50000, 10000, VertexIDType.NUMBER, new NumberLoadingFactory());
+            _ignoreIDs = false;
         }
 
         [Test]
-        public void TestObjectIdLoading()
+        public void testObjectIdLoading()
         {
-            LoadingTest(5000, 100, VertexIDType.OBJECT, new StringLoadingFactory());
-            LoadingTest(200000, 10000, VertexIDType.OBJECT, new StringLoadingFactory());
+            loadingTest(5000, 100, VertexIDType.OBJECT, new StringLoadingFactory());
+            loadingTest(200000, 10000, VertexIDType.OBJECT, new StringLoadingFactory());
         }
 
         [Test]
-        public void TestStringIdLoading()
+        public void testStringIdLoading()
         {
-            LoadingTest(5000, 100, VertexIDType.STRING, new StringLoadingFactory());
-            LoadingTest(200000, 10000, VertexIDType.STRING, new StringLoadingFactory());
+            loadingTest(5000, 100, VertexIDType.STRING, new StringLoadingFactory());
+            loadingTest(200000, 10000, VertexIDType.STRING, new StringLoadingFactory());
         }
 
         [Test]
-        public void TestURLIdLoading()
+        public void testUrlIdLoading()
         {
-            LoadingTest(5000, 100, VertexIDType.URL, new URLLoadingFactory());
-            LoadingTest(200000, 10000, VertexIDType.URL, new URLLoadingFactory());
+            loadingTest(5000, 100, VertexIDType.URL, new URLLoadingFactory());
+            loadingTest(200000, 10000, VertexIDType.URL, new URLLoadingFactory());
         }
 
         [Test]
-        public void TestQuadLoading()
+        public void testQuadLoading()
         {
             int numEdges = 10000;
-            string[][] quads = GenerateQuads(100, numEdges, new string[]{"knows", "friend"});
+            string[][] quads = generateQuads(100, numEdges, new string[]{"knows", "friend"});
             TinkerGraph graph = new TinkerGraph();
             BatchGraph bgraph = new BatchGraph(new WritethroughGraph(graph), VertexIDType.STRING, 1000);
             foreach (string[] quad in quads)
@@ -68,25 +68,25 @@ namespace Frontenac.Blueprints.Util.Wrappers.Batch
                 Vertex[] vertices = new Vertex[2];
                 for (int i = 0; i < 2; i++)
                 {
-                    vertices[i] = bgraph.GetVertex(quad[i]);
-                    if (vertices[i] == null) vertices[i] = bgraph.AddVertex(quad[i]);
+                    vertices[i] = bgraph.getVertex(quad[i]);
+                    if (vertices[i] == null) vertices[i] = bgraph.addVertex(quad[i]);
                 }
-                Edge edge = bgraph.AddEdge(null, vertices[0], vertices[1], quad[2]);
-                edge.SetProperty("annotation", quad[3]);
+                Edge edge = bgraph.addEdge(null, vertices[0], vertices[1], quad[2]);
+                edge.setProperty("annotation", quad[3]);
             }
-            Assert.AreEqual(numEdges, BaseTest.Count(graph.GetEdges()));
+            Assert.AreEqual(numEdges, BaseTest.count(graph.getEdges()));
 
-            bgraph.Shutdown();
+            bgraph.shutdown();
         }
 
         [Test]
-        public void TestLoadingWithExisting1()
+        public void testLoadingWithExisting1()
         {
             int numEdges = 1000;
-            string[][] quads = GenerateQuads(100, numEdges, new string[]{"knows", "friend"});
+            string[][] quads = generateQuads(100, numEdges, new string[]{"knows", "friend"});
             TinkerGraph tg = new TinkerGraph();
             BatchGraph bg = new BatchGraph(new WritethroughGraph(tg), VertexIDType.STRING, 100);
-            bg.SetLoadingFromScratch(false);
+            bg.setLoadingFromScratch(false);
             Graph graph = null;
             int counter = 0;
             foreach (string[] quad in quads)
@@ -97,38 +97,38 @@ namespace Frontenac.Blueprints.Util.Wrappers.Batch
                 Vertex[] vertices = new Vertex[2];
                 for (int i = 0; i < 2; i++)
                 {
-                    vertices[i] = graph.GetVertex(quad[i]);
-                    if (vertices[i] == null) vertices[i] = graph.AddVertex(quad[i]);
+                    vertices[i] = graph.getVertex(quad[i]);
+                    if (vertices[i] == null) vertices[i] = graph.addVertex(quad[i]);
                 }
-                Edge edge = graph.AddEdge(null, vertices[0], vertices[1], quad[2]);
-                edge.SetProperty("annotation", quad[3]);
+                Edge edge = graph.addEdge(null, vertices[0], vertices[1], quad[2]);
+                edge.setProperty("annotation", quad[3]);
                 counter++;
             }
-            Assert.AreEqual(numEdges, BaseTest.Count(tg.GetEdges()));
+            Assert.AreEqual(numEdges, BaseTest.count(tg.getEdges()));
 
-            bg.Shutdown();
+            bg.shutdown();
         }
 
         [Test]
-        public void TestLoadingWithExisting2()
+        public void testLoadingWithExisting2()
         {
             int numEdges = 1000;
-            string[][] quads = GenerateQuads(100, numEdges, new string[]{"knows", "friend"});
+            string[][] quads = generateQuads(100, numEdges, new string[]{"knows", "friend"});
             TinkerGraph tg = new IgnoreIdTinkerGraph();
             BatchGraph bg = new BatchGraph(new WritethroughGraph(tg), VertexIDType.STRING, 100);
             try
             {
-                bg.SetLoadingFromScratch(false);
+                bg.setLoadingFromScratch(false);
                 Assert.Fail();
             }
             catch (InvalidOperationException)
             {
             }
-            bg.SetVertexIdKey("uid");
-            bg.SetLoadingFromScratch(false);
+            bg.setVertexIdKey("uid");
+            bg.setLoadingFromScratch(false);
             try
             {
-                bg.SetVertexIdKey(null);
+                bg.setVertexIdKey(null);
                 Assert.Fail();
             }
             catch (InvalidOperationException)
@@ -144,19 +144,19 @@ namespace Frontenac.Blueprints.Util.Wrappers.Batch
 
                 Vertex[] vertices = new Vertex[2];
                 for (int i = 0; i < 2; i++) {
-                    vertices[i] = graph.GetVertex(quad[i]);
-                    if (vertices[i] == null) vertices[i] = graph.AddVertex(quad[i]);
+                    vertices[i] = graph.getVertex(quad[i]);
+                    if (vertices[i] == null) vertices[i] = graph.addVertex(quad[i]);
                 }
-                Edge edge = graph.AddEdge(null, vertices[0], vertices[1], quad[2]);
-                edge.SetProperty("annotation", quad[3]);
+                Edge edge = graph.addEdge(null, vertices[0], vertices[1], quad[2]);
+                edge.setProperty("annotation", quad[3]);
                 counter++;
             }
-            Assert.AreEqual(numEdges, BaseTest.Count(tg.GetEdges()));
+            Assert.AreEqual(numEdges, BaseTest.count(tg.getEdges()));
 
-            bg.Shutdown();
+            bg.shutdown();
         }
 
-        public static string[][] GenerateQuads(int numVertices, int numEdges, string[] labels)
+        public static string[][] generateQuads(int numVertices, int numEdges, string[] labels)
         {
             Random random = new Random();
             string[][] edges = new string[numEdges][];
@@ -171,12 +171,12 @@ namespace Frontenac.Blueprints.Util.Wrappers.Batch
             return edges;
         }
 
-        public void LoadingTest(int total, int bufferSize, VertexIDType type, LoadingFactory ids)
+        public void loadingTest(int total, int bufferSize, VertexIDType type, LoadingFactory ids)
         {
             VertexEdgeCounter counter = new VertexEdgeCounter();
 
             MockTransactionalGraph tgraph = null;
-            if (_IgnoreIDs)
+            if (_ignoreIDs)
                 tgraph = new MockTransactionalGraph(new IgnoreIdTinkerGraph());
             else
                 tgraph = new MockTransactionalGraph(new TinkerGraph());
@@ -184,61 +184,61 @@ namespace Frontenac.Blueprints.Util.Wrappers.Batch
             BLGraph graph = new BLGraph(this, tgraph, counter, ids);
             BatchGraph loader = new BatchGraph(graph, type, bufferSize);
 
-            if (_AssignKeys)
-                loader.SetVertexIdKey(_VertexIDKey);
-                loader.SetEdgeIdKey(_EdgeIDKey);
+            if (_assignKeys)
+                loader.setVertexIdKey(vertexIdKey);
+                loader.setEdgeIdKey(edgeIdKey);
 
             //Create a chain
             int chainLength = total;
             Vertex previous = null;
             for (int i = 0; i <= chainLength; i++)
             {
-                Vertex next = loader.AddVertex(ids.GetVertexID(i));
-                next.SetProperty(_UID, i);
-                counter._NumVertices++;
-                counter._TotalVertices++;
+                Vertex next = loader.addVertex(ids.getVertexId(i));
+                next.setProperty(_UID, i);
+                counter.numVertices++;
+                counter.totalVertices++;
                 if (previous != null)
                 {
-                    Edge e = loader.AddEdge(ids.GetEdgeID(i), loader.GetVertex(previous.GetId()), loader.GetVertex(next.GetId()), "next");
-                    e.SetProperty(_UID, i);
-                    counter._NumEdges++;
+                    Edge e = loader.addEdge(ids.getEdgeId(i), loader.getVertex(previous.getId()), loader.getVertex(next.getId()), "next");
+                    e.setProperty(_UID, i);
+                    counter.numEdges++;
                 }
                 previous = next;
             }
 
-            loader.Commit();
-            Assert.True(tgraph.AllSuccessful());
+            loader.commit();
+            Assert.True(tgraph.allSuccessful());
 
-            loader.Shutdown();
+            loader.shutdown();
         }
 
         class VertexEdgeCounter
         {
-            public int _NumVertices = 0;
-            public int _NumEdges = 0;
-            public int _TotalVertices = 0;
+            public int numVertices = 0;
+            public int numEdges = 0;
+            public int totalVertices = 0;
         }
 
         class BLGraph : TransactionalGraph
         {
             const int keepLast = 10;
 
-            readonly VertexEdgeCounter _Counter;
-            bool _First = true;
-            readonly LoadingFactory _Ids;
+            readonly VertexEdgeCounter _counter;
+            bool _first = true;
+            readonly LoadingFactory _ids;
 
-            readonly TransactionalGraph _Graph;
-            readonly BatchGraphTest _BatchGraphTest;
+            readonly TransactionalGraph _graph;
+            readonly BatchGraphTest _batchGraphTest;
 
             public BLGraph(BatchGraphTest batchGraphTest, TransactionalGraph graph, VertexEdgeCounter counter, LoadingFactory ids)
             {
-                _BatchGraphTest = batchGraphTest;
-                _Graph = graph;
-                _Counter = counter;
-                _Ids = ids;
+                _batchGraphTest = batchGraphTest;
+                _graph = graph;
+                _counter = counter;
+                _ids = ids;
             }
 
-            static object ParseID(object id)
+            static object parseId(object id)
             {
                 if (id is string)
                 {
@@ -255,142 +255,142 @@ namespace Frontenac.Blueprints.Util.Wrappers.Batch
                     return id;
             }
 
-            public void Commit()
+            public void commit()
             {
-                _Graph.Commit();
-                VerifyCounts();
+                _graph.commit();
+                verifyCounts();
             }
 
             
-            public void Rollback()
+            public void rollback()
             {
-                _Graph.Rollback();
-                VerifyCounts();
+                _graph.rollback();
+                verifyCounts();
             }
 
-            void VerifyCounts() 
+            void verifyCounts() 
             {
                 //System.out.println("Committed (vertices/edges): " + counter.numVertices + " / " + counter.numEdges);
-                Assert.AreEqual(_Counter._NumVertices, BaseTest.Count(_Graph.GetVertices()) - (_First ? 0 : keepLast));
-                Assert.AreEqual(_Counter._NumEdges, BaseTest.Count(_Graph.GetEdges()));
-                foreach (Edge e in GetEdges())
+                Assert.AreEqual(_counter.numVertices, BaseTest.count(_graph.getVertices()) - (_first ? 0 : keepLast));
+                Assert.AreEqual(_counter.numEdges, BaseTest.count(_graph.getEdges()));
+                foreach (Edge e in getEdges())
                 {
-                    int id = (int)e.GetProperty(_UID);
-                    if (!_BatchGraphTest._IgnoreIDs)
-                        Assert.AreEqual(_Ids.GetEdgeID(id), ParseID(e.GetId()));
+                    int id = (int)e.getProperty(_UID);
+                    if (!_batchGraphTest._ignoreIDs)
+                        Assert.AreEqual(_ids.getEdgeId(id), parseId(e.getId()));
                     
-                    Assert.AreEqual(1, (int)e.GetVertex(Direction.IN).GetProperty(_UID) - (int)e.GetVertex(Direction.OUT).GetProperty(_UID));
-                    if (_BatchGraphTest._AssignKeys)
-                        Assert.AreEqual(_Ids.GetEdgeID(id), e.GetProperty(_EdgeIDKey));
+                    Assert.AreEqual(1, (int)e.getVertex(Direction.IN).getProperty(_UID) - (int)e.getVertex(Direction.OUT).getProperty(_UID));
+                    if (_batchGraphTest._assignKeys)
+                        Assert.AreEqual(_ids.getEdgeId(id), e.getProperty(edgeIdKey));
                 }
-                foreach (Vertex v in GetVertices())
+                foreach (Vertex v in getVertices())
                 {
-                    int id = (int)v.GetProperty(_UID);
-                    if (!_BatchGraphTest._IgnoreIDs)
-                        Assert.AreEqual(_Ids.GetVertexID(id), ParseID(v.GetId()));
+                    int id = (int)v.getProperty(_UID);
+                    if (!_batchGraphTest._ignoreIDs)
+                        Assert.AreEqual(_ids.getVertexId(id), parseId(v.getId()));
                     
-                    Assert.True(2 >= BaseTest.Count(v.GetEdges(Direction.BOTH)));
-                    Assert.True(1 >= BaseTest.Count(v.GetEdges(Direction.IN)));
-                    Assert.True(1 >= BaseTest.Count(v.GetEdges(Direction.OUT)));
+                    Assert.True(2 >= BaseTest.count(v.getEdges(Direction.BOTH)));
+                    Assert.True(1 >= BaseTest.count(v.getEdges(Direction.IN)));
+                    Assert.True(1 >= BaseTest.count(v.getEdges(Direction.OUT)));
 
-                    if (_BatchGraphTest._AssignKeys)
-                        Assert.AreEqual(_Ids.GetVertexID(id), v.GetProperty(_VertexIDKey));
+                    if (_batchGraphTest._assignKeys)
+                        Assert.AreEqual(_ids.getVertexId(id), v.getProperty(vertexIdKey));
                 }
-                foreach (Vertex v in GetVertices())
+                foreach (Vertex v in getVertices())
                 {
-                    int id = (int)v.GetProperty(_UID);
-                    if (id < _Counter._TotalVertices - keepLast)
-                        RemoveVertex(v);
+                    int id = (int)v.getProperty(_UID);
+                    if (id < _counter.totalVertices - keepLast)
+                        removeVertex(v);
                 }
-                foreach (Edge e in GetEdges()) RemoveEdge(e);
-                Assert.AreEqual(keepLast, BaseTest.Count(_Graph.GetVertices()));
-                _Counter._NumVertices = 0;
-                _Counter._NumEdges = 0;
-                _First = false;
+                foreach (Edge e in getEdges()) removeEdge(e);
+                Assert.AreEqual(keepLast, BaseTest.count(_graph.getVertices()));
+                _counter.numVertices = 0;
+                _counter.numEdges = 0;
+                _first = false;
                 //System.out.println("------");
             }
 
-            public Features GetFeatures()
+            public Features getFeatures()
             {
-                return _Graph.GetFeatures();
+                return _graph.getFeatures();
             }
 
-            public Vertex AddVertex(object id)
+            public Vertex addVertex(object id)
             {
-                return _Graph.AddVertex(id);
+                return _graph.addVertex(id);
             }
 
-            public Vertex GetVertex(object id)
+            public Vertex getVertex(object id)
             {
-                return _Graph.GetVertex(id);
+                return _graph.getVertex(id);
             }
 
-            public void RemoveVertex(Vertex vertex)
+            public void removeVertex(Vertex vertex)
             {
-                _Graph.RemoveVertex(vertex);
+                _graph.removeVertex(vertex);
             }
 
-            public IEnumerable<Vertex> GetVertices()
+            public IEnumerable<Vertex> getVertices()
             {
-                return _Graph.GetVertices();
+                return _graph.getVertices();
             }
 
-            public IEnumerable<Vertex> GetVertices(string key, object value)
+            public IEnumerable<Vertex> getVertices(string key, object value)
             {
-                return _Graph.GetVertices(key, value);
+                return _graph.getVertices(key, value);
             }
 
-            public Edge AddEdge(object id, Vertex outVertex, Vertex inVertex, string label)
+            public Edge addEdge(object id, Vertex outVertex, Vertex inVertex, string label)
             {
-                return _Graph.AddEdge(id, outVertex, inVertex, label);
+                return _graph.addEdge(id, outVertex, inVertex, label);
             }
 
-            public Edge GetEdge(object id)
+            public Edge getEdge(object id)
             {
-                return _Graph.GetEdge(id);
+                return _graph.getEdge(id);
             }
 
-            public void RemoveEdge(Edge edge)
+            public void removeEdge(Edge edge)
             {
-                _Graph.RemoveEdge(edge);
+                _graph.removeEdge(edge);
             }
 
-            public IEnumerable<Edge> GetEdges()
+            public IEnumerable<Edge> getEdges()
             {
-                return _Graph.GetEdges();
+                return _graph.getEdges();
             }
 
-            public IEnumerable<Edge> GetEdges(string key, object value)
+            public IEnumerable<Edge> getEdges(string key, object value)
             {
-                return _Graph.GetEdges(key, value);
+                return _graph.getEdges(key, value);
             }
 
-            public void Shutdown()
+            public void shutdown()
             {
-                _Graph.Shutdown();
+                _graph.shutdown();
             }
 
-            public GraphQuery Query()
+            public GraphQuery query()
             {
-                return _Graph.Query();
+                return _graph.query();
             }
         }
 
         public interface LoadingFactory
         {
-            object GetVertexID(int id);
+            object getVertexId(int id);
 
-            object GetEdgeID(int id);
+            object getEdgeId(int id);
         }
 
         class StringLoadingFactory : LoadingFactory
         {
-            public object GetVertexID(int id)
+            public object getVertexId(int id)
             {
                 return string.Concat("V", id);
             }
 
-            public object GetEdgeID(int id)
+            public object getEdgeId(int id)
             {
                 return string.Concat("E", id);
             }
@@ -398,12 +398,12 @@ namespace Frontenac.Blueprints.Util.Wrappers.Batch
 
         class NumberLoadingFactory : LoadingFactory
         {
-            public object GetVertexID(int id)
+            public object getVertexId(int id)
             {
                 return id * 2;
             }
 
-            public object GetEdgeID(int id)
+            public object getEdgeId(int id)
             {
                 return id * 2 + 1;
             }
@@ -411,12 +411,12 @@ namespace Frontenac.Blueprints.Util.Wrappers.Batch
 
         class URLLoadingFactory : LoadingFactory
         {
-            public object GetVertexID(int id)
+            public object getVertexId(int id)
             {
                 return string.Concat("http://www.tinkerpop.com/rdf/ns/vertex/", + id);
             }
 
-            public object GetEdgeID(int id)
+            public object getEdgeId(int id)
             {
                 return string.Concat("http://www.tinkerpop.com/rdf/ns/edge#", id);
             }

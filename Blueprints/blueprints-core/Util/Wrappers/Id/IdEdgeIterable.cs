@@ -8,14 +8,14 @@ namespace Frontenac.Blueprints.Util.Wrappers.Id
 {
     class IdEdgeIterable : CloseableIterable<Edge>
     {
-        readonly IEnumerable<Element> _Iterable;
-        readonly IdGraph _IdGraph;
-        bool _Disposed;
+        readonly IEnumerable<Element> _iterable;
+        readonly IdGraph _idGraph;
+        bool _disposed;
 
         public IdEdgeIterable(IEnumerable<Element> iterable, IdGraph idGraph)
         {
-            _Iterable = iterable;
-            _IdGraph = idGraph;
+            _iterable = iterable;
+            _idGraph = idGraph;
         }
 
         ~IdEdgeIterable()
@@ -31,22 +31,22 @@ namespace Frontenac.Blueprints.Util.Wrappers.Id
 
         protected virtual void Dispose(bool disposing)
         {
-            if (_Disposed)
+            if (_disposed)
                 return;
 
             if (disposing)
             {
-                if (_Iterable is IDisposable)
-                    (_Iterable as IDisposable).Dispose();
+                if (_iterable is IDisposable)
+                    (_iterable as IDisposable).Dispose();
             }
 
-            _Disposed = true;
+            _disposed = true;
         }
 
         public IEnumerator<Edge> GetEnumerator()
         {
-            foreach (Edge edge in _Iterable)
-                yield return new IdEdge(edge, _IdGraph);
+            foreach (Edge edge in _iterable)
+                yield return new IdEdge(edge, _idGraph);
         }
 
         System.Collections.IEnumerator System.Collections.IEnumerable.GetEnumerator()

@@ -8,14 +8,14 @@ namespace Frontenac.Blueprints.Util.Wrappers.Partition
 {
     class PartitionVertexIterable : CloseableIterable<Vertex>
     {
-        readonly IEnumerable<Vertex> _Iterable;
-        readonly PartitionGraph _Graph;
-        bool _Disposed;
+        readonly IEnumerable<Vertex> _iterable;
+        readonly PartitionGraph _graph;
+        bool _disposed;
 
         public PartitionVertexIterable(IEnumerable<Vertex> iterable, PartitionGraph graph)
         {
-            _Iterable = iterable;
-            _Graph = graph;
+            _iterable = iterable;
+            _graph = graph;
         }
 
         ~PartitionVertexIterable()
@@ -31,16 +31,16 @@ namespace Frontenac.Blueprints.Util.Wrappers.Partition
 
         protected virtual void Dispose(bool disposing)
         {
-            if (_Disposed)
+            if (_disposed)
                 return;
 
             if (disposing)
             {
-                if (_Iterable is IDisposable)
-                    (_Iterable as IDisposable).Dispose();
+                if (_iterable is IDisposable)
+                    (_iterable as IDisposable).Dispose();
             }
 
-            _Disposed = true;
+            _disposed = true;
         }
 
         public IEnumerator<Vertex> GetEnumerator()
@@ -50,49 +50,49 @@ namespace Frontenac.Blueprints.Util.Wrappers.Partition
 
         class InnerPartitionVertexIterable : IEnumerable<Vertex>
         {
-            readonly PartitionVertexIterable _PartitionVertexIterable;
-            IEnumerator<Vertex> _Itty;
-            PartitionVertex _NextVertex;
+            readonly PartitionVertexIterable _partitionVertexIterable;
+            readonly IEnumerator<Vertex> _itty;
+            PartitionVertex _nextVertex;
 
             public InnerPartitionVertexIterable(PartitionVertexIterable partitionVertexIterable)
             {
-                _PartitionVertexIterable = partitionVertexIterable;
-                _Itty = _PartitionVertexIterable._Iterable.GetEnumerator();
+                _partitionVertexIterable = partitionVertexIterable;
+                _itty = _partitionVertexIterable._iterable.GetEnumerator();
             }
 
             public IEnumerator<Vertex> GetEnumerator()
             {
-                while (HasNext())
+                while (hasNext())
                 {
-                    if (null != _NextVertex)
+                    if (null != _nextVertex)
                     {
-                        PartitionVertex temp = _NextVertex;
-                        _NextVertex = null;
+                        PartitionVertex temp = _nextVertex;
+                        _nextVertex = null;
                         yield return temp;
                     }
                     else
                     {
-                        while (_Itty.MoveNext())
+                        while (_itty.MoveNext())
                         {
-                            Vertex vertex = _Itty.Current;
-                            if (_PartitionVertexIterable._Graph.IsInPartition(vertex))
-                                yield return new PartitionVertex(vertex, _PartitionVertexIterable._Graph);
+                            Vertex vertex = _itty.Current;
+                            if (_partitionVertexIterable._graph.isInPartition(vertex))
+                                yield return new PartitionVertex(vertex, _partitionVertexIterable._graph);
                         }
                     }
                 }
             }
 
-            bool HasNext()
+            bool hasNext()
             {
-                if (null != _NextVertex)
+                if (null != _nextVertex)
                     return true;
 
-                while (_Itty.MoveNext())
+                while (_itty.MoveNext())
                 {
-                    Vertex vertex = _Itty.Current;
-                    if (_PartitionVertexIterable._Graph.IsInPartition(vertex))
+                    Vertex vertex = _itty.Current;
+                    if (_partitionVertexIterable._graph.isInPartition(vertex))
                     {
-                        _NextVertex = new PartitionVertex(vertex, _PartitionVertexIterable._Graph);
+                        _nextVertex = new PartitionVertex(vertex, _partitionVertexIterable._graph);
                         return true;
                     }
                 }

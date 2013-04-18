@@ -8,18 +8,18 @@ namespace Frontenac.Blueprints.Util.Wrappers.Event.Listener
 {
     public class EdgeRemovedEvent : Event
     {
-        readonly Edge _Edge;
+        readonly Edge _edge;
 
         public EdgeRemovedEvent(Edge edge)
         {
-            _Edge = edge;
+            _edge = edge;
         }
 
-        public void FireEvent(IEnumerator<GraphChangedListener> eventListeners)
+        public void fireEvent(IEnumerator<GraphChangedListener> eventListeners)
         {
             while (eventListeners.MoveNext())
             {
-                eventListeners.Current.EdgeRemoved(_Edge);
+                eventListeners.Current.edgeRemoved(_edge);
             }
         }
     }
