@@ -38,7 +38,7 @@ namespace Frontenac.Blueprints
             return ret;
         }
 
-        public static bool isNumeric(object expression)
+        public static bool isNumber(object expression)
         {
             return expression is byte ||
                    expression is sbyte ||

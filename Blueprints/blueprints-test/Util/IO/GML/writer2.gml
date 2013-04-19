@@ -15,18 +15,18 @@ graph [
 		source 1
 		target 2
 		label "Edge from node 1 to node 2"
-		directed "true"
+		directed "True"
 	]
 	edge [
 		source 2
 		target 3
 		label "Edge from node 2 to node 3"
-		directed "true"
+		directed "True"
 	]
 	edge [
 		source 3
 		target 1
 		label "Edge from node 3 to node 1"
-		directed "true"
+		directed "True"
 	]
 ]

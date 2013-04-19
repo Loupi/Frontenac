@@ -84,24 +84,19 @@ namespace Frontenac.Blueprints.Impls.TG
             _directory = directory;
             _fileType = fileType;
 
-            string file = string.Concat(_directory, "ted");
-
             if (!Directory.Exists(_directory))
                 Directory.CreateDirectory(_directory);
             else
             {
-                using (var input = File.OpenRead(file))
-                {
-                    TinkerStorage tinkerStorage = TinkerStorageFactory.getInstance().getTinkerStorage(fileType);
-                    TinkerGraph graph = tinkerStorage.load(directory);
+                TinkerStorage tinkerStorage = TinkerStorageFactory.getInstance().getTinkerStorage(fileType);
+                TinkerGraph graph = tinkerStorage.load(directory);
 
-                    vertices = graph.vertices;
-                    edges = graph.edges;
-                    currentId = graph.currentId;
-                    indices = graph.indices;
-                    vertexKeyIndex = graph.vertexKeyIndex;
-                    edgeKeyIndex = graph.edgeKeyIndex;
-                }
+                vertices = graph.vertices;
+                edges = graph.edges;
+                currentId = graph.currentId;
+                indices = graph.indices;
+                vertexKeyIndex = graph.vertexKeyIndex;
+                edgeKeyIndex = graph.edgeKeyIndex;
             }
         }
 

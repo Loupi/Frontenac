@@ -186,7 +186,7 @@ namespace Frontenac.Blueprints.Util.IO.GML
                         if (doubleValue == (Double)((int)doubleValue))
                             return (int)doubleValue;
                         else
-                            return (float)doubleValue;
+                            return doubleValue;
                     }
                     else
                     {

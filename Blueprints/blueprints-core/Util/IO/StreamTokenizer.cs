@@ -574,6 +574,7 @@ namespace Frontenac.Blueprints.Util.IO
                     v = v / denom;
                 }
                 NumberValue = neg ? -v : v;
+                StringValue = NumberValue.ToString();
                 return ttype = TT_NUMBER;
             }
 

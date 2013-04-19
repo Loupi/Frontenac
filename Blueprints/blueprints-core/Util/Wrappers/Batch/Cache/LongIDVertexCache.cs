@@ -20,7 +20,7 @@ namespace Frontenac.Blueprints.Util.Wrappers.Batch.Cache
 
         static long getId(object externalID)
         {
-            if (!(Portability.isNumeric(externalID))) throw new ArgumentException("Number expected.");
+            if (!(Portability.isNumber(externalID))) throw new ArgumentException("Number expected.");
             return Convert.ToInt64(externalID);
         }
 

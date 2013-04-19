@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Text;
@@ -112,22 +113,21 @@ namespace Frontenac.Blueprints.Util.IO.GML
         public void outputGraph(Stream gMLOutputStream)
         {
             // ISO 8859-1 as specified in the GML documentation
-            using (var writer = new StreamWriter(gMLOutputStream, Encoding.GetEncoding("ISO-8859-1")))
+            var writer = new StreamWriter(gMLOutputStream, Encoding.GetEncoding("ISO-8859-1"));
+            List<Vertex> vertices = new List<Vertex>();
+            List<Edge> edges = new List<Edge>();
+
+            populateLists(vertices, edges);
+
+            if (_normalize)
             {
-                List<Vertex> vertices = new List<Vertex>();
-                List<Edge> edges = new List<Edge>();
-
-                populateLists(vertices, edges);
-
-                if (_normalize)
-                {
-                    LexicographicalElementComparator comparator = new LexicographicalElementComparator();
-                    vertices.Sort(comparator);
-                    edges.Sort(comparator);
-                }
-
-                writeGraph(writer, vertices, edges);
+                LexicographicalElementComparator comparator = new LexicographicalElementComparator();
+                vertices.Sort(comparator);
+                edges.Sort(comparator);
             }
+
+            writeGraph(writer, vertices, edges);
+            writer.Flush();
         }
 
         void writeGraph(StreamWriter writer, List<Vertex> vertices, List<Edge> edges)
@@ -201,8 +201,8 @@ namespace Frontenac.Blueprints.Util.IO.GML
             if (!_useId)
             {
                 writeKey(writer, _vertexIdKey);
-                if (Portability.isNumeric(blueprintsId))
-                    writeNumberProperty(writer, Convert.ToInt64(blueprintsId));
+                if (Portability.isNumber(blueprintsId))
+                    writeNumberProperty(writer, blueprintsId);
                 else
                     writeStringProperty(writer, blueprintsId);
             }
@@ -215,8 +215,8 @@ namespace Frontenac.Blueprints.Util.IO.GML
             if (!_useId)
             {
                 writeKey(writer, _edgeIdKey);
-                if (Portability.isNumeric(blueprintsId))
-                    writeNumberProperty(writer, Convert.ToInt64(blueprintsId));
+                if (Portability.isNumber(blueprintsId))
+                    writeNumberProperty(writer, blueprintsId);
                 else
                     writeStringProperty(writer, blueprintsId);
             }
@@ -227,7 +227,8 @@ namespace Frontenac.Blueprints.Util.IO.GML
         {
             foreach (string key in e.getPropertyKeys())
             {
-                if (!_strict || regex.Match(key).Length > 0)
+                Match m = regex.Match(key);
+                if (!_strict || m.Length > 0 && m.Value == key)
                 {
                     object property = e.getProperty(key);
                     writeKey(writer, key);
@@ -238,8 +239,8 @@ namespace Frontenac.Blueprints.Util.IO.GML
 
         void writeProperty(StreamWriter writer, object property, int tab)
         {
-            if (Portability.isNumeric(property))
-                writeNumberProperty(writer, Convert.ToInt64(property));
+            if (Portability.isNumber(property))
+                writeNumberProperty(writer, property);
             else if (property is IDictionary)
                 writeMapProperty(writer, property as IDictionary, tab);
             else
@@ -266,9 +267,9 @@ namespace Frontenac.Blueprints.Util.IO.GML
                 writer.Write(TAB);
         }
 
-        void writeNumberProperty(StreamWriter writer, long integer)
+        void writeNumberProperty(StreamWriter writer, object number)
         {
-            writer.Write(integer.ToString());
+            writer.Write(Convert.ToString(number, CultureInfo.InvariantCulture));
             writer.Write(NEW_LINE);
         }
 
