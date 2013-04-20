@@ -138,6 +138,8 @@ namespace Frontenac.Blueprints.Util.IO.GraphSON
                     GraphSONUtility graphson = new GraphSONUtility(GraphSONMode.NORMAL, elementFactory,
                             vertexPropertyKeys, edgePropertyKeys);
 
+                    JsonSerializer serializer = JsonSerializer.Create(null);
+
                     while (jp.Read() && jp.TokenType != JsonToken.EndObject)
                     {
                         string fieldname = Convert.ToString(jp.Value);
@@ -151,7 +153,7 @@ namespace Frontenac.Blueprints.Util.IO.GraphSON
                             jp.Read();
                             while (jp.Read() && jp.TokenType != JsonToken.EndArray)
                             {
-                                JObject node = (JObject)JsonConvert.DeserializeObject(Convert.ToString(jp.Value));
+                                JObject node = (JObject) serializer.Deserialize(jp);
                                 graphson.vertexFromJson(node);
                             }
                         }
@@ -160,7 +162,7 @@ namespace Frontenac.Blueprints.Util.IO.GraphSON
                             jp.Read();
                             while (jp.Read() && jp.TokenType != JsonToken.EndArray)
                             {
-                                JObject node = (JObject)JsonConvert.DeserializeObject(Convert.ToString(jp.Value));
+                                JObject node = (JObject)serializer.Deserialize(jp);
                                 Vertex inV = graph.getVertex(GraphSONUtility.getTypedValueFromJsonNode(node[GraphSONTokens._IN_V]));
                                 Vertex outV = graph.getVertex(GraphSONUtility.getTypedValueFromJsonNode(node[GraphSONTokens._OUT_V]));
                                 graphson.edgeFromJson(node, outV, inV);

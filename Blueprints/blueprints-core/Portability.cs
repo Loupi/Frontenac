@@ -17,6 +17,13 @@ namespace Frontenac.Blueprints
             return ret;
         }
 
+        public static TValue get<TValue>(this IList<TValue> list, int at)
+        {
+            TValue ret;
+            ret = list.ElementAtOrDefault(at);
+            return ret;
+        }
+
         public static TValue javaRemove<TKey, TValue>(this IDictionary<TKey, TValue> dictionary, TKey key)
         {
             TValue ret = default(TValue);

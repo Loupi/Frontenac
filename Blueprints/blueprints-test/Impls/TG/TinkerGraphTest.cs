@@ -324,8 +324,8 @@ namespace Frontenac.Blueprints.Impls.TG
             Assert.AreEqual(g2.getVertex(2), idxAge.get("age", 27).First());
 
             Index idxWeight = g2.getIndex("weight", typeof(Edge));
-            Assert.AreEqual(g2.getEdge(7), idxWeight.get("weight", 0.5).First());
-            Assert.AreEqual(g2.getEdge(12), idxWeight.get("weight", 0.2).First());
+            Assert.AreEqual(g2.getEdge(7), idxWeight.get("weight", 0.5f).First());
+            Assert.AreEqual(g2.getEdge(12), idxWeight.get("weight", 0.2f).First());
 
             IEnumerator<Vertex> namesItty = g2.getVertices("name", "marko").GetEnumerator();
             namesItty.MoveNext();

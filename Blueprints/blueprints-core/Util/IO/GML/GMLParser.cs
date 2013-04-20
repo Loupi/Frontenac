@@ -186,7 +186,7 @@ namespace Frontenac.Blueprints.Util.IO.GML
                         if (doubleValue == Math.Floor(doubleValue))
                             return (int)doubleValue;
                         else
-                            return doubleValue;
+                            return (float)doubleValue;
                     }
                     else
                     {

@@ -50,34 +50,32 @@ namespace Frontenac.Blueprints.Util.IO.GraphSON
         public void outputGraph(Stream jsonOutputStream, IEnumerable<string> vertexPropertyKeys,
                             IEnumerable<string> edgePropertyKeys, GraphSONMode mode)
         {
-            using (StreamWriter sw = new StreamWriter(jsonOutputStream))
-            {
-                using (JsonTextWriter jg = new JsonTextWriter(sw))
-                {
-                    GraphSONUtility graphson = new GraphSONUtility(mode, null, vertexPropertyKeys, edgePropertyKeys);
+            StreamWriter sw = new StreamWriter(jsonOutputStream);
+            JsonTextWriter jg = new JsonTextWriter(sw);
+            
+            GraphSONUtility graphson = new GraphSONUtility(mode, null, vertexPropertyKeys, edgePropertyKeys);
 
-                    jg.WriteStartObject();
+            jg.WriteStartObject();
 
-                    jg.WritePropertyName(GraphSONTokens.MODE);
-                    jg.WriteValue(mode.ToString());
+            jg.WritePropertyName(GraphSONTokens.MODE);
+            jg.WriteValue(mode.ToString());
 
-                    jg.WritePropertyName(GraphSONTokens.VERTICES);
-                    jg.WriteStartArray();
-                    foreach (Vertex v in _graph.getVertices())
-                        jg.WriteRawValue(graphson.objectNodeFromElement(v).ToString());
+            jg.WritePropertyName(GraphSONTokens.VERTICES);
+            jg.WriteStartArray();
+            foreach (Vertex v in _graph.getVertices())
+                jg.WriteRawValue(graphson.objectNodeFromElement(v).ToString());
 
-                    jg.WriteEndArray();
+            jg.WriteEndArray();
 
-                    jg.WritePropertyName(GraphSONTokens.EDGES);
-                    jg.WriteStartArray();
-                    foreach (Edge e in _graph.getEdges())
-                        jg.WriteRawValue(graphson.objectNodeFromElement(e).ToString());
+            jg.WritePropertyName(GraphSONTokens.EDGES);
+            jg.WriteStartArray();
+            foreach (Edge e in _graph.getEdges())
+                jg.WriteRawValue(graphson.objectNodeFromElement(e).ToString());
 
-                    jg.WriteEndArray();
+            jg.WriteEndArray();
 
-                    jg.WriteEndObject();
-                }
-            }
+            jg.WriteEndObject();
+            jg.Flush();
         }
 
         /// <summary>

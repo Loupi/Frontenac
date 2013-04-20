@@ -60,6 +60,8 @@
     <Compile Include="Util\IO\GML\GMLReaderTest.cs" />
     <Compile Include="Util\IO\GML\GMLWriterTest.cs" />
     <Compile Include="Util\IO\GraphML\GraphMLWriterTest.cs" />
+    <Compile Include="Util\IO\GraphSON\ElementPropertyConfigTest.cs" />
+    <Compile Include="Util\IO\GraphSON\GraphSONReaderTest.cs" />
     <Compile Include="Util\KeyIndexableGraphHelperTest.cs" />
     <Compile Include="Util\MultiIterableTest.cs" />
     <Compile Include="Util\PropertyFilteredIterableTest.cs" />

@@ -39,7 +39,7 @@ namespace Frontenac.Blueprints.Util.IO.GraphSON
         /// <summary>
         /// Construct a configuration that includes the specified properties from both vertices and edges.
         /// </summary>
-        public static ElementPropertyConfig includeProperties(IEnumerable<string> vertexPropertyKeys,
+        public static ElementPropertyConfig IncludeProperties(IEnumerable<string> vertexPropertyKeys,
                                                           IEnumerable<string> edgePropertyKeys)
         {
             return new ElementPropertyConfig(vertexPropertyKeys, edgePropertyKeys, ElementPropertiesRule.INCLUDE,
@@ -49,7 +49,7 @@ namespace Frontenac.Blueprints.Util.IO.GraphSON
         /// <summary>
         /// Construct a configuration that excludes the specified properties from both vertices and edges.
         /// </summary>
-        public static ElementPropertyConfig excludeProperties(IEnumerable<string> vertexPropertyKeys,
+        public static ElementPropertyConfig ExcludeProperties(IEnumerable<string> vertexPropertyKeys,
                                                           IEnumerable<string> edgePropertyKeys)
         {
             return new ElementPropertyConfig(vertexPropertyKeys, edgePropertyKeys, ElementPropertiesRule.EXCLUDE,

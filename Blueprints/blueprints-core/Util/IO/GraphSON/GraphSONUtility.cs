@@ -46,7 +46,7 @@ namespace Frontenac.Blueprints.Util.IO.GraphSON
         /// </summary>
         public GraphSONUtility(GraphSONMode mode, ElementFactory factory,
                            IEnumerable<string> vertexPropertyKeys, IEnumerable<string> edgePropertyKeys) :
-            this(mode, factory, ElementPropertyConfig.includeProperties(vertexPropertyKeys, edgePropertyKeys))
+            this(mode, factory, ElementPropertyConfig.IncludeProperties(vertexPropertyKeys, edgePropertyKeys))
         {
 
         }
@@ -382,11 +382,11 @@ namespace Frontenac.Blueprints.Util.IO.GraphSON
                 else if (type == GraphSONTokens.TYPE_STRING)
                     propertyValue = node[GraphSONTokens.VALUE].Value<string>();
                 else if (type == GraphSONTokens.TYPE_LIST)
-                    propertyValue = readProperties(node[GraphSONTokens.VALUE].Values(), hasEmbeddedTypes);
+                    propertyValue = readProperties(node[GraphSONTokens.VALUE], hasEmbeddedTypes);
                 else if (type == GraphSONTokens.TYPE_MAP)
                     propertyValue = readProperties(node[GraphSONTokens.VALUE] as JObject, false, hasEmbeddedTypes);
                 else
-                    propertyValue = node.Value<string>();
+                    propertyValue = (node[GraphSONTokens.VALUE] as JValue).Value;
 
             }
             else
@@ -447,7 +447,7 @@ namespace Frontenac.Blueprints.Util.IO.GraphSON
                     else if (value is Element)
                         value = objectNodeFromElement((Element)value, propertyKeys,
                                 showTypes ? GraphSONMode.EXTENDED : GraphSONMode.NORMAL);
-                    else if (value is IEnumerable)
+                    else if (!(value is string) && value is IEnumerable)
                         value = createJsonList(value as IEnumerable, propertyKeys, showTypes);
                 }
 
@@ -464,7 +464,7 @@ namespace Frontenac.Blueprints.Util.IO.GraphSON
 
         static void putObject(JObject jsonMap, string key, object value)
         {
-            jsonMap.Add(key, JValue.FromObject(value));
+            jsonMap.put(key, JValue.FromObject(value));
         }
 
         static Dictionary<string, object> createPropertyMap(Element element, IEnumerable<string> propertyKeys, ElementPropertyConfig.ElementPropertiesRule rule)
