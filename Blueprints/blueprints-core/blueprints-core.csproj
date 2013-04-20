@@ -88,6 +88,7 @@
     <Compile Include="Util\IO\GML\GMLReader.cs" />
     <Compile Include="Util\IO\GML\GMLTokens.cs" />
     <Compile Include="Util\IO\GML\GMLWriter.cs" />
+    <Compile Include="Util\IO\GraphML\EncodingStreamWriter.cs" />
     <Compile Include="Util\IO\GraphML\GraphMigrator.cs" />
     <Compile Include="Util\IO\GraphML\GraphMLReader.cs" />
     <Compile Include="Util\IO\GraphML\GraphMLTokens.cs" />
@@ -191,7 +192,9 @@
     <None Include="key.snk" />
     <None Include="packages.config" />
   </ItemGroup>
-  <ItemGroup />
+  <ItemGroup>
+    <EmbeddedResource Include="Util\IO\GraphML\graph-example-1.xml" />
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.

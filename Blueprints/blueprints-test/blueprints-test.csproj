@@ -59,6 +59,7 @@
     <Compile Include="Util\IndexableGraphHelperTest.cs" />
     <Compile Include="Util\IO\GML\GMLReaderTest.cs" />
     <Compile Include="Util\IO\GML\GMLWriterTest.cs" />
+    <Compile Include="Util\IO\GraphML\GraphMLWriterTest.cs" />
     <Compile Include="Util\KeyIndexableGraphHelperTest.cs" />
     <Compile Include="Util\MultiIterableTest.cs" />
     <Compile Include="Util\PropertyFilteredIterableTest.cs" />
@@ -86,7 +87,9 @@
       <Name>blueprints-testsuite</Name>
     </ProjectReference>
   </ItemGroup>
-  <ItemGroup />
+  <ItemGroup>
+    <EmbeddedResource Include="Util\IO\GraphML\graph-example-1-normalized.xml" />
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.

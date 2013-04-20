@@ -181,9 +181,9 @@ namespace Frontenac.Blueprints.Util.IO.GML
                 {
                     if (type == StreamTokenizer.TT_NUMBER)
                     {
-
                         double doubleValue = st.NumberValue;
-                        if (doubleValue == (Double)((int)doubleValue))
+                        
+                        if (doubleValue == Math.Floor(doubleValue))
                             return (int)doubleValue;
                         else
                             return doubleValue;

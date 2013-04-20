@@ -6,6 +6,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Xml;
 using Frontenac.Blueprints.Util.Wrappers.Batch;
+using System.Globalization;
 
 namespace Frontenac.Blueprints.Util.IO.GraphML
 {
@@ -199,7 +200,7 @@ namespace Frontenac.Blueprints.Util.IO.GraphML
                         {
                             edgeId = reader.GetAttribute(GraphMLTokens.ID);
                             edgeLabel = reader.GetAttribute(GraphMLTokens.LABEL);
-                            edgeLabel = edgeLabel == null ? GraphMLTokens._DEFAULT : edgeLabel;
+                            edgeLabel = edgeLabel ?? GraphMLTokens._DEFAULT;
 
                             string[] vertexIds = new string[2];
                             vertexIds[0] = reader.GetAttribute(GraphMLTokens.SOURCE);
@@ -232,12 +233,12 @@ namespace Frontenac.Blueprints.Util.IO.GraphML
                         }
                         else if (elementName == GraphMLTokens.DATA)
                         {
-                            string key = reader.GetAttribute(null, GraphMLTokens.KEY);
+                            string key = reader.GetAttribute(GraphMLTokens.KEY);
                             string attributeName = keyIdMap.get(key);
 
                             if (attributeName != null)
                             {
-                                string value = reader.Value;
+                                string value = reader.ReadInnerXml();
 
                                 if (inVertex == true)
                                 {
@@ -306,15 +307,15 @@ namespace Frontenac.Blueprints.Util.IO.GraphML
             if (null == type || type == GraphMLTokens.STRING)
                 return value;
             else if (type == GraphMLTokens.FLOAT)
-                return float.Parse(value);
+                return float.Parse(value, CultureInfo.InvariantCulture);
             else if (type == GraphMLTokens.INT)
-                return int.Parse(value);
+                return int.Parse(value, CultureInfo.InvariantCulture);
             else if (type == GraphMLTokens.DOUBLE)
-                return double.Parse(value);
+                return double.Parse(value, CultureInfo.InvariantCulture);
             else if (type == GraphMLTokens.BOOLEAN)
                 return bool.Parse(value);
             else if (type == GraphMLTokens.LONG)
-                return long.Parse(value);
+                return long.Parse(value, CultureInfo.InvariantCulture);
             else
                 return value;
         }
