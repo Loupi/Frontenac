@@ -62,7 +62,7 @@ namespace Frontenac.Blueprints.Util.IO.GraphML
         /// In practice, usually the provided graph is empty.
         /// </summary>
         /// <param name="graphMLInputStream">a Stream of GraphML data</param>
-        void inputGraph(Stream graphMLInputStream)
+        public void inputGraph(Stream graphMLInputStream)
         {
             GraphMLReader.inputGraph(_graph, graphMLInputStream, 1000, _vertexIdKey, _edgeIdKey, _edgeLabelKey);
         }
@@ -238,7 +238,8 @@ namespace Frontenac.Blueprints.Util.IO.GraphML
 
                             if (attributeName != null)
                             {
-                                string value = reader.ReadInnerXml();
+                                reader.Read();
+                                string value = reader.Value;
 
                                 if (inVertex == true)
                                 {

@@ -142,7 +142,7 @@ namespace Frontenac.Blueprints.Util.IO.GraphML
             if (_normalize)
             {
                 writer.Formatting = Formatting.Indented;
-                writer.Indentation = 2;
+                writer.Indentation = 4;
             }
 
             writer.WriteStartDocument();
