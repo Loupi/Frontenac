@@ -20,7 +20,7 @@ namespace Frontenac.Blueprints.Util.IO.GraphSON
             Graph g = TinkerGraphFactory.createTinkerGraph();
             IDictionary<string, JToken> rootNode;
 
-            using(var stream = new MemoryStream())
+            using (var stream = new MemoryStream())
             {
                 GraphSONWriter writer = new GraphSONWriter(g);
                 writer.outputGraph(stream, null, null, GraphSONMode.NORMAL);
@@ -53,7 +53,7 @@ namespace Frontenac.Blueprints.Util.IO.GraphSON
             Graph g = TinkerGraphFactory.createTinkerGraph();
             IDictionary<string, JToken> rootNode;
 
-            using(var stream = new MemoryStream())
+            using (var stream = new MemoryStream())
             {
                 GraphSONWriter writer = new GraphSONWriter(g);
                 writer.outputGraph(stream, null, null, GraphSONMode.EXTENDED);
@@ -85,7 +85,7 @@ namespace Frontenac.Blueprints.Util.IO.GraphSON
             Graph g = TinkerGraphFactory.createTinkerGraph();
             IDictionary<string, JToken> rootNode;
 
-            using(var stream = new MemoryStream())
+            using (var stream = new MemoryStream())
             {
                 GraphSONWriter writer = new GraphSONWriter(g);
                 writer.outputGraph(stream, null, null, GraphSONMode.COMPACT);

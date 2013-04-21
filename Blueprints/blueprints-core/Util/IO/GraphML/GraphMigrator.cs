@@ -25,8 +25,6 @@ namespace Frontenac.Blueprints.Util.IO.GraphML
 
             using (AnonymousPipeClientStream inPipe = new AnonymousPipeClientStream(PipeDirection.In, outPipe.GetClientHandleAsString()))
             {
-                outPipe.DisposeLocalCopyOfClientHandle();
-
                 Task.Factory.StartNew(() =>
                 {
                     GraphMLWriter.outputGraph(fromGraph, outPipe);
