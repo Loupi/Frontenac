@@ -22,17 +22,18 @@ namespace Frontenac.Blueprints.Util.IO.GraphML
         {
             const int PIPE_SIZE = 1024;
             AnonymousPipeServerStream outPipe = new AnonymousPipeServerStream(PipeDirection.Out, HandleInheritability.Inheritable, PIPE_SIZE);
-
-            using (AnonymousPipeClientStream inPipe = new AnonymousPipeClientStream(PipeDirection.In, outPipe.GetClientHandleAsString()))
             {
-                Task.Factory.StartNew(() =>
+                using (AnonymousPipeClientStream inPipe = new AnonymousPipeClientStream(PipeDirection.In, outPipe.ClientSafePipeHandle))
                 {
-                    GraphMLWriter.outputGraph(fromGraph, outPipe);
-                    outPipe.Flush();
-                    outPipe.Close();
-                });
+                    Task t = Task.Factory.StartNew(() =>
+                    {
+                        GraphMLWriter.outputGraph(fromGraph, outPipe);
+                        outPipe.Flush();
+                        outPipe.Close();
+                    });
 
-                GraphMLReader.inputGraph(toGraph, inPipe);
+                    GraphMLReader.inputGraph(toGraph, inPipe);
+                }
             }
         }
     }

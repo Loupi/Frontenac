@@ -8,6 +8,7 @@ using System.Threading.Tasks;
 using Frontenac.Blueprints.Util;
 using Frontenac.Blueprints.Util.IO.GML;
 using Frontenac.Blueprints.Util.IO.GraphML;
+using Frontenac.Blueprints.Util.IO.GraphSON;
 
 namespace Frontenac.Blueprints.Impls.TG
 {
@@ -111,6 +112,21 @@ namespace Frontenac.Blueprints.Impls.TG
         }
 
         public TinkerGraphGraphMLReaderTestSuite()
+            : base(new TinkerGraphTestImpl())
+        {
+        }
+    }
+
+    [TestFixture(Category = "TinkerGraphGraphTestSuite")]
+    public class TinkerGraphGraphSONReaderTestSuite : GraphSONReaderTestSuite
+    {
+        [SetUp]
+        public void setUp()
+        {
+            deleteDirectory(TinkerGraphTestImpl.getThinkerGraphDirectory());
+        }
+
+        public TinkerGraphGraphSONReaderTestSuite()
             : base(new TinkerGraphTestImpl())
         {
         }

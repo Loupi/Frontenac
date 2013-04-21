@@ -61,6 +61,7 @@
     <Compile Include="TestSuite.cs" />
     <Compile Include="Util\IO\GML\GMLReaderTestSuite.cs" />
     <Compile Include="Util\IO\GraphML\GraphMLReaderTestSuite.cs" />
+    <Compile Include="Util\IO\GraphSON\GraphSONReaderTestSuite.cs" />
     <Compile Include="Util\IO\MockSerializable.cs" />
     <Compile Include="VertexTestSuite.cs" />
   </ItemGroup>
@@ -76,6 +77,8 @@
     <EmbeddedResource Include="Util\IO\GML\graph-example-1.gml" />
     <EmbeddedResource Include="Util\IO\GML\graph-example-2.gml" />
     <EmbeddedResource Include="Util\IO\GML\graph-example-3.gml" />
+    <EmbeddedResource Include="Util\IO\GraphSON\graph-example-1.json" />
+    <EmbeddedResource Include="Util\IO\GraphSON\graph-example-2.json" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="Util\IO\GraphML\graph-example-1.xml">
