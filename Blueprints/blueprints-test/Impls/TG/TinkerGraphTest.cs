@@ -7,6 +7,7 @@ using System.Text;
 using System.Threading.Tasks;
 using Frontenac.Blueprints.Util;
 using Frontenac.Blueprints.Util.IO.GML;
+using Frontenac.Blueprints.Util.IO.GraphML;
 
 namespace Frontenac.Blueprints.Impls.TG
 {
@@ -95,6 +96,21 @@ namespace Frontenac.Blueprints.Impls.TG
         }
 
         public TinkerGraphGMLReaderTestSuite()
+            : base(new TinkerGraphTestImpl())
+        {
+        }
+    }
+
+    [TestFixture(Category = "TinkerGraphGraphTestSuite")]
+    public class TinkerGraphGraphMLReaderTestSuite : GraphMLReaderTestSuite
+    {
+        [SetUp]
+        public void setUp()
+        {
+            deleteDirectory(TinkerGraphTestImpl.getThinkerGraphDirectory());
+        }
+
+        public TinkerGraphGraphMLReaderTestSuite()
             : base(new TinkerGraphTestImpl())
         {
         }

@@ -43,7 +43,7 @@ namespace Frontenac.Blueprints.Util.IO.GraphML
         /// if the id of an edge is a &lt;data/&gt; property, fetch it from the data property.
         /// </summary>
         /// <param name="edgeIdKey"></param>
-        void setEdgeIdKey(string edgeIdKey)
+        public void setEdgeIdKey(string edgeIdKey)
         {
             _edgeIdKey = edgeIdKey;
         }

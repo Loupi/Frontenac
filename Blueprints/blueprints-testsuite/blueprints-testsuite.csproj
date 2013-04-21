@@ -60,6 +60,7 @@
     <Compile Include="QueryTestSuite.cs" />
     <Compile Include="TestSuite.cs" />
     <Compile Include="Util\IO\GML\GMLReaderTestSuite.cs" />
+    <Compile Include="Util\IO\GraphML\GraphMLReaderTestSuite.cs" />
     <Compile Include="Util\IO\MockSerializable.cs" />
     <Compile Include="VertexTestSuite.cs" />
   </ItemGroup>
@@ -75,6 +76,14 @@
     <EmbeddedResource Include="Util\IO\GML\graph-example-1.gml" />
     <EmbeddedResource Include="Util\IO\GML\graph-example-2.gml" />
     <EmbeddedResource Include="Util\IO\GML\graph-example-3.gml" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Util\IO\GraphML\graph-example-1.xml">
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Util\IO\GraphML\graph-example-2.xml" />
+    <EmbeddedResource Include="Util\IO\GraphML\graph-example-3.xml" />
+    <EmbeddedResource Include="Util\IO\GraphML\graph-example-4.xml" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Import Project="$(SolutionDir)\.nuget\nuget.targets" />
