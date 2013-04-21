@@ -138,7 +138,7 @@ namespace Frontenac.Blueprints.Util.IO.GraphSON
             Dictionary<string, object> props = GraphSONUtility.readProperties(json, true, _hasEmbeddedTypes);
 
             object edgeId = getTypedValueFromJsonNode(json[GraphSONTokens._ID]);
-            var nodeLabel = json[GraphSONTokens._LABEL];
+            var nodeLabel = json[GraphSONTokens._LABEL] ?? string.Empty;
             string label = nodeLabel == null ? null : nodeLabel.Value<string>();
 
             Edge e = _factory.createEdge(edgeId, out_, in_, label);
@@ -156,7 +156,7 @@ namespace Frontenac.Blueprints.Util.IO.GraphSON
         /// <summary>
         /// Creates GraphSON for a single graph element.
         /// </summary>
-        public JObject objectNodeFromElement(Element element)
+        public JObject jsonFromElement(Element element)
         {
             bool isEdge = element is Edge;
             bool showTypes = _mode == GraphSONMode.EXTENDED;
@@ -295,16 +295,16 @@ namespace Frontenac.Blueprints.Util.IO.GraphSON
         }
 
         /// <summary>
-        /// Creates a Jackson ObjectNode from a graph element.
+        /// Creates a JSON.NET ObjectNode from a graph element.
         /// </summary>
         /// <param name="element">the graph element to convert to JSON.</param>
         /// <param name="propertyKeys">The property keys at the root of the element to serialize.  If null, then all keys are serialized.</param>
         /// <param name="mode">The type of GraphSON to generate.</param>
-        public static JObject objectNodeFromElement(Element element, IEnumerable<string> propertyKeys, GraphSONMode mode)
+        public static JObject jsonFromElement(Element element, IEnumerable<string> propertyKeys, GraphSONMode mode)
         {
             GraphSONUtility graphson = element is Edge ? new GraphSONUtility(mode, null, null, propertyKeys)
                     : new GraphSONUtility(mode, null, propertyKeys, null);
-            return graphson.objectNodeFromElement(element);
+            return graphson.jsonFromElement(element);
         }
 
         static Dictionary<string, object> readProperties(JObject node, bool ignoreReservedKeys, bool hasEmbeddedTypes)
@@ -423,10 +423,10 @@ namespace Frontenac.Blueprints.Util.IO.GraphSON
             foreach (object item in list)
             {
                 if (item is Element)
-                    jsonList.Add(objectNodeFromElement(item as Element, propertyKeys, showTypes ? GraphSONMode.EXTENDED : GraphSONMode.NORMAL));
+                    jsonList.Add(jsonFromElement(item as Element, propertyKeys, showTypes ? GraphSONMode.EXTENDED : GraphSONMode.NORMAL));
                 else if (item is IDictionary)
                     jsonList.Add(createJsonMap(item as IDictionary, propertyKeys, showTypes));
-                else if (item != null && item is IEnumerable)
+                else if (item != null && !(item is string) && item is IEnumerable)
                     jsonList.Add(createJsonList(item as IEnumerable, propertyKeys, showTypes));
                 else
                     addObject(jsonList, item);
@@ -445,7 +445,7 @@ namespace Frontenac.Blueprints.Util.IO.GraphSON
                     if (value is IDictionary)
                         value = createJsonMap(value as IDictionary, propertyKeys, showTypes);
                     else if (value is Element)
-                        value = objectNodeFromElement((Element)value, propertyKeys,
+                        value = jsonFromElement((Element)value, propertyKeys,
                                 showTypes ? GraphSONMode.EXTENDED : GraphSONMode.NORMAL);
                     else if (!(value is string) && value is IEnumerable)
                         value = createJsonList(value as IEnumerable, propertyKeys, showTypes);
@@ -459,12 +459,12 @@ namespace Frontenac.Blueprints.Util.IO.GraphSON
 
         static void addObject(JArray jsonList, object value)
         {
-            jsonList.Add(value);
+            jsonList.Add(value == null || value is JToken ? value : JToken.FromObject(value));
         }
 
         static void putObject(JObject jsonMap, string key, object value)
         {
-            jsonMap.put(key, JValue.FromObject(value));
+            jsonMap.put(key, (JToken)(value == null || value is JToken ? value : JToken.FromObject(value)));
         }
 
         static Dictionary<string, object> createPropertyMap(Element element, IEnumerable<string> propertyKeys, ElementPropertyConfig.ElementPropertiesRule rule)

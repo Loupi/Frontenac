@@ -36,6 +36,10 @@
     <AssemblyOriginatorKeyFile>key.snk</AssemblyOriginatorKeyFile>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="Newtonsoft.Json, Version=4.5.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\packages\Newtonsoft.Json.5.0.3\lib\net45\Newtonsoft.Json.dll</HintPath>
+    </Reference>
     <Reference Include="nunit.framework">
       <HintPath>..\packages\NUnit.2.6.2\lib\nunit.framework.dll</HintPath>
     </Reference>
@@ -62,6 +66,7 @@
     <Compile Include="Util\IO\GraphML\GraphMLWriterTest.cs" />
     <Compile Include="Util\IO\GraphSON\ElementPropertyConfigTest.cs" />
     <Compile Include="Util\IO\GraphSON\GraphSONReaderTest.cs" />
+    <Compile Include="Util\IO\GraphSON\GraphSONUtilityTest.cs" />
     <Compile Include="Util\KeyIndexableGraphHelperTest.cs" />
     <Compile Include="Util\MultiIterableTest.cs" />
     <Compile Include="Util\PropertyFilteredIterableTest.cs" />

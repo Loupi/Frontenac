@@ -63,14 +63,14 @@ namespace Frontenac.Blueprints.Util.IO.GraphSON
             jg.WritePropertyName(GraphSONTokens.VERTICES);
             jg.WriteStartArray();
             foreach (Vertex v in _graph.getVertices())
-                jg.WriteRawValue(graphson.objectNodeFromElement(v).ToString());
+                jg.WriteRawValue(graphson.jsonFromElement(v).ToString());
 
             jg.WriteEndArray();
 
             jg.WritePropertyName(GraphSONTokens.EDGES);
             jg.WriteStartArray();
             foreach (Edge e in _graph.getEdges())
-                jg.WriteRawValue(graphson.objectNodeFromElement(e).ToString());
+                jg.WriteRawValue(graphson.jsonFromElement(e).ToString());
 
             jg.WriteEndArray();
 
