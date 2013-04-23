@@ -33,7 +33,7 @@ namespace Frontenac.Blueprints
 
         protected string convertId(Graph graph, string id)
         {
-            if (graph.getFeatures().isRdfModel.Value)
+            if (graph.getFeatures().isRDFModel.Value)
                 return string.Concat("blueprints:", id);
             else
                 return id;

@@ -56,9 +56,11 @@
     <Compile Include="Impls\GraphTest.cs" />
     <Compile Include="IndexableGraphTestSuite.cs" />
     <Compile Include="IndexTestSuite.cs" />
+    <Compile Include="KeyIndexableGraphTestSuite.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="QueryTestSuite.cs" />
     <Compile Include="TestSuite.cs" />
+    <Compile Include="TransactionalGraphTestSuite.cs" />
     <Compile Include="Util\IO\GML\GMLReaderTestSuite.cs" />
     <Compile Include="Util\IO\GraphML\GraphMLReaderTestSuite.cs" />
     <Compile Include="Util\IO\GraphSON\GraphSONReaderTestSuite.cs" />

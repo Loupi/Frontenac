@@ -25,6 +25,11 @@ namespace Frontenac.Blueprints.Impls.TG
             : base(new TinkerGraphTestImpl())
         {
         }
+
+        public TinkerGraphGraphTestSuite(GraphTest graphTest)
+            : base(graphTest)
+        {
+        }
     }
 
     [TestFixture(Category = "TinkerGraphGraphTestSuite")]
@@ -38,6 +43,11 @@ namespace Frontenac.Blueprints.Impls.TG
 
         public TinkerGraphVertexTestSuite()
             : base(new TinkerGraphTestImpl())
+        {
+        }
+
+        public TinkerGraphVertexTestSuite(GraphTest graphTest)
+            : base(graphTest)
         {
         }
     }
@@ -55,6 +65,11 @@ namespace Frontenac.Blueprints.Impls.TG
             : base(new TinkerGraphTestImpl())
         {
         }
+
+        public TinkerGraphEdgeTestSuite(GraphTest graphTest)
+            : base(graphTest)
+        {
+        }
     }
 
     [TestFixture(Category = "TinkerGraphGraphTestSuite")]
@@ -68,6 +83,11 @@ namespace Frontenac.Blueprints.Impls.TG
 
         public TinkerGraphIndexableGraphTestSuite()
             : base(new TinkerGraphTestImpl())
+        {
+        }
+
+        public TinkerGraphIndexableGraphTestSuite(GraphTest graphTest)
+            : base(graphTest)
         {
         }
     }
@@ -85,6 +105,31 @@ namespace Frontenac.Blueprints.Impls.TG
             : base(new TinkerGraphTestImpl())
         {
         }
+
+        public TinkerGraphIndexTestSuite(GraphTest graphTest)
+            : base(graphTest)
+        {
+        }
+    }
+
+    [TestFixture(Category = "TinkerGraphGraphTestSuite")]
+    public class TinkerGraphKeyIndexableGraphTestSuite : KeyIndexableGraphTestSuite
+    {
+        [SetUp]
+        public void setUp()
+        {
+            deleteDirectory(TinkerGraphTestImpl.getThinkerGraphDirectory());
+        }
+
+        public TinkerGraphKeyIndexableGraphTestSuite()
+            : base(new TinkerGraphTestImpl())
+        {
+        }
+
+        public TinkerGraphKeyIndexableGraphTestSuite(GraphTest graphTest)
+            : base(graphTest)
+        {
+        }
     }
 
     [TestFixture(Category = "TinkerGraphGraphTestSuite")]
@@ -98,6 +143,11 @@ namespace Frontenac.Blueprints.Impls.TG
 
         public TinkerGraphGMLReaderTestSuite()
             : base(new TinkerGraphTestImpl())
+        {
+        }
+
+        public TinkerGraphGMLReaderTestSuite(GraphTest graphTest)
+            : base(graphTest)
         {
         }
     }
@@ -115,6 +165,11 @@ namespace Frontenac.Blueprints.Impls.TG
             : base(new TinkerGraphTestImpl())
         {
         }
+
+        public TinkerGraphGraphMLReaderTestSuite(GraphTest graphTest)
+            : base(graphTest)
+        {
+        }
     }
 
     [TestFixture(Category = "TinkerGraphGraphTestSuite")]
@@ -128,6 +183,11 @@ namespace Frontenac.Blueprints.Impls.TG
 
         public TinkerGraphGraphSONReaderTestSuite()
             : base(new TinkerGraphTestImpl())
+        {
+        }
+
+        public TinkerGraphGraphSONReaderTestSuite(GraphTest graphTest)
+            : base(graphTest)
         {
         }
     }
@@ -160,13 +220,24 @@ namespace Frontenac.Blueprints.Impls.TG
     }
 
     [TestFixture(Category = "TinkerGraphGraphTestSuite")]
-    public class TinkerGraphTestGeneral : TinkerGraphTestImpl
+    public class TinkerGraphTestGeneral : TestSuite
     {
+        public TinkerGraphTestGeneral()
+            : this(new TinkerGraphTestImpl())
+        {
+        }
+
+        public TinkerGraphTestGeneral(GraphTest graphTest) :
+            base("TinkerGraphTestGeneral", graphTest)
+        {
+
+        }
+
         [Test]
         public void testClear()
         {
-            deleteDirectory(getThinkerGraphDirectory());
-            TinkerGraph graph = (TinkerGraph)this.generateGraph();
+            deleteDirectory(TinkerGraphTestImpl.getThinkerGraphDirectory());
+            TinkerGraph graph = (TinkerGraph)graphTest.generateGraph();
             this.stopWatch();
             for (int i = 0; i < 25; i++)
             {
@@ -192,8 +263,8 @@ namespace Frontenac.Blueprints.Impls.TG
         [Test]
         public void testShutdownStartManyTimes()
         {
-            deleteDirectory(getThinkerGraphDirectory());
-            TinkerGraph graph = (TinkerGraph)this.generateGraph();
+            deleteDirectory(TinkerGraphTestImpl.getThinkerGraphDirectory());
+            TinkerGraph graph = (TinkerGraph)graphTest.generateGraph();
             for (int i = 0; i < 25; i++)
             {
                 Vertex a = graph.addVertex(null);
@@ -207,7 +278,7 @@ namespace Frontenac.Blueprints.Impls.TG
             int iterations = 150;
             for (int i = 0; i < iterations; i++)
             {
-                graph = (TinkerGraph)this.generateGraph();
+                graph = (TinkerGraph)graphTest.generateGraph();
                 Assert.AreEqual(50, count(graph.getVertices()));
                 foreach (Vertex v in graph.getVertices())
                 {

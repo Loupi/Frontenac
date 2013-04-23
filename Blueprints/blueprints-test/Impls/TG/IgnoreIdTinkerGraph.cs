@@ -11,6 +11,7 @@ namespace Frontenac.Blueprints.Impls.TG
     /// and instead uses its own internal id scheme.
     /// This is meant to be used for testing only.
     /// </summary>
+    [Serializable]
     public class IgnoreIdTinkerGraph : TinkerGraph
     {
         public IgnoreIdTinkerGraph()

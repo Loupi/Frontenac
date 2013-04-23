@@ -55,7 +55,7 @@ namespace Frontenac.Blueprints.Impls.TG
 
             FEATURES.ignoresSuppliedIds = false;
             FEATURES.isPersistent = false;
-            FEATURES.isRdfModel = false;
+            FEATURES.isRDFModel = false;
             FEATURES.isWrapper = false;
 
             FEATURES.supportsIndices = true;

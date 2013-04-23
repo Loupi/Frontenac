@@ -94,7 +94,7 @@ namespace Frontenac.Blueprints
         /// Is the graph an RDF framework?
         /// Deprecated thus far, isRDFModel describes a collection of features. Use actual features to describe your data model.
         /// </summary>
-        public bool? isRdfModel { get; set; }
+        public bool? isRDFModel { get; set; }
 
         /// <summary>
         /// Does the graph implement WrapperGraph?

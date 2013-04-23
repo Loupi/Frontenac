@@ -54,6 +54,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Impls\TG\IgnoreIdTinkerGraph.cs" />
+    <Compile Include="Impls\TG\IgnoreIdTinkerGraphTest.cs" />
     <Compile Include="Impls\TG\MockTransactionalGraph.cs" />
     <Compile Include="Impls\TG\TinkerGraphTest.cs" />
     <Compile Include="ParameterTest.cs" />

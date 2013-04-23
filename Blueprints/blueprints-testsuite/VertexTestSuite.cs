@@ -82,7 +82,7 @@ namespace Frontenac.Blueprints
                 Assert.AreEqual(3, count(graph.getVertices()));
             }
 
-            if (graph.getFeatures().isRdfModel.Value)
+            if (graph.getFeatures().isRDFModel.Value)
             {
                 Vertex v1 = graph.addVertex("http://tinkerpop.com#marko");
                 Assert.AreEqual("http://tinkerpop.com#marko", v1.getId());
@@ -283,7 +283,7 @@ namespace Frontenac.Blueprints
                 }
 
             }
-            else if (graph.getFeatures().isRdfModel.Value)
+            else if (graph.getFeatures().isRDFModel.Value)
             {
                 Vertex v1 = graph.addVertex("\"1\"^^<http://www.w3.org/2001/XMLSchema#int>");
                 Assert.AreEqual("http://www.w3.org/2001/XMLSchema#int", v1.getProperty(SailTokens.DATATYPE));
@@ -325,7 +325,7 @@ namespace Frontenac.Blueprints
                     Assert.AreEqual(15, vertex.getPropertyKeys().Count());
 
             }
-            else if (graph.getFeatures().isRdfModel.Value)
+            else if (graph.getFeatures().isRDFModel.Value)
             {
                 HashSet<Vertex> vertices = new HashSet<Vertex>();
                 this.stopWatch();
@@ -437,7 +437,7 @@ namespace Frontenac.Blueprints
                     Assert.Null(v2.removeProperty("key2"));
                 }
             }
-            else if (graph.getFeatures().isRdfModel.Value)
+            else if (graph.getFeatures().isRDFModel.Value)
             {
                 Vertex v1 = graph.addVertex("\"1\"^^<http://www.w3.org/2001/XMLSchema#int>");
                 Assert.AreEqual("http://www.w3.org/2001/XMLSchema#int", v1.removeProperty("type"));
