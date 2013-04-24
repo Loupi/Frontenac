@@ -10,7 +10,7 @@ namespace Frontenac.Blueprints.Impls.TG
     /// <summary>
     /// Reads TinkerGraph metadata from a Stream.
     /// </summary>
-    class TinkerMetadataReader
+    public class TinkerMetadataReader
     {
         readonly TinkerGraph _graph;
 

@@ -73,6 +73,26 @@ namespace Frontenac.Blueprints.Impls.TG
     }
 
     [TestFixture(Category = "TinkerGraphGraphTestSuite")]
+    public class TinkerGraphKeyIndexableGraphTestSuite : KeyIndexableGraphTestSuite
+    {
+        [SetUp]
+        public void setUp()
+        {
+            deleteDirectory(TinkerGraphTestImpl.getThinkerGraphDirectory());
+        }
+
+        public TinkerGraphKeyIndexableGraphTestSuite()
+            : base(new TinkerGraphTestImpl())
+        {
+        }
+
+        public TinkerGraphKeyIndexableGraphTestSuite(GraphTest graphTest)
+            : base(graphTest)
+        {
+        }
+    }
+
+    [TestFixture(Category = "TinkerGraphGraphTestSuite")]
     public class TinkerGraphIndexableGraphTestSuite : IndexableGraphTestSuite
     {
         [SetUp]
@@ -112,25 +132,7 @@ namespace Frontenac.Blueprints.Impls.TG
         }
     }
 
-    [TestFixture(Category = "TinkerGraphGraphTestSuite")]
-    public class TinkerGraphKeyIndexableGraphTestSuite : KeyIndexableGraphTestSuite
-    {
-        [SetUp]
-        public void setUp()
-        {
-            deleteDirectory(TinkerGraphTestImpl.getThinkerGraphDirectory());
-        }
-
-        public TinkerGraphKeyIndexableGraphTestSuite()
-            : base(new TinkerGraphTestImpl())
-        {
-        }
-
-        public TinkerGraphKeyIndexableGraphTestSuite(GraphTest graphTest)
-            : base(graphTest)
-        {
-        }
-    }
+    
 
     [TestFixture(Category = "TinkerGraphGraphTestSuite")]
     public class TinkerGraphGMLReaderTestSuite : GMLReaderTestSuite
