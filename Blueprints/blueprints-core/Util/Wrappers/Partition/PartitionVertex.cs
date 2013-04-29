@@ -1,44 +1,49 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.Collections.Generic;
 
 namespace Frontenac.Blueprints.Util.Wrappers.Partition
 {
-    public class PartitionVertex : PartitionElement, Vertex
+    public class PartitionVertex : PartitionElement, IVertex
     {
-        public PartitionVertex(Vertex baseVertex, PartitionGraph graph)
+        public PartitionVertex(IVertex baseVertex, PartitionGraph graph)
             : base(baseVertex, graph)
         {
 
         }
 
-        public IEnumerable<Edge> getEdges(Direction direction, params string[] labels)
+        public IEnumerable<IEdge> GetEdges(Direction direction, params string[] labels)
         {
-            return new PartitionEdgeIterable((baseElement as Vertex).getEdges(direction, labels), graph);
+            var vertex = BaseElement as IVertex;
+            if (vertex != null)
+                return new PartitionEdgeIterable(vertex.GetEdges(direction, labels), Graph);
+            return null;
         }
 
-        public IEnumerable<Vertex> getVertices(Direction direction, params string[] labels)
+        public IEnumerable<IVertex> GetVertices(Direction direction, params string[] labels)
         {
-            return new PartitionVertexIterable((baseElement as Vertex).getVertices(direction, labels), graph);
+            var vertex = BaseElement as IVertex;
+            if (vertex != null)
+                return new PartitionVertexIterable(vertex.GetVertices(direction, labels), Graph);
+            return null;
         }
 
-        public VertexQuery query()
+        public IVertexQuery Query()
         {
-            return new WrapperVertexQuery((baseElement as Vertex).query(),
-                t => new PartitionEdgeIterable(t.edges(), graph),
-                t => new PartitionVertexIterable(t.vertices(), graph));
+            var vertex = BaseElement as IVertex;
+            if (vertex != null)
+                return new WrapperVertexQuery(vertex.Query(),
+                                              t => new PartitionEdgeIterable(t.Edges(), Graph),
+                                              t => new PartitionVertexIterable(t.Vertices(), Graph));
+            return null;
         }
 
-        public Edge addEdge(string label, Vertex vertex)
+        public IEdge AddEdge(string label, IVertex vertex)
         {
-            return graph.addEdge(null, this, vertex, label);
+            return Graph.AddEdge(null, this, vertex, label);
         }
 
-        public Vertex getBaseVertex()
+        public IVertex GetBaseVertex()
         {
-            return this.baseElement as Vertex;
+            return BaseElement as IVertex;
         }
     }
 }

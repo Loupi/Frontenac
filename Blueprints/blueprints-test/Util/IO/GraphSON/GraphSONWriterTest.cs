@@ -2,112 +2,110 @@
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using NUnit.Framework;
-using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text;
-using System.Threading.Tasks;
 
 namespace Frontenac.Blueprints.Util.IO.GraphSON
 {
     [TestFixture(Category = "GraphSONWriterTest")]
-    public class GraphSONWriterTest
+    public class GraphSonWriterTest
     {
         [Test]
-        public void outputGraphNoEmbeddedTypes()
+        public void OutputGraphNoEmbeddedTypes()
         {
-            Graph g = TinkerGraphFactory.createTinkerGraph();
+            IGraph g = TinkerGraphFactory.CreateTinkerGraph();
             IDictionary<string, JToken> rootNode;
 
             using (var stream = new MemoryStream())
             {
-                GraphSONWriter writer = new GraphSONWriter(g);
-                writer.outputGraph(stream, null, null, GraphSONMode.NORMAL);
+                var writer = new GraphSonWriter(g);
+                writer.OutputGraph(stream, null, null, GraphSonMode.NORMAL);
                 stream.Position = 0;
-                string jsonString = System.Text.Encoding.Default.GetString(stream.ToArray());
-                rootNode = (IDictionary<string, JToken>)((JObject)JsonConvert.DeserializeObject(jsonString));
+                string jsonString = Encoding.Default.GetString(stream.ToArray());
+                rootNode = (JObject)JsonConvert.DeserializeObject(jsonString);
             }
 
             // ensure that the JSON conforms to basic structure and that the right
             // number of graph elements are present. other tests already cover element formatting
             Assert.NotNull(rootNode);
 
-            Assert.True(rootNode.ContainsKey(GraphSONTokens.MODE));
-            Assert.AreEqual("NORMAL", rootNode.get(GraphSONTokens.MODE).ToString());
+            Assert.True(rootNode.ContainsKey(GraphSonTokens.Mode));
+            Assert.AreEqual("NORMAL", rootNode.Get(GraphSonTokens.Mode).ToString());
 
-            Assert.True(rootNode.ContainsKey(GraphSONTokens.VERTICES));
+            Assert.True(rootNode.ContainsKey(GraphSonTokens.Vertices));
 
-            IList<JToken> vertices = (IList<JToken>)rootNode.get(GraphSONTokens.VERTICES);
+            var vertices = (IList<JToken>)rootNode.Get(GraphSonTokens.Vertices);
             Assert.AreEqual(7, vertices.Count());
 
-            Assert.True(rootNode.ContainsKey(GraphSONTokens.EDGES));
+            Assert.True(rootNode.ContainsKey(GraphSonTokens.Edges));
 
-            IList<JToken> edges = (IList<JToken>)rootNode.get(GraphSONTokens.EDGES);
+            var edges = (IList<JToken>)rootNode.Get(GraphSonTokens.Edges);
             Assert.AreEqual(6, edges.Count());
         }
 
         [Test]
-        public void outputGraphWithEmbeddedTypes()
+        public void OutputGraphWithEmbeddedTypes()
         {
-            Graph g = TinkerGraphFactory.createTinkerGraph();
+            IGraph g = TinkerGraphFactory.CreateTinkerGraph();
             IDictionary<string, JToken> rootNode;
 
             using (var stream = new MemoryStream())
             {
-                GraphSONWriter writer = new GraphSONWriter(g);
-                writer.outputGraph(stream, null, null, GraphSONMode.EXTENDED);
+                var writer = new GraphSonWriter(g);
+                writer.OutputGraph(stream, null, null, GraphSonMode.EXTENDED);
                 stream.Position = 0;
-                string jsonString = System.Text.Encoding.Default.GetString(stream.ToArray());
-                rootNode = (IDictionary<string, JToken>)((JObject)JsonConvert.DeserializeObject(jsonString));
+                string jsonString = Encoding.Default.GetString(stream.ToArray());
+                rootNode = (JObject)JsonConvert.DeserializeObject(jsonString);
             }
 
             // ensure that the JSON conforms to basic structure and that the right
             // number of graph elements are present. other tests already cover element formatting
             Assert.NotNull(rootNode);
-            Assert.True(rootNode.ContainsKey(GraphSONTokens.MODE));
-            Assert.AreEqual("EXTENDED", rootNode.get(GraphSONTokens.MODE).ToString());
+            Assert.True(rootNode.ContainsKey(GraphSonTokens.Mode));
+            Assert.AreEqual("EXTENDED", rootNode.Get(GraphSonTokens.Mode).ToString());
 
-            Assert.True(rootNode.ContainsKey(GraphSONTokens.VERTICES));
+            Assert.True(rootNode.ContainsKey(GraphSonTokens.Vertices));
 
-            JArray vertices = (JArray)rootNode.get(GraphSONTokens.VERTICES);
+            var vertices = (JArray)rootNode.Get(GraphSonTokens.Vertices);
             Assert.AreEqual(7, vertices.Count());
 
-            Assert.True(rootNode.ContainsKey(GraphSONTokens.EDGES));
+            Assert.True(rootNode.ContainsKey(GraphSonTokens.Edges));
 
-            JArray edges = (JArray)rootNode.get(GraphSONTokens.EDGES);
+            var edges = (JArray)rootNode.Get(GraphSonTokens.Edges);
             Assert.AreEqual(6, edges.Count());
         }
 
         [Test]
-        public void outputGraphWithCompact()
+        public void OutputGraphWithCompact()
         {
-            Graph g = TinkerGraphFactory.createTinkerGraph();
+            IGraph g = TinkerGraphFactory.CreateTinkerGraph();
             IDictionary<string, JToken> rootNode;
 
             using (var stream = new MemoryStream())
             {
-                GraphSONWriter writer = new GraphSONWriter(g);
-                writer.outputGraph(stream, null, null, GraphSONMode.COMPACT);
+                var writer = new GraphSonWriter(g);
+                writer.OutputGraph(stream, null, null, GraphSonMode.COMPACT);
                 stream.Position = 0;
-                string jsonString = System.Text.Encoding.Default.GetString(stream.ToArray());
-                rootNode = (IDictionary<string, JToken>)((JObject)JsonConvert.DeserializeObject(jsonString));
+                string jsonString = Encoding.Default.GetString(stream.ToArray());
+                rootNode = (JObject)JsonConvert.DeserializeObject(jsonString);
             }
 
             // ensure that the JSON conforms to basic structure and that the right
             // number of graph elements are present. other tests already cover element formatting
             Assert.NotNull(rootNode);
-            Assert.True(rootNode.ContainsKey(GraphSONTokens.MODE));
-            Assert.AreEqual("COMPACT", rootNode.get(GraphSONTokens.MODE).ToString());
+            Assert.True(rootNode.ContainsKey(GraphSonTokens.Mode));
+            Assert.AreEqual("COMPACT", rootNode.Get(GraphSonTokens.Mode).ToString());
 
-            Assert.True(rootNode.ContainsKey(GraphSONTokens.VERTICES));
+            Assert.True(rootNode.ContainsKey(GraphSonTokens.Vertices));
 
-            JArray vertices = (JArray)rootNode.get(GraphSONTokens.VERTICES);
+            var vertices = (JArray)rootNode.Get(GraphSonTokens.Vertices);
             Assert.AreEqual(7, vertices.Count());
 
-            Assert.True(rootNode.ContainsKey(GraphSONTokens.EDGES));
+            Assert.True(rootNode.ContainsKey(GraphSonTokens.Edges));
 
-            JArray edges = (JArray)rootNode.get(GraphSONTokens.EDGES);
+            var edges = (JArray)rootNode.Get(GraphSonTokens.Edges);
             Assert.AreEqual(6, edges.Count());
         }
     }

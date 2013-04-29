@@ -1,8 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Frontenac.Blueprints.Util.Wrappers.Event
 {
@@ -10,30 +6,30 @@ namespace Frontenac.Blueprints.Util.Wrappers.Event
     /// The transactional and indexable implementation of EventGraph where events are raised in batch in the order they
     /// changes occured to the graph, but only after a successful commit to the underlying graph.
     /// </summary>
-    public class EventTransactionalIndexableGraph : EventIndexableGraph, TransactionalGraph, IndexableGraph, WrapperGraph
+    public class EventTransactionalIndexableGraph : EventIndexableGraph, ITransactionalGraph
     {
-        protected readonly TransactionalGraph transactionalGraph;
+        protected readonly ITransactionalGraph TransactionalGraph;
 
-        public EventTransactionalIndexableGraph(IndexableGraph baseIndexableGraph)
+        public EventTransactionalIndexableGraph(IIndexableGraph baseIndexableGraph)
             : base(baseIndexableGraph)
         {
-            transactionalGraph = baseIndexableGraph as TransactionalGraph;
-            if (transactionalGraph == null)
+            TransactionalGraph = baseIndexableGraph as ITransactionalGraph;
+            if (TransactionalGraph == null)
                 throw new ArgumentException("baseIndexableGraph must also implement TransactionalGraph");
 
-            trigger = new EventTrigger(this, true);
+            Trigger = new EventTrigger(this, true);
         }
 
         /// <summary>
         /// A commit only fires the event queue on successful operation.  If the commit operation to the underlying
         /// graph fails, the event queue will not fire and the queue will not be reset.
         /// </summary>
-        public void commit()
+        public void Commit()
         {
             bool transactionFailure = false;
             try
             {
-                transactionalGraph.commit();
+                TransactionalGraph.Commit();
             }
             catch (Exception)
             {
@@ -44,8 +40,8 @@ namespace Frontenac.Blueprints.Util.Wrappers.Event
             {
                 if (!transactionFailure)
                 {
-                    trigger.fireEventQueue();
-                    trigger.resetEventQueue();
+                    Trigger.FireEventQueue();
+                    Trigger.ResetEventQueue();
                 }
             }
         }
@@ -54,23 +50,23 @@ namespace Frontenac.Blueprints.Util.Wrappers.Event
         /// A rollback only resets the event queue on successful operation.  If the rollback operation to the underlying
         /// graph fails, the event queue will not be reset.
         /// </summary>
-        public void rollback()
+        public void Rollback()
         {
             bool transactionFailure = false;
             try
             {
-                transactionalGraph.rollback();
+                TransactionalGraph.Rollback();
             }
-            catch (Exception re)
+            catch (Exception)
             {
                 transactionFailure = true;
-                throw re;
+                throw;
             }
             finally
             {
                 if (!transactionFailure)
                 {
-                    trigger.resetEventQueue();
+                    Trigger.ResetEventQueue();
                 }
             }
         }

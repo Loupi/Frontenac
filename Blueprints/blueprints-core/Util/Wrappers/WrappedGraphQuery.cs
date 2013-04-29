@@ -1,76 +1,73 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Frontenac.Blueprints.Util.Wrappers
 {
-    public class WrappedGraphQuery : GraphQuery
+    public class WrappedGraphQuery : IGraphQuery
     {
-        protected GraphQuery query;
-        protected Func<GraphQuery, IEnumerable<Edge>> edgesSelector;
-        protected Func<GraphQuery, IEnumerable<Vertex>> verticesSelector;
+        protected IGraphQuery Query;
+        protected Func<IGraphQuery, IEnumerable<IEdge>> EdgesSelector;
+        protected Func<IGraphQuery, IEnumerable<IVertex>> VerticesSelector;
 
-        public WrappedGraphQuery(GraphQuery query, Func<GraphQuery, IEnumerable<Edge>> edgesSelector, Func<GraphQuery, IEnumerable<Vertex>> verticesSelector)
+        public WrappedGraphQuery(IGraphQuery query, Func<IGraphQuery, IEnumerable<IEdge>> edgesSelector, Func<IGraphQuery, IEnumerable<IVertex>> verticesSelector)
         {
-            this.query = query;
-            this.edgesSelector = edgesSelector;
-            this.verticesSelector = verticesSelector;
+            Query = query;
+            EdgesSelector = edgesSelector;
+            VerticesSelector = verticesSelector;
         }
 
-        public GraphQuery has(string key, object value)
+        public IGraphQuery Has(string key, object value)
         {
-            query = query.has(key, value);
+            Query = Query.Has(key, value);
             return this;
         }
 
-        public GraphQuery has<T>(string key, Compare compare, T value) where T : IComparable<T>
+        public IGraphQuery Has<T>(string key, Compare compare, T value) where T : IComparable<T>
         {
-            query = query.has(key, compare, value);
+            Query = Query.Has(key, compare, value);
             return this;
         }
 
-        public GraphQuery interval<T>(string key, T startValue, T endValue) where T : IComparable<T>
+        public IGraphQuery Interval<T>(string key, T startValue, T endValue) where T : IComparable<T>
         {
-            query = query.interval(key, startValue, endValue);
+            Query = Query.Interval(key, startValue, endValue);
             return this;
         }
 
-        public GraphQuery limit(long max)
+        public IGraphQuery Limit(long max)
         {
-            query = query.limit(max);
+            Query = Query.Limit(max);
             return this;
         }
 
-        Query Query.has(string key, object value)
+        IQuery IQuery.Has(string key, object value)
         {
-            return this.has(key, value);
+            return Has(key, value);
         }
 
-        Query Query.has<T>(string key, Compare compare, T value)
+        IQuery IQuery.Has<T>(string key, Compare compare, T value)
         {
-            return this.has(key, compare, value);
+            return Has(key, compare, value);
         }
 
-        Query Query.interval<T>(string key, T startValue, T endValue)
+        IQuery IQuery.Interval<T>(string key, T startValue, T endValue)
         {
-            return this.interval(key, startValue, endValue);
+            return Interval(key, startValue, endValue);
         }
 
-        Query Query.limit(long max)
+        IQuery IQuery.Limit(long max)
         {
-            return this.limit(max);
+            return Limit(max);
         }
 
-        public IEnumerable<Edge> edges()
+        public IEnumerable<IEdge> Edges()
         {
-            return edgesSelector(query);
+            return EdgesSelector(Query);
         }
 
-        public IEnumerable<Vertex> vertices()
+        public IEnumerable<IVertex> Vertices()
         {
-            return verticesSelector(query);
+            return VerticesSelector(Query);
         }
     }
 }

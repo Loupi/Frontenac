@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.Collections.Generic;
 
 namespace Frontenac.Blueprints.Impls.TG
 {
@@ -12,108 +8,108 @@ namespace Frontenac.Blueprints.Impls.TG
     /// these can be compared to expected behavior.
     /// This class is only meant for testing.
     /// </summary>
-    public class MockTransactionalGraph : TransactionalGraph
+    public class MockTransactionalGraph : ITransactionalGraph
     {
-        int _numTransactionsCommitted = 0;
-        int _numTransactionsAborted = 0;
+        int _numTransactionsCommitted;
+        int _numTransactionsAborted;
 
-        readonly Graph _graph;
+        readonly IGraph _graph;
 
-        public MockTransactionalGraph(Graph graph)
+        public MockTransactionalGraph(IGraph graph)
         {
             _graph = graph;
         }
 
-        public void rollback()
+        public void Rollback()
         {
             _numTransactionsAborted++;
         }
 
-        public void commit()
+        public void Commit()
         {
             _numTransactionsCommitted++;
         }
 
-        public int getNumTransactionsCommitted()
+        public int GetNumTransactionsCommitted()
         {
             return _numTransactionsCommitted;
         }
 
-        public int getNumTransactionsAborted()
+        public int GetNumTransactionsAborted()
         {
             return _numTransactionsAborted;
         }
 
-        public bool allSuccessful()
+        public bool AllSuccessful()
         {
             return _numTransactionsAborted == 0;
         }
 
-        public Features getFeatures()
+        public Features GetFeatures()
         {
-            Features f = _graph.getFeatures().copyFeatures();
-            f.supportsTransactions = true;
+            Features f = _graph.GetFeatures().CopyFeatures();
+            f.SupportsTransactions = true;
             return f;
         }
 
-        public Vertex addVertex(object id)
+        public IVertex AddVertex(object id)
         {
-            return _graph.addVertex(id);
+            return _graph.AddVertex(id);
         }
 
-        public Vertex getVertex(object id)
+        public IVertex GetVertex(object id)
         {
-            return _graph.getVertex(id);
+            return _graph.GetVertex(id);
         }
 
-        public void removeVertex(Vertex vertex)
+        public void RemoveVertex(IVertex vertex)
         {
-            _graph.removeVertex(vertex);
+            _graph.RemoveVertex(vertex);
         }
 
-        public IEnumerable<Vertex> getVertices()
+        public IEnumerable<IVertex> GetVertices()
         {
-            return _graph.getVertices();
+            return _graph.GetVertices();
         }
 
-        public IEnumerable<Vertex> getVertices(string key, object value)
+        public IEnumerable<IVertex> GetVertices(string key, object value)
         {
-            return _graph.getVertices(key, value);
+            return _graph.GetVertices(key, value);
         }
 
-        public Edge addEdge(object id, Vertex outVertex, Vertex inVertex, string label)
+        public IEdge AddEdge(object id, IVertex outVertex, IVertex inVertex, string label)
         {
-            return _graph.addEdge(id, outVertex, inVertex, label);
+            return _graph.AddEdge(id, outVertex, inVertex, label);
         }
 
-        public Edge getEdge(object id)
+        public IEdge GetEdge(object id)
         {
-            return _graph.getEdge(id);
+            return _graph.GetEdge(id);
         }
 
-        public void removeEdge(Edge edge)
+        public void RemoveEdge(IEdge edge)
         {
-            _graph.removeEdge(edge);
+            _graph.RemoveEdge(edge);
         }
 
-        public IEnumerable<Edge> getEdges()
+        public IEnumerable<IEdge> GetEdges()
         {
-            return _graph.getEdges();
+            return _graph.GetEdges();
         }
 
-        public IEnumerable<Edge> getEdges(string key, object value)
+        public IEnumerable<IEdge> GetEdges(string key, object value)
         {
-            return _graph.getEdges(key, value);
+            return _graph.GetEdges(key, value);
         }
 
-        public void shutdown()
+        public void Shutdown()
         {
-            _graph.shutdown();
+            _graph.Shutdown();
         }
 
-        public GraphQuery query()
+        public IGraphQuery Query()
         {
-            return _graph.query();
+            return _graph.Query();
         }
     }
 }

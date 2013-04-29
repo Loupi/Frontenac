@@ -1,59 +1,56 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Frontenac.Blueprints.Util.Wrappers.Event.Listener
 {
     /// <summary>
     /// An example listener that writes a message to the console for each event that fires from the graph.
     /// </summary>
-    public class ConsoleGraphChangedListener : GraphChangedListener
+    public class ConsoleGraphChangedListener : IGraphChangedListener
     {
-        readonly Graph _graph;
+        readonly IGraph _graph;
 
-        public ConsoleGraphChangedListener(Graph graph)
+        public ConsoleGraphChangedListener(IGraph graph)
         {
             _graph = graph;
         }
 
-        public void vertexAdded(Vertex vertex)
+        public void VertexAdded(IVertex vertex)
         {
             Console.WriteLine(string.Concat("Vertex [", vertex, "] added to graph [", _graph, "]"));
         }
 
-        public void vertexPropertyChanged(Vertex vertex, string key, object oldValue, object newValue)
+        public void VertexPropertyChanged(IVertex vertex, string key, object oldValue, object newValue)
         {
             Console.WriteLine(string.Concat("Vertex [", vertex, "] property [", key, "] change value from [", oldValue, "] to [", newValue, "] in graph [", _graph, "]"));
         }
 
-        public void vertexPropertyRemoved(Vertex vertex, string key, object removedValue)
+        public void VertexPropertyRemoved(IVertex vertex, string key, object removedValue)
         {
             Console.WriteLine(string.Concat("Vertex [", vertex, "] property [", key, "] with value of [", removedValue, "] removed in graph [", _graph, "]"));
         }
 
-        public void vertexRemoved(Vertex vertex, IDictionary<string, object> props)
+        public void VertexRemoved(IVertex vertex, IDictionary<string, object> props)
         {
             Console.WriteLine(string.Concat("Vertex [", vertex, "] removed from graph [", _graph, "]"));
         }
 
-        public void edgeAdded(Edge edge)
+        public void EdgeAdded(IEdge edge)
         {
             Console.WriteLine(string.Concat("Edge [", edge, "] added to graph [", _graph, "]"));
         }
 
-        public void edgePropertyChanged(Edge edge, string key, object oldValue, object newValue)
+        public void EdgePropertyChanged(IEdge edge, string key, object oldValue, object newValue)
         {
             Console.WriteLine(string.Concat("Edge [", edge, "] property [", key, "] change value from [", oldValue, "] to [", newValue, "] in graph [", _graph, "]"));
         }
 
-        public void edgePropertyRemoved(Edge edge, string key, object removedValue)
+        public void EdgePropertyRemoved(IEdge edge, string key, object removedValue)
         {
             Console.WriteLine(string.Concat("Edge [", edge, "] property [", key, "] with value of [", removedValue, "] removed in graph [", _graph, "]"));
         }
 
-        public void edgeRemoved(Edge edge, IDictionary<string, object> props)
+        public void EdgeRemoved(IEdge edge, IDictionary<string, object> props)
         {
             Console.WriteLine(string.Concat("Edge [", edge, "] removed from graph [", _graph, "]"));
         }

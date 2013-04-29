@@ -1,9 +1,4 @@
 ﻿using NUnit.Framework;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Frontenac.Blueprints.Util.IO.GraphSON
 {
@@ -11,19 +6,19 @@ namespace Frontenac.Blueprints.Util.IO.GraphSON
     public class ElementPropertyConfigTest
     {
         [Test]
-        public void shouldExcludeBoth()
+        public void ShouldExcludeBoth()
         {
             ElementPropertyConfig config = ElementPropertyConfig.ExcludeProperties(null, null);
-            Assert.AreEqual(ElementPropertyConfig.ElementPropertiesRule.EXCLUDE, config.getVertexPropertiesRule());
-            Assert.AreEqual(ElementPropertyConfig.ElementPropertiesRule.EXCLUDE, config.getEdgePropertiesRule());
+            Assert.AreEqual(ElementPropertyConfig.ElementPropertiesRule.Exclude, config.GetVertexPropertiesRule());
+            Assert.AreEqual(ElementPropertyConfig.ElementPropertiesRule.Exclude, config.GetEdgePropertiesRule());
         }
 
         [Test]
-        public void shouldIncludeBoth()
+        public void ShouldIncludeBoth()
         {
             ElementPropertyConfig config = ElementPropertyConfig.IncludeProperties(null, null);
-            Assert.AreEqual(ElementPropertyConfig.ElementPropertiesRule.INCLUDE, config.getVertexPropertiesRule());
-            Assert.AreEqual(ElementPropertyConfig.ElementPropertiesRule.INCLUDE, config.getEdgePropertiesRule());
+            Assert.AreEqual(ElementPropertyConfig.ElementPropertiesRule.Include, config.GetVertexPropertiesRule());
+            Assert.AreEqual(ElementPropertyConfig.ElementPropertiesRule.Include, config.GetEdgePropertiesRule());
         }
     }
 }

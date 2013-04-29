@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.IO;
 
 /**
@@ -39,7 +40,7 @@ namespace Frontenac.Blueprints.Util.IO
     {
 
         /* Only one of these will be non-null */
-        private StreamReader reader = null;
+        private readonly StreamReader _reader;
 
 
         /**
@@ -49,25 +50,25 @@ namespace Frontenac.Blueprints.Util.IO
          * character, it should be discarded and a second new character should be
          * Read.
          */
-        private int peekc = NEED_CHAR;
+        private int _peekc = NeedChar;
 
-        private const int NEED_CHAR = Int32.MaxValue;
-        private const int SKIP_LF = Int32.MaxValue - 1;
+        private const int NeedChar = Int32.MaxValue;
+        private const int SkipLf = Int32.MaxValue - 1;
 
-        private bool pushedBack;
-        private bool forceLower;
+        private bool _pushedBack;
+        private bool _forceLower;
         /** The line number of the last token Read */
 
-        private bool eolIsSignificantP = false;
-        private bool slashSlashCommentsP = false;
-        private bool slashStarCommentsP = false;
+        private bool _eolIsSignificantP;
+        private bool _slashSlashCommentsP;
+        private bool _slashStarCommentsP;
 
-        private byte[] characterType = new byte[256];
-        private const byte CT_WHITESPACE = 1;
-        private const byte CT_DIGIT = 2;
-        private const byte CT_ALPHA = 4;
-        private const byte CT_QUOTE = 8;
-        private const byte CT_COMMENT = 16;
+        private readonly byte[] _characterType = new byte[256];
+        private const byte CtWhitespace = 1;
+        private const byte CtDigit = 2;
+        private const byte CtAlpha = 4;
+        private const byte CtQuote = 8;
+        private const byte CtComment = 16;
 
         public int LineNumber { get; private set; }
 
@@ -91,33 +92,33 @@ namespace Frontenac.Blueprints.Util.IO
          * The initial value of this field is -4.
          *
          */
-        public int ttype = TT_NOTHING;
+        public int Ttype = TtNothing;
 
         /**
          * A constant indicating that the end of the stream has been Read.
          */
-        public const int TT_EOF = -1;
+        public const int TtEof = -1;
 
         /**
          * A constant indicating that the end of the line has been Read.
          */
-        public const int TT_EOL = '\n';
+        public const int TtEol = '\n';
 
         /**
          * A constant indicating that a number token has been Read.
          */
-        public const int TT_NUMBER = -2;
+        public const int TtNumber = -2;
 
         /**
          * A constant indicating that a word token has been Read.
          */
-        public const int TT_WORD = -3;
+        public const int TtWord = -3;
 
         /* A constant indicating that no token has been Read, used for
          * initializing ttype.  FIXME This could be made public and
          * made available as the part of the API in a future release.
          */
-        private const int TT_NOTHING = -4;
+        private const int TtNothing = -4;
 
         /**
          * If the current token is a word token, this field contains a
@@ -173,7 +174,7 @@ namespace Frontenac.Blueprints.Util.IO
             {
                 throw new ArgumentNullException();
             }
-            reader = r;
+            _reader = r;
         }
 
         /**
@@ -183,7 +184,7 @@ namespace Frontenac.Blueprints.Util.IO
          */
         public void ResetSyntax()
         {
-            Array.Clear(characterType, 0, characterType.Length);
+            Array.Clear(_characterType, 0, _characterType.Length);
         }
 
         /**
@@ -201,13 +202,13 @@ namespace Frontenac.Blueprints.Util.IO
             {
                 low = 0;
             }
-            if (hi >= characterType.Length)
+            if (hi >= _characterType.Length)
             {
-                hi = characterType.Length - 1;
+                hi = _characterType.Length - 1;
             }
             while (low <= hi)
             {
-                characterType[low++] |= CT_ALPHA;
+                _characterType[low++] |= CtAlpha;
             }
         }
 
@@ -229,13 +230,13 @@ namespace Frontenac.Blueprints.Util.IO
             {
                 low = 0;
             }
-            if (hi >= characterType.Length)
+            if (hi >= _characterType.Length)
             {
-                hi = characterType.Length - 1;
+                hi = _characterType.Length - 1;
             }
             while (low <= hi)
             {
-                characterType[low++] = CT_WHITESPACE;
+                _characterType[low++] = CtWhitespace;
             }
         }
 
@@ -256,13 +257,13 @@ namespace Frontenac.Blueprints.Util.IO
             {
                 low = 0;
             }
-            if (hi >= characterType.Length)
+            if (hi >= _characterType.Length)
             {
-                hi = characterType.Length - 1;
+                hi = _characterType.Length - 1;
             }
             while (low <= hi)
             {
-                characterType[low++] = 0;
+                _characterType[low++] = 0;
             }
         }
         /**
@@ -283,8 +284,8 @@ namespace Frontenac.Blueprints.Util.IO
          */
         public void OrdinaryChar(int ch)
         {
-            if (ch >= 0 && ch < characterType.Length)
-                characterType[ch] = 0;
+            if (ch >= 0 && ch < _characterType.Length)
+                _characterType[ch] = 0;
         }
 
         /**
@@ -298,9 +299,9 @@ namespace Frontenac.Blueprints.Util.IO
          */
         public void CommentChar(int ch)
         {
-            if (ch >= 0 && ch < characterType.Length)
+            if (ch >= 0 && ch < _characterType.Length)
             {
-                characterType[ch] = CT_COMMENT;
+                _characterType[ch] = CtComment;
             }
         }
 
@@ -327,8 +328,8 @@ namespace Frontenac.Blueprints.Util.IO
          */
         public void QuoteChar(int ch)
         {
-            if (ch >= 0 && ch < characterType.Length)
-                characterType[ch] = CT_QUOTE;
+            if (ch >= 0 && ch < _characterType.Length)
+                _characterType[ch] = CtQuote;
         }
 
         /**
@@ -351,10 +352,10 @@ namespace Frontenac.Blueprints.Util.IO
         {
             for (int i = '0'; i <= '9'; i++)
             {
-                characterType[i] |= CT_DIGIT;
+                _characterType[i] |= CtDigit;
             }
-            characterType['.'] |= CT_DIGIT;
-            characterType['-'] |= CT_DIGIT;
+            _characterType['.'] |= CtDigit;
+            _characterType['-'] |= CtDigit;
         }
 
         /**
@@ -379,7 +380,7 @@ namespace Frontenac.Blueprints.Util.IO
          */
         public void EolIsSignificant(bool flag)
         {
-            eolIsSignificantP = flag;
+            _eolIsSignificantP = flag;
         }
 
         /**
@@ -396,8 +397,8 @@ namespace Frontenac.Blueprints.Util.IO
          */
         public bool SlashStarComments
         {
-            get { return slashStarCommentsP; }
-            set { slashStarCommentsP = value; }
+            get { return _slashStarCommentsP; }
+            set { _slashStarCommentsP = value; }
         }
 
         /**
@@ -415,8 +416,8 @@ namespace Frontenac.Blueprints.Util.IO
          */
         public bool SlashSlashComments
         {
-            get { return slashSlashCommentsP; }
-            set { slashSlashCommentsP = value; }
+            get { return _slashSlashCommentsP; }
+            set { _slashSlashCommentsP = value; }
         }
 
         /**
@@ -435,20 +436,17 @@ namespace Frontenac.Blueprints.Util.IO
          */
         public bool LowerCaseMode
         {
-            set { forceLower = value; }
+            set { _forceLower = value; }
         }
 
         /** Read the next character */
         private int Read()
         {
-            if (reader != null)
+            if (_reader != null)
             {
-                return reader.Read();
+                return _reader.Read();
             }
-            else
-            {
-                throw new InvalidOperationException();
-            }
+            throw new InvalidOperationException();
         }
 
         /**
@@ -467,48 +465,48 @@ namespace Frontenac.Blueprints.Util.IO
          */
         public int NextToken()
         {
-            if (pushedBack)
+            if (_pushedBack)
             {
-                pushedBack = false;
-                return ttype;
+                _pushedBack = false;
+                return Ttype;
             }
-            byte[] ct = characterType;
+            byte[] ct = _characterType;
             StringValue = null;
 
-            int c = peekc;
+            int c = _peekc;
             if (c < 0)
-                c = NEED_CHAR;
-            if (c == SKIP_LF)
+                c = NeedChar;
+            if (c == SkipLf)
             {
                 c = Read();
                 if (c < 0)
-                    return ttype = TT_EOF;
+                    return Ttype = TtEof;
                 if (c == '\n')
-                    c = NEED_CHAR;
+                    c = NeedChar;
             }
-            if (c == NEED_CHAR)
+            if (c == NeedChar)
             {
                 c = Read();
                 if (c < 0)
-                    return ttype = TT_EOF;
+                    return Ttype = TtEof;
             }
-            ttype = c;      /* Just to be safe */
+            Ttype = c;      /* Just to be safe */
 
             /* Set peekc so that the next invocation of nextToken will Read
              * another character unless peekc is reset in this invocation
              */
-            peekc = NEED_CHAR;
+            _peekc = NeedChar;
 
-            int ctype = c < 256 ? ct[c] : CT_ALPHA;
-            while ((ctype & CT_WHITESPACE) != 0)
+            int ctype = c < 256 ? ct[c] : CtAlpha;
+            while ((ctype & CtWhitespace) != 0)
             {
                 if (c == '\r')
                 {
                     LineNumber++;
-                    if (eolIsSignificantP)
+                    if (_eolIsSignificantP)
                     {
-                        peekc = SKIP_LF;
-                        return ttype = TT_EOL;
+                        _peekc = SkipLf;
+                        return Ttype = TtEol;
                     }
                     c = Read();
                     if (c == '\n')
@@ -519,19 +517,19 @@ namespace Frontenac.Blueprints.Util.IO
                     if (c == '\n')
                     {
                         LineNumber++;
-                        if (eolIsSignificantP)
+                        if (_eolIsSignificantP)
                         {
-                            return ttype = TT_EOL;
+                            return Ttype = TtEol;
                         }
                     }
                     c = Read();
                 }
                 if (c < 0)
-                    return ttype = TT_EOF;
-                ctype = c < 256 ? ct[c] : CT_ALPHA;
+                    return Ttype = TtEof;
+                ctype = c < 256 ? ct[c] : CtAlpha;
             }
 
-            if ((ctype & CT_DIGIT) != 0)
+            if ((ctype & CtDigit) != 0)
             {
                 bool neg = false;
                 if (c == '-')
@@ -539,8 +537,8 @@ namespace Frontenac.Blueprints.Util.IO
                     c = Read();
                     if (c != '.' && (c < '0' || c > '9'))
                     {
-                        peekc = c;
-                        return ttype = '-';
+                        _peekc = c;
+                        return Ttype = '-';
                     }
                     neg = true;
                 }
@@ -560,7 +558,7 @@ namespace Frontenac.Blueprints.Util.IO
                         break;
                     c = Read();
                 }
-                peekc = c;
+                _peekc = c;
                 if (decexp != 0)
                 {
                     double denom = 10;
@@ -574,13 +572,13 @@ namespace Frontenac.Blueprints.Util.IO
                     v = v / denom;
                 }
                 NumberValue = neg ? -v : v;
-                StringValue = NumberValue.ToString();
-                return ttype = TT_NUMBER;
+                StringValue = NumberValue.ToString(CultureInfo.InvariantCulture);
+                return Ttype = TtNumber;
             }
 
-            if ((ctype & CT_ALPHA) != 0)
+            if ((ctype & CtAlpha) != 0)
             {
-                List<char> buf = new List<char>();
+                var buf = new List<char>();
                 int i = 0;
                 do
                 {
@@ -588,27 +586,27 @@ namespace Frontenac.Blueprints.Util.IO
                     buf.Add((char)c);
                     i++;
                     c = Read();
-                    ctype = c < 0 ? CT_WHITESPACE : c < 256 ? ct[c] : CT_ALPHA;
-                } while ((ctype & (CT_ALPHA | CT_DIGIT)) != 0);
-                peekc = c;
+                    ctype = c < 0 ? CtWhitespace : c < 256 ? ct[c] : CtAlpha;
+                } while ((ctype & (CtAlpha | CtDigit)) != 0);
+                _peekc = c;
                 StringValue = new string(buf.ToArray(), 0, i);
-                if (forceLower)
+                if (_forceLower)
                     StringValue = StringValue.ToLower();
-                return ttype = TT_WORD;
+                return Ttype = TtWord;
             }
 
-            if ((ctype & CT_QUOTE) != 0)
+            if ((ctype & CtQuote) != 0)
             {
-                List<char> buf = new List<char>();
+                var buf = new List<char>();
 
-                ttype = c;
+                Ttype = c;
                 int i = 0;
                 /* Invariants (because \Octal needs a lookahead):
                  *   (i)  c contains char value
                  *   (ii) d contains the lookahead
                  */
                 int d = Read();
-                while (d >= 0 && d != ttype && d != '\n' && d != '\r')
+                while (d >= 0 && d != Ttype && d != '\n' && d != '\r')
                 {
                     if (d == '\\')
                     {
@@ -676,16 +674,16 @@ namespace Frontenac.Blueprints.Util.IO
                  * character then arrange to Read a new character next time
                  * around; otherwise, save the character.
                  */
-                peekc = (d == ttype) ? NEED_CHAR : d;
+                _peekc = (d == Ttype) ? NeedChar : d;
 
                 StringValue = new string(buf.ToArray(), 0, i);
-                return ttype;
+                return Ttype;
             }
 
-            if (c == '/' && (slashSlashCommentsP || slashStarCommentsP))
+            if (c == '/' && (_slashSlashCommentsP || _slashStarCommentsP))
             {
                 c = Read();
-                if (c == '*' && slashStarCommentsP)
+                if (c == '*' && _slashStarCommentsP)
                 {
                     int prevc = 0;
                     while ((c = Read()) != '/' || prevc != '*')
@@ -708,42 +706,42 @@ namespace Frontenac.Blueprints.Util.IO
                             }
                         }
                         if (c < 0)
-                            return ttype = TT_EOF;
+                            return Ttype = TtEof;
                         prevc = c;
                     }
                     return NextToken();
                 }
-                else if (c == '/' && slashSlashCommentsP)
+                if (c == '/' && _slashSlashCommentsP)
                 {
-                    while ((c = Read()) != '\n' && c != '\r' && c >= 0) ;
-                    peekc = c;
+                    while ((c = Read()) != '\n' && c != '\r' && c >= 0)
+                    {
+                    }
+                    _peekc = c;
                     return NextToken();
                 }
-                else
+                /* Now see if it is still a single line comment */
+                if ((ct['/'] & CtComment) != 0)
                 {
-                    /* Now see if it is still a single line comment */
-                    if ((ct['/'] & CT_COMMENT) != 0)
+                    while ((c = Read()) != '\n' && c != '\r' && c >= 0)
                     {
-                        while ((c = Read()) != '\n' && c != '\r' && c >= 0) ;
-                        peekc = c;
-                        return NextToken();
                     }
-                    else
-                    {
-                        peekc = c;
-                        return ttype = '/';
-                    }
+                    _peekc = c;
+                    return NextToken();
                 }
+                _peekc = c;
+                return Ttype = '/';
             }
 
-            if ((ctype & CT_COMMENT) != 0)
+            if ((ctype & CtComment) != 0)
             {
-                while ((c = Read()) != '\n' && c != '\r' && c >= 0) ;
-                peekc = c;
+                while ((c = Read()) != '\n' && c != '\r' && c >= 0)
+                {
+                }
+                _peekc = c;
                 return NextToken();
             }
 
-            return ttype = c;
+            return Ttype = c;
         }
 
         /**
@@ -754,9 +752,9 @@ namespace Frontenac.Blueprints.Util.IO
          */
         public void PushBack()
         {
-            if (ttype != TT_NOTHING)   /* No-op if nextToken() not called */
+            if (Ttype != TtNothing)   /* No-op if nextToken() not called */
             {
-                pushedBack = true;
+                _pushedBack = true;
             }
         }
 
@@ -774,21 +772,21 @@ namespace Frontenac.Blueprints.Util.IO
         public override string ToString()
         {
             string ret;
-            switch (ttype)
+            switch (Ttype)
             {
-                case TT_EOF:
+                case TtEof:
                     ret = "EOF";
                     break;
-                case TT_EOL:
+                case TtEol:
                     ret = "EOL";
                     break;
-                case TT_WORD:
+                case TtWord:
                     ret = StringValue;
                     break;
-                case TT_NUMBER:
+                case TtNumber:
                     ret = "n=" + NumberValue;
                     break;
-                case TT_NOTHING:
+                case TtNothing:
                     ret = "NOTHING";
                     break;
                 default:
@@ -799,16 +797,16 @@ namespace Frontenac.Blueprints.Util.IO
                          * than 0, since those are reserved values used in the previous
                          * case statements
                          */
-                        if (ttype < 256 &&
-                            ((characterType[ttype] & CT_QUOTE) != 0))
+                        if (Ttype < 256 &&
+                            ((_characterType[Ttype] & CtQuote) != 0))
                         {
                             ret = StringValue;
                             break;
                         }
 
-                        char[] s = new char[3];
+                        var s = new char[3];
                         s[0] = s[2] = '\'';
-                        s[1] = (char)ttype;
+                        s[1] = (char)Ttype;
                         ret = new string(s);
                         break;
                     }
@@ -823,7 +821,7 @@ namespace Frontenac.Blueprints.Util.IO
             while (true)
             {
                 int token = NextToken();
-                if (token == TT_EOF)
+                if (token == TtEof)
                 {
                     yield break;
                 }

@@ -1,31 +1,25 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace Frontenac.Blueprints.Util.Wrappers.Partition
+﻿namespace Frontenac.Blueprints.Util.Wrappers.Partition
 {
-    public class PartitionEdge : PartitionElement, Edge
+    public class PartitionEdge : PartitionElement, IEdge
     {
-        public PartitionEdge(Edge baseEdge, PartitionGraph graph)
+        public PartitionEdge(IEdge baseEdge, PartitionGraph graph)
             : base(baseEdge, graph)
         {
         }
 
-        public Vertex getVertex(Direction direction)
+        public IVertex GetVertex(Direction direction)
         {
-            return new PartitionVertex(((Edge)baseElement).getVertex(direction), graph);
+            return new PartitionVertex(((IEdge)BaseElement).GetVertex(direction), Graph);
         }
 
-        public string getLabel()
+        public string GetLabel()
         {
-            return ((Edge)baseElement).getLabel();
+            return ((IEdge)BaseElement).GetLabel();
         }
 
-        public Edge getBaseEdge()
+        public IEdge GetBaseEdge()
         {
-            return (Edge)baseElement;
+            return (IEdge)BaseElement;
         }
     }
 }

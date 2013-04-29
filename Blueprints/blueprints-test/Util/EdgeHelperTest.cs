@@ -1,9 +1,4 @@
 ﻿using NUnit.Framework;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using Frontenac.Blueprints.Impls.TG;
 
 namespace Frontenac.Blueprints.Util
@@ -12,22 +7,22 @@ namespace Frontenac.Blueprints.Util
     public class EdgeHelperTest : BaseTest
     {
         [Test]
-        public void testRelabelEdge()
+        public void TestRelabelEdge()
         {
-            Graph graph = TinkerGraphFactory.createTinkerGraph();
-            EdgeHelper.relabelEdge(graph, graph.getEdge(7), "1234", "use_to_know");
-            Assert.AreEqual(count(graph.getVertices()), 7);
-            Assert.AreEqual(count(graph.getEdges()), 6);
+            IGraph graph = TinkerGraphFactory.CreateTinkerGraph();
+            EdgeHelper.RelabelEdge(graph, graph.GetEdge(7), "1234", "use_to_know");
+            Assert.AreEqual(Count(graph.GetVertices()), 7);
+            Assert.AreEqual(Count(graph.GetEdges()), 6);
             int counter = 0;
             int counter2 = 0;
-            Edge temp = null;
-            foreach (Edge edge in graph.getVertex(1).getEdges(Direction.OUT))
+            IEdge temp = null;
+            foreach (IEdge edge in graph.GetVertex(1).GetEdges(Direction.Out))
             {
-                if (edge.getLabel() == "use_to_know")
+                if (edge.GetLabel() == "use_to_know")
                 {
                     counter++;
-                    Assert.AreEqual(edge.getId(), "1234");
-                    Assert.AreEqual(edge.getProperty("weight"), 0.5f);
+                    Assert.AreEqual(edge.GetId(), "1234");
+                    Assert.AreEqual(edge.GetProperty("weight"), 0.5f);
                     temp = edge;
                 }
 
@@ -38,13 +33,13 @@ namespace Frontenac.Blueprints.Util
 
             counter = 0;
             counter2 = 0;
-            foreach (Edge edge in graph.getVertex(2).getEdges(Direction.IN))
+            foreach (IEdge edge in graph.GetVertex(2).GetEdges(Direction.In))
             {
-                if (edge.getLabel() == "use_to_know")
+                if (edge.GetLabel() == "use_to_know")
                 {
                     counter++;
-                    Assert.AreEqual(edge.getId(), "1234");
-                    Assert.AreEqual(edge.getProperty("weight"), 0.5f);
+                    Assert.AreEqual(edge.GetId(), "1234");
+                    Assert.AreEqual(edge.GetProperty("weight"), 0.5f);
                     Assert.AreEqual(edge, temp);
                 }
                 counter2++;
@@ -54,21 +49,21 @@ namespace Frontenac.Blueprints.Util
         }
 
         [Test]
-        public void testRelabelEdges()
+        public void TestRelabelEdges()
         {
-            Graph graph = TinkerGraphFactory.createTinkerGraph();
-            EdgeHelper.relabelEdges(graph, new Edge[]{graph.getEdge(7)}, "use_to_know");
-            Assert.AreEqual(count(graph.getVertices()), 7);
-            Assert.AreEqual(count(graph.getEdges()), 6);
+            IGraph graph = TinkerGraphFactory.CreateTinkerGraph();
+            EdgeHelper.RelabelEdges(graph, new[]{graph.GetEdge(7)}, "use_to_know");
+            Assert.AreEqual(Count(graph.GetVertices()), 7);
+            Assert.AreEqual(Count(graph.GetEdges()), 6);
             int counter = 0;
             int counter2 = 0;
-            Edge temp = null;
-            foreach (Edge edge in graph.getVertex(1).getEdges(Direction.OUT))
+            IEdge temp = null;
+            foreach (IEdge edge in graph.GetVertex(1).GetEdges(Direction.Out))
             {
-                if (edge.getLabel() == "use_to_know")
+                if (edge.GetLabel() == "use_to_know")
                 {
                     counter++;
-                    Assert.AreEqual(edge.getProperty("weight"), 0.5f);
+                    Assert.AreEqual(edge.GetProperty("weight"), 0.5f);
                     temp = edge;
                 }
 
@@ -79,12 +74,12 @@ namespace Frontenac.Blueprints.Util
 
             counter = 0;
             counter2 = 0;
-            foreach (Edge edge in graph.getVertex(2).getEdges(Direction.IN))
+            foreach (IEdge edge in graph.GetVertex(2).GetEdges(Direction.In))
             {
-                if (edge.getLabel() == "use_to_know")
+                if (edge.GetLabel() == "use_to_know")
                 {
                     counter++;
-                    Assert.AreEqual(edge.getProperty("weight"), 0.5f);
+                    Assert.AreEqual(edge.GetProperty("weight"), 0.5f);
                     Assert.AreEqual(edge, temp);
                 }
                 counter2++;

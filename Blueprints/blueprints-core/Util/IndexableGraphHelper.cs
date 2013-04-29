@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.Linq;
 
 namespace Frontenac.Blueprints.Util
 {
@@ -18,13 +14,13 @@ namespace Frontenac.Blueprints.Util
         /// <param name="uniqueKey">the key to check on for uniqueness of the vertex</param>
         /// <param name="uniqueValue">the value to check on for uniqueness of the vertex</param>
         /// <returns>the newly created vertex or the vertex that satisfies the uniqueness criteria</returns>
-        public static Vertex addUniqueVertex(IndexableGraph graph, object id, Index index, string uniqueKey, object uniqueValue)
+        public static IVertex AddUniqueVertex(IIndexableGraph graph, object id, IIndex index, string uniqueKey, object uniqueValue)
         {
-            Vertex result = (Vertex)index.get(uniqueKey, uniqueValue).FirstOrDefault();
+            var result = (IVertex)index.Get(uniqueKey, uniqueValue).FirstOrDefault();
             if (result == null)
             {
-                result = graph.addVertex(id);
-                result.setProperty(uniqueKey, uniqueValue);
+                result = graph.AddVertex(id);
+                result.SetProperty(uniqueKey, uniqueValue);
             }
             return result;
         }

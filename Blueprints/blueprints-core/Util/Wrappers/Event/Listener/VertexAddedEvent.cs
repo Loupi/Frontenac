@@ -1,28 +1,24 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.Collections.Generic;
 
 namespace Frontenac.Blueprints.Util.Wrappers.Event.Listener
 {
     /// <summary>
     /// Event that fires when a vertex is added to a graph.
     /// </summary>
-    public class VertexAddedEvent : Event
+    public class VertexAddedEvent : IEvent
     {
-        readonly Vertex _vertex;
+        readonly IVertex _vertex;
 
-        public VertexAddedEvent(Vertex vertex)
+        public VertexAddedEvent(IVertex vertex)
         {
             _vertex = vertex;
         }
 
-        public void fireEvent(IEnumerator<GraphChangedListener> eventListeners)
+        public void FireEvent(IEnumerator<IGraphChangedListener> eventListeners)
         {
             while (eventListeners.MoveNext())
             {
-                eventListeners.Current.vertexAdded(_vertex);
+                eventListeners.Current.VertexAdded(_vertex);
             }
         }
     }

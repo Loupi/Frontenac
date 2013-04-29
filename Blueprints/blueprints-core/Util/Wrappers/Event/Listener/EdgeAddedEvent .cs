@@ -1,25 +1,21 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.Collections.Generic;
 
 namespace Frontenac.Blueprints.Util.Wrappers.Event.Listener
 {
-    public class EdgeAddedEvent : Event
+    public class EdgeAddedEvent : IEvent
     {
-        readonly Edge _edge;
+        readonly IEdge _edge;
 
-        public EdgeAddedEvent(Edge edge)
+        public EdgeAddedEvent(IEdge edge)
         {
             _edge = edge;
         }
 
-        public void fireEvent(IEnumerator<GraphChangedListener> eventListeners)
+        public void FireEvent(IEnumerator<IGraphChangedListener> eventListeners)
         {
             while (eventListeners.MoveNext())
             {
-                eventListeners.Current.edgeAdded(_edge);
+                eventListeners.Current.EdgeAdded(_edge);
             }
         }
     }

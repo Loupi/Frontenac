@@ -1,232 +1,231 @@
-﻿using System.Collections;
-using System.IO;
+﻿using System.IO;
 using Frontenac.Blueprints.Impls.TG;
 using NUnit.Framework;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using System.Threading.Tasks;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 
 namespace Frontenac.Blueprints.Util.IO.GraphSON
 {
     [TestFixture(Category = "GraphSONUtilityTest")]
-    public class GraphSONUtilityTest
+    public class GraphSonUtilityTest
     {
-        TinkerGraph graph = new TinkerGraph();
+        readonly TinkerGraph _graph = new TinkerGraph();
 
-        string vertexJson1 = "{\"name\":\"marko\",\"age\":29,\"_id\":1,\"_type\":\"vertex\"}";
-        string vertexJson2 = "{\"name\":\"vadas\",\"age\":27,\"_id\":2,\"_type\":\"vertex\"}";
+        private const string VertexJson1 = "{\"name\":\"marko\",\"age\":29,\"_id\":1,\"_type\":\"vertex\"}";
+        private const string VertexJson2 = "{\"name\":\"vadas\",\"age\":27,\"_id\":2,\"_type\":\"vertex\"}";
 
-        string edgeJsonLight = "{\"weight\":0.5,\"_outV\":1,\"_inV\":2}";
-        string edgeJson = "{\"weight\":0.5,\"_id\":7,\"_type\":\"edge\",\"_outV\":1,\"_inV\":2,\"_label\":\"knows\"}";
+        private const string EdgeJsonLight = "{\"weight\":0.5,\"_outV\":1,\"_inV\":2}";
+        private const string EdgeJson = "{\"weight\":0.5,\"_id\":7,\"_type\":\"edge\",\"_outV\":1,\"_inV\":2,\"_label\":\"knows\"}";
 
-        Stream inputStreamVertexJson1;
-        Stream inputStreamEdgeJsonLight;
+        Stream _inputStreamVertexJson1;
+        Stream _inputStreamEdgeJsonLight;
 
         [SetUp]
         public void Setup()
         {
-            this.graph.clear();
+            _graph.Clear();
 
-            this.inputStreamVertexJson1 = new MemoryStream(System.Text.Encoding.Default.GetBytes(vertexJson1));
-            this.inputStreamEdgeJsonLight = new MemoryStream(System.Text.Encoding.Default.GetBytes(edgeJsonLight));
+            _inputStreamVertexJson1 = new MemoryStream(Encoding.Default.GetBytes(VertexJson1));
+            _inputStreamEdgeJsonLight = new MemoryStream(Encoding.Default.GetBytes(EdgeJsonLight));
         }
 
         [Test]
-        public void jsonFromElementEdgeNoPropertiesNoKeysNoTypes()
+        public void JsonFromElementEdgeNoPropertiesNoKeysNoTypes()
         {
-            Vertex v1 = this.graph.addVertex(1);
-            Vertex v2 = this.graph.addVertex(2);
+            IVertex v1 = _graph.AddVertex(1);
+            IVertex v2 = _graph.AddVertex(2);
 
-            Edge e = this.graph.addEdge(3, v1, v2, "test");
-            e.setProperty("weight", 0.5f);
+            IEdge e = _graph.AddEdge(3, v1, v2, "test");
+            e.SetProperty("weight", 0.5f);
 
-            IDictionary<string, JToken> json = GraphSONUtility.jsonFromElement(e, null, GraphSONMode.NORMAL);
+            IDictionary<string, JToken> json = GraphSonUtility.JsonFromElement(e, null, GraphSonMode.NORMAL);
 
             Assert.NotNull(json);
-            Assert.True(json.ContainsKey(GraphSONTokens._ID));
-            Assert.AreEqual(3, json[GraphSONTokens._ID].Value<int>());
-            Assert.True(json.ContainsKey(GraphSONTokens._LABEL));
-            Assert.AreEqual("test", json[GraphSONTokens._LABEL].Value<string>());
-            Assert.True(json.ContainsKey(GraphSONTokens._TYPE));
-            Assert.AreEqual("edge", json[GraphSONTokens._TYPE].Value<string>());
-            Assert.True(json.ContainsKey(GraphSONTokens._IN_V));
-            Assert.AreEqual(2, json[GraphSONTokens._IN_V].Value<int>());
-            Assert.True(json.ContainsKey(GraphSONTokens._OUT_V));
-            Assert.AreEqual(1, json[GraphSONTokens._OUT_V].Value<int>());
+            Assert.True(json.ContainsKey(GraphSonTokens.Id));
+            Assert.AreEqual(3, json[GraphSonTokens.Id].Value<int>());
+            Assert.True(json.ContainsKey(GraphSonTokens.Label));
+            Assert.AreEqual("test", json[GraphSonTokens.Label].Value<string>());
+            Assert.True(json.ContainsKey(GraphSonTokens.UnderscoreType));
+            Assert.AreEqual("edge", json[GraphSonTokens.UnderscoreType].Value<string>());
+            Assert.True(json.ContainsKey(GraphSonTokens.InV));
+            Assert.AreEqual(2, json[GraphSonTokens.InV].Value<int>());
+            Assert.True(json.ContainsKey(GraphSonTokens.OutV));
+            Assert.AreEqual(1, json[GraphSonTokens.OutV].Value<int>());
             Assert.True(json.ContainsKey("weight"));
             Assert.AreEqual(0.5d, json["weight"].Value<double>(), 0.0d);
         }
 
         [Test]
-        public void jsonFromElementEdgeCompactIdOnlyAsInclude()
+        public void JsonFromElementEdgeCompactIdOnlyAsInclude()
         {
-            Vertex v1 = this.graph.addVertex(1);
-            Vertex v2 = this.graph.addVertex(2);
+            IVertex v1 = _graph.AddVertex(1);
+            IVertex v2 = _graph.AddVertex(2);
 
-            Edge e = this.graph.addEdge(3, v1, v2, "test");
-            e.setProperty("weight", 0.5f);
+            IEdge e = _graph.AddEdge(3, v1, v2, "test");
+            e.SetProperty("weight", 0.5f);
 
-            HashSet<String> propertiesToInclude = new HashSet<String>();
-            propertiesToInclude.Add(GraphSONTokens._ID);
+            var propertiesToInclude = new HashSet<String> {GraphSonTokens.Id};
 
-            IDictionary<string, JToken> json = GraphSONUtility.jsonFromElement(e, propertiesToInclude, GraphSONMode.COMPACT);
+            IDictionary<string, JToken> json = GraphSonUtility.JsonFromElement(e, propertiesToInclude, GraphSonMode.COMPACT);
 
             Assert.NotNull(json);
-            Assert.False(json.ContainsKey(GraphSONTokens._TYPE));
-            Assert.False(json.ContainsKey(GraphSONTokens._LABEL));
-            Assert.False(json.ContainsKey(GraphSONTokens._IN_V));
-            Assert.False(json.ContainsKey(GraphSONTokens._OUT_V));
-            Assert.True(json.ContainsKey(GraphSONTokens._ID));
+            Assert.False(json.ContainsKey(GraphSonTokens.UnderscoreType));
+            Assert.False(json.ContainsKey(GraphSonTokens.Label));
+            Assert.False(json.ContainsKey(GraphSonTokens.InV));
+            Assert.False(json.ContainsKey(GraphSonTokens.OutV));
+            Assert.True(json.ContainsKey(GraphSonTokens.Id));
             Assert.False(json.ContainsKey("weight"));
         }
 
         [Test]
-        public void jsonFromElementEdgeCompactIdOnlyAsExclude()
+        public void JsonFromElementEdgeCompactIdOnlyAsExclude()
         {
-            ElementFactory factory = new GraphElementFactory(this.graph);
-            Vertex v1 = this.graph.addVertex(1);
-            Vertex v2 = this.graph.addVertex(2);
+            IElementFactory factory = new GraphElementFactory(_graph);
+            IVertex v1 = _graph.AddVertex(1);
+            IVertex v2 = _graph.AddVertex(2);
 
-            Edge e = this.graph.addEdge(3, v1, v2, "test");
-            e.setProperty("weight", 0.5f);
-            e.setProperty("x", "y");
+            IEdge e = _graph.AddEdge(3, v1, v2, "test");
+            e.SetProperty("weight", 0.5f);
+            e.SetProperty("x", "y");
 
-            HashSet<string> propertiesToExclude = new HashSet<string>() {
-                GraphSONTokens._TYPE,
-                GraphSONTokens._LABEL,
-                GraphSONTokens._IN_V,
-                GraphSONTokens._OUT_V,
+            var propertiesToExclude = new HashSet<string>
+            {
+                GraphSonTokens.UnderscoreType,
+                GraphSonTokens.Label,
+                GraphSonTokens.InV,
+                GraphSonTokens.OutV,
                 "weight"
             };
 
-            ElementPropertyConfig config = new ElementPropertyConfig(null, propertiesToExclude,
-                    ElementPropertyConfig.ElementPropertiesRule.INCLUDE,
-                    ElementPropertyConfig.ElementPropertiesRule.EXCLUDE);
-            GraphSONUtility utility = new GraphSONUtility(GraphSONMode.COMPACT, factory, config);
-            IDictionary<string, JToken> json = utility.jsonFromElement(e);
-
+            var config = new ElementPropertyConfig(null, propertiesToExclude,
+                    ElementPropertyConfig.ElementPropertiesRule.Include,
+                    ElementPropertyConfig.ElementPropertiesRule.Exclude);
+            var utility = new GraphSonUtility(GraphSonMode.COMPACT, factory, config);
+            var json = utility.JsonFromElement(e) as IDictionary<string, JToken>;
+            
             Assert.NotNull(json);
-            Assert.False(json.ContainsKey(GraphSONTokens._TYPE));
-            Assert.False(json.ContainsKey(GraphSONTokens._LABEL));
-            Assert.False(json.ContainsKey(GraphSONTokens._IN_V));
-            Assert.False(json.ContainsKey(GraphSONTokens._OUT_V));
-            Assert.True(json.ContainsKey(GraphSONTokens._ID));
+            Assert.False(json.ContainsKey(GraphSonTokens.UnderscoreType));
+            Assert.False(json.ContainsKey(GraphSonTokens.Label));
+            Assert.False(json.ContainsKey(GraphSonTokens.InV));
+            Assert.False(json.ContainsKey(GraphSonTokens.OutV));
+            Assert.True(json.ContainsKey(GraphSonTokens.Id));
             Assert.False(json.ContainsKey("weight"));
             Assert.True(json.ContainsKey("x"));
             Assert.AreEqual("y", json["x"].Value<string>());
         }
 
         [Test]
-        public void jsonFromElementEdgeCompactAllKeys()
+        public void JsonFromElementEdgeCompactAllKeys()
         {
-            Vertex v1 = this.graph.addVertex(1);
-            Vertex v2 = this.graph.addVertex(2);
+            IVertex v1 = _graph.AddVertex(1);
+            IVertex v2 = _graph.AddVertex(2);
 
-            Edge e = this.graph.addEdge(3, v1, v2, "test");
-            e.setProperty("weight", 0.5f);
+            IEdge e = _graph.AddEdge(3, v1, v2, "test");
+            e.SetProperty("weight", 0.5f);
 
-            IDictionary<string, JToken> json = GraphSONUtility.jsonFromElement(e, null, GraphSONMode.COMPACT);
+            IDictionary<string, JToken> json = GraphSonUtility.JsonFromElement(e, null, GraphSonMode.COMPACT);
 
             Assert.NotNull(json);
-            Assert.True(json.ContainsKey(GraphSONTokens._ID));
-            Assert.True(json.ContainsKey(GraphSONTokens._TYPE));
-            Assert.True(json.ContainsKey(GraphSONTokens._LABEL));
-            Assert.True(json.ContainsKey(GraphSONTokens._IN_V));
-            Assert.True(json.ContainsKey(GraphSONTokens._OUT_V));
+            Assert.True(json.ContainsKey(GraphSonTokens.Id));
+            Assert.True(json.ContainsKey(GraphSonTokens.UnderscoreType));
+            Assert.True(json.ContainsKey(GraphSonTokens.Label));
+            Assert.True(json.ContainsKey(GraphSonTokens.InV));
+            Assert.True(json.ContainsKey(GraphSonTokens.OutV));
             Assert.AreEqual(0.5d, json["weight"].Value<double>(), 0.0d);
         }
 
         [Test]
-        public void jsonFromElementVertexNoPropertiesNoKeysNoTypes()
+        public void JsonFromElementVertexNoPropertiesNoKeysNoTypes()
         {
-            Vertex v = this.graph.addVertex(1);
-            v.setProperty("name", "marko");
+            IVertex v = _graph.AddVertex(1);
+            v.SetProperty("name", "marko");
 
-            IDictionary<string, JToken> json = GraphSONUtility.jsonFromElement(v, null, GraphSONMode.NORMAL);
+            IDictionary<string, JToken> json = GraphSonUtility.JsonFromElement(v, null, GraphSonMode.NORMAL);
 
             Assert.NotNull(json);
-            Assert.True(json.ContainsKey(GraphSONTokens._ID));
-            Assert.AreEqual(1, json[GraphSONTokens._ID].Value<int>());
-            Assert.True(json.ContainsKey(GraphSONTokens._TYPE));
-            Assert.AreEqual("vertex", json[GraphSONTokens._TYPE].Value<string>());
+            Assert.True(json.ContainsKey(GraphSonTokens.Id));
+            Assert.AreEqual(1, json[GraphSonTokens.Id].Value<int>());
+            Assert.True(json.ContainsKey(GraphSonTokens.UnderscoreType));
+            Assert.AreEqual("vertex", json[GraphSonTokens.UnderscoreType].Value<string>());
             Assert.AreEqual("marko", json["name"].Value<string>());
         }
 
         [Test]
-        public void jsonFromElementVertexCompactIdOnlyAsInclude()
+        public void JsonFromElementVertexCompactIdOnlyAsInclude()
         {
-            Vertex v = this.graph.addVertex(1);
-            v.setProperty("name", "marko");
+            IVertex v = _graph.AddVertex(1);
+            v.SetProperty("name", "marko");
 
-            HashSet<String> propertiesToInclude = new HashSet<String>() {
-               GraphSONTokens._ID
+            var propertiesToInclude = new HashSet<String>
+            {
+               GraphSonTokens.Id
             };
 
-            IDictionary<string, JToken> json = GraphSONUtility.jsonFromElement(v, propertiesToInclude, GraphSONMode.COMPACT);
+            IDictionary<string, JToken> json = GraphSonUtility.JsonFromElement(v, propertiesToInclude, GraphSonMode.COMPACT);
 
             Assert.NotNull(json);
-            Assert.False(json.ContainsKey(GraphSONTokens._TYPE));
-            Assert.True(json.ContainsKey(GraphSONTokens._ID));
+            Assert.False(json.ContainsKey(GraphSonTokens.UnderscoreType));
+            Assert.True(json.ContainsKey(GraphSonTokens.Id));
             Assert.False(json.ContainsKey("name"));
         }
 
         [Test]
-        public void jsonFromElementVertexCompactIdNameOnlyAsExclude()
+        public void JsonFromElementVertexCompactIdNameOnlyAsExclude()
         {
-            GraphElementFactory factory = new GraphElementFactory(this.graph);
-            Vertex v = this.graph.addVertex(1);
-            v.setProperty("name", "marko");
+            var factory = new GraphElementFactory(_graph);
+            IVertex v = _graph.AddVertex(1);
+            v.SetProperty("name", "marko");
 
-            HashSet<String> propertiesToExclude = new HashSet<String>() { GraphSONTokens._TYPE };
+            var propertiesToExclude = new HashSet<String> { GraphSonTokens.UnderscoreType };
 
-            ElementPropertyConfig config = new ElementPropertyConfig(propertiesToExclude, null,
-                    ElementPropertyConfig.ElementPropertiesRule.EXCLUDE,
-                    ElementPropertyConfig.ElementPropertiesRule.EXCLUDE);
+            var config = new ElementPropertyConfig(propertiesToExclude, null,
+                    ElementPropertyConfig.ElementPropertiesRule.Exclude,
+                    ElementPropertyConfig.ElementPropertiesRule.Exclude);
 
-            GraphSONUtility utility = new GraphSONUtility(GraphSONMode.COMPACT, factory, config);
-            IDictionary<string, JToken> json = utility.jsonFromElement(v);
+            var utility = new GraphSonUtility(GraphSonMode.COMPACT, factory, config);
+            IDictionary<string, JToken> json = utility.JsonFromElement(v);
 
             Assert.NotNull(json);
-            Assert.False(json.ContainsKey(GraphSONTokens._TYPE));
-            Assert.True(json.ContainsKey(GraphSONTokens._ID));
+            Assert.False(json.ContainsKey(GraphSonTokens.UnderscoreType));
+            Assert.True(json.ContainsKey(GraphSonTokens.Id));
             Assert.True(json.ContainsKey("name"));
         }
 
         [Test]
-        public void jsonFromElementVertexCompactAllOnly()
+        public void JsonFromElementVertexCompactAllOnly()
         {
-            Vertex v = this.graph.addVertex(1);
-            v.setProperty("name", "marko");
+            IVertex v = _graph.AddVertex(1);
+            v.SetProperty("name", "marko");
 
-            IDictionary<string, JToken> json = GraphSONUtility.jsonFromElement(v, null, GraphSONMode.COMPACT);
+            IDictionary<string, JToken> json = GraphSonUtility.JsonFromElement(v, null, GraphSonMode.COMPACT);
 
             Assert.NotNull(json);
-            Assert.True(json.ContainsKey(GraphSONTokens._TYPE));
-            Assert.True(json.ContainsKey(GraphSONTokens._ID));
+            Assert.True(json.ContainsKey(GraphSonTokens.UnderscoreType));
+            Assert.True(json.ContainsKey(GraphSonTokens.Id));
             Assert.True(json.ContainsKey("name"));
         }
 
         [Test]
-        public void jsonFromElementVertexPrimitivePropertiesNoKeysNoTypes()
+        public void JsonFromElementVertexPrimitivePropertiesNoKeysNoTypes()
         {
-            Vertex v = this.graph.addVertex(1);
-            v.setProperty("keyString", "string");
-            v.setProperty("keyLong", 1L);
-            v.setProperty("keyInt", 2);
-            v.setProperty("keyFloat", 3.3f);
-            v.setProperty("keyExponentialDouble", 1312928167.626012);
-            v.setProperty("keyDouble", 4.4);
-            v.setProperty("keyBoolean", true);
+            IVertex v = _graph.AddVertex(1);
+            v.SetProperty("keyString", "string");
+            v.SetProperty("keyLong", 1L);
+            v.SetProperty("keyInt", 2);
+            v.SetProperty("keyFloat", 3.3f);
+            v.SetProperty("keyExponentialDouble", 1312928167.626012);
+            v.SetProperty("keyDouble", 4.4);
+            v.SetProperty("keyBoolean", true);
 
-            IDictionary<string, JToken> json = GraphSONUtility.jsonFromElement(v, null, GraphSONMode.NORMAL);
+            IDictionary<string, JToken> json = GraphSonUtility.JsonFromElement(v, null, GraphSonMode.NORMAL);
 
             Assert.NotNull(json);
-            Assert.True(json.ContainsKey(GraphSONTokens._ID));
-            Assert.AreEqual(1, json[GraphSONTokens._ID].Value<int>());
+            Assert.True(json.ContainsKey(GraphSonTokens.Id));
+            Assert.AreEqual(1, json[GraphSonTokens.Id].Value<int>());
             Assert.True(json.ContainsKey("keyString"));
             Assert.AreEqual("string", json["keyString"].Value<string>());
             Assert.True(json.ContainsKey("keyLong"));
@@ -244,200 +243,196 @@ namespace Frontenac.Blueprints.Util.IO.GraphSON
         }
 
         [Test]
-        public void jsonFromElementVertexMapPropertyNoKeysNoTypes()
+        public void JsonFromElementVertexMapPropertyNoKeysNoTypes()
         {
-            Vertex v = this.graph.addVertex(1);
+            IVertex v = _graph.AddVertex(1);
             var map = new Dictionary<string, object>();
-            map.put("this", "some");
-            map.put("that", 1);
+            map.Put("this", "some");
+            map.Put("that", 1);
 
-            v.setProperty("keyMap", map);
+            v.SetProperty("keyMap", map);
 
-            IDictionary<string, JToken> json = GraphSONUtility.jsonFromElement(v, null, GraphSONMode.NORMAL);
+            IDictionary<string, JToken> json = GraphSonUtility.JsonFromElement(v, null, GraphSonMode.NORMAL);
 
             Assert.NotNull(json);
-            Assert.True(json.ContainsKey(GraphSONTokens._ID));
-            Assert.AreEqual(1, json[GraphSONTokens._ID].Value<int>());
+            Assert.True(json.ContainsKey(GraphSonTokens.Id));
+            Assert.AreEqual(1, json[GraphSonTokens.Id].Value<int>());
             Assert.True(json.ContainsKey("keyMap"));
 
-            IDictionary<string, JToken> mapAsJSON = (JObject)json["keyMap"];
-            Assert.NotNull(mapAsJSON);
-            Assert.True(mapAsJSON.ContainsKey("this"));
-            Assert.AreEqual("some", mapAsJSON["this"].Value<string>());
-            Assert.True(mapAsJSON.ContainsKey("that"));
-            Assert.AreEqual(1, mapAsJSON["that"].Value<int>());
+            IDictionary<string, JToken> mapAsJson = (JObject)json["keyMap"];
+            Assert.NotNull(mapAsJson);
+            Assert.True(mapAsJson.ContainsKey("this"));
+            Assert.AreEqual("some", mapAsJson["this"].Value<string>());
+            Assert.True(mapAsJson.ContainsKey("that"));
+            Assert.AreEqual(1, mapAsJson["that"].Value<int>());
         }
 
         [Test]
-        public void jsonFromElementVertexListPropertyNoKeysNoTypes()
+        public void JsonFromElementVertexListPropertyNoKeysNoTypes()
         {
-            Vertex v = this.graph.addVertex(1);
-            List<object> list = new List<object>();
-            list.Add("this");
-            list.Add("that");
-            list.Add("other");
-            list.Add(true);
+            IVertex v = _graph.AddVertex(1);
+            var list = new List<object> {"this", "that", "other", true};
 
-            v.setProperty("keyList", list);
+            v.SetProperty("keyList", list);
 
-            IDictionary<string, JToken> json = GraphSONUtility.jsonFromElement(v, null, GraphSONMode.NORMAL);
+            IDictionary<string, JToken> json = GraphSonUtility.JsonFromElement(v, null, GraphSonMode.NORMAL);
 
             Assert.NotNull(json);
-            Assert.True(json.ContainsKey(GraphSONTokens._ID));
-            Assert.AreEqual(1, json[GraphSONTokens._ID].Value<int>());
+            Assert.True(json.ContainsKey(GraphSonTokens.Id));
+            Assert.AreEqual(1, json[GraphSonTokens.Id].Value<int>());
             Assert.True(json.ContainsKey("keyList"));
 
-            IList<JToken> listAsJSON = (JArray)json["keyList"];
-            Assert.NotNull(listAsJSON);
-            Assert.AreEqual(4, listAsJSON.Count());
+            IList<JToken> listAsJson = (JArray)json["keyList"];
+            Assert.NotNull(listAsJson);
+            Assert.AreEqual(4, listAsJson.Count());
         }
 
         [Test]
-        public void jsonFromElementVertexStringArrayPropertyNoKeysNoTypes()
+        public void JsonFromElementVertexStringArrayPropertyNoKeysNoTypes()
         {
-            Vertex v = this.graph.addVertex(1);
-            string[] stringArray = new string[] { "this", "that", "other" };
+            IVertex v = _graph.AddVertex(1);
+            var stringArray = new[] { "this", "that", "other" };
 
-            v.setProperty("keyStringArray", stringArray);
+            v.SetProperty("keyStringArray", stringArray);
 
-            IDictionary<string, JToken> json = GraphSONUtility.jsonFromElement(v, null, GraphSONMode.NORMAL);
+            IDictionary<string, JToken> json = GraphSonUtility.JsonFromElement(v, null, GraphSonMode.NORMAL);
 
             Assert.NotNull(json);
-            Assert.True(json.ContainsKey(GraphSONTokens._ID));
-            Assert.AreEqual(1, json[GraphSONTokens._ID].Value<int>());
+            Assert.True(json.ContainsKey(GraphSonTokens.Id));
+            Assert.AreEqual(1, json[GraphSonTokens.Id].Value<int>());
             Assert.True(json.ContainsKey("keyStringArray"));
 
-            JArray stringArrayAsJSON = (JArray)json["keyStringArray"];
-            Assert.NotNull(stringArrayAsJSON);
-            Assert.AreEqual(3, stringArrayAsJSON.Count());
+            var stringArrayAsJson = (JArray)json["keyStringArray"];
+            Assert.NotNull(stringArrayAsJson);
+            Assert.AreEqual(3, stringArrayAsJson.Count());
         }
 
         [Test]
-        public void jsonFromElementVertexDoubleArrayPropertyNoKeysNoTypes()
+        public void JsonFromElementVertexDoubleArrayPropertyNoKeysNoTypes()
         {
-            Vertex v = this.graph.addVertex(1);
-            double[] doubleArray = new double[] { 1.0, 2.0, 3.0 };
+            IVertex v = _graph.AddVertex(1);
+            var doubleArray = new[] { 1.0, 2.0, 3.0 };
 
-            v.setProperty("keyDoubleArray", doubleArray);
+            v.SetProperty("keyDoubleArray", doubleArray);
 
-            IDictionary<string, JToken> json = GraphSONUtility.jsonFromElement(v, null, GraphSONMode.NORMAL);
+            IDictionary<string, JToken> json = GraphSonUtility.JsonFromElement(v, null, GraphSonMode.NORMAL);
 
             Assert.NotNull(json);
-            Assert.True(json.ContainsKey(GraphSONTokens._ID));
-            Assert.AreEqual(1, json[GraphSONTokens._ID].Value<int>());
+            Assert.True(json.ContainsKey(GraphSonTokens.Id));
+            Assert.AreEqual(1, json[GraphSonTokens.Id].Value<int>());
             Assert.True(json.ContainsKey("keyDoubleArray"));
 
-            JArray doubleArrayAsJSON = (JArray)json["keyDoubleArray"];
-            Assert.NotNull(doubleArrayAsJSON);
-            Assert.AreEqual(3, doubleArrayAsJSON.Count());
+            var doubleArrayAsJson = (JArray)json["keyDoubleArray"];
+            Assert.NotNull(doubleArrayAsJson);
+            Assert.AreEqual(3, doubleArrayAsJson.Count());
         }
 
         [Test]
-        public void jsonFromElementVertexIntArrayPropertyNoKeysNoTypes()
+        public void JsonFromElementVertexIntArrayPropertyNoKeysNoTypes()
         {
-            Vertex v = this.graph.addVertex(1);
-            int[] intArray = new int[] { 1, 2, 3 };
+            IVertex v = _graph.AddVertex(1);
+            var intArray = new[] { 1, 2, 3 };
 
-            v.setProperty("keyIntArray", intArray);
+            v.SetProperty("keyIntArray", intArray);
 
-            IDictionary<string, JToken> json = GraphSONUtility.jsonFromElement(v, null, GraphSONMode.NORMAL);
+            IDictionary<string, JToken> json = GraphSonUtility.JsonFromElement(v, null, GraphSonMode.NORMAL);
 
             Assert.NotNull(json);
-            Assert.True(json.ContainsKey(GraphSONTokens._ID));
-            Assert.AreEqual(1, json[GraphSONTokens._ID].Value<int>());
+            Assert.True(json.ContainsKey(GraphSonTokens.Id));
+            Assert.AreEqual(1, json[GraphSonTokens.Id].Value<int>());
             Assert.True(json.ContainsKey("keyIntArray"));
 
-            JArray intArrayAsJSON = (JArray)json["keyIntArray"];
-            Assert.NotNull(intArrayAsJSON);
-            Assert.AreEqual(3, intArrayAsJSON.Count());
+            var intArrayAsJson = (JArray)json["keyIntArray"];
+            Assert.NotNull(intArrayAsJson);
+            Assert.AreEqual(3, intArrayAsJson.Count());
         }
 
         [Test]
-        public void jsonFromElementVertexLongArrayPropertyNoKeysNoTypes()
+        public void JsonFromElementVertexLongArrayPropertyNoKeysNoTypes()
         {
-            Vertex v = this.graph.addVertex(1);
-            long[] longArray = new long[] { 1, 2, 3 };
+            IVertex v = _graph.AddVertex(1);
+            var longArray = new long[] { 1, 2, 3 };
 
-            v.setProperty("keyLongArray", longArray);
+            v.SetProperty("keyLongArray", longArray);
 
-            IDictionary<string, JToken> json = GraphSONUtility.jsonFromElement(v, null, GraphSONMode.NORMAL);
+            IDictionary<string, JToken> json = GraphSonUtility.JsonFromElement(v, null, GraphSonMode.NORMAL);
 
             Assert.NotNull(json);
-            Assert.True(json.ContainsKey(GraphSONTokens._ID));
-            Assert.AreEqual(1, json[GraphSONTokens._ID].Value<int>());
+            Assert.True(json.ContainsKey(GraphSonTokens.Id));
+            Assert.AreEqual(1, json[GraphSonTokens.Id].Value<int>());
             Assert.True(json.ContainsKey("keyLongArray"));
 
-            JArray longArrayAsJSON = (JArray)json["keyLongArray"];
-            Assert.NotNull(longArrayAsJSON);
-            Assert.AreEqual(3, longArrayAsJSON.Count());
+            var longArrayAsJson = (JArray)json["keyLongArray"];
+            Assert.NotNull(longArrayAsJson);
+            Assert.AreEqual(3, longArrayAsJson.Count());
         }
 
         [Test]
-        public void jsonFromElementFloatArrayPropertyNoKeysNoTypes()
+        public void JsonFromElementFloatArrayPropertyNoKeysNoTypes()
         {
-            Vertex v = this.graph.addVertex(1);
-            float[] floatArray = new float[] { 1.0f, 2.0f, 3.0f };
+            IVertex v = _graph.AddVertex(1);
+            var floatArray = new[] { 1.0f, 2.0f, 3.0f };
 
-            v.setProperty("keyFloatArray", floatArray);
+            v.SetProperty("keyFloatArray", floatArray);
 
-            IDictionary<string, JToken> json = GraphSONUtility.jsonFromElement(v, null, GraphSONMode.NORMAL);
+            IDictionary<string, JToken> json = GraphSonUtility.JsonFromElement(v, null, GraphSonMode.NORMAL);
 
             Assert.NotNull(json);
-            Assert.True(json.ContainsKey(GraphSONTokens._ID));
-            Assert.AreEqual(1, json[GraphSONTokens._ID].Value<int>());
+            Assert.True(json.ContainsKey(GraphSonTokens.Id));
+            Assert.AreEqual(1, json[GraphSonTokens.Id].Value<int>());
             Assert.True(json.ContainsKey("keyFloatArray"));
 
-            JArray floatArrayAsJSON = (JArray)json["keyFloatArray"];
-            Assert.NotNull(floatArrayAsJSON);
-            Assert.AreEqual(3, floatArrayAsJSON.Count());
+            var floatArrayAsJson = (JArray)json["keyFloatArray"];
+            Assert.NotNull(floatArrayAsJson);
+            Assert.AreEqual(3, floatArrayAsJson.Count());
         }
 
         [Test]
-        public void jsonFromElementBooleanArrayPropertyNoKeysNoTypes()
+        public void JsonFromElementBooleanArrayPropertyNoKeysNoTypes()
         {
-            Vertex v = this.graph.addVertex(1);
-            bool[] booleanArray = new bool[] { true, false, true };
+            IVertex v = _graph.AddVertex(1);
+            var booleanArray = new[] { true, false, true };
 
-            v.setProperty("keyBooleanArray", booleanArray);
+            v.SetProperty("keyBooleanArray", booleanArray);
 
-            IDictionary<string, JToken> json = GraphSONUtility.jsonFromElement(v, null, GraphSONMode.NORMAL);
+            IDictionary<string, JToken> json = GraphSonUtility.JsonFromElement(v, null, GraphSonMode.NORMAL);
 
             Assert.NotNull(json);
-            Assert.True(json.ContainsKey(GraphSONTokens._ID));
-            Assert.AreEqual(1, json[GraphSONTokens._ID].Value<int>());
+            Assert.True(json.ContainsKey(GraphSonTokens.Id));
+            Assert.AreEqual(1, json[GraphSonTokens.Id].Value<int>());
             Assert.True(json.ContainsKey("keyBooleanArray"));
 
-            JArray booleanArrayAsJSON = (JArray)json["keyBooleanArray"];
-            Assert.NotNull(booleanArrayAsJSON);
-            Assert.AreEqual(3, booleanArrayAsJSON.Count());
+            var booleanArrayAsJson = (JArray)json["keyBooleanArray"];
+            Assert.NotNull(booleanArrayAsJson);
+            Assert.AreEqual(3, booleanArrayAsJson.Count());
         }
 
         [Test]
-        public void jsonFromElementVertexCatPropertyNoKeysNoTypes()
+        public void JsonFromElementVertexCatPropertyNoKeysNoTypes()
         {
-            Vertex v = this.graph.addVertex(1);
-            v.setProperty("mycat", new Cat("smithers"));
+            IVertex v = _graph.AddVertex(1);
+            v.SetProperty("mycat", new Cat("smithers"));
 
-            IDictionary<string, JToken> json = GraphSONUtility.jsonFromElement(v, null, GraphSONMode.NORMAL);
+            IDictionary<string, JToken> json = GraphSonUtility.JsonFromElement(v, null, GraphSonMode.NORMAL);
 
             Assert.NotNull(json);
-            Assert.True(json.ContainsKey(GraphSONTokens._ID));
-            Assert.AreEqual(1, json[GraphSONTokens._ID].Value<int>());
+            Assert.True(json.ContainsKey(GraphSonTokens.Id));
+            Assert.AreEqual(1, json[GraphSonTokens.Id].Value<int>());
             Assert.True(json.ContainsKey("mycat"));
             Assert.AreEqual("smithers", json["mycat"].Value<string>());
         }
 
         [Test]
-        public void jsonFromElementVertexCatPropertyNoKeysWithTypes()
+        public void JsonFromElementVertexCatPropertyNoKeysWithTypes()
         {
-            Vertex v = this.graph.addVertex(1);
-            v.setProperty("mycat", new Cat("smithers"));
+            IVertex v = _graph.AddVertex(1);
+            v.SetProperty("mycat", new Cat("smithers"));
 
-            IDictionary<string, JToken> json = GraphSONUtility.jsonFromElement(v, null, GraphSONMode.EXTENDED);
+            IDictionary<string, JToken> json = GraphSonUtility.JsonFromElement(v, null, GraphSonMode.EXTENDED);
 
             Assert.NotNull(json);
-            Assert.True(json.ContainsKey(GraphSONTokens._ID));
-            Assert.AreEqual(1, json[GraphSONTokens._ID].Value<int>());
+            Assert.True(json.ContainsKey(GraphSonTokens.Id));
+            Assert.AreEqual(1, json[GraphSonTokens.Id].Value<int>());
             Assert.True(json.ContainsKey("mycat"));
             IDictionary<string, JToken> jsonObjectCat = (JObject)json["mycat"];
             Assert.True(jsonObjectCat.ContainsKey("value"));
@@ -445,59 +440,54 @@ namespace Frontenac.Blueprints.Util.IO.GraphSON
         }
 
         [Test]
-        public void jsonFromElementVertexCatArrayPropertyNoKeysNoTypes()
+        public void JsonFromElementVertexCatArrayPropertyNoKeysNoTypes()
         {
-            Vertex v = this.graph.addVertex(1);
-            List<Cat> cats = new List<Cat>();
-            cats.Add(new Cat("smithers"));
-            cats.Add(new Cat("mcallister"));
+            IVertex v = _graph.AddVertex(1);
+            var cats = new List<Cat> {new Cat("smithers"), new Cat("mcallister")};
 
-            v.setProperty("cats", cats);
+            v.SetProperty("cats", cats);
 
-            IDictionary<string, JToken> json = GraphSONUtility.jsonFromElement(v, null, GraphSONMode.NORMAL);
+            IDictionary<string, JToken> json = GraphSonUtility.JsonFromElement(v, null, GraphSonMode.NORMAL);
 
             Assert.NotNull(json);
-            Assert.True(json.ContainsKey(GraphSONTokens._ID));
-            Assert.AreEqual(1, json[GraphSONTokens._ID].Value<int>());
+            Assert.True(json.ContainsKey(GraphSonTokens.Id));
+            Assert.AreEqual(1, json[GraphSonTokens.Id].Value<int>());
             Assert.True(json.ContainsKey("cats"));
 
-            JArray catListAsJson = (JArray)json["cats"];
+            var catListAsJson = (JArray)json["cats"];
             Assert.NotNull(catListAsJson);
             Assert.AreEqual(2, catListAsJson.Count());
         }
 
         [Test]
-        public void jsonFromElementCrazyPropertyNoKeysNoTypes()
+        public void JsonFromElementCrazyPropertyNoKeysNoTypes()
         {
-            Vertex v = this.graph.addVertex(1);
-            var mix = new List<object>();
-            mix.Add(new Cat("smithers"));
-            mix.Add(true);
+            IVertex v = _graph.AddVertex(1);
+            var mix = new List<object> {new Cat("smithers"), true};
 
-            var deepCats = new List<object>();
-            deepCats.Add(new Cat("mcallister"));
+            var deepCats = new List<object> {new Cat("mcallister")};
             mix.Add(deepCats);
 
             var map = new Dictionary<string, object>();
-            map.put("crazy", mix);
+            map.Put("crazy", mix);
 
-            int[] someInts = new int[] { 1, 2, 3 };
-            map.put("ints", someInts);
+            var someInts = new[] { 1, 2, 3 };
+            map.Put("ints", someInts);
 
-            map.put("regular", "stuff");
+            map.Put("regular", "stuff");
 
             var innerMap = new Dictionary<string, object>();
-            innerMap.put("me", "you");
+            innerMap.Put("me", "you");
 
-            map.put("inner", innerMap);
+            map.Put("inner", innerMap);
 
-            v.setProperty("crazy-map", map);
+            v.SetProperty("crazy-map", map);
 
-            IDictionary<string, JToken> json = GraphSONUtility.jsonFromElement(v, null, GraphSONMode.NORMAL);
+            IDictionary<string, JToken> json = GraphSonUtility.JsonFromElement(v, null, GraphSonMode.NORMAL);
 
             Assert.NotNull(json);
-            Assert.True(json.ContainsKey(GraphSONTokens._ID));
-            Assert.AreEqual(1, json[GraphSONTokens._ID].Value<int>());
+            Assert.True(json.ContainsKey(GraphSonTokens.Id));
+            Assert.AreEqual(1, json[GraphSonTokens.Id].Value<int>());
             Assert.True(json.ContainsKey("crazy-map"));
 
             IDictionary<string, JToken> mapAsJson = (JObject)json["crazy-map"];
@@ -505,71 +495,68 @@ namespace Frontenac.Blueprints.Util.IO.GraphSON
             Assert.AreEqual("stuff", mapAsJson["regular"].Value<string>());
 
             Assert.True(mapAsJson.ContainsKey("ints"));
-            JArray intArrayAsJson = (JArray)mapAsJson["ints"];
+            var intArrayAsJson = (JArray)mapAsJson["ints"];
             Assert.NotNull(intArrayAsJson);
             Assert.AreEqual(3, intArrayAsJson.Count());
 
             Assert.True(mapAsJson.ContainsKey("crazy"));
-            JArray deepListAsJSON = (JArray)mapAsJson["crazy"];
-            Assert.NotNull(deepListAsJSON);
-            Assert.AreEqual(3, deepListAsJSON.Count());
+            var deepListAsJson = (JArray)mapAsJson["crazy"];
+            Assert.NotNull(deepListAsJson);
+            Assert.AreEqual(3, deepListAsJson.Count());
 
             Assert.True(mapAsJson.ContainsKey("inner"));
-            IDictionary<string, JToken> mapInMapAsJSON = (JObject)mapAsJson["inner"];
-            Assert.NotNull(mapInMapAsJSON);
-            Assert.True(mapInMapAsJSON.ContainsKey("me"));
-            Assert.AreEqual("you", mapInMapAsJSON["me"].Value<string>());
+            IDictionary<string, JToken> mapInMapAsJson = (JObject)mapAsJson["inner"];
+            Assert.NotNull(mapInMapAsJson);
+            Assert.True(mapInMapAsJson.ContainsKey("me"));
+            Assert.AreEqual("you", mapInMapAsJson["me"].Value<string>());
 
         }
 
         [Test]
-        public void jsonFromElementVertexNoPropertiesWithKeysNoTypes()
+        public void JsonFromElementVertexNoPropertiesWithKeysNoTypes()
         {
-            Vertex v = this.graph.addVertex(1);
-            v.setProperty("x", "X");
-            v.setProperty("y", "Y");
-            v.setProperty("z", "Z");
+            IVertex v = _graph.AddVertex(1);
+            v.SetProperty("x", "X");
+            v.SetProperty("y", "Y");
+            v.SetProperty("z", "Z");
 
-            HashSet<String> propertiesToInclude = new HashSet<String>();
-            propertiesToInclude.Add("y");
-            IDictionary<string, JToken> json = GraphSONUtility.jsonFromElement(v, propertiesToInclude, GraphSONMode.NORMAL);
+            var propertiesToInclude = new HashSet<String> {"y"};
+            IDictionary<string, JToken> json = GraphSonUtility.JsonFromElement(v, propertiesToInclude, GraphSonMode.NORMAL);
 
             Assert.NotNull(json);
-            Assert.True(json.ContainsKey(GraphSONTokens._ID));
-            Assert.AreEqual(1, json[GraphSONTokens._ID].Value<int>());
-            Assert.True(json.ContainsKey(GraphSONTokens._TYPE));
-            Assert.AreEqual("vertex", json[GraphSONTokens._TYPE].Value<string>());
+            Assert.True(json.ContainsKey(GraphSonTokens.Id));
+            Assert.AreEqual(1, json[GraphSonTokens.Id].Value<int>());
+            Assert.True(json.ContainsKey(GraphSonTokens.UnderscoreType));
+            Assert.AreEqual("vertex", json[GraphSonTokens.UnderscoreType].Value<string>());
             Assert.False(json.ContainsKey("x"));
             Assert.False(json.ContainsKey("z"));
             Assert.True(json.ContainsKey("y"));
         }
 
         [Test]
-        public void jsonFromElementVertexVertexPropertiesWithKeysNoTypes()
+        public void JsonFromElementVertexVertexPropertiesWithKeysNoTypes()
         {
-            Vertex v = this.graph.addVertex(1);
-            v.setProperty("x", "X");
-            v.setProperty("y", "Y");
-            v.setProperty("z", "Z");
+            IVertex v = _graph.AddVertex(1);
+            v.SetProperty("x", "X");
+            v.SetProperty("y", "Y");
+            v.SetProperty("z", "Z");
 
-            Vertex innerV = this.graph.addVertex(2);
-            innerV.setProperty("x", "X");
-            innerV.setProperty("y", "Y");
-            innerV.setProperty("z", "Z");
+            IVertex innerV = _graph.AddVertex(2);
+            innerV.SetProperty("x", "X");
+            innerV.SetProperty("y", "Y");
+            innerV.SetProperty("z", "Z");
 
-            v.setProperty("v", innerV);
+            v.SetProperty("v", innerV);
 
-            HashSet<String> propertiesToInclude = new HashSet<String>();
-            propertiesToInclude.Add("y");
-            propertiesToInclude.Add("v");
+            var propertiesToInclude = new HashSet<String> {"y", "v"};
 
-            IDictionary<string, JToken> json = GraphSONUtility.jsonFromElement(v, propertiesToInclude, GraphSONMode.NORMAL);
+            IDictionary<string, JToken> json = GraphSonUtility.JsonFromElement(v, propertiesToInclude, GraphSonMode.NORMAL);
 
             Assert.NotNull(json);
-            Assert.True(json.ContainsKey(GraphSONTokens._ID));
-            Assert.AreEqual(1, json[GraphSONTokens._ID].Value<int>());
-            Assert.True(json.ContainsKey(GraphSONTokens._TYPE));
-            Assert.AreEqual("vertex", json[GraphSONTokens._TYPE].Value<string>());
+            Assert.True(json.ContainsKey(GraphSonTokens.Id));
+            Assert.AreEqual(1, json[GraphSonTokens.Id].Value<int>());
+            Assert.True(json.ContainsKey(GraphSonTokens.UnderscoreType));
+            Assert.AreEqual("vertex", json[GraphSonTokens.UnderscoreType].Value<string>());
             Assert.False(json.ContainsKey("x"));
             Assert.False(json.ContainsKey("z"));
             Assert.True(json.ContainsKey("y"));
@@ -583,325 +570,305 @@ namespace Frontenac.Blueprints.Util.IO.GraphSON
         }
 
         [Test]
-        public void jsonFromElementVertexPrimitivePropertiesNoKeysWithTypes()
+        public void JsonFromElementVertexPrimitivePropertiesNoKeysWithTypes()
         {
-            Vertex v = this.graph.addVertex(1);
-            v.setProperty("keyString", "string");
-            v.setProperty("keyLong", 1L);
-            v.setProperty("keyInt", 2);
-            v.setProperty("keyFloat", 3.3f);
-            v.setProperty("keyDouble", 4.4);
-            v.setProperty("keyBoolean", true);
+            IVertex v = _graph.AddVertex(1);
+            v.SetProperty("keyString", "string");
+            v.SetProperty("keyLong", 1L);
+            v.SetProperty("keyInt", 2);
+            v.SetProperty("keyFloat", 3.3f);
+            v.SetProperty("keyDouble", 4.4);
+            v.SetProperty("keyBoolean", true);
 
-            IDictionary<string, JToken> json = GraphSONUtility.jsonFromElement(v, null, GraphSONMode.EXTENDED);
+            IDictionary<string, JToken> json = GraphSonUtility.JsonFromElement(v, null, GraphSonMode.EXTENDED);
 
             Assert.NotNull(json);
-            Assert.True(json.ContainsKey(GraphSONTokens._ID));
-            Assert.AreEqual(1, json[GraphSONTokens._ID].Value<int>());
+            Assert.True(json.ContainsKey(GraphSonTokens.Id));
+            Assert.AreEqual(1, json[GraphSonTokens.Id].Value<int>());
             Assert.True(json.ContainsKey("keyString"));
 
             IDictionary<string, JToken> valueAsJson = (JObject)json["keyString"];
             Assert.NotNull(valueAsJson);
-            Assert.True(valueAsJson.ContainsKey(GraphSONTokens.TYPE));
-            Assert.AreEqual(GraphSONTokens.TYPE_STRING, valueAsJson[GraphSONTokens.TYPE].Value<string>());
-            Assert.True(valueAsJson.ContainsKey(GraphSONTokens.VALUE));
-            Assert.AreEqual("string", valueAsJson[GraphSONTokens.VALUE].Value<string>());
+            Assert.True(valueAsJson.ContainsKey(GraphSonTokens.Type));
+            Assert.AreEqual(GraphSonTokens.TypeString, valueAsJson[GraphSonTokens.Type].Value<string>());
+            Assert.True(valueAsJson.ContainsKey(GraphSonTokens.Value));
+            Assert.AreEqual("string", valueAsJson[GraphSonTokens.Value].Value<string>());
 
             valueAsJson = (JObject)json["keyLong"];
             Assert.NotNull(valueAsJson);
-            Assert.True(valueAsJson.ContainsKey(GraphSONTokens.TYPE));
-            Assert.AreEqual(GraphSONTokens.TYPE_LONG, valueAsJson[GraphSONTokens.TYPE].Value<string>());
-            Assert.True(valueAsJson.ContainsKey(GraphSONTokens.VALUE));
-            Assert.AreEqual(1L, valueAsJson[GraphSONTokens.VALUE].Value<long>());
+            Assert.True(valueAsJson.ContainsKey(GraphSonTokens.Type));
+            Assert.AreEqual(GraphSonTokens.TypeLong, valueAsJson[GraphSonTokens.Type].Value<string>());
+            Assert.True(valueAsJson.ContainsKey(GraphSonTokens.Value));
+            Assert.AreEqual(1L, valueAsJson[GraphSonTokens.Value].Value<long>());
 
             valueAsJson = (JObject)json["keyInt"];
             Assert.NotNull(valueAsJson);
-            Assert.True(valueAsJson.ContainsKey(GraphSONTokens.TYPE));
-            Assert.AreEqual(GraphSONTokens.TYPE_INTEGER, valueAsJson[GraphSONTokens.TYPE].Value<string>());
-            Assert.True(valueAsJson.ContainsKey(GraphSONTokens.VALUE));
-            Assert.AreEqual(2, valueAsJson[GraphSONTokens.VALUE].Value<int>());
+            Assert.True(valueAsJson.ContainsKey(GraphSonTokens.Type));
+            Assert.AreEqual(GraphSonTokens.TypeInteger, valueAsJson[GraphSonTokens.Type].Value<string>());
+            Assert.True(valueAsJson.ContainsKey(GraphSonTokens.Value));
+            Assert.AreEqual(2, valueAsJson[GraphSonTokens.Value].Value<int>());
 
             valueAsJson = (JObject)json["keyFloat"];
             Assert.NotNull(valueAsJson);
-            Assert.True(valueAsJson.ContainsKey(GraphSONTokens.TYPE));
-            Assert.AreEqual(GraphSONTokens.TYPE_FLOAT, valueAsJson[GraphSONTokens.TYPE].Value<string>());
-            Assert.True(valueAsJson.ContainsKey(GraphSONTokens.VALUE));
-            Assert.AreEqual(3.3f, (float)valueAsJson[GraphSONTokens.VALUE].Value<double>(), 0);
+            Assert.True(valueAsJson.ContainsKey(GraphSonTokens.Type));
+            Assert.AreEqual(GraphSonTokens.TypeFloat, valueAsJson[GraphSonTokens.Type].Value<string>());
+            Assert.True(valueAsJson.ContainsKey(GraphSonTokens.Value));
+            Assert.AreEqual(3.3f, (float)valueAsJson[GraphSonTokens.Value].Value<double>(), 0);
 
             valueAsJson = (JObject)json["keyDouble"];
             Assert.NotNull(valueAsJson);
-            Assert.True(valueAsJson.ContainsKey(GraphSONTokens.TYPE));
-            Assert.AreEqual(GraphSONTokens.TYPE_DOUBLE, valueAsJson[GraphSONTokens.TYPE].Value<string>());
-            Assert.True(valueAsJson.ContainsKey(GraphSONTokens.VALUE));
-            Assert.AreEqual(4.4, valueAsJson[GraphSONTokens.VALUE].Value<double>(), 0);
+            Assert.True(valueAsJson.ContainsKey(GraphSonTokens.Type));
+            Assert.AreEqual(GraphSonTokens.TypeDouble, valueAsJson[GraphSonTokens.Type].Value<string>());
+            Assert.True(valueAsJson.ContainsKey(GraphSonTokens.Value));
+            Assert.AreEqual(4.4, valueAsJson[GraphSonTokens.Value].Value<double>(), 0);
 
             valueAsJson = (JObject)json["keyBoolean"];
             Assert.NotNull(valueAsJson);
-            Assert.True(valueAsJson.ContainsKey(GraphSONTokens.TYPE));
-            Assert.AreEqual(GraphSONTokens.TYPE_BOOLEAN, valueAsJson[GraphSONTokens.TYPE].Value<string>());
-            Assert.True(valueAsJson.ContainsKey(GraphSONTokens.VALUE));
-            Assert.True(valueAsJson[GraphSONTokens.VALUE].Value<bool>());
+            Assert.True(valueAsJson.ContainsKey(GraphSonTokens.Type));
+            Assert.AreEqual(GraphSonTokens.TypeBoolean, valueAsJson[GraphSonTokens.Type].Value<string>());
+            Assert.True(valueAsJson.ContainsKey(GraphSonTokens.Value));
+            Assert.True(valueAsJson[GraphSonTokens.Value].Value<bool>());
         }
 
         [Test]
-        public void jsonFromElementVertexListPropertiesNoKeysWithTypes()
+        public void JsonFromElementVertexListPropertiesNoKeysWithTypes()
         {
-            Vertex v = this.graph.addVertex(1);
-            List<string> list = new List<string>();
-            list.Add("this");
-            list.Add("this");
-            list.Add("this");
+            IVertex v = _graph.AddVertex(1);
+            var list = new List<string> {"this", "this", "this"};
 
-            v.setProperty("keyList", list);
+            v.SetProperty("keyList", list);
 
-            IDictionary<string, JToken> json = GraphSONUtility.jsonFromElement(v, null, GraphSONMode.EXTENDED);
+            IDictionary<string, JToken> json = GraphSonUtility.JsonFromElement(v, null, GraphSonMode.EXTENDED);
 
             Assert.NotNull(json);
-            Assert.True(json.ContainsKey(GraphSONTokens._ID));
-            Assert.AreEqual(1, json[GraphSONTokens._ID].Value<int>());
+            Assert.True(json.ContainsKey(GraphSonTokens.Id));
+            Assert.AreEqual(1, json[GraphSonTokens.Id].Value<int>());
             Assert.True(json.ContainsKey("keyList"));
 
             IDictionary<string, JToken> listWithTypeAsJson = (JObject)json["keyList"];
             Assert.NotNull(listWithTypeAsJson);
-            Assert.True(listWithTypeAsJson.ContainsKey(GraphSONTokens.TYPE));
-            Assert.AreEqual(GraphSONTokens.TYPE_LIST, listWithTypeAsJson[GraphSONTokens.TYPE].Value<string>());
-            Assert.True(listWithTypeAsJson.ContainsKey(GraphSONTokens.VALUE));
-            JArray listAsJSON = (JArray)listWithTypeAsJson[GraphSONTokens.VALUE];
-            Assert.NotNull(listAsJSON);
-            Assert.AreEqual(3, listAsJSON.Count());
+            Assert.True(listWithTypeAsJson.ContainsKey(GraphSonTokens.Type));
+            Assert.AreEqual(GraphSonTokens.TypeList, listWithTypeAsJson[GraphSonTokens.Type].Value<string>());
+            Assert.True(listWithTypeAsJson.ContainsKey(GraphSonTokens.Value));
+            var listAsJson = (JArray)listWithTypeAsJson[GraphSonTokens.Value];
+            Assert.NotNull(listAsJson);
+            Assert.AreEqual(3, listAsJson.Count());
 
-            for (int ix = 0; ix < listAsJSON.Count(); ix++)
+            for (int ix = 0; ix < listAsJson.Count(); ix++)
             {
-                IDictionary<string, JToken> valueAsJson = (JObject)listAsJSON[ix];
+                IDictionary<string, JToken> valueAsJson = (JObject)listAsJson[ix];
                 Assert.NotNull(valueAsJson);
-                Assert.True(valueAsJson.ContainsKey(GraphSONTokens.TYPE));
-                Assert.AreEqual(GraphSONTokens.TYPE_STRING, valueAsJson[GraphSONTokens.TYPE].Value<string>());
-                Assert.True(valueAsJson.ContainsKey(GraphSONTokens.VALUE));
-                Assert.AreEqual("this", valueAsJson[GraphSONTokens.VALUE].Value<string>());
+                Assert.True(valueAsJson.ContainsKey(GraphSonTokens.Type));
+                Assert.AreEqual(GraphSonTokens.TypeString, valueAsJson[GraphSonTokens.Type].Value<string>());
+                Assert.True(valueAsJson.ContainsKey(GraphSonTokens.Value));
+                Assert.AreEqual("this", valueAsJson[GraphSonTokens.Value].Value<string>());
             }
         }
 
         [Test]
-        public void jsonFromElementVertexBooleanListPropertiesNoKeysWithTypes()
+        public void JsonFromElementVertexBooleanListPropertiesNoKeysWithTypes()
         {
-            Vertex v = this.graph.addVertex(1);
-            List<bool> list = new List<bool>();
-            list.Add(true);
-            list.Add(true);
-            list.Add(true);
+            IVertex v = _graph.AddVertex(1);
+            var list = new List<bool> {true, true, true};
 
-            v.setProperty("keyList", list);
+            v.SetProperty("keyList", list);
 
-            IDictionary<string, JToken> json = GraphSONUtility.jsonFromElement(v, null, GraphSONMode.EXTENDED);
+            IDictionary<string, JToken> json = GraphSonUtility.JsonFromElement(v, null, GraphSonMode.EXTENDED);
 
             Assert.NotNull(json);
-            Assert.True(json.ContainsKey(GraphSONTokens._ID));
-            Assert.AreEqual(1, json[GraphSONTokens._ID].Value<int>());
+            Assert.True(json.ContainsKey(GraphSonTokens.Id));
+            Assert.AreEqual(1, json[GraphSonTokens.Id].Value<int>());
             Assert.True(json.ContainsKey("keyList"));
 
             IDictionary<string, JToken> listWithTypeAsJson = (JObject)json["keyList"];
             Assert.NotNull(listWithTypeAsJson);
-            Assert.True(listWithTypeAsJson.ContainsKey(GraphSONTokens.TYPE));
-            Assert.AreEqual(GraphSONTokens.TYPE_LIST, listWithTypeAsJson[GraphSONTokens.TYPE].Value<string>());
-            Assert.True(listWithTypeAsJson.ContainsKey(GraphSONTokens.VALUE));
-            JArray listAsJSON = (JArray)listWithTypeAsJson[GraphSONTokens.VALUE];
-            Assert.NotNull(listAsJSON);
-            Assert.AreEqual(3, listAsJSON.Count());
+            Assert.True(listWithTypeAsJson.ContainsKey(GraphSonTokens.Type));
+            Assert.AreEqual(GraphSonTokens.TypeList, listWithTypeAsJson[GraphSonTokens.Type].Value<string>());
+            Assert.True(listWithTypeAsJson.ContainsKey(GraphSonTokens.Value));
+            var listAsJson = (JArray)listWithTypeAsJson[GraphSonTokens.Value];
+            Assert.NotNull(listAsJson);
+            Assert.AreEqual(3, listAsJson.Count());
 
-            for (int ix = 0; ix < listAsJSON.Count(); ix++)
+            for (int ix = 0; ix < listAsJson.Count(); ix++)
             {
-                IDictionary<string, JToken> valueAsJson = (JObject)listAsJSON[ix];
+                IDictionary<string, JToken> valueAsJson = (JObject)listAsJson[ix];
                 Assert.NotNull(valueAsJson);
-                Assert.True(valueAsJson.ContainsKey(GraphSONTokens.TYPE));
-                Assert.AreEqual(GraphSONTokens.TYPE_BOOLEAN, valueAsJson[GraphSONTokens.TYPE].Value<string>());
-                Assert.True(valueAsJson.ContainsKey(GraphSONTokens.VALUE));
-                Assert.AreEqual(true, valueAsJson[GraphSONTokens.VALUE].Value<bool>());
+                Assert.True(valueAsJson.ContainsKey(GraphSonTokens.Type));
+                Assert.AreEqual(GraphSonTokens.TypeBoolean, valueAsJson[GraphSonTokens.Type].Value<string>());
+                Assert.True(valueAsJson.ContainsKey(GraphSonTokens.Value));
+                Assert.AreEqual(true, valueAsJson[GraphSonTokens.Value].Value<bool>());
             }
         }
 
         [Test]
-        public void jsonFromElementVertexLongListPropertiesNoKeysWithTypes()
+        public void JsonFromElementVertexLongListPropertiesNoKeysWithTypes()
         {
-            Vertex v = this.graph.addVertex(1);
-            List<long> list = new List<long>();
-            list.Add(1000L);
-            list.Add(1000L);
-            list.Add(1000L);
+            IVertex v = _graph.AddVertex(1);
+            var list = new List<long> {1000L, 1000L, 1000L};
 
-            v.setProperty("keyList", list);
+            v.SetProperty("keyList", list);
 
-            IDictionary<string, JToken> json = GraphSONUtility.jsonFromElement(v, null, GraphSONMode.EXTENDED);
+            IDictionary<string, JToken> json = GraphSonUtility.JsonFromElement(v, null, GraphSonMode.EXTENDED);
 
             Assert.NotNull(json);
-            Assert.True(json.ContainsKey(GraphSONTokens._ID));
-            Assert.AreEqual(1, json[GraphSONTokens._ID].Value<int>());
+            Assert.True(json.ContainsKey(GraphSonTokens.Id));
+            Assert.AreEqual(1, json[GraphSonTokens.Id].Value<int>());
             Assert.True(json.ContainsKey("keyList"));
 
             IDictionary<string, JToken> listWithTypeAsJson = (JObject)json["keyList"];
             Assert.NotNull(listWithTypeAsJson);
-            Assert.True(listWithTypeAsJson.ContainsKey(GraphSONTokens.TYPE));
-            Assert.AreEqual(GraphSONTokens.TYPE_LIST, listWithTypeAsJson[GraphSONTokens.TYPE].Value<string>());
-            Assert.True(listWithTypeAsJson.ContainsKey(GraphSONTokens.VALUE));
-            JArray listAsJSON = (JArray)listWithTypeAsJson[GraphSONTokens.VALUE];
-            Assert.NotNull(listAsJSON);
-            Assert.AreEqual(3, listAsJSON.Count());
+            Assert.True(listWithTypeAsJson.ContainsKey(GraphSonTokens.Type));
+            Assert.AreEqual(GraphSonTokens.TypeList, listWithTypeAsJson[GraphSonTokens.Type].Value<string>());
+            Assert.True(listWithTypeAsJson.ContainsKey(GraphSonTokens.Value));
+            var listAsJson = (JArray)listWithTypeAsJson[GraphSonTokens.Value];
+            Assert.NotNull(listAsJson);
+            Assert.AreEqual(3, listAsJson.Count());
 
-            for (int ix = 0; ix < listAsJSON.Count(); ix++)
+            for (int ix = 0; ix < listAsJson.Count(); ix++)
             {
-                IDictionary<string, JToken> valueAsJson = (JObject)listAsJSON[ix];
+                IDictionary<string, JToken> valueAsJson = (JObject)listAsJson[ix];
                 Assert.NotNull(valueAsJson);
-                Assert.True(valueAsJson.ContainsKey(GraphSONTokens.TYPE));
-                Assert.AreEqual(GraphSONTokens.TYPE_LONG, valueAsJson[GraphSONTokens.TYPE].Value<string>());
-                Assert.True(valueAsJson.ContainsKey(GraphSONTokens.VALUE));
-                Assert.AreEqual(1000L, valueAsJson[GraphSONTokens.VALUE].Value<long>());
+                Assert.True(valueAsJson.ContainsKey(GraphSonTokens.Type));
+                Assert.AreEqual(GraphSonTokens.TypeLong, valueAsJson[GraphSonTokens.Type].Value<string>());
+                Assert.True(valueAsJson.ContainsKey(GraphSonTokens.Value));
+                Assert.AreEqual(1000L, valueAsJson[GraphSonTokens.Value].Value<long>());
             }
         }
 
         [Test]
-        public void jsonFromElementVertexIntListPropertiesNoKeysWithTypes()
+        public void JsonFromElementVertexIntListPropertiesNoKeysWithTypes()
         {
-            Vertex v = this.graph.addVertex(1);
-            List<int> list = new List<int>();
-            list.Add(1);
-            list.Add(1);
-            list.Add(1);
+            IVertex v = _graph.AddVertex(1);
+            var list = new List<int> {1, 1, 1};
 
-            v.setProperty("keyList", list);
+            v.SetProperty("keyList", list);
 
-            IDictionary<string, JToken> json = GraphSONUtility.jsonFromElement(v, null, GraphSONMode.EXTENDED);
+            IDictionary<string, JToken> json = GraphSonUtility.JsonFromElement(v, null, GraphSonMode.EXTENDED);
 
             Assert.NotNull(json);
-            Assert.True(json.ContainsKey(GraphSONTokens._ID));
-            Assert.AreEqual(1, json[GraphSONTokens._ID].Value<int>());
+            Assert.True(json.ContainsKey(GraphSonTokens.Id));
+            Assert.AreEqual(1, json[GraphSonTokens.Id].Value<int>());
             Assert.True(json.ContainsKey("keyList"));
 
             IDictionary<string, JToken> listWithTypeAsJson = (JObject)json["keyList"];
             Assert.NotNull(listWithTypeAsJson);
-            Assert.True(listWithTypeAsJson.ContainsKey(GraphSONTokens.TYPE));
-            Assert.AreEqual(GraphSONTokens.TYPE_LIST, listWithTypeAsJson[GraphSONTokens.TYPE].Value<string>());
-            Assert.True(listWithTypeAsJson.ContainsKey(GraphSONTokens.VALUE));
-            JArray listAsJSON = (JArray)listWithTypeAsJson[GraphSONTokens.VALUE];
-            Assert.NotNull(listAsJSON);
-            Assert.AreEqual(3, listAsJSON.Count());
+            Assert.True(listWithTypeAsJson.ContainsKey(GraphSonTokens.Type));
+            Assert.AreEqual(GraphSonTokens.TypeList, listWithTypeAsJson[GraphSonTokens.Type].Value<string>());
+            Assert.True(listWithTypeAsJson.ContainsKey(GraphSonTokens.Value));
+            var listAsJson = (JArray)listWithTypeAsJson[GraphSonTokens.Value];
+            Assert.NotNull(listAsJson);
+            Assert.AreEqual(3, listAsJson.Count());
 
-            for (int ix = 0; ix < listAsJSON.Count(); ix++)
+            for (int ix = 0; ix < listAsJson.Count(); ix++)
             {
-                IDictionary<string, JToken> valueAsJson = (JObject)listAsJSON[ix];
+                IDictionary<string, JToken> valueAsJson = (JObject)listAsJson[ix];
                 Assert.NotNull(valueAsJson);
-                Assert.True(valueAsJson.ContainsKey(GraphSONTokens.TYPE));
+                Assert.True(valueAsJson.ContainsKey(GraphSonTokens.Type));
                 //Porting Note: JSON.NET parse integers as longs
-                Assert.AreEqual(GraphSONTokens.TYPE_LONG, valueAsJson[GraphSONTokens.TYPE].Value<string>());
-                Assert.True(valueAsJson.ContainsKey(GraphSONTokens.VALUE));
-                Assert.AreEqual(1, valueAsJson[GraphSONTokens.VALUE].Value<int>());
+                Assert.AreEqual(GraphSonTokens.TypeLong, valueAsJson[GraphSonTokens.Type].Value<string>());
+                Assert.True(valueAsJson.ContainsKey(GraphSonTokens.Value));
+                Assert.AreEqual(1, valueAsJson[GraphSonTokens.Value].Value<int>());
             }
         }
 
         [Test]
-        public void jsonFromElementVertexListOfListPropertiesNoKeysWithTypes()
+        public void JsonFromElementVertexListOfListPropertiesNoKeysWithTypes()
         {
-            Vertex v = this.graph.addVertex(1);
-            List<int> list = new List<int>();
-            list.Add(1);
-            list.Add(1);
-            list.Add(1);
+            IVertex v = _graph.AddVertex(1);
+            var list = new List<int> {1, 1, 1};
 
-            List<List<int>> listList = new List<List<int>>();
-            listList.Add(list);
+            var listList = new List<List<int>> {list};
 
-            v.setProperty("keyList", listList);
+            v.SetProperty("keyList", listList);
 
-            IDictionary<string, JToken> json = GraphSONUtility.jsonFromElement(v, null, GraphSONMode.EXTENDED);
+            IDictionary<string, JToken> json = GraphSonUtility.JsonFromElement(v, null, GraphSonMode.EXTENDED);
 
             Assert.NotNull(json);
-            Assert.True(json.ContainsKey(GraphSONTokens._ID));
-            Assert.AreEqual(1, json[GraphSONTokens._ID].Value<int>());
+            Assert.True(json.ContainsKey(GraphSonTokens.Id));
+            Assert.AreEqual(1, json[GraphSonTokens.Id].Value<int>());
             Assert.True(json.ContainsKey("keyList"));
 
             IDictionary<string, JToken> listWithTypeAsJson = (JObject)json["keyList"];
             Assert.NotNull(listWithTypeAsJson);
-            Assert.True(listWithTypeAsJson.ContainsKey(GraphSONTokens.TYPE));
-            Assert.AreEqual(GraphSONTokens.TYPE_LIST, listWithTypeAsJson[GraphSONTokens.TYPE].Value<string>());
-            Assert.True(listWithTypeAsJson.ContainsKey(GraphSONTokens.VALUE));
-            JArray listAsJSON = (JArray)listWithTypeAsJson[GraphSONTokens.VALUE][0][GraphSONTokens.VALUE];
-            Assert.NotNull(listAsJSON);
-            Assert.AreEqual(3, listAsJSON.Count());
+            Assert.True(listWithTypeAsJson.ContainsKey(GraphSonTokens.Type));
+            Assert.AreEqual(GraphSonTokens.TypeList, listWithTypeAsJson[GraphSonTokens.Type].Value<string>());
+            Assert.True(listWithTypeAsJson.ContainsKey(GraphSonTokens.Value));
+            var listAsJson = (JArray)listWithTypeAsJson[GraphSonTokens.Value][0][GraphSonTokens.Value];
+            Assert.NotNull(listAsJson);
+            Assert.AreEqual(3, listAsJson.Count());
 
-            for (int ix = 0; ix < listAsJSON.Count(); ix++)
+            for (int ix = 0; ix < listAsJson.Count(); ix++)
             {
-                IDictionary<string, JToken> valueAsJson = (JObject)listAsJSON[ix];
+                IDictionary<string, JToken> valueAsJson = (JObject)listAsJson[ix];
                 Assert.NotNull(valueAsJson);
-                Assert.True(valueAsJson.ContainsKey(GraphSONTokens.TYPE));
+                Assert.True(valueAsJson.ContainsKey(GraphSonTokens.Type));
                 //Porting Note: JSON.NET parse integers as longs
-                Assert.AreEqual(GraphSONTokens.TYPE_LONG, valueAsJson[GraphSONTokens.TYPE].Value<string>());
-                Assert.True(valueAsJson.ContainsKey(GraphSONTokens.VALUE));
-                Assert.AreEqual(1, valueAsJson[GraphSONTokens.VALUE].Value<long>());
+                Assert.AreEqual(GraphSonTokens.TypeLong, valueAsJson[GraphSonTokens.Type].Value<string>());
+                Assert.True(valueAsJson.ContainsKey(GraphSonTokens.Value));
+                Assert.AreEqual(1, valueAsJson[GraphSonTokens.Value].Value<long>());
             }
         }
 
         [Test]
-        public void jsonFromElementVertexMapPropertiesNoKeysWithTypes()
+        public void JsonFromElementVertexMapPropertiesNoKeysWithTypes()
         {
-            Vertex v = this.graph.addVertex(1);
+            IVertex v = _graph.AddVertex(1);
 
             var map = new Dictionary<string, object>();
-            map.put("this", "some");
-            map.put("that", 1);
+            map.Put("this", "some");
+            map.Put("that", 1);
 
-            v.setProperty("keyMap", map);
+            v.SetProperty("keyMap", map);
 
-            IDictionary<string, JToken> json = GraphSONUtility.jsonFromElement(v, null, GraphSONMode.EXTENDED);
+            IDictionary<string, JToken> json = GraphSonUtility.JsonFromElement(v, null, GraphSonMode.EXTENDED);
 
             Assert.NotNull(json);
-            Assert.True(json.ContainsKey(GraphSONTokens._ID));
-            Assert.AreEqual(1, json[GraphSONTokens._ID].Value<int>());
+            Assert.True(json.ContainsKey(GraphSonTokens.Id));
+            Assert.AreEqual(1, json[GraphSonTokens.Id].Value<int>());
             Assert.True(json.ContainsKey("keyMap"));
 
-            IDictionary<string, JToken> mapWithTypeAsJSON = (JObject)json["keyMap"];
-            Assert.NotNull(mapWithTypeAsJSON);
-            Assert.True(mapWithTypeAsJSON.ContainsKey(GraphSONTokens.TYPE));
-            Assert.AreEqual(GraphSONTokens.TYPE_MAP, mapWithTypeAsJSON[GraphSONTokens.TYPE].Value<string>());
+            IDictionary<string, JToken> mapWithTypeAsJson = (JObject)json["keyMap"];
+            Assert.NotNull(mapWithTypeAsJson);
+            Assert.True(mapWithTypeAsJson.ContainsKey(GraphSonTokens.Type));
+            Assert.AreEqual(GraphSonTokens.TypeMap, mapWithTypeAsJson[GraphSonTokens.Type].Value<string>());
 
-            Assert.True(mapWithTypeAsJSON.ContainsKey(GraphSONTokens.VALUE));
-            IDictionary<string, JToken> mapAsJSON = (JObject)mapWithTypeAsJSON[GraphSONTokens.VALUE];
+            Assert.True(mapWithTypeAsJson.ContainsKey(GraphSonTokens.Value));
+            IDictionary<string, JToken> mapAsJson = (JObject)mapWithTypeAsJson[GraphSonTokens.Value];
 
-            Assert.True(mapAsJSON.ContainsKey("this"));
-            IDictionary<string, JToken> thisAsJson = (JObject)mapAsJSON["this"];
-            Assert.True(thisAsJson.ContainsKey(GraphSONTokens.TYPE));
-            Assert.AreEqual(GraphSONTokens.TYPE_STRING, thisAsJson[GraphSONTokens.TYPE].Value<string>());
-            Assert.True(thisAsJson.ContainsKey(GraphSONTokens.VALUE));
-            Assert.AreEqual("some", thisAsJson[GraphSONTokens.VALUE].Value<string>());
+            Assert.True(mapAsJson.ContainsKey("this"));
+            IDictionary<string, JToken> thisAsJson = (JObject)mapAsJson["this"];
+            Assert.True(thisAsJson.ContainsKey(GraphSonTokens.Type));
+            Assert.AreEqual(GraphSonTokens.TypeString, thisAsJson[GraphSonTokens.Type].Value<string>());
+            Assert.True(thisAsJson.ContainsKey(GraphSonTokens.Value));
+            Assert.AreEqual("some", thisAsJson[GraphSonTokens.Value].Value<string>());
 
-            Assert.True(mapAsJSON.ContainsKey("that"));
-            IDictionary<string, JToken> thatAsJson = (JObject)mapAsJSON["that"];
-            Assert.True(thatAsJson.ContainsKey(GraphSONTokens.TYPE));
-            Assert.AreEqual(GraphSONTokens.TYPE_INTEGER, thatAsJson[GraphSONTokens.TYPE].Value<string>());
-            Assert.True(thatAsJson.ContainsKey(GraphSONTokens.VALUE));
-            Assert.AreEqual(1, thatAsJson[GraphSONTokens.VALUE].Value<int>());
+            Assert.True(mapAsJson.ContainsKey("that"));
+            IDictionary<string, JToken> thatAsJson = (JObject)mapAsJson["that"];
+            Assert.True(thatAsJson.ContainsKey(GraphSonTokens.Type));
+            Assert.AreEqual(GraphSonTokens.TypeInteger, thatAsJson[GraphSonTokens.Type].Value<string>());
+            Assert.True(thatAsJson.ContainsKey(GraphSonTokens.Value));
+            Assert.AreEqual(1, thatAsJson[GraphSonTokens.Value].Value<int>());
         }
 
         [Test]
-        public void jsonFromElementNullsNoKeysNoTypes()
+        public void JsonFromElementNullsNoKeysNoTypes()
         {
-            Graph g = new TinkerGraph();
-            Vertex v = g.addVertex(1);
+            IGraph g = new TinkerGraph();
+            IVertex v = g.AddVertex(1);
             //v.setProperty("key", null);
 
             var map = new Dictionary<string, object>();
-            map.put("innerkey", null);
+            map.Put("innerkey", null);
 
-            List<String> innerList = new List<string>();
-            innerList.Add(null);
-            innerList.Add("innerstring");
-            map.put("list", innerList);
+            var innerList = new List<string> {null, "innerstring"};
+            map.Put("list", innerList);
 
-            v.setProperty("keyMap", map);
+            v.SetProperty("keyMap", map);
 
-            List<string> list = new List<string>();
-            list.Add(null);
-            list.Add("string");
-            v.setProperty("keyList", list);
+            var list = new List<string> {null, "string"};
+            v.SetProperty("keyList", list);
 
-            IDictionary<string, JToken> json = GraphSONUtility.jsonFromElement(v, null, GraphSONMode.NORMAL);
+            IDictionary<string, JToken> json = GraphSonUtility.JsonFromElement(v, null, GraphSonMode.NORMAL);
 
             Assert.NotNull(json);
             Assert.True(json["key"] == null);
@@ -910,257 +877,245 @@ namespace Frontenac.Blueprints.Util.IO.GraphSON
             Assert.NotNull(jsonMap);
             Assert.True(((JValue)jsonMap["innerkey"]).Value == null);
 
-            JArray jsonInnerArray = (JArray)jsonMap["list"];
+            var jsonInnerArray = (JArray)jsonMap["list"];
             Assert.NotNull(jsonInnerArray);
             Assert.True(((JValue)jsonInnerArray[0]).Value == null);
-            Assert.AreEqual("innerstring", jsonInnerArray.get(1).Value<string>());
+            Assert.AreEqual("innerstring", jsonInnerArray.Get(1).Value<string>());
 
-            JArray jsonArray = (JArray)json["keyList"];
+            var jsonArray = (JArray)json["keyList"];
             Assert.NotNull(jsonArray);
             Assert.True(((JValue)jsonArray[0]).Value == null);
-            Assert.AreEqual("string", jsonArray.get(1).Value<string>());
+            Assert.AreEqual("string", jsonArray.Get(1).Value<string>());
         }
 
         [Test]
-        public void jsonFromElementNullsNoKeysWithTypes()
+        public void JsonFromElementNullsNoKeysWithTypes()
         {
-            Graph g = new TinkerGraph();
-            Vertex v = g.addVertex(1);
+            IGraph g = new TinkerGraph();
+            IVertex v = g.AddVertex(1);
             // v.setProperty("key", null);
 
             var map = new Dictionary<string, object>();
-            map.put("innerkey", null);
+            map.Put("innerkey", null);
 
-            List<string> innerList = new List<string>();
-            innerList.Add(null);
-            innerList.Add("innerstring");
-            map.put("list", innerList);
+            var innerList = new List<string> {null, "innerstring"};
+            map.Put("list", innerList);
 
-            v.setProperty("keyMap", map);
+            v.SetProperty("keyMap", map);
 
-            List<string> list = new List<string>();
-            list.Add(null);
-            list.Add("string");
-            v.setProperty("keyList", list);
+            var list = new List<string> {null, "string"};
+            v.SetProperty("keyList", list);
 
-            IDictionary<string, JToken> json = GraphSONUtility.jsonFromElement(v, null, GraphSONMode.EXTENDED);
+            IDictionary<string, JToken> json = GraphSonUtility.JsonFromElement(v, null, GraphSonMode.EXTENDED);
 
             Assert.NotNull(json);
-            IDictionary<string, JToken> jsonObjectKey = (JObject)json["key"];
             // Assert.assertTrue(jsonObjectKey.isNull(GraphSONTokens.VALUE));
-            // Assert.assertEquals(GraphSONTokens.TYPE_UNKNOWN, jsonObjectKey.optString(GraphSONTokens.TYPE));
+            // Assert.assertEquals(GraphSONTokens.TYPE_UNKNOWN, jsonObjectKey.optString(GraphSONTokens.Type));
 
-            IDictionary<string, JToken> jsonMap = (JObject)json["keyMap"][GraphSONTokens.VALUE];
+            IDictionary<string, JToken> jsonMap = (JObject)json["keyMap"][GraphSonTokens.Value];
             Assert.NotNull(jsonMap);
             IDictionary<string, JToken> jsonObjectMap = (JObject)jsonMap["innerkey"];
-            Assert.True(((JValue)jsonObjectMap[GraphSONTokens.VALUE]).Value == null);
-            Assert.AreEqual(GraphSONTokens.TYPE_UNKNOWN, jsonObjectMap[GraphSONTokens.TYPE].Value<string>());
+            Assert.True(((JValue)jsonObjectMap[GraphSonTokens.Value]).Value == null);
+            Assert.AreEqual(GraphSonTokens.TypeUnknown, jsonObjectMap[GraphSonTokens.Type].Value<string>());
 
-            JArray jsonInnerArray = (JArray)jsonMap["list"][GraphSONTokens.VALUE];
+            var jsonInnerArray = (JArray)jsonMap["list"][GraphSonTokens.Value];
             Assert.NotNull(jsonInnerArray);
             IDictionary<string, JToken> jsonObjectInnerListFirst = (JObject)jsonInnerArray[0];
-            Assert.True(((JValue)jsonObjectInnerListFirst[GraphSONTokens.VALUE]).Value == null);
-            Assert.AreEqual(GraphSONTokens.TYPE_UNKNOWN, jsonObjectInnerListFirst[GraphSONTokens.TYPE].Value<string>());
+            Assert.True(((JValue)jsonObjectInnerListFirst[GraphSonTokens.Value]).Value == null);
+            Assert.AreEqual(GraphSonTokens.TypeUnknown, jsonObjectInnerListFirst[GraphSonTokens.Type].Value<string>());
 
-            JArray jsonArray = (JArray)json["keyList"][GraphSONTokens.VALUE];
+            var jsonArray = (JArray)json["keyList"][GraphSonTokens.Value];
             Assert.NotNull(jsonArray);
             IDictionary<string, JToken> jsonObjectListFirst = (JObject)jsonArray[0];
-            Assert.True(((JValue)jsonObjectListFirst[GraphSONTokens.VALUE]).Value == null);
-            Assert.AreEqual(GraphSONTokens.TYPE_UNKNOWN, jsonObjectListFirst[GraphSONTokens.TYPE].Value<string>());
+            Assert.True(((JValue)jsonObjectListFirst[GraphSonTokens.Value]).Value == null);
+            Assert.AreEqual(GraphSonTokens.TypeUnknown, jsonObjectListFirst[GraphSonTokens.Type].Value<string>());
         }
 
         [Test]
-        public void vertexFromJsonValid()
+        public void VertexFromJsonValid()
         {
-            Graph g = new TinkerGraph();
-            ElementFactory factory = new GraphElementFactory(g);
+            IGraph g = new TinkerGraph();
+            IElementFactory factory = new GraphElementFactory(g);
 
-            Vertex v = GraphSONUtility.vertexFromJson((JObject)JsonConvert.DeserializeObject(vertexJson1), factory, GraphSONMode.NORMAL, null);
+            IVertex v = GraphSonUtility.VertexFromJson((JObject)JsonConvert.DeserializeObject(VertexJson1), factory, GraphSonMode.NORMAL, null);
 
-            Assert.AreSame(v, g.getVertex(1));
+            Assert.AreSame(v, g.GetVertex(1));
 
             // tinkergraph converts id to string
-            Assert.AreEqual("1", v.getId());
-            Assert.AreEqual("marko", v.getProperty("name"));
-            Assert.AreEqual(29, v.getProperty("age"));
+            Assert.AreEqual("1", v.GetId());
+            Assert.AreEqual("marko", v.GetProperty("name"));
+            Assert.AreEqual(29, v.GetProperty("age"));
         }
 
         [Test]
-        public void vertexFromJsonStringValid()
+        public void VertexFromJsonStringValid()
         {
-            Graph g = new TinkerGraph();
-            ElementFactory factory = new GraphElementFactory(g);
+            IGraph g = new TinkerGraph();
+            IElementFactory factory = new GraphElementFactory(g);
 
-            Vertex v = GraphSONUtility.vertexFromJson(vertexJson1, factory, GraphSONMode.NORMAL, null);
+            IVertex v = GraphSonUtility.VertexFromJson(VertexJson1, factory, GraphSonMode.NORMAL, null);
 
-            Assert.AreSame(v, g.getVertex(1));
+            Assert.AreSame(v, g.GetVertex(1));
 
             // tinkergraph converts id to string
-            Assert.AreEqual("1", v.getId());
-            Assert.AreEqual("marko", v.getProperty("name"));
-            Assert.AreEqual(29, v.getProperty("age"));
+            Assert.AreEqual("1", v.GetId());
+            Assert.AreEqual("marko", v.GetProperty("name"));
+            Assert.AreEqual(29, v.GetProperty("age"));
         }
 
         [Test]
-        public void vertexFromJsonInputStreamValid()
+        public void VertexFromJsonInputStreamValid()
         {
-            Graph g = new TinkerGraph();
-            ElementFactory factory = new GraphElementFactory(g);
+            IGraph g = new TinkerGraph();
+            IElementFactory factory = new GraphElementFactory(g);
 
-            Vertex v = GraphSONUtility.vertexFromJson(inputStreamVertexJson1, factory, GraphSONMode.NORMAL, null);
+            IVertex v = GraphSonUtility.VertexFromJson(_inputStreamVertexJson1, factory, GraphSonMode.NORMAL, null);
 
-            Assert.AreSame(v, g.getVertex(1));
+            Assert.AreSame(v, g.GetVertex(1));
 
             // tinkergraph converts id to string
-            Assert.AreEqual("1", v.getId());
-            Assert.AreEqual("marko", v.getProperty("name"));
-            Assert.AreEqual(29, v.getProperty("age"));
+            Assert.AreEqual("1", v.GetId());
+            Assert.AreEqual("marko", v.GetProperty("name"));
+            Assert.AreEqual(29, v.GetProperty("age"));
         }
 
         [Test]
-        public void vertexFromJsonIgnoreKeyValid()
+        public void VertexFromJsonIgnoreKeyValid()
         {
-            Graph g = new TinkerGraph();
-            ElementFactory factory = new GraphElementFactory(g);
+            IGraph g = new TinkerGraph();
+            IElementFactory factory = new GraphElementFactory(g);
 
-            HashSet<string> ignoreAge = new HashSet<string>();
-            ignoreAge.Add("age");
+            var ignoreAge = new HashSet<string> {"age"};
             ElementPropertyConfig config = ElementPropertyConfig.ExcludeProperties(ignoreAge, null);
-            GraphSONUtility utility = new GraphSONUtility(GraphSONMode.NORMAL, factory, config);
-            Vertex v = utility.vertexFromJson((JObject)JsonConvert.DeserializeObject(vertexJson1));
+            var utility = new GraphSonUtility(GraphSonMode.NORMAL, factory, config);
+            IVertex v = utility.VertexFromJson((JObject)JsonConvert.DeserializeObject(VertexJson1));
 
-            Assert.AreSame(v, g.getVertex(1));
+            Assert.AreSame(v, g.GetVertex(1));
 
             // tinkergraph converts id to string
-            Assert.AreEqual("1", v.getId());
-            Assert.AreEqual("marko", v.getProperty("name"));
-            Assert.Null(v.getProperty("age"));
+            Assert.AreEqual("1", v.GetId());
+            Assert.AreEqual("marko", v.GetProperty("name"));
+            Assert.Null(v.GetProperty("age"));
         }
 
         [Test]
-        public void edgeFromJsonValid()
+        public void EdgeFromJsonValid()
         {
-            Graph g = new TinkerGraph();
-            ElementFactory factory = new GraphElementFactory(g);
+            IGraph g = new TinkerGraph();
+            IElementFactory factory = new GraphElementFactory(g);
 
-            Vertex v1 = GraphSONUtility.vertexFromJson((JObject)JsonConvert.DeserializeObject(vertexJson1), factory, GraphSONMode.NORMAL, null);
-            Vertex v2 = GraphSONUtility.vertexFromJson((JObject)JsonConvert.DeserializeObject(vertexJson2), factory, GraphSONMode.NORMAL, null);
-            Edge e = GraphSONUtility.edgeFromJson((JObject)JsonConvert.DeserializeObject(edgeJson), v1, v2, factory, GraphSONMode.NORMAL, null);
+            IVertex v1 = GraphSonUtility.VertexFromJson((JObject)JsonConvert.DeserializeObject(VertexJson1), factory, GraphSonMode.NORMAL, null);
+            IVertex v2 = GraphSonUtility.VertexFromJson((JObject)JsonConvert.DeserializeObject(VertexJson2), factory, GraphSonMode.NORMAL, null);
+            IEdge e = GraphSonUtility.EdgeFromJson((JObject)JsonConvert.DeserializeObject(EdgeJson), v1, v2, factory, GraphSonMode.NORMAL, null);
 
-            Assert.AreSame(v1, g.getVertex(1));
-            Assert.AreSame(v2, g.getVertex(2));
-            Assert.AreSame(e, g.getEdge(7));
+            Assert.AreSame(v1, g.GetVertex(1));
+            Assert.AreSame(v2, g.GetVertex(2));
+            Assert.AreSame(e, g.GetEdge(7));
 
             // tinkergraph converts id to string
-            Assert.AreEqual("7", e.getId());
-            Assert.AreEqual(0.5d, e.getProperty("weight"));
-            Assert.AreEqual("knows", e.getLabel());
-            Assert.AreEqual(v1, e.getVertex(Direction.OUT));
-            Assert.AreEqual(v2, e.getVertex(Direction.IN));
+            Assert.AreEqual("7", e.GetId());
+            Assert.AreEqual(0.5d, e.GetProperty("weight"));
+            Assert.AreEqual("knows", e.GetLabel());
+            Assert.AreEqual(v1, e.GetVertex(Direction.Out));
+            Assert.AreEqual(v2, e.GetVertex(Direction.In));
         }
 
         [Test]
-        public void edgeFromJsonStringValid()
+        public void EdgeFromJsonStringValid()
         {
-            Graph g = new TinkerGraph();
-            ElementFactory factory = new GraphElementFactory(g);
+            IGraph g = new TinkerGraph();
+            IElementFactory factory = new GraphElementFactory(g);
 
-            Vertex v1 = GraphSONUtility.vertexFromJson(vertexJson1, factory, GraphSONMode.NORMAL, null);
-            Vertex v2 = GraphSONUtility.vertexFromJson(vertexJson2, factory, GraphSONMode.NORMAL, null);
-            Edge e = GraphSONUtility.edgeFromJson(edgeJson, v1, v2, factory, GraphSONMode.NORMAL, null);
+            IVertex v1 = GraphSonUtility.VertexFromJson(VertexJson1, factory, GraphSonMode.NORMAL, null);
+            IVertex v2 = GraphSonUtility.VertexFromJson(VertexJson2, factory, GraphSonMode.NORMAL, null);
+            IEdge e = GraphSonUtility.EdgeFromJson(EdgeJson, v1, v2, factory, GraphSonMode.NORMAL, null);
 
-            Assert.AreSame(v1, g.getVertex(1));
-            Assert.AreSame(v2, g.getVertex(2));
-            Assert.AreSame(e, g.getEdge(7));
+            Assert.AreSame(v1, g.GetVertex(1));
+            Assert.AreSame(v2, g.GetVertex(2));
+            Assert.AreSame(e, g.GetEdge(7));
 
             // tinkergraph converts id to string
-            Assert.AreEqual("7", e.getId());
-            Assert.AreEqual(0.5d, e.getProperty("weight"));
-            Assert.AreEqual("knows", e.getLabel());
-            Assert.AreEqual(v1, e.getVertex(Direction.OUT));
-            Assert.AreEqual(v2, e.getVertex(Direction.IN));
+            Assert.AreEqual("7", e.GetId());
+            Assert.AreEqual(0.5d, e.GetProperty("weight"));
+            Assert.AreEqual("knows", e.GetLabel());
+            Assert.AreEqual(v1, e.GetVertex(Direction.Out));
+            Assert.AreEqual(v2, e.GetVertex(Direction.In));
         }
 
         [Test]
-        public void edgeFromJsonIgnoreWeightValid()
+        public void EdgeFromJsonIgnoreWeightValid()
         {
-            Graph g = new TinkerGraph();
-            ElementFactory factory = new GraphElementFactory(g);
+            IGraph g = new TinkerGraph();
+            IElementFactory factory = new GraphElementFactory(g);
 
-            Vertex v1 = GraphSONUtility.vertexFromJson((JObject)JsonConvert.DeserializeObject(vertexJson1), factory, GraphSONMode.NORMAL, null);
-            Vertex v2 = GraphSONUtility.vertexFromJson((JObject)JsonConvert.DeserializeObject(vertexJson2), factory, GraphSONMode.NORMAL, null);
+            IVertex v1 = GraphSonUtility.VertexFromJson((JObject)JsonConvert.DeserializeObject(VertexJson1), factory, GraphSonMode.NORMAL, null);
+            IVertex v2 = GraphSonUtility.VertexFromJson((JObject)JsonConvert.DeserializeObject(VertexJson2), factory, GraphSonMode.NORMAL, null);
 
-            HashSet<string> ignoreWeight = new HashSet<string>();
-            ignoreWeight.Add("weight");
+            var ignoreWeight = new HashSet<string> {"weight"};
             ElementPropertyConfig config = ElementPropertyConfig.ExcludeProperties(null, ignoreWeight);
-            GraphSONUtility utility = new GraphSONUtility(GraphSONMode.NORMAL, factory, config);
-            Edge e = utility.edgeFromJson((JObject)JsonConvert.DeserializeObject(edgeJson), v1, v2);
+            var utility = new GraphSonUtility(GraphSonMode.NORMAL, factory, config);
+            IEdge e = utility.EdgeFromJson((JObject)JsonConvert.DeserializeObject(EdgeJson), v1, v2);
 
-            Assert.AreSame(v1, g.getVertex(1));
-            Assert.AreSame(v2, g.getVertex(2));
-            Assert.AreSame(e, g.getEdge(7));
+            Assert.AreSame(v1, g.GetVertex(1));
+            Assert.AreSame(v2, g.GetVertex(2));
+            Assert.AreSame(e, g.GetEdge(7));
 
             // tinkergraph converts id to string
-            Assert.AreEqual("7", e.getId());
-            Assert.Null(e.getProperty("weight"));
-            Assert.AreEqual("knows", e.getLabel());
-            Assert.AreEqual(v1, e.getVertex(Direction.OUT));
-            Assert.AreEqual(v2, e.getVertex(Direction.IN));
+            Assert.AreEqual("7", e.GetId());
+            Assert.Null(e.GetProperty("weight"));
+            Assert.AreEqual("knows", e.GetLabel());
+            Assert.AreEqual(v1, e.GetVertex(Direction.Out));
+            Assert.AreEqual(v2, e.GetVertex(Direction.In));
         }
 
         [Test]
-        public void edgeFromJsonNormalLabelOrIdOnEdge()
+        public void EdgeFromJsonNormalLabelOrIdOnEdge()
         {
-            Graph g = new TinkerGraph();
-            ElementFactory factory = new GraphElementFactory(g);
+            IGraph g = new TinkerGraph();
+            IElementFactory factory = new GraphElementFactory(g);
 
-            Vertex v1 = GraphSONUtility.vertexFromJson((JObject)JsonConvert.DeserializeObject(vertexJson1), factory, GraphSONMode.NORMAL, null);
-            Vertex v2 = GraphSONUtility.vertexFromJson((JObject)JsonConvert.DeserializeObject(vertexJson2), factory, GraphSONMode.NORMAL, null);
-            Edge e = GraphSONUtility.edgeFromJson((JObject)JsonConvert.DeserializeObject(edgeJsonLight), v1, v2, factory, GraphSONMode.NORMAL, null);
+            IVertex v1 = GraphSonUtility.VertexFromJson((JObject)JsonConvert.DeserializeObject(VertexJson1), factory, GraphSonMode.NORMAL, null);
+            IVertex v2 = GraphSonUtility.VertexFromJson((JObject)JsonConvert.DeserializeObject(VertexJson2), factory, GraphSonMode.NORMAL, null);
+            IEdge e = GraphSonUtility.EdgeFromJson((JObject)JsonConvert.DeserializeObject(EdgeJsonLight), v1, v2, factory, GraphSonMode.NORMAL, null);
 
-            Assert.AreSame(v1, g.getVertex(1));
-            Assert.AreSame(v2, g.getVertex(2));
-            Assert.AreSame(e, g.getEdge(0));
+            Assert.AreSame(v1, g.GetVertex(1));
+            Assert.AreSame(v2, g.GetVertex(2));
+            Assert.AreSame(e, g.GetEdge(0));
         }
 
         [Test]
-        public void edgeFromJsonInputStreamCompactLabelOrIdOnEdge()
+        public void EdgeFromJsonInputStreamCompactLabelOrIdOnEdge()
         {
-            Graph g = new TinkerGraph();
-            ElementFactory factory = new GraphElementFactory(g);
+            IGraph g = new TinkerGraph();
+            IElementFactory factory = new GraphElementFactory(g);
 
-            Vertex v1 = GraphSONUtility.vertexFromJson((JObject)JsonConvert.DeserializeObject(vertexJson1), factory, GraphSONMode.COMPACT, null);
-            Vertex v2 = GraphSONUtility.vertexFromJson((JObject)JsonConvert.DeserializeObject(vertexJson2), factory, GraphSONMode.COMPACT, null);
-            Edge e = GraphSONUtility.edgeFromJson(inputStreamEdgeJsonLight, v1, v2, factory, GraphSONMode.COMPACT, null);
+            IVertex v1 = GraphSonUtility.VertexFromJson((JObject)JsonConvert.DeserializeObject(VertexJson1), factory, GraphSonMode.COMPACT, null);
+            IVertex v2 = GraphSonUtility.VertexFromJson((JObject)JsonConvert.DeserializeObject(VertexJson2), factory, GraphSonMode.COMPACT, null);
+            IEdge e = GraphSonUtility.EdgeFromJson(_inputStreamEdgeJsonLight, v1, v2, factory, GraphSonMode.COMPACT, null);
 
-            Assert.AreSame(v1, g.getVertex(1));
-            Assert.AreSame(v2, g.getVertex(2));
-            Assert.AreSame(e, g.getEdge(0));
+            Assert.AreSame(v1, g.GetVertex(1));
+            Assert.AreSame(v2, g.GetVertex(2));
+            Assert.AreSame(e, g.GetEdge(0));
         }
 
         [Test]
-        public void edgeFromJsonInputStreamCompactNoIdOnEdge()
+        public void EdgeFromJsonInputStreamCompactNoIdOnEdge()
         {
-            Graph g = new TinkerGraph();
-            ElementFactory factory = new GraphElementFactory(g);
+            IGraph g = new TinkerGraph();
+            IElementFactory factory = new GraphElementFactory(g);
 
-            HashSet<string> vertexKeys = new HashSet<string>() {
-                GraphSONTokens._ID
-            };
+            var vertexKeys = new HashSet<string> { GraphSonTokens.Id };
+            var edgeKeys = new HashSet<string> { GraphSonTokens.InV };
 
-            HashSet<string> edgeKeys = new HashSet<string>() {
-                GraphSONTokens._IN_V
-            };
+            var graphson = new GraphSonUtility(GraphSonMode.COMPACT, factory, vertexKeys, edgeKeys);
 
-            GraphSONUtility graphson = new GraphSONUtility(GraphSONMode.COMPACT, factory, vertexKeys, edgeKeys);
+            IVertex v1 = graphson.VertexFromJson((JObject)JsonConvert.DeserializeObject(VertexJson1));
+            IVertex v2 = graphson.VertexFromJson((JObject)JsonConvert.DeserializeObject(VertexJson2));
+            IEdge e = graphson.EdgeFromJson(_inputStreamEdgeJsonLight, v1, v2);
 
-            Vertex v1 = graphson.vertexFromJson((JObject)JsonConvert.DeserializeObject(vertexJson1));
-            Vertex v2 = graphson.vertexFromJson((JObject)JsonConvert.DeserializeObject(vertexJson2));
-            Edge e = graphson.edgeFromJson(inputStreamEdgeJsonLight, v1, v2);
-
-            Assert.AreSame(v1, g.getVertex(1));
-            Assert.AreSame(v2, g.getVertex(2));
-            Assert.AreSame(e, g.getEdge(0));
+            Assert.AreSame(v1, g.GetVertex(1));
+            Assert.AreSame(v2, g.GetVertex(2));
+            Assert.AreSame(e, g.GetEdge(0));
         }
 
         [JsonConverter(typeof(CatConverter))]
@@ -1173,7 +1128,7 @@ namespace Frontenac.Blueprints.Util.IO.GraphSON
                 _name = name;
             }
 
-            public string getName()
+            public string GetName()
             {
                 return _name;
             }

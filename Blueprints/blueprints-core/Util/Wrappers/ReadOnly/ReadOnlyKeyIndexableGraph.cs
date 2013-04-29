@@ -1,8 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Frontenac.Blueprints.Util.Wrappers.ReadOnly
 {
@@ -10,27 +7,26 @@ namespace Frontenac.Blueprints.Util.Wrappers.ReadOnly
     /// A ReadOnlyKeyIndexableGraph wraps a KeyIndexableGraph and overrides the underlying graph's mutating methods.
     /// In this way, a ReadOnlyKeyIndexableGraph can only be read from, not written to.
     /// </summary>
-    /// <typeparam name="T"></typeparam>
-    public class ReadOnlyKeyIndexableGraph : ReadOnlyIndexableGraph, KeyIndexableGraph
+    public class ReadOnlyKeyIndexableGraph : ReadOnlyIndexableGraph, IKeyIndexableGraph
     {
-        public ReadOnlyKeyIndexableGraph(KeyIndexableGraph baseKIGraph)
-            : base((IndexableGraph)baseKIGraph)
+        public ReadOnlyKeyIndexableGraph(IKeyIndexableGraph baseKiGraph)
+            : base((IIndexableGraph)baseKiGraph)
         {
         }
 
-        public void dropKeyIndex(string key, Type elementClass)
+        public void DropKeyIndex(string key, Type elementClass)
         {
-            throw new InvalidOperationException(ReadOnlyTokens.MUTATE_ERROR_MESSAGE);
+            throw new InvalidOperationException(ReadOnlyTokens.MutateErrorMessage);
         }
 
-        public void createKeyIndex(string key, Type elementClass, params Parameter[] indexParameters)
+        public void CreateKeyIndex(string key, Type elementClass, params Parameter[] indexParameters)
         {
-            throw new InvalidOperationException(ReadOnlyTokens.MUTATE_ERROR_MESSAGE);
+            throw new InvalidOperationException(ReadOnlyTokens.MutateErrorMessage);
         }
 
-        public IEnumerable<string> getIndexedKeys(Type elementClass)
+        public IEnumerable<string> GetIndexedKeys(Type elementClass)
         {
-            return ((KeyIndexableGraph)baseGraph).getIndexedKeys(elementClass);
+            return ((IKeyIndexableGraph)BaseGraph).GetIndexedKeys(elementClass);
         }
     }
 }

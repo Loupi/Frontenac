@@ -1,47 +1,61 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.Collections.Generic;
 
 namespace Frontenac.Blueprints.Util.Wrappers.Wrapped
 {
-    public class WrappedVertex : WrappedElement, Vertex
+    public class WrappedVertex : WrappedElement, IVertex
     {
-        public WrappedVertex(Vertex baseVertex)
+        public WrappedVertex(IVertex baseVertex)
             : base(baseVertex)
         {
 
         }
 
-        public IEnumerable<Edge> getEdges(Direction direction, params string[] labels)
+        public IEnumerable<IEdge> GetEdges(Direction direction, params string[] labels)
         {
-            return new WrappedEdgeIterable((baseElement as Vertex).getEdges(direction, labels));
+            var vertex = BaseElement as IVertex;
+            if (vertex != null)
+                return new WrappedEdgeIterable(vertex.GetEdges(direction, labels));
+            return null;
         }
 
-        public IEnumerable<Vertex> getVertices(Direction direction, params string[] labels)
+        public IEnumerable<IVertex> GetVertices(Direction direction, params string[] labels)
         {
-            return new WrappedVertexIterable((baseElement as Vertex).getVertices(direction, labels));
+            var vertex = BaseElement as IVertex;
+            if (vertex != null)
+                return new WrappedVertexIterable(vertex.GetVertices(direction, labels));
+            return null;
         }
 
-        public VertexQuery query()
+        public IVertexQuery Query()
         {
-            return new WrapperVertexQuery((baseElement as Vertex).query(),
-                t => new WrappedEdgeIterable(t.edges()),
-                t => new WrappedVertexIterable(t.vertices()));
+            var vertex = BaseElement as IVertex;
+            if (vertex != null)
+                return new WrapperVertexQuery(vertex.Query(),
+                                              t => new WrappedEdgeIterable(t.Edges()),
+                                              t => new WrappedVertexIterable(t.Vertices()));
+            return null;
         }
 
-        public Edge addEdge(string label, Vertex vertex)
+        public IEdge AddEdge(string label, IVertex vertex)
         {
             if (vertex is WrappedVertex)
-                return new WrappedEdge((baseElement as Vertex).addEdge(label, (vertex as WrappedVertex).getBaseVertex()));
+            {
+                var vertex1 = BaseElement as IVertex;
+                if (vertex1 != null)
+                    return new WrappedEdge(vertex1.AddEdge(label, (vertex as WrappedVertex).GetBaseVertex()));
+            }
             else
-                return new WrappedEdge((baseElement as Vertex).addEdge(label, vertex));
+            {
+                var vertex2 = BaseElement as IVertex;
+                if (vertex2 != null)
+                    return new WrappedEdge(vertex2.AddEdge(label, vertex));
+            }
+            return null;
         }
 
-        public Vertex getBaseVertex()
+        public IVertex GetBaseVertex()
         {
-            return this.baseElement as Vertex;
+            return BaseElement as IVertex;
         }
     }
 }

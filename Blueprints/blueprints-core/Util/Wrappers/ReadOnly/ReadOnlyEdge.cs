@@ -1,31 +1,25 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace Frontenac.Blueprints.Util.Wrappers.ReadOnly
+﻿namespace Frontenac.Blueprints.Util.Wrappers.ReadOnly
 {
-    public class ReadOnlyEdge : ReadOnlyElement, Edge
+    public class ReadOnlyEdge : ReadOnlyElement, IEdge
     {
-        public ReadOnlyEdge(Edge baseEdge)
+        public ReadOnlyEdge(IEdge baseEdge)
             : base(baseEdge)
         {
         }
 
-        public Vertex getVertex(Direction direction)
+        public IVertex GetVertex(Direction direction)
         {
-            return new ReadOnlyVertex(((Edge)baseElement).getVertex(direction));
+            return new ReadOnlyVertex(((IEdge)BaseElement).GetVertex(direction));
         }
 
-        public string getLabel()
+        public string GetLabel()
         {
-            return ((Edge)baseElement).getLabel();
+            return ((IEdge)BaseElement).GetLabel();
         }
 
-        public Edge getBaseEdge()
+        public IEdge GetBaseEdge()
         {
-            return (Edge)baseElement;
+            return (IEdge)BaseElement;
         }
     }
 }

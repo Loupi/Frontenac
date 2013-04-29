@@ -1,12 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Frontenac.Blueprints.Util
 {
-    public class WrappingCloseableIterable<T> : CloseableIterable<T>
+    public class WrappingCloseableIterable<T> : ICloseableIterable<T>
     {
         readonly IEnumerable<T> _iterable;
         bool _disposed;
@@ -43,8 +40,7 @@ namespace Frontenac.Blueprints.Util
 
         public IEnumerator<T> GetEnumerator()
         {
-            foreach (T t in _iterable)
-                yield return t;
+            return _iterable.GetEnumerator();
         }
 
         System.Collections.IEnumerator System.Collections.IEnumerable.GetEnumerator()

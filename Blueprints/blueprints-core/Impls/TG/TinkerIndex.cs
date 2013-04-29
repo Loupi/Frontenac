@@ -1,93 +1,83 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using Frontenac.Blueprints.Util;
 
 namespace Frontenac.Blueprints.Impls.TG
 {
     [Serializable]
-    class TinkerIndex : Index
+    class TinkerIndex : IIndex
     {
-        internal Dictionary<string, Dictionary<object, HashSet<Element>>> index = new Dictionary<string, Dictionary<object, HashSet<Element>>>();
-        protected readonly string indexName;
-        protected readonly Type indexClass;
+        internal Dictionary<string, Dictionary<object, HashSet<IElement>>> Index = new Dictionary<string, Dictionary<object, HashSet<IElement>>>();
+        protected readonly string IndexName;
+        protected readonly Type IndexClass;
 
         public TinkerIndex(string indexName, Type indexClass)
         {
-            this.indexName = indexName;
-            this.indexClass = indexClass;
+            IndexName = indexName;
+            IndexClass = indexClass;
         }
 
-        public string getIndexName()
+        public string GetIndexName()
         {
-            return indexName;
+            return IndexName;
         }
 
-        public Type getIndexClass()
+        public Type GetIndexClass()
         {
-            return indexClass;
+            return IndexClass;
         }
 
-        public void put(string key, object value, Element element)
+        public void Put(string key, object value, IElement element)
         {
-            var keyMap = index.get(key);
+            var keyMap = Index.Get(key);
             if (keyMap == null)
             {
-                keyMap = new Dictionary<object, HashSet<Element>>();
-                index.put(key, keyMap);
+                keyMap = new Dictionary<object, HashSet<IElement>>();
+                Index.Put(key, keyMap);
             }
-            HashSet<Element> objects = Portability.get(keyMap, value);
+            HashSet<IElement> objects = keyMap.Get(value);
             if (null == objects)
             {
-                objects = new HashSet<Element>();
-                keyMap.put(value, objects);
+                objects = new HashSet<IElement>();
+                keyMap.Put(value, objects);
             }
             objects.Add(element);
         }
 
-        public CloseableIterable<Element> get(string key, object value)
+        public ICloseableIterable<IElement> Get(string key, object value)
         {
-            var keyMap = index.get(key);
+            var keyMap = Index.Get(key);
             if (null == keyMap)
-                return new WrappingCloseableIterable<Element>(Enumerable.Empty<Element>());
-            else
-            {
-                HashSet<Element> set = Portability.get(keyMap, value);
-                if (null == set)
-                    return new WrappingCloseableIterable<Element>(Enumerable.Empty<Element>());
-                else
-                    return new WrappingCloseableIterable<Element>(new List<Element>(set));
-            }
+                return new WrappingCloseableIterable<IElement>(Enumerable.Empty<IElement>());
+            var set = keyMap.Get(value);
+            if (null == set)
+                return new WrappingCloseableIterable<IElement>(Enumerable.Empty<IElement>());
+            return new WrappingCloseableIterable<IElement>(new List<IElement>(set));
         }
 
-        public CloseableIterable<Element> query(string key, object query)
+        public ICloseableIterable<IElement> Query(string key, object query)
         {
             throw new NotImplementedException();
         }
 
-        public long count(string key, object value)
+        public long Count(string key, object value)
         {
-            var keyMap = index.get(key);
+            var keyMap = Index.Get(key);
             if (null == keyMap)
                 return 0;
-            else
-            {
-                HashSet<Element> set = keyMap.get(value);
-                if (null == set)
-                    return 0;
-                else
-                    return set.LongCount();
-            }
+            var set = keyMap.Get(value);
+            if (null == set)
+                return 0;
+            return set.LongCount();
         }
 
-        public void remove(string key, object value, Element element)
+        public void Remove(string key, object value, IElement element)
         {
-            var keyMap = index.get(key);
+            var keyMap = Index.Get(key);
             if (null != keyMap)
             {
-                HashSet<Element> objects = Portability.get(keyMap, value);
+                HashSet<IElement> objects = keyMap.Get(value);
                 if (null != objects)
                 {
                     objects.Remove(element);
@@ -97,13 +87,13 @@ namespace Frontenac.Blueprints.Impls.TG
             }
         }
 
-        public void removeElement(Element element)
+        public void RemoveElement(IElement element)
         {
-            if (indexClass.IsInstanceOfType(element))
+            if (IndexClass.IsInstanceOfType(element))
             {
-                foreach (var map in index.Values)
+                foreach (var map in Index.Values)
                 {
-                    foreach (HashSet<Element> set in map.Values)
+                    foreach (HashSet<IElement> set in map.Values)
                         set.Remove(element);
                 }
             }
@@ -111,7 +101,7 @@ namespace Frontenac.Blueprints.Impls.TG
 
         public override string ToString()
         {
-            return StringFactory.indexString(this);
+            return StringFactory.IndexString(this);
         }
     }
 }

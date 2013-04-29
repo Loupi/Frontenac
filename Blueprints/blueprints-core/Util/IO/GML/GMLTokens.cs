@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace Frontenac.Blueprints.Util.IO.GML
+﻿namespace Frontenac.Blueprints.Util.IO.GML
 {
     /// <summary>
     /// A collection of tokens used for GML related data.
@@ -12,28 +6,28 @@ namespace Frontenac.Blueprints.Util.IO.GML
     /// Tokens defined from GML Tags
     /// (http://www.fim.uni-passau.de/fileadmin/files/lehrstuhl/brandenburg/projekte/gml/gml-documentation.tar.gz)
     /// </summary>
-    public static class GMLTokens
+    public static class GmlTokens
     {
-        public const string GML = "gml";
-        public const string ID = "id";
-        public const string NAME = "name";
-        public const string LABEL = "label";
-        public const string COMMENT = "comment";
-        public const string CREATOR = "Creator";
-        public const string VERSION = "Version";
-        public const string GRAPH = "graph";
-        public const string NODE = "node";
-        public const string EDGE = "edge";
-        public const string SOURCE = "source";
-        public const string TARGET = "target";
-        public const string DIRECTED = "directed"; // directed (0) undirected (1) default is undirected
-        public const string GRAPHICS = "graphics";
-        public const string LABEL_GRAPHICS = "LabelGraphics";
-        public const char COMMENT_CHAR = '#';
+        public const string Gml = "gml";
+        public const string Id = "id";
+        public const string Name = "name";
+        public const string Label = "label";
+        public const string Comment = "comment";
+        public const string Creator = "Creator";
+        public const string Version = "Version";
+        public const string Graph = "graph";
+        public const string Node = "node";
+        public const string Edge = "edge";
+        public const string Source = "source";
+        public const string Target = "target";
+        public const string Directed = "directed"; // directed (0) undirected (1) default is undirected
+        public const string Graphics = "graphics";
+        public const string LabelGraphics = "LabelGraphics";
+        public const char CommentChar = '#';
 
         /// <summary>
         /// Special token used to store Blueprint ids as they may not be integers
         /// </summary>
-        public const string BLUEPRINTS_ID = "blueprintsId";
+        public const string BlueprintsId = "blueprintsId";
     }
 }

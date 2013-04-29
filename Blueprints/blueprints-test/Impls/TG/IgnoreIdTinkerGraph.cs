@@ -1,8 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Frontenac.Blueprints.Impls.TG
 {
@@ -25,21 +21,21 @@ namespace Frontenac.Blueprints.Impls.TG
 
         }
 
-        public override Features getFeatures()
+        public override Features GetFeatures()
         {
-            Features f = base.getFeatures().copyFeatures();
-            f.ignoresSuppliedIds = true;
+            Features f = base.GetFeatures().CopyFeatures();
+            f.IgnoresSuppliedIds = true;
             return f;
         }
 
-        public override Vertex addVertex(object id)
+        public override IVertex AddVertex(object id)
         {
-            return base.addVertex(null);
+            return base.AddVertex(null);
         }
 
-        public override Edge addEdge(object id, Vertex outVertex, Vertex inVertex, string label)
+        public override IEdge AddEdge(object id, IVertex outVertex, IVertex inVertex, string label)
         {
-            return base.addEdge(null, outVertex, inVertex, label);
+            return base.AddEdge(null, outVertex, inVertex, label);
         }
     }
 }

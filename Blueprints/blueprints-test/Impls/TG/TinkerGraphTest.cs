@@ -3,8 +3,6 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using Frontenac.Blueprints.Util;
 using Frontenac.Blueprints.Util.IO.GML;
 using Frontenac.Blueprints.Util.IO.GraphML;
@@ -16,9 +14,9 @@ namespace Frontenac.Blueprints.Impls.TG
     public class TinkerGraphGraphTestSuite : GraphTestSuite
     {
         [SetUp]
-        public void setUp()
+        public void SetUp()
         {
-            deleteDirectory(TinkerGraphTestImpl.getThinkerGraphDirectory());
+            DeleteDirectory(TinkerGraphTestImpl.GetThinkerGraphDirectory());
         }
 
         public TinkerGraphGraphTestSuite()
@@ -36,9 +34,9 @@ namespace Frontenac.Blueprints.Impls.TG
     public class TinkerGraphVertexTestSuite : VertexTestSuite
     {
         [SetUp]
-        public void setUp()
+        public void SetUp()
         {
-            deleteDirectory(TinkerGraphTestImpl.getThinkerGraphDirectory());
+            DeleteDirectory(TinkerGraphTestImpl.GetThinkerGraphDirectory());
         }
 
         public TinkerGraphVertexTestSuite()
@@ -56,9 +54,9 @@ namespace Frontenac.Blueprints.Impls.TG
     public class TinkerGraphEdgeTestSuite : EdgeTestSuite
     {
         [SetUp]
-        public void setUp()
+        public void SetUp()
         {
-            deleteDirectory(TinkerGraphTestImpl.getThinkerGraphDirectory());
+            DeleteDirectory(TinkerGraphTestImpl.GetThinkerGraphDirectory());
         }
 
         public TinkerGraphEdgeTestSuite()
@@ -76,9 +74,9 @@ namespace Frontenac.Blueprints.Impls.TG
     public class TinkerGraphKeyIndexableGraphTestSuite : KeyIndexableGraphTestSuite
     {
         [SetUp]
-        public void setUp()
+        public void SetUp()
         {
-            deleteDirectory(TinkerGraphTestImpl.getThinkerGraphDirectory());
+            DeleteDirectory(TinkerGraphTestImpl.GetThinkerGraphDirectory());
         }
 
         public TinkerGraphKeyIndexableGraphTestSuite()
@@ -96,9 +94,9 @@ namespace Frontenac.Blueprints.Impls.TG
     public class TinkerGraphIndexableGraphTestSuite : IndexableGraphTestSuite
     {
         [SetUp]
-        public void setUp()
+        public void SetUp()
         {
-            deleteDirectory(TinkerGraphTestImpl.getThinkerGraphDirectory());
+            DeleteDirectory(TinkerGraphTestImpl.GetThinkerGraphDirectory());
         }
 
         public TinkerGraphIndexableGraphTestSuite()
@@ -116,9 +114,9 @@ namespace Frontenac.Blueprints.Impls.TG
     public class TinkerGraphIndexTestSuite : IndexTestSuite
     {
         [SetUp]
-        public void setUp()
+        public void SetUp()
         {
-            deleteDirectory(TinkerGraphTestImpl.getThinkerGraphDirectory());
+            DeleteDirectory(TinkerGraphTestImpl.GetThinkerGraphDirectory());
         }
 
         public TinkerGraphIndexTestSuite()
@@ -135,60 +133,60 @@ namespace Frontenac.Blueprints.Impls.TG
     
 
     [TestFixture(Category = "TinkerGraphGraphTestSuite")]
-    public class TinkerGraphGMLReaderTestSuite : GMLReaderTestSuite
+    public class TinkerGraphGmlReaderTestSuite : GmlReaderTestSuite
     {
         [SetUp]
-        public void setUp()
+        public void SetUp()
         {
-            deleteDirectory(TinkerGraphTestImpl.getThinkerGraphDirectory());
+            DeleteDirectory(TinkerGraphTestImpl.GetThinkerGraphDirectory());
         }
 
-        public TinkerGraphGMLReaderTestSuite()
+        public TinkerGraphGmlReaderTestSuite()
             : base(new TinkerGraphTestImpl())
         {
         }
 
-        public TinkerGraphGMLReaderTestSuite(GraphTest graphTest)
+        public TinkerGraphGmlReaderTestSuite(GraphTest graphTest)
             : base(graphTest)
         {
         }
     }
 
     [TestFixture(Category = "TinkerGraphGraphTestSuite")]
-    public class TinkerGraphGraphMLReaderTestSuite : GraphMLReaderTestSuite
+    public class TinkerGraphGraphMlReaderTestSuite : GraphMlReaderTestSuite
     {
         [SetUp]
-        public void setUp()
+        public void SetUp()
         {
-            deleteDirectory(TinkerGraphTestImpl.getThinkerGraphDirectory());
+            DeleteDirectory(TinkerGraphTestImpl.GetThinkerGraphDirectory());
         }
 
-        public TinkerGraphGraphMLReaderTestSuite()
+        public TinkerGraphGraphMlReaderTestSuite()
             : base(new TinkerGraphTestImpl())
         {
         }
 
-        public TinkerGraphGraphMLReaderTestSuite(GraphTest graphTest)
+        public TinkerGraphGraphMlReaderTestSuite(GraphTest graphTest)
             : base(graphTest)
         {
         }
     }
 
     [TestFixture(Category = "TinkerGraphGraphTestSuite")]
-    public class TinkerGraphGraphSONReaderTestSuite : GraphSONReaderTestSuite
+    public class TinkerGraphGraphSonReaderTestSuite : GraphSonReaderTestSuite
     {
         [SetUp]
-        public void setUp()
+        public void SetUp()
         {
-            deleteDirectory(TinkerGraphTestImpl.getThinkerGraphDirectory());
+            DeleteDirectory(TinkerGraphTestImpl.GetThinkerGraphDirectory());
         }
 
-        public TinkerGraphGraphSONReaderTestSuite()
+        public TinkerGraphGraphSonReaderTestSuite()
             : base(new TinkerGraphTestImpl())
         {
         }
 
-        public TinkerGraphGraphSONReaderTestSuite(GraphTest graphTest)
+        public TinkerGraphGraphSonReaderTestSuite(GraphTest graphTest)
             : base(graphTest)
         {
         }
@@ -196,26 +194,24 @@ namespace Frontenac.Blueprints.Impls.TG
 
     public class TinkerGraphTestImpl : GraphTest
     {
-        public override Graph generateGraph()
+        public override IGraph GenerateGraph()
         {
-            return generateGraph("graph");
+            return GenerateGraph("graph");
         }
 
-        public override Graph generateGraph(string graphDirectoryName)
+        public override IGraph GenerateGraph(string graphDirectoryName)
         {
-            return new TinkerGraph(getThinkerGraphDirectory());
+            return new TinkerGraph(GetThinkerGraphDirectory());
         }
 
-        public static string getThinkerGraphDirectory()
+        public static string GetThinkerGraphDirectory()
         {
-            string directory = System.Environment.GetEnvironmentVariable("tinkerGraphDirectory");
-            if (directory == null)
-                directory = getWorkingDirectory();
+            string directory = Environment.GetEnvironmentVariable("tinkerGraphDirectory") ?? GetWorkingDirectory();
 
             return string.Concat(directory, "/graph");
         }
 
-        static string getWorkingDirectory()
+        static string GetWorkingDirectory()
         {
             return Directory.GetCurrentDirectory();
         }
@@ -236,184 +232,184 @@ namespace Frontenac.Blueprints.Impls.TG
         }
 
         [Test]
-        public void testClear()
+        public void TestClear()
         {
-            deleteDirectory(TinkerGraphTestImpl.getThinkerGraphDirectory());
-            TinkerGraph graph = (TinkerGraph)graphTest.generateGraph();
-            this.stopWatch();
+            DeleteDirectory(TinkerGraphTestImpl.GetThinkerGraphDirectory());
+            var graph = (TinkerGraph)GraphTest.GenerateGraph();
+            StopWatch();
             for (int i = 0; i < 25; i++)
             {
-                Vertex a = graph.addVertex(null);
-                Vertex b = graph.addVertex(null);
-                graph.addEdge(null, a, b, "knows");
+                IVertex a = graph.AddVertex(null);
+                IVertex b = graph.AddVertex(null);
+                graph.AddEdge(null, a, b, "knows");
             }
-            printPerformance(graph.ToString(), 75, "elements added", this.stopWatch());
+            PrintPerformance(graph.ToString(), 75, "elements added", StopWatch());
 
-            Assert.AreEqual(50, count(graph.getVertices()));
-            Assert.AreEqual(25, count(graph.getEdges()));
+            Assert.AreEqual(50, Count(graph.GetVertices()));
+            Assert.AreEqual(25, Count(graph.GetEdges()));
 
-            this.stopWatch();
-            graph.clear();
-            printPerformance(graph.ToString(), 75, "elements deleted", this.stopWatch());
+            StopWatch();
+            graph.Clear();
+            PrintPerformance(graph.ToString(), 75, "elements deleted", StopWatch());
 
-            Assert.AreEqual(0, count(graph.getVertices()));
-            Assert.AreEqual(0, count(graph.getEdges()));
+            Assert.AreEqual(0, Count(graph.GetVertices()));
+            Assert.AreEqual(0, Count(graph.GetEdges()));
 
-            graph.shutdown();
+            graph.Shutdown();
         }
 
         [Test]
-        public void testShutdownStartManyTimes()
+        public void TestShutdownStartManyTimes()
         {
-            deleteDirectory(TinkerGraphTestImpl.getThinkerGraphDirectory());
-            TinkerGraph graph = (TinkerGraph)graphTest.generateGraph();
+            DeleteDirectory(TinkerGraphTestImpl.GetThinkerGraphDirectory());
+            var graph = (TinkerGraph)GraphTest.GenerateGraph();
             for (int i = 0; i < 25; i++)
             {
-                Vertex a = graph.addVertex(null);
-                a.setProperty("name", string.Concat("a", Guid.NewGuid()));
-                Vertex b = graph.addVertex(null);
-                b.setProperty("name", string.Concat("b", Guid.NewGuid()));
-                graph.addEdge(null, a, b, "knows").setProperty("weight", 1);
+                IVertex a = graph.AddVertex(null);
+                a.SetProperty("name", string.Concat("a", Guid.NewGuid()));
+                IVertex b = graph.AddVertex(null);
+                b.SetProperty("name", string.Concat("b", Guid.NewGuid()));
+                graph.AddEdge(null, a, b, "knows").SetProperty("weight", 1);
             }
-            graph.shutdown();
-            this.stopWatch();
-            int iterations = 150;
+            graph.Shutdown();
+            StopWatch();
+            const int iterations = 150;
             for (int i = 0; i < iterations; i++)
             {
-                graph = (TinkerGraph)graphTest.generateGraph();
-                Assert.AreEqual(50, count(graph.getVertices()));
-                foreach (Vertex v in graph.getVertices())
+                graph = (TinkerGraph)GraphTest.GenerateGraph();
+                Assert.AreEqual(50, Count(graph.GetVertices()));
+                foreach (IVertex v in graph.GetVertices())
                 {
-                    Assert.True(v.getProperty("name").ToString().StartsWith("a") || v.getProperty("name").ToString().StartsWith("b"));
+                    Assert.True(v.GetProperty("name").ToString().StartsWith("a") || v.GetProperty("name").ToString().StartsWith("b"));
                 }
-                Assert.AreEqual(25, count(graph.getEdges()));
-                foreach (Edge e in graph.getEdges())
+                Assert.AreEqual(25, Count(graph.GetEdges()));
+                foreach (IEdge e in graph.GetEdges())
                 {
-                    Assert.AreEqual(e.getProperty("weight"), 1);
+                    Assert.AreEqual(e.GetProperty("weight"), 1);
                 }
 
-                graph.shutdown();
+                graph.Shutdown();
             }
-            printPerformance(graph.ToString(), iterations, "iterations of shutdown and restart", this.stopWatch());
+            PrintPerformance(graph.ToString(), iterations, "iterations of shutdown and restart", StopWatch());
         }
 
 
         [Test]
-        public void testGraphFileTypeJava()
+        public void TestGraphFileTypeJava()
         {
-            testGraphFileType("graph-test-java", TinkerGraph.FileType.JAVA);
+            TestGraphFileType("graph-test-java", TinkerGraph.FileType.Java);
         }
 
         [Test]
-        public void testGraphFileTypeGML()
+        public void TestGraphFileTypeGml()
         {
-            testGraphFileType("graph-test-gml", TinkerGraph.FileType.GML);
+            TestGraphFileType("graph-test-gml", TinkerGraph.FileType.Gml);
         }
 
         [Test]
-        public void testGraphFileTypeGraphML()
+        public void TestGraphFileTypeGraphMl()
         {
-            testGraphFileType("graph-test-graphml", TinkerGraph.FileType.GRAPHML);
+            TestGraphFileType("graph-test-graphml", TinkerGraph.FileType.Graphml);
         }
 
         [Test]
-        public void testGraphFileTypeGraphSON()
+        public void TestGraphFileTypeGraphSon()
         {
-            testGraphFileType("graph-test-graphson", TinkerGraph.FileType.GRAPHSON);
+            TestGraphFileType("graph-test-graphson", TinkerGraph.FileType.Graphson);
         }
 
-        void testGraphFileType(string directory, TinkerGraph.FileType fileType)
+        void TestGraphFileType(string directory, TinkerGraph.FileType fileType)
         {
-            string path = TinkerGraphTestImpl.getThinkerGraphDirectory() + "/" + directory;
-            deleteDirectory(path);
+            string path = TinkerGraphTestImpl.GetThinkerGraphDirectory() + "/" + directory;
+            DeleteDirectory(path);
 
-            TinkerGraph sourceGraph = TinkerGraphFactory.createTinkerGraph();
-            TinkerGraph targetGraph = new TinkerGraph(path, fileType);
-            createKeyIndices(targetGraph);
+            TinkerGraph sourceGraph = TinkerGraphFactory.CreateTinkerGraph();
+            var targetGraph = new TinkerGraph(path, fileType);
+            CreateKeyIndices(targetGraph);
 
-            copyGraphs(sourceGraph, targetGraph);
+            CopyGraphs(sourceGraph, targetGraph);
 
-            createManualIndices(targetGraph);
+            CreateManualIndices(targetGraph);
 
-            this.stopWatch();
-            targetGraph.shutdown();
-            printTestPerformance("save graph: " + fileType.ToString(), this.stopWatch());
+            StopWatch();
+            targetGraph.Shutdown();
+            PrintTestPerformance("save graph: " + fileType.ToString(), StopWatch());
 
-            this.stopWatch();
-            TinkerGraph compareGraph = new TinkerGraph(path, fileType);
-            printTestPerformance("load graph: " + fileType.ToString(), this.stopWatch());
+            StopWatch();
+            var compareGraph = new TinkerGraph(path, fileType);
+            PrintTestPerformance("load graph: " + fileType.ToString(), StopWatch());
 
-            compareGraphs(targetGraph, compareGraph, fileType);
+            CompareGraphs(targetGraph, compareGraph, fileType);
         }
 
-        void createKeyIndices(TinkerGraph g)
+        static void CreateKeyIndices(TinkerGraph g)
         {
-            g.createKeyIndex("name", typeof(Vertex));
-            g.createKeyIndex("weight", typeof(Edge));
+            g.CreateKeyIndex("name", typeof(IVertex));
+            g.CreateKeyIndex("weight", typeof(IEdge));
         }
 
-        void createManualIndices(TinkerGraph g)
+        static void CreateManualIndices(TinkerGraph g)
         {
-            Index ageIndex = g.createIndex("age", typeof(Vertex));
-            Vertex v1 = g.getVertex(1);
-            Vertex v2 = g.getVertex(2);
-            ageIndex.put("age", v1.getProperty("age"), v1);
-            ageIndex.put("age", v2.getProperty("age"), v2);
+            IIndex ageIndex = g.CreateIndex("age", typeof(IVertex));
+            IVertex v1 = g.GetVertex(1);
+            IVertex v2 = g.GetVertex(2);
+            ageIndex.Put("age", v1.GetProperty("age"), v1);
+            ageIndex.Put("age", v2.GetProperty("age"), v2);
 
-            Index weightIndex = g.createIndex("weight", typeof(Edge));
-            Edge e7 = g.getEdge(7);
-            Edge e12 = g.getEdge(12);
-            weightIndex.put("weight", e7.getProperty("weight"), e7);
-            weightIndex.put("weight", e12.getProperty("weight"), e12);
+            IIndex weightIndex = g.CreateIndex("weight", typeof(IEdge));
+            IEdge e7 = g.GetEdge(7);
+            IEdge e12 = g.GetEdge(12);
+            weightIndex.Put("weight", e7.GetProperty("weight"), e7);
+            weightIndex.Put("weight", e12.GetProperty("weight"), e12);
         }
 
-        void copyGraphs(TinkerGraph src, TinkerGraph dst)
+        static void CopyGraphs(TinkerGraph src, TinkerGraph dst)
         {
-            foreach (Vertex v in src.getVertices())
+            foreach (IVertex v in src.GetVertices())
             {
-                ElementHelper.copyProperties(v, dst.addVertex(v.getId()));
+                ElementHelper.CopyProperties(v, dst.AddVertex(v.GetId()));
             }
 
-            foreach (Edge e in src.getEdges())
+            foreach (IEdge e in src.GetEdges())
             {
-                ElementHelper.copyProperties(e,
-                        dst.addEdge(e.getId(),
-                                    dst.getVertex(e.getVertex(Direction.OUT).getId()),
-                                    dst.getVertex(e.getVertex(Direction.IN).getId()),
-                                    e.getLabel()));
+                ElementHelper.CopyProperties(e,
+                        dst.AddEdge(e.GetId(),
+                                    dst.GetVertex(e.GetVertex(Direction.Out).GetId()),
+                                    dst.GetVertex(e.GetVertex(Direction.In).GetId()),
+                                    e.GetLabel()));
             }
         }
 
-        void compareGraphs(TinkerGraph g1, TinkerGraph g2, TinkerGraph.FileType fileType)
+        void CompareGraphs(TinkerGraph g1, TinkerGraph g2, TinkerGraph.FileType fileType)
         {
-            foreach (Vertex v1 in g1.getVertices())
+            foreach (IVertex v1 in g1.GetVertices())
             {
-                Vertex v2 = g2.getVertex(v1.getId());
+                IVertex v2 = g2.GetVertex(v1.GetId());
 
-                compareEdgeCounts(v1, v2, Direction.IN);
-                compareEdgeCounts(v1, v2, Direction.OUT);
-                compareEdgeCounts(v1, v2, Direction.BOTH);
+                CompareEdgeCounts(v1, v2, Direction.In);
+                CompareEdgeCounts(v1, v2, Direction.Out);
+                CompareEdgeCounts(v1, v2, Direction.Both);
 
-                Assert.True(ElementHelper.haveEqualProperties(v1, v2));
-                Assert.True(ElementHelper.areEqual(v1, v2));
+                Assert.True(ElementHelper.HaveEqualProperties(v1, v2));
+                Assert.True(ElementHelper.AreEqual(v1, v2));
             }
 
-            foreach (Edge e1 in g1.getEdges())
+            foreach (IEdge e1 in g1.GetEdges())
             {
-                Edge e2 = g2.getEdge(e1.getId());
+                IEdge e2 = g2.GetEdge(e1.GetId());
 
-                compareVertices(e1, e2, Direction.IN);
-                compareVertices(e2, e2, Direction.OUT);
+                CompareVertices(e1, e2, Direction.In);
+                CompareVertices(e2, e2, Direction.Out);
 
-                if (fileType == TinkerGraph.FileType.GML)
+                if (fileType == TinkerGraph.FileType.Gml)
                 {
                     // For GML we need to iterate the properties manually to catch the
                     // case where the property returned from GML is an integer
                     // while the target graph property is a float.
-                    foreach (String p in e1.getPropertyKeys())
+                    foreach (String p in e1.GetPropertyKeys())
                     {
-                        Object v1 = e1.getProperty(p);
-                        Object v2 = e2.getProperty(p);
+                        Object v1 = e1.GetProperty(p);
+                        Object v2 = e2.GetProperty(p);
 
                         if (v1.GetType() != v2.GetType())
                         {
@@ -434,45 +430,45 @@ namespace Frontenac.Blueprints.Impls.TG
                 }
                 else
                 {
-                    Assert.True(ElementHelper.haveEqualProperties(e1, e2));
+                    Assert.True(ElementHelper.HaveEqualProperties(e1, e2));
                 }
 
-                Assert.True(ElementHelper.areEqual(e1, e2));
+                Assert.True(ElementHelper.AreEqual(e1, e2));
             }
 
-            Index idxAge = g2.getIndex("age", typeof(Vertex));
-            Assert.AreEqual(g2.getVertex(1), idxAge.get("age", 29).First());
-            Assert.AreEqual(g2.getVertex(2), idxAge.get("age", 27).First());
+            IIndex idxAge = g2.GetIndex("age", typeof(IVertex));
+            Assert.AreEqual(g2.GetVertex(1), idxAge.Get("age", 29).First());
+            Assert.AreEqual(g2.GetVertex(2), idxAge.Get("age", 27).First());
 
-            Index idxWeight = g2.getIndex("weight", typeof(Edge));
-            Assert.AreEqual(g2.getEdge(7), idxWeight.get("weight", 0.5f).First());
-            Assert.AreEqual(g2.getEdge(12), idxWeight.get("weight", 0.2f).First());
+            IIndex idxWeight = g2.GetIndex("weight", typeof(IEdge));
+            Assert.AreEqual(g2.GetEdge(7), idxWeight.Get("weight", 0.5f).First());
+            Assert.AreEqual(g2.GetEdge(12), idxWeight.Get("weight", 0.2f).First());
 
-            IEnumerator<Vertex> namesItty = g2.getVertices("name", "marko").GetEnumerator();
+            IEnumerator<IVertex> namesItty = g2.GetVertices("name", "marko").GetEnumerator();
             namesItty.MoveNext();
-            Assert.AreEqual(g2.getVertex(1), namesItty.Current);
+            Assert.AreEqual(g2.GetVertex(1), namesItty.Current);
             Assert.False(namesItty.MoveNext());
 
-            IEnumerator<Edge> weightItty = g2.getEdges("weight", 0.5f).GetEnumerator();
+            IEnumerator<IEdge> weightItty = g2.GetEdges("weight", 0.5f).GetEnumerator();
             weightItty.MoveNext();
-            Assert.AreEqual(g2.getEdge(7), weightItty.Current);
+            Assert.AreEqual(g2.GetEdge(7), weightItty.Current);
             Assert.False(weightItty.MoveNext());
         }
 
-        void compareEdgeCounts(Vertex v1, Vertex v2, Direction direction)
+        static void CompareEdgeCounts(IVertex v1, IVertex v2, Direction direction)
         {
-            int c1 = v1.getEdges(direction).Count();
-            int c2 = v2.getEdges(direction).Count();
+            int c1 = v1.GetEdges(direction).Count();
+            int c2 = v2.GetEdges(direction).Count();
 
             Assert.AreEqual(c1, c2);
         }
 
-        void compareVertices(Edge e1, Edge e2, Direction direction)
+        static void CompareVertices(IEdge e1, IEdge e2, Direction direction)
         {
-            Vertex v1 = e1.getVertex(direction);
-            Vertex v2 = e2.getVertex(direction);
+            IVertex v1 = e1.GetVertex(direction);
+            IVertex v2 = e2.GetVertex(direction);
 
-            Assert.AreEqual(v1.getId(), v2.getId());
+            Assert.AreEqual(v1.GetId(), v2.GetId());
         }
     }
 }

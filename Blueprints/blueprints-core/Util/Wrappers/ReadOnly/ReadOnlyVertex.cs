@@ -1,39 +1,36 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Frontenac.Blueprints.Util.Wrappers.ReadOnly
 {
-    public class ReadOnlyVertex : ReadOnlyElement, Vertex
+    public class ReadOnlyVertex : ReadOnlyElement, IVertex
     {
-        public ReadOnlyVertex(Vertex baseVertex)
+        public ReadOnlyVertex(IVertex baseVertex)
             : base(baseVertex)
         {
 
         }
 
-        public IEnumerable<Edge> getEdges(Direction direction, params string[] labels)
+        public IEnumerable<IEdge> GetEdges(Direction direction, params string[] labels)
         {
-            return new ReadOnlyEdgeIterable((baseElement as Vertex).getEdges(direction, labels));
+            return new ReadOnlyEdgeIterable(((IVertex) BaseElement).GetEdges(direction, labels));
         }
 
-        public IEnumerable<Vertex> getVertices(Direction direction, params string[] labels)
+        public IEnumerable<IVertex> GetVertices(Direction direction, params string[] labels)
         {
-            return new ReadOnlyVertexIterable((baseElement as Vertex).getVertices(direction, labels));
+            return new ReadOnlyVertexIterable(((IVertex) BaseElement).GetVertices(direction, labels));
         }
 
-        public Edge addEdge(string label, Vertex vertex)
+        public IEdge AddEdge(string label, IVertex vertex)
         {
-            throw new InvalidOperationException(ReadOnlyTokens.MUTATE_ERROR_MESSAGE);
+            throw new InvalidOperationException(ReadOnlyTokens.MutateErrorMessage);
         }
 
-        public VertexQuery query()
+        public IVertexQuery Query()
         {
-            return new WrapperVertexQuery((baseElement as Vertex).query(),
-                t => new ReadOnlyEdgeIterable(t.edges()),
-                t => new ReadOnlyVertexIterable(t.vertices()));
+            return new WrapperVertexQuery(((IVertex) BaseElement).Query(),
+                t => new ReadOnlyEdgeIterable(t.Edges()),
+                t => new ReadOnlyVertexIterable(t.Vertices()));
         }
     }
 }

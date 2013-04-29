@@ -1,21 +1,19 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Frontenac.Blueprints.Util.Wrappers.Event
 {
     /// <summary>
     /// A sequence of edges that applies the list of listeners into each edge.
     /// </summary>
-    public class EventEdgeIterable : CloseableIterable<Edge>
+    public class EventEdgeIterable : ICloseableIterable<IEdge>
     {
-        readonly IEnumerable<Edge> _iterable;
+        readonly IEnumerable<IEdge> _iterable;
         readonly EventGraph _eventGraph;
         bool _disposed;
 
-        public EventEdgeIterable(IEnumerable<Edge> iterable, EventGraph eventGraph)
+        public EventEdgeIterable(IEnumerable<IEdge> iterable, EventGraph eventGraph)
         {
             _iterable = iterable;
             _eventGraph = eventGraph;
@@ -46,15 +44,14 @@ namespace Frontenac.Blueprints.Util.Wrappers.Event
             _disposed = true;
         }
 
-        public IEnumerator<Edge> GetEnumerator()
+        public IEnumerator<IEdge> GetEnumerator()
         {
-            foreach (Edge edge in _iterable)
-                yield return new EventEdge(edge, _eventGraph);
+            return _iterable.Select(edge => new EventEdge(edge, _eventGraph)).Cast<IEdge>().GetEnumerator();
         }
 
         System.Collections.IEnumerator System.Collections.IEnumerable.GetEnumerator()
         {
-            return (this as IEnumerable<Edge>).GetEnumerator();
+            return (this as IEnumerable<IEdge>).GetEnumerator();
         }
     }
 }

@@ -1,64 +1,59 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Frontenac.Blueprints.Util.Wrappers.ReadOnly
 {
-    public class ReadOnlyIndex : Index
+    public class ReadOnlyIndex : IIndex
     {
-        protected Index rawIndex;
+        protected IIndex RawIndex;
 
-        public ReadOnlyIndex(Index rawIndex)
+        public ReadOnlyIndex(IIndex rawIndex)
         {
-            this.rawIndex = rawIndex;
+            RawIndex = rawIndex;
         }
 
-        public void remove(string key, object value, Element element)
+        public void Remove(string key, object value, IElement element)
         {
-            throw new InvalidOperationException(ReadOnlyTokens.MUTATE_ERROR_MESSAGE);
+            throw new InvalidOperationException(ReadOnlyTokens.MutateErrorMessage);
         }
 
-        public void put(string key, object value, Element element)
+        public void Put(string key, object value, IElement element)
         {
-            throw new InvalidOperationException(ReadOnlyTokens.MUTATE_ERROR_MESSAGE);
+            throw new InvalidOperationException(ReadOnlyTokens.MutateErrorMessage);
         }
 
-        public CloseableIterable<Element> get(string key, object value)
+        public ICloseableIterable<IElement> Get(string key, object value)
         {
-            if (typeof(Vertex).IsAssignableFrom(this.getIndexClass()))
-                return (CloseableIterable<Element>)new ReadOnlyVertexIterable((IEnumerable<Vertex>)rawIndex.get(key, value));
-            else
-                return (CloseableIterable<Element>)new ReadOnlyEdgeIterable((IEnumerable<Edge>)rawIndex.get(key, value));
+            if (typeof(IVertex).IsAssignableFrom(GetIndexClass()))
+                return new ReadOnlyVertexIterable((IEnumerable<IVertex>)RawIndex.Get(key, value));
+            return new ReadOnlyEdgeIterable((IEnumerable<IEdge>)RawIndex.Get(key, value));
         }
 
-        public CloseableIterable<Element> query(string key, object value)
+        public ICloseableIterable<IElement> Query(string key, object value)
         {
-            if (typeof(Vertex).IsAssignableFrom(this.getIndexClass()))
-                return (CloseableIterable<Element>)new ReadOnlyVertexIterable((IEnumerable<Vertex>)rawIndex.query(key, value));
-            else
-                return (CloseableIterable<Element>)new ReadOnlyEdgeIterable((IEnumerable<Edge>)rawIndex.query(key, value));
+            if (typeof(IVertex).IsAssignableFrom(GetIndexClass()))
+                return new ReadOnlyVertexIterable((IEnumerable<IVertex>)RawIndex.Query(key, value));
+            return new ReadOnlyEdgeIterable((IEnumerable<IEdge>)RawIndex.Query(key, value));
         }
 
-        public long count(string key, object value)
+        public long Count(string key, object value)
         {
-            return rawIndex.count(key, value);
+            return RawIndex.Count(key, value);
         }
 
-        public string getIndexName()
+        public string GetIndexName()
         {
-            return rawIndex.getIndexName();
+            return RawIndex.GetIndexName();
         }
 
-        public Type getIndexClass()
+        public Type GetIndexClass()
         {
-            return rawIndex.getIndexClass();
+            return RawIndex.GetIndexClass();
         }
 
         public override string ToString()
         {
-            return StringFactory.indexString(this);
+            return StringFactory.IndexString(this);
         }
     }
 }

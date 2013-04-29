@@ -1,46 +1,41 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using Frontenac.Blueprints.Util;
 
 namespace Frontenac.Blueprints.Impls.TG
 {
     [Serializable]
-    class TinkerEdge : TinkerElement, Edge
+    class TinkerEdge : TinkerElement, IEdge
     {
         readonly string _label;
-        readonly Vertex _inVertex;
-        readonly Vertex _outVertex;
+        readonly IVertex _inVertex;
+        readonly IVertex _outVertex;
 
-        public TinkerEdge(string id, Vertex outVertex, Vertex inVertex, string label, TinkerGraph graph)
+        public TinkerEdge(string id, IVertex outVertex, IVertex inVertex, string label, TinkerGraph graph)
             : base(id, graph)
         {
             _label = label;
             _outVertex = outVertex;
             _inVertex = inVertex;
-            base.graph.edgeKeyIndex.autoUpdate(StringFactory.LABEL, _label, null, this);
+            Graph.EdgeKeyIndex.AutoUpdate(StringFactory.Label, _label, null, this);
         }
 
-        public string getLabel()
+        public string GetLabel()
         {
             return _label;
         }
 
-        public Vertex getVertex(Direction direction)
+        public IVertex GetVertex(Direction direction)
         {
-            if (direction == Direction.IN)
+            if (direction == Direction.In)
                 return _inVertex;
-            else if (direction == Direction.OUT)
+            if (direction == Direction.Out)
                 return _outVertex;
-            else
-                throw ExceptionFactory.bothIsNotSupported();
+            throw ExceptionFactory.BothIsNotSupported();
         }
 
         public override string ToString()
         {
-            return StringFactory.edgeString(this);
+            return StringFactory.EdgeString(this);
         }
     }
 }

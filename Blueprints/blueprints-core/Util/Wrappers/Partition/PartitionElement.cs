@@ -1,92 +1,88 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.Collections.Generic;
 
 namespace Frontenac.Blueprints.Util.Wrappers.Partition
 {
-    public abstract class PartitionElement : Element
+    public abstract class PartitionElement : IElement
     {
-        protected Element baseElement;
-        protected PartitionGraph graph;
+        protected readonly IElement BaseElement;
+        protected PartitionGraph Graph;
 
-        protected PartitionElement(Element baseElement, PartitionGraph partitionGraph)
+        protected PartitionElement(IElement baseElement, PartitionGraph partitionGraph)
         {
-            this.baseElement = baseElement;
-            graph = partitionGraph;
+            BaseElement = baseElement;
+            Graph = partitionGraph;
         }
 
-        public void setProperty(string key, object value)
+        public void SetProperty(string key, object value)
         {
-            if (!key.Equals(graph.getPartitionKey()))
-                baseElement.setProperty(key, value);
+            if (!key.Equals(Graph.GetPartitionKey()))
+                BaseElement.SetProperty(key, value);
         }
 
-        public object getProperty(string key)
+        public object GetProperty(string key)
         {
-            if (key.Equals(graph.getPartitionKey()))
+            if (key.Equals(Graph.GetPartitionKey()))
                 return null;
 
-            return baseElement.getProperty(key);
+            return BaseElement.GetProperty(key);
         }
 
-        public object removeProperty(string key)
+        public object RemoveProperty(string key)
         {
-            if (key.Equals(graph.getPartitionKey()))
+            if (key.Equals(Graph.GetPartitionKey()))
                 return null;
 
-            return baseElement.removeProperty(key);
+            return BaseElement.RemoveProperty(key);
         }
 
-        public IEnumerable<string> getPropertyKeys()
+        public IEnumerable<string> GetPropertyKeys()
         {
-            ISet<string> keys = new HashSet<string>(baseElement.getPropertyKeys());
-            keys.Remove(graph.getPartitionKey());
+            ISet<string> keys = new HashSet<string>(BaseElement.GetPropertyKeys());
+            keys.Remove(Graph.GetPartitionKey());
             return keys;
         }
 
-        public object getId()
+        public object GetId()
         {
-            return baseElement.getId();
+            return BaseElement.GetId();
         }
 
         public override bool Equals(object obj)
         {
-            return ElementHelper.areEqual(this, obj);
+            return ElementHelper.AreEqual(this, obj);
         }
 
         public override int GetHashCode()
         {
-            return baseElement.GetHashCode();
+            return BaseElement.GetHashCode();
         }
 
-        public Element getBaseElement()
+        public IElement GetBaseElement()
         {
-            return baseElement;
+            return BaseElement;
         }
 
-        public string getPartition()
+        public string GetPartition()
         {
-            return (string)baseElement.getProperty(graph.getPartitionKey());
+            return (string)BaseElement.GetProperty(Graph.GetPartitionKey());
         }
 
-        public void setPartition(string partition)
+        public void SetPartition(string partition)
         {
-            baseElement.setProperty(graph.getPartitionKey(), partition);
+            BaseElement.SetProperty(Graph.GetPartitionKey(), partition);
         }
 
-        public void remove()
+        public void Remove()
         {
-            if (this is Vertex)
-                graph.removeVertex(this as Vertex);
+            if (this is IVertex)
+                Graph.RemoveVertex(this as IVertex);
             else
-                graph.removeEdge(this as Edge);
+                Graph.RemoveEdge(this as IEdge);
         }
 
         public override string ToString()
         {
-            return baseElement.ToString();
+            return BaseElement.ToString();
         }
     }
 }

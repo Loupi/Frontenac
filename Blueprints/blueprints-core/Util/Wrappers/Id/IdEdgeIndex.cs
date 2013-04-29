@@ -1,68 +1,64 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Frontenac.Blueprints.Util.Wrappers.Id
 {
-    public class IdEdgeIndex : Index
+    public class IdEdgeIndex : IIndex
     {
-        protected readonly Index baseIndex;
-        protected readonly IdGraph idGraph;
+        protected readonly IIndex BaseIndex;
+        protected readonly IdGraph IdGraph;
 
-        public IdEdgeIndex(Index baseIndex, IdGraph idGraph)
+        public IdEdgeIndex(IIndex baseIndex, IdGraph idGraph)
         {
             if (null == baseIndex)
                 throw new ArgumentException("null base index");
 
-            this.idGraph = idGraph;
-            this.baseIndex = baseIndex;
+            IdGraph = idGraph;
+            BaseIndex = baseIndex;
         }
 
-        public string getIndexName()
+        public string GetIndexName()
         {
-            return baseIndex.getIndexName();
+            return BaseIndex.GetIndexName();
         }
 
-        public Type getIndexClass()
+        public Type GetIndexClass()
         {
-            return baseIndex.getIndexClass();
+            return BaseIndex.GetIndexClass();
         }
 
-        public void put(string key, object value, Element element)
+        public void Put(string key, object value, IElement element)
         {
-            baseIndex.put(key, value, GetBaseElement(element));
+            BaseIndex.Put(key, value, GetBaseElement(element));
         }
 
-        public CloseableIterable<Element> get(string key, object value)
+        public ICloseableIterable<IElement> Get(string key, object value)
         {
-            return (CloseableIterable<Element>)new IdEdgeIterable(baseIndex.get(key, value), idGraph);
+            return new IdEdgeIterable(BaseIndex.Get(key, value), IdGraph);
         }
 
-        public CloseableIterable<Element> query(string key, object value)
+        public ICloseableIterable<IElement> Query(string key, object value)
         {
-            return (CloseableIterable<Element>)new IdEdgeIterable(baseIndex.query(key, value), idGraph);
+            return new IdEdgeIterable(BaseIndex.Query(key, value), IdGraph);
         }
 
-        public long count(string key, object value)
+        public long Count(string key, object value)
         {
-            return baseIndex.count(key, value);
+            return BaseIndex.Count(key, value);
         }
 
-        public void remove(string key, object value, Element element)
+        public void Remove(string key, object value, IElement element)
         {
-            baseIndex.remove(key, value, GetBaseElement(element));
+            BaseIndex.Remove(key, value, GetBaseElement(element));
         }
 
         public override string ToString()
         {
-            return StringFactory.indexString(this);
+            return StringFactory.IndexString(this);
         }
 
-        Edge GetBaseElement(Element e)
+        IEdge GetBaseElement(IElement e)
         {
-            return ((IdEdge)e).getBaseEdge();
+            return ((IdEdge)e).GetBaseEdge();
         }
     }
 }

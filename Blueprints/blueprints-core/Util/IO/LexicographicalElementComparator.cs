@@ -1,19 +1,15 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.Collections.Generic;
 
 namespace Frontenac.Blueprints.Util.IO
 {
     /// <summary>
     /// Elements are sorted in lexicographical order of IDs.
     /// </summary>
-    public class LexicographicalElementComparator : IComparer<Element>
+    public class LexicographicalElementComparator : IComparer<IElement>
     {
-        public int Compare(Element a, Element b)
+        public int Compare(IElement a, IElement b)
         {
-            return a.getId().ToString().CompareTo(b.getId().ToString());
+            return System.String.Compare(a.GetId().ToString(), b.GetId().ToString(), System.StringComparison.Ordinal);
         }
     }
 }

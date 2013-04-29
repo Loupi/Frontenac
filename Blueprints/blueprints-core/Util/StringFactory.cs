@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace Frontenac.Blueprints.Util
+﻿namespace Frontenac.Blueprints.Util
 {
     /// <summary>
     /// A collection of helpful methods for creating standard toString() representations of graph-related objects.
@@ -13,34 +7,34 @@ namespace Frontenac.Blueprints.Util
     {
         public const string V = "v";
         public const string E = "e";
-        public const string L_BRACKET = "[";
-        public const string R_BRACKET = "]";
-        public const string DASH = "-";
-        public const string ARROW = "->";
-        public const string COLON = ":";
+        public const string LBracket = "[";
+        public const string RBracket = "]";
+        public const string Dash = "-";
+        public const string Arrow = "->";
+        public const string Colon = ":";
 
-        public const string ID = "id";
-        public const string LABEL = "label";
-        public const string EMPTY_STRING = "";
+        public const string Id = "id";
+        public const string Label = "label";
+        public const string EmptyString = "";
 
-        public static string vertexString(Vertex vertex)
+        public static string VertexString(IVertex vertex)
         {
-            return string.Concat(V, L_BRACKET, vertex.getId(), R_BRACKET);
+            return string.Concat(V, LBracket, vertex.GetId(), RBracket);
         }
 
-        public static string edgeString(Edge edge)
+        public static string EdgeString(IEdge edge)
         {
-            return string.Concat(E, L_BRACKET, edge.getId(), R_BRACKET, L_BRACKET, edge.getVertex(Direction.OUT).getId(), DASH, edge.getLabel(), ARROW, edge.getVertex(Direction.IN).getId(), R_BRACKET);
+            return string.Concat(E, LBracket, edge.GetId(), RBracket, LBracket, edge.GetVertex(Direction.Out).GetId(), Dash, edge.GetLabel(), Arrow, edge.GetVertex(Direction.In).GetId(), RBracket);
         }
 
-        public static string graphString(Graph graph, string internalString)
+        public static string GraphString(IGraph graph, string internalString)
         {
-            return string.Concat(graph.GetType().Name.ToLower(), L_BRACKET, internalString, R_BRACKET);
+            return string.Concat(graph.GetType().Name.ToLower(), LBracket, internalString, RBracket);
         }
 
-        public static string indexString(Index index)
+        public static string IndexString(IIndex index)
         {
-            return string.Concat("index", L_BRACKET, index.getIndexName(), COLON, index.getIndexClass().Name, R_BRACKET);
+            return string.Concat("index", LBracket, index.GetIndexName(), Colon, index.GetIndexClass().Name, RBracket);
         }
     }
 }

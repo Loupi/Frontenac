@@ -1,9 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.IO;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Frontenac.Blueprints.Impls.TG
 {
@@ -23,11 +19,11 @@ namespace Frontenac.Blueprints.Impls.TG
         /// Read TinkerGraph metadata from a file.
         /// </summary>
         /// <param name="filename">the name of the file to read the TinkerGraph metadata from</param>
-        public void load(string filename)
+        public void Load(string filename)
         {
             using (var fos = File.OpenRead(filename))
             {
-                load(fos);
+                Load(fos);
             }
         }
 
@@ -35,14 +31,14 @@ namespace Frontenac.Blueprints.Impls.TG
         /// Read TinkerGraph metadata from a Stream.
         /// </summary>
         /// <param name="inputStream">the Stream to read the TinkerGraph metadata from</param>
-        public void load(Stream inputStream)
+        public void Load(Stream inputStream)
         {
-            using (BinaryReader reader = new BinaryReader(inputStream))
+            using (var reader = new BinaryReader(inputStream))
             {
-                _graph.currentId = reader.ReadInt64();
-                readIndices(reader, _graph);
-                readVertexKeyIndices(reader, _graph);
-                readEdgeKeyIndices(reader, _graph);
+                _graph.CurrentId = reader.ReadInt64();
+                ReadIndices(reader, _graph);
+                ReadVertexKeyIndices(reader, _graph);
+                ReadEdgeKeyIndices(reader, _graph);
             }
         }
 
@@ -51,10 +47,10 @@ namespace Frontenac.Blueprints.Impls.TG
         /// </summary>
         /// <param name="graph">the TinkerGraph to push the metadata to</param>
         /// <param name="inputStream">the Stream to read the TinkerGraph metadata from</param>
-        public static void load(TinkerGraph graph, Stream inputStream)
+        public static void Load(TinkerGraph graph, Stream inputStream)
         {
-            TinkerMetadataReader reader = new TinkerMetadataReader(graph);
-            reader.load(inputStream);
+            var reader = new TinkerMetadataReader(graph);
+            reader.Load(inputStream);
         }
 
         /// <summary>
@@ -62,13 +58,13 @@ namespace Frontenac.Blueprints.Impls.TG
         /// </summary>
         /// <param name="graph">the TinkerGraph to push the data to</param>
         /// <param name="filename">the name of the file to read the TinkerGraph metadata from</param>
-        public static void load(TinkerGraph graph, string filename)
+        public static void Load(TinkerGraph graph, string filename)
         {
-            TinkerMetadataReader reader = new TinkerMetadataReader(graph);
-            reader.load(filename);
+            var reader = new TinkerMetadataReader(graph);
+            reader.Load(filename);
         }
 
-        void readIndices(BinaryReader reader, TinkerGraph graph)
+        void ReadIndices(BinaryReader reader, TinkerGraph graph)
         {
             // Read the number of indices
             int indexCount = reader.ReadInt32();
@@ -86,7 +82,7 @@ namespace Frontenac.Blueprints.Impls.TG
                     throw new InvalidDataException("Unknown index class type");
                 }
 
-                TinkerIndex tinkerIndex = new TinkerIndex(indexName, indexType == 1 ? typeof(Vertex) : typeof(Edge));
+                var tinkerIndex = new TinkerIndex(indexName, indexType == 1 ? typeof(IVertex) : typeof(IEdge));
 
                 // Read the number of items associated with this index name
                 int indexItemCount = reader.ReadInt32();
@@ -106,25 +102,25 @@ namespace Frontenac.Blueprints.Impls.TG
                             // Read the vertex or edge identifier
                             if (indexType == 1)
                             {
-                                Vertex v = graph.getVertex(readTypedData(reader));
+                                IVertex v = graph.GetVertex(ReadTypedData(reader));
                                 if (v != null)
-                                    tinkerIndex.put(indexItemKey, v.getProperty(indexItemKey), v);
+                                    tinkerIndex.Put(indexItemKey, v.GetProperty(indexItemKey), v);
                             }
                             else if (indexType == 2)
                             {
-                                Edge e = graph.getEdge(readTypedData(reader));
+                                IEdge e = graph.GetEdge(ReadTypedData(reader));
                                 if (e != null)
-                                    tinkerIndex.put(indexItemKey, e.getProperty(indexItemKey), e);
+                                    tinkerIndex.Put(indexItemKey, e.GetProperty(indexItemKey), e);
                             }
                         }
                     }
                 }
 
-                graph.indices.put(indexName, tinkerIndex);
+                graph.Indices.Put(indexName, tinkerIndex);
             }
         }
 
-        void readVertexKeyIndices(BinaryReader reader, TinkerGraph graph)
+        void ReadVertexKeyIndices(BinaryReader reader, TinkerGraph graph)
         {
             // Read the number of vertex key indices
             int indexCount = reader.ReadInt32();
@@ -134,37 +130,37 @@ namespace Frontenac.Blueprints.Impls.TG
                 // Read the key index name
                 string indexName = reader.ReadString();
 
-                graph.vertexKeyIndex.createKeyIndex(indexName);
+                graph.VertexKeyIndex.CreateKeyIndex(indexName);
 
-                Dictionary<object, HashSet<Element>> items = new Dictionary<object, HashSet<Element>>();
+                var items = new Dictionary<object, HashSet<IElement>>();
 
                 // Read the number of items associated with this key index name
                 int itemCount = reader.ReadInt32();
                 for (int j = 0; j < itemCount; j++)
                 {
                     // Read the item key
-                    object key = readTypedData(reader);
+                    object key = ReadTypedData(reader);
 
-                    HashSet<Element> vertices = new HashSet<Element>();
+                    var vertices = new HashSet<IElement>();
 
                     // Read the number of vertices in this item
                     int vertexCount = reader.ReadInt32();
                     for (int k = 0; k < vertexCount; k++)
                     {
                         // Read the vertex identifier
-                        Vertex v = graph.getVertex(readTypedData(reader));
+                        IVertex v = graph.GetVertex(ReadTypedData(reader));
                         if (v != null)
-                            vertices.Add((TinkerVertex)v);
+                            vertices.Add(v);
                     }
 
-                    items.put(key, vertices);
+                    items.Put(key, vertices);
                 }
 
-                graph.vertexKeyIndex.index.put(indexName, items);
+                graph.VertexKeyIndex.Index.Put(indexName, items);
             }
         }
 
-        void readEdgeKeyIndices(BinaryReader reader, TinkerGraph graph)
+        void ReadEdgeKeyIndices(BinaryReader reader, TinkerGraph graph)
         {
             // Read the number of edge key indices
             int indexCount = reader.ReadInt32();
@@ -174,54 +170,53 @@ namespace Frontenac.Blueprints.Impls.TG
                 // Read the key index name
                 string indexName = reader.ReadString();
 
-                graph.edgeKeyIndex.createKeyIndex(indexName);
+                graph.EdgeKeyIndex.CreateKeyIndex(indexName);
 
-                Dictionary<object, HashSet<Element>> items = new Dictionary<object, HashSet<Element>>();
+                var items = new Dictionary<object, HashSet<IElement>>();
 
                 // Read the number of items associated with this key index name
                 int itemCount = reader.ReadInt32();
                 for (int j = 0; j < itemCount; j++)
                 {
                     // Read the item key
-                    object key = readTypedData(reader);
+                    object key = ReadTypedData(reader);
 
-                    HashSet<Element> edges = new HashSet<Element>();
+                    var edges = new HashSet<IElement>();
 
                     // Read the number of edges in this item
                     int edgeCount = reader.ReadInt32();
                     for (int k = 0; k < edgeCount; k++)
                     {
                         // Read the edge identifier
-                        Edge e = graph.getEdge(readTypedData(reader));
+                        IEdge e = graph.GetEdge(ReadTypedData(reader));
                         if (e != null)
-                            edges.Add((TinkerEdge)e);
+                            edges.Add(e);
                     }
 
-                    items.put(key, edges);
+                    items.Put(key, edges);
                 }
 
-                graph.edgeKeyIndex.index.put(indexName, items);
+                graph.EdgeKeyIndex.Index.Put(indexName, items);
             }
         }
 
-        object readTypedData(BinaryReader reader)
+        object ReadTypedData(BinaryReader reader)
         {
             byte type = reader.ReadByte();
 
             if (type == 1)
                 return reader.ReadString();
-            else if (type == 2)
+            if (type == 2)
                 return reader.ReadInt32();
-            else if (type == 3)
+            if (type == 3)
                 return reader.ReadInt64();
-            else if (type == 4)
+            if (type == 4)
                 return reader.ReadInt16();
-            else if (type == 5)
+            if (type == 5)
                 return reader.ReadSingle();
-            else if (type == 6)
+            if (type == 6)
                 return reader.ReadDouble();
-            else
-                throw new IOException("unknown data type: use java serialization");
+            throw new IOException("unknown data type: use java serialization");
         }
     }
 }

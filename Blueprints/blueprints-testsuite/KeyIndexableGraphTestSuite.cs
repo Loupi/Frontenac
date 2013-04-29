@@ -1,10 +1,6 @@
 ﻿using Frontenac.Blueprints.Impls;
 using NUnit.Framework;
-using System;
-using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Frontenac.Blueprints
 {
@@ -16,212 +12,221 @@ namespace Frontenac.Blueprints
         }
 
         [Test]
-        public void testAutoIndexKeyManagementWithPersistence()
+        public void TestAutoIndexKeyManagementWithPersistence()
         {
-            KeyIndexableGraph graph = (KeyIndexableGraph)graphTest.generateGraph();
-            if (graph.getFeatures().supportsVertexKeyIndex.Value)
+            var graph = (IKeyIndexableGraph)GraphTest.GenerateGraph();
+            if (graph.GetFeatures().SupportsVertexKeyIndex)
             {
-                Assert.AreEqual(graph.getIndexedKeys(typeof(Vertex)).Count(), 0);
-                this.stopWatch();
-                graph.createKeyIndex("name", typeof(Vertex));
-                graph.createKeyIndex("location", typeof(Vertex));
-                printPerformance(graph.ToString(), 2, "automatic index keys added", this.stopWatch());
-                Assert.AreEqual(graph.getIndexedKeys(typeof(Vertex)).Count(), 2);
-                Assert.True(graph.getIndexedKeys(typeof(Vertex)).Contains("name"));
-                Assert.True(graph.getIndexedKeys(typeof(Vertex)).Contains("location"));
+                Assert.AreEqual(graph.GetIndexedKeys(typeof(IVertex)).Count(), 0);
+                StopWatch();
+                graph.CreateKeyIndex("name", typeof(IVertex));
+                graph.CreateKeyIndex("location", typeof(IVertex));
+                PrintPerformance(graph.ToString(), 2, "automatic index keys added", StopWatch());
+                Assert.AreEqual(graph.GetIndexedKeys(typeof(IVertex)).Count(), 2);
+                Assert.True(graph.GetIndexedKeys(typeof(IVertex)).Contains("name"));
+                Assert.True(graph.GetIndexedKeys(typeof(IVertex)).Contains("location"));
             }
-            if (graph.getFeatures().supportsEdgeKeyIndex.Value)
+            if (graph.GetFeatures().SupportsEdgeKeyIndex)
             {
-                Assert.AreEqual(graph.getIndexedKeys(typeof(Edge)).Count(), 0);
-                this.stopWatch();
-                graph.createKeyIndex("weight", typeof(Edge));
-                graph.createKeyIndex("since", typeof(Edge));
-                printPerformance(graph.ToString(), 2, "automatic index keys added", this.stopWatch());
-                Assert.AreEqual(graph.getIndexedKeys(typeof(Edge)).Count(), 2);
-                Assert.True(graph.getIndexedKeys(typeof(Edge)).Contains("weight"));
-                Assert.True(graph.getIndexedKeys(typeof(Edge)).Contains("since"));
+                Assert.AreEqual(graph.GetIndexedKeys(typeof(IEdge)).Count(), 0);
+                StopWatch();
+                graph.CreateKeyIndex("weight", typeof(IEdge));
+                graph.CreateKeyIndex("since", typeof(IEdge));
+                PrintPerformance(graph.ToString(), 2, "automatic index keys added", StopWatch());
+                Assert.AreEqual(graph.GetIndexedKeys(typeof(IEdge)).Count(), 2);
+                Assert.True(graph.GetIndexedKeys(typeof(IEdge)).Contains("weight"));
+                Assert.True(graph.GetIndexedKeys(typeof(IEdge)).Contains("since"));
             }
-            graph.shutdown();
+            graph.Shutdown();
 
-            if (graph.getFeatures().isPersistent.Value)
+            if (graph.GetFeatures().IsPersistent)
             {
-                graph = (KeyIndexableGraph)graphTest.generateGraph();
-                if (graph.getFeatures().supportsVertexKeyIndex.Value)
+                graph = (IKeyIndexableGraph)GraphTest.GenerateGraph();
+                if (graph.GetFeatures().SupportsVertexKeyIndex)
                 {
-                    Assert.AreEqual(graph.getIndexedKeys(typeof(Vertex)).Count(), 2);
-                    Assert.True(graph.getIndexedKeys(typeof(Vertex)).Contains("name"));
-                    Assert.True(graph.getIndexedKeys(typeof(Vertex)).Contains("location"));
+                    Assert.AreEqual(graph.GetIndexedKeys(typeof(IVertex)).Count(), 2);
+                    Assert.True(graph.GetIndexedKeys(typeof(IVertex)).Contains("name"));
+                    Assert.True(graph.GetIndexedKeys(typeof(IVertex)).Contains("location"));
                 }
-                if (graph.getFeatures().supportsEdgeKeyIndex.Value)
+                
+                if (graph.GetFeatures().SupportsEdgeKeyIndex)
                 {
-                    Assert.AreEqual(graph.getIndexedKeys(typeof(Edge)).Count(), 2);
-                    Assert.True(graph.getIndexedKeys(typeof(Edge)).Contains("weight"));
-                    Assert.True(graph.getIndexedKeys(typeof(Edge)).Contains("since"));
+                    Assert.AreEqual(graph.GetIndexedKeys(typeof(IEdge)).Count(), 2);
+                    Assert.True(graph.GetIndexedKeys(typeof(IEdge)).Contains("weight"));
+                    Assert.True(graph.GetIndexedKeys(typeof(IEdge)).Contains("since"));
                 }
-                graph.shutdown();
+                graph.Shutdown();
             }
         }
 
         [Test]
-        public void testAutoIndexKeyDroppingWithPersistence()
+        public void TestAutoIndexKeyDroppingWithPersistence()
         {
-            testAutoIndexKeyManagementWithPersistence();
-            KeyIndexableGraph graph = (KeyIndexableGraph)graphTest.generateGraph();
-            if (graph.getFeatures().isPersistent.Value)
+            TestAutoIndexKeyManagementWithPersistence();
+            var graph = (IKeyIndexableGraph)GraphTest.GenerateGraph();
+            if (graph.GetFeatures().IsPersistent)
             {
-                if (graph.getFeatures().supportsVertexKeyIndex.Value)
+                if (graph.GetFeatures().SupportsVertexKeyIndex)
                 {
-                    graph.dropKeyIndex("name", typeof(Vertex));
+                    graph.DropKeyIndex("name", typeof(IVertex));
                 }
-                if (graph.getFeatures().supportsEdgeKeyIndex.Value)
-                {
-                    graph.dropKeyIndex("weight", typeof(Edge));
-                }
-                graph.shutdown();
 
-                graph = (KeyIndexableGraph)graphTest.generateGraph();
-                if (graph.getFeatures().supportsVertexKeyIndex.Value)
+                if (graph.GetFeatures().SupportsEdgeKeyIndex)
                 {
-                    Assert.AreEqual(graph.getIndexedKeys(typeof(Vertex)).Count(), 1);
-                    Assert.True(graph.getIndexedKeys(typeof(Vertex)).Contains("location"));
-                    graph.dropKeyIndex("location", typeof(Vertex));
+                    graph.DropKeyIndex("weight", typeof(IEdge));
                 }
-                if (graph.getFeatures().supportsEdgeKeyIndex.Value)
+                graph.Shutdown();
+
+                graph = (IKeyIndexableGraph)GraphTest.GenerateGraph();
+
+                if (graph.GetFeatures().SupportsVertexKeyIndex)
                 {
-                    Assert.AreEqual(graph.getIndexedKeys(typeof(Edge)).Count(), 1);
-                    Assert.True(graph.getIndexedKeys(typeof(Edge)).Contains("since"));
-                    graph.dropKeyIndex("since", typeof(Edge));
+                    Assert.AreEqual(graph.GetIndexedKeys(typeof(IVertex)).Count(), 1);
+                    Assert.True(graph.GetIndexedKeys(typeof(IVertex)).Contains("location"));
+                    graph.DropKeyIndex("location", typeof(IVertex));
                 }
-                graph.shutdown();
-                graph = (KeyIndexableGraph)graphTest.generateGraph();
-                if (graph.getFeatures().supportsVertexKeyIndex.Value)
+
+                if (graph.GetFeatures().SupportsEdgeKeyIndex)
                 {
-                    Assert.AreEqual(graph.getIndexedKeys(typeof(Vertex)).Count(), 0);
+                    Assert.AreEqual(graph.GetIndexedKeys(typeof(IEdge)).Count(), 1);
+                    Assert.True(graph.GetIndexedKeys(typeof(IEdge)).Contains("since"));
+                    graph.DropKeyIndex("since", typeof(IEdge));
                 }
-                if (graph.getFeatures().supportsEdgeKeyIndex.Value)
+                graph.Shutdown();
+                graph = (IKeyIndexableGraph)GraphTest.GenerateGraph();
+
+                if (graph.GetFeatures().SupportsVertexKeyIndex)
                 {
-                    Assert.AreEqual(graph.getIndexedKeys(typeof(Edge)).Count(), 0);
+                    Assert.AreEqual(graph.GetIndexedKeys(typeof(IVertex)).Count(), 0);
+                }
+
+                if (graph.GetFeatures().SupportsEdgeKeyIndex)
+                {
+                    Assert.AreEqual(graph.GetIndexedKeys(typeof(IEdge)).Count(), 0);
                 }
             }
-            graph.shutdown();
+            graph.Shutdown();
         }
 
         [Test]
-        public void testGettingVerticesAndEdgesWithKeyValue()
+        public void TestGettingVerticesAndEdgesWithKeyValue()
         {
-            KeyIndexableGraph graph = (KeyIndexableGraph)graphTest.generateGraph();
-            if (graph.getFeatures().supportsVertexIteration.Value && graph.getFeatures().supportsVertexKeyIndex.Value)
+            var graph = (IKeyIndexableGraph)GraphTest.GenerateGraph();
+            
+            if (graph.GetFeatures().SupportsVertexIteration && graph.GetFeatures().SupportsVertexKeyIndex)
             {
-                graph.createKeyIndex("name", typeof(Vertex));
-                Assert.AreEqual(graph.getIndexedKeys(typeof(Vertex)).Count(), 1);
-                Assert.True(graph.getIndexedKeys(typeof(Vertex)).Contains("name"));
-                Vertex v1 = graph.addVertex(null);
-                v1.setProperty("name", "marko");
-                v1.setProperty("location", "everywhere");
-                Vertex v2 = graph.addVertex(null);
-                v2.setProperty("name", "stephen");
-                v2.setProperty("location", "everywhere");
+                graph.CreateKeyIndex("name", typeof(IVertex));
+                Assert.AreEqual(graph.GetIndexedKeys(typeof(IVertex)).Count(), 1);
+                Assert.True(graph.GetIndexedKeys(typeof(IVertex)).Contains("name"));
+                IVertex v1 = graph.AddVertex(null);
+                v1.SetProperty("name", "marko");
+                v1.SetProperty("location", "everywhere");
+                IVertex v2 = graph.AddVertex(null);
+                v2.SetProperty("name", "stephen");
+                v2.SetProperty("location", "everywhere");
 
-                Assert.AreEqual(count(graph.getVertices("location", "everywhere")), 2);
-                Assert.AreEqual(count(graph.getVertices("name", "marko")), 1);
-                Assert.AreEqual(count(graph.getVertices("name", "stephen")), 1);
-                Assert.AreEqual(graph.getVertices("name", "marko").First(), v1);
-                Assert.AreEqual(graph.getVertices("name", "stephen").First(), v2);
+                Assert.AreEqual(Count(graph.GetVertices("location", "everywhere")), 2);
+                Assert.AreEqual(Count(graph.GetVertices("name", "marko")), 1);
+                Assert.AreEqual(Count(graph.GetVertices("name", "stephen")), 1);
+                Assert.AreEqual(graph.GetVertices("name", "marko").First(), v1);
+                Assert.AreEqual(graph.GetVertices("name", "stephen").First(), v2);
             }
 
-            if (graph.getFeatures().supportsEdgeIteration.Value && graph.getFeatures().supportsEdgeKeyIndex.Value)
+            if (graph.GetFeatures().SupportsEdgeIteration && graph.GetFeatures().SupportsEdgeKeyIndex)
             {
-                graph.createKeyIndex("place", typeof(Edge));
-                Assert.AreEqual(graph.getIndexedKeys(typeof(Edge)).Count(), 1);
-                Assert.True(graph.getIndexedKeys(typeof(Edge)).Contains("place"));
+                graph.CreateKeyIndex("place", typeof(IEdge));
+                Assert.AreEqual(graph.GetIndexedKeys(typeof(IEdge)).Count(), 1);
+                Assert.True(graph.GetIndexedKeys(typeof(IEdge)).Contains("place"));
 
-                Edge e1 = graph.addEdge(null, graph.addVertex(null), graph.addVertex(null), "knows");
-                e1.setProperty("name", "marko");
-                e1.setProperty("place", "everywhere");
-                Edge e2 = graph.addEdge(null, graph.addVertex(null), graph.addVertex(null), "knows");
-                e2.setProperty("name", "stephen");
-                e2.setProperty("place", "everywhere");
+                IEdge e1 = graph.AddEdge(null, graph.AddVertex(null), graph.AddVertex(null), "knows");
+                e1.SetProperty("name", "marko");
+                e1.SetProperty("place", "everywhere");
+                IEdge e2 = graph.AddEdge(null, graph.AddVertex(null), graph.AddVertex(null), "knows");
+                e2.SetProperty("name", "stephen");
+                e2.SetProperty("place", "everywhere");
 
-                Assert.AreEqual(count(graph.getEdges("place", "everywhere")), 2);
-                Assert.AreEqual(count(graph.getEdges("name", "marko")), 1);
-                Assert.AreEqual(count(graph.getEdges("name", "stephen")), 1);
-                Assert.AreEqual(graph.getEdges("name", "marko").First(), e1);
-                Assert.AreEqual(graph.getEdges("name", "stephen").First(), e2);
+                Assert.AreEqual(Count(graph.GetEdges("place", "everywhere")), 2);
+                Assert.AreEqual(Count(graph.GetEdges("name", "marko")), 1);
+                Assert.AreEqual(Count(graph.GetEdges("name", "stephen")), 1);
+                Assert.AreEqual(graph.GetEdges("name", "marko").First(), e1);
+                Assert.AreEqual(graph.GetEdges("name", "stephen").First(), e2);
             }
-            graph.shutdown();
+            graph.Shutdown();
         }
 
         [Test]
-        public void testReIndexingOfElements()
+        public void TestReIndexingOfElements()
         {
-            KeyIndexableGraph graph = (KeyIndexableGraph)graphTest.generateGraph();
-            if (graph.getFeatures().supportsVertexKeyIndex.Value)
+            var graph = (IKeyIndexableGraph)GraphTest.GenerateGraph();
+            if (graph.GetFeatures().SupportsVertexKeyIndex)
             {
-                Vertex vertex = graph.addVertex(null);
-                vertex.setProperty("name", "marko");
-                Assert.AreEqual(count(graph.getVertices("name", "marko")), 1);
-                Assert.AreEqual(graph.getVertices("name", "marko").First(), vertex);
-                graph.createKeyIndex("name", typeof(Vertex));
-                Assert.AreEqual(count(graph.getVertices("name", "marko")), 1);
-                Assert.AreEqual(graph.getVertices("name", "marko").First(), vertex);
+                IVertex vertex = graph.AddVertex(null);
+                vertex.SetProperty("name", "marko");
+                Assert.AreEqual(Count(graph.GetVertices("name", "marko")), 1);
+                Assert.AreEqual(graph.GetVertices("name", "marko").First(), vertex);
+                graph.CreateKeyIndex("name", typeof(IVertex));
+                Assert.AreEqual(Count(graph.GetVertices("name", "marko")), 1);
+                Assert.AreEqual(graph.GetVertices("name", "marko").First(), vertex);
             }
 
-            if (graph.getFeatures().supportsEdgeKeyIndex.Value)
+            if (graph.GetFeatures().SupportsEdgeKeyIndex)
             {
-                Edge edge = graph.addEdge(null, graph.addVertex(null), graph.addVertex(null), "knows");
-                edge.setProperty("date", 2012);
-                Assert.AreEqual(count(graph.getEdges("date", 2012)), 1);
-                Assert.AreEqual(graph.getEdges("date", 2012).First(), edge);
-                graph.createKeyIndex("date", typeof(Edge));
-                Assert.AreEqual(count(graph.getEdges("date", 2012)), 1);
-                Assert.AreEqual(graph.getEdges("date", 2012).First(), edge);
+                IEdge edge = graph.AddEdge(null, graph.AddVertex(null), graph.AddVertex(null), "knows");
+                edge.SetProperty("date", 2012);
+                Assert.AreEqual(Count(graph.GetEdges("date", 2012)), 1);
+                Assert.AreEqual(graph.GetEdges("date", 2012).First(), edge);
+                graph.CreateKeyIndex("date", typeof(IEdge));
+                Assert.AreEqual(Count(graph.GetEdges("date", 2012)), 1);
+                Assert.AreEqual(graph.GetEdges("date", 2012).First(), edge);
             }
-            graph.shutdown();
+            graph.Shutdown();
         }
 
         [Test]
-        public void testNoConcurrentModificationException()
+        public void TestNoConcurrentModificationException()
         {
-            KeyIndexableGraph graph = (KeyIndexableGraph)graphTest.generateGraph();
-            if (graph.getFeatures().supportsEdgeKeyIndex.Value)
+            var graph = (IKeyIndexableGraph)GraphTest.GenerateGraph();
+
+            if (graph.GetFeatures().SupportsEdgeKeyIndex)
             {
-                graph.createKeyIndex("key", typeof(Edge));
+                graph.CreateKeyIndex("key", typeof(IEdge));
                 for (int i = 0; i < 25; i++)
                 {
-                    graph.addEdge(null, graph.addVertex(null), graph.addVertex(null), "test").setProperty("key", "value");
+                    graph.AddEdge(null, graph.AddVertex(null), graph.AddVertex(null), "test").SetProperty("key", "value");
                 }
-                if (graph.getFeatures().supportsVertexIteration.Value) Assert.AreEqual(count(graph.getVertices()), 50);
-                if (graph.getFeatures().supportsEdgeIteration.Value) Assert.AreEqual(count(graph.getEdges()), 25);
+
+                if (graph.GetFeatures().SupportsVertexIteration) Assert.AreEqual(Count(graph.GetVertices()), 50);
+                if (graph.GetFeatures().SupportsEdgeIteration) Assert.AreEqual(Count(graph.GetEdges()), 25);
                 int counter = 0;
-                foreach (Edge edge in graph.getEdges("key", "value"))
+                foreach (var edge in graph.GetEdges("key", "value"))
                 {
-                    graph.removeEdge(edge);
+                    graph.RemoveEdge(edge);
                     counter++;
                 }
                 Assert.AreEqual(counter, 25);
-                if (graph.getFeatures().supportsVertexIteration.Value) Assert.AreEqual(count(graph.getVertices()), 50);
-                if (graph.getFeatures().supportsEdgeIteration.Value) Assert.AreEqual(count(graph.getEdges()), 0);
+                if (graph.GetFeatures().SupportsVertexIteration) Assert.AreEqual(Count(graph.GetVertices()), 50);
+                if (graph.GetFeatures().SupportsEdgeIteration) Assert.AreEqual(Count(graph.GetEdges()), 0);
 
             }
-            graph.shutdown();
+            graph.Shutdown();
         }
 
         [Test]
-        public void testKeyIndicesConsistentWithElementRemoval()
+        public void TestKeyIndicesConsistentWithElementRemoval()
         {
-            KeyIndexableGraph graph = (KeyIndexableGraph)graphTest.generateGraph();
+            var graph = (IKeyIndexableGraph)GraphTest.GenerateGraph();
 
-            graph.createKeyIndex("foo", typeof(Vertex));
+            graph.CreateKeyIndex("foo", typeof(IVertex));
 
-            Vertex v1 = graph.addVertex(null);
-            v1.setProperty("foo", 42);
-            vertexCount(graph, 1);
+            IVertex v1 = graph.AddVertex(null);
+            v1.SetProperty("foo", 42);
+            VertexCount(graph, 1);
 
-            graph.removeVertex(v1);
-            vertexCount(graph, 0);
-            Assert.AreEqual(0, count(graph.getVertices("foo", 42)));
+            graph.RemoveVertex(v1);
+            VertexCount(graph, 0);
+            Assert.AreEqual(0, Count(graph.GetVertices("foo", 42)));
 
-            graph.shutdown();
+            graph.Shutdown();
         }
     }
 }

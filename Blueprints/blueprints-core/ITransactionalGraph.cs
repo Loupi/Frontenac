@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace Frontenac.Blueprints
+﻿namespace Frontenac.Blueprints
 {
     /// <summary>
     /// A transactional graph supports the notion of transactions. A transaction scopes a logically coherent operation composed
@@ -18,16 +12,16 @@ namespace Frontenac.Blueprints
     /// 
     /// By default, the first operation on a TransactionalGraph will start a transaction automatically.
     /// </summary>
-    public interface TransactionalGraph : Graph
+    public interface ITransactionalGraph : IGraph
     {
         /// <summary>
         /// Stop the current transaction and successfully apply mutations to the graph.
         /// </summary>
-        void commit();
+        void Commit();
 
         /// <summary>
         /// Stop the current transaction and drop any mutations applied since the last transaction.
         /// </summary>
-        void rollback();
+        void Rollback();
     }
 }

@@ -4,97 +4,95 @@ using System.Collections;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using Frontenac.Blueprints.Impls.TG;
 
 namespace Frontenac.Blueprints.Util.IO.GML
 {
     [TestFixture(Category = "GMLReaderTest")]
-    public class GMLReaderTest
+    public class GmlReaderTest
     {
-        const string LABEL = "label";
+        const string Label = "label";
 
         [Test]
-        public void exampleGmlGetsCorrectNumberOfElements()
+        public void ExampleGmlGetsCorrectNumberOfElements()
         {
-            TinkerGraph graph = new TinkerGraph();
+            var graph = new TinkerGraph();
             
-            using(var stream = typeof(GMLReaderTest).Assembly.GetManifestResourceStream(typeof(GMLReaderTest), "example.gml"))
+            using(var stream = typeof(GmlReaderTest).Assembly.GetManifestResourceStream(typeof(GmlReaderTest), "example.gml"))
             {
-                GMLReader.inputGraph(graph, stream);
+                GmlReader.InputGraph(graph, stream);
             }
 
-            Assert.AreEqual(3, graph.getVertices().Count());
-            Assert.AreEqual(3, graph.getEdges().Count());
+            Assert.AreEqual(3, graph.GetVertices().Count());
+            Assert.AreEqual(3, graph.GetEdges().Count());
         }
 
         [Test]
-        public void exampleGmlGetsCorrectTopology()
+        public void ExampleGmlGetsCorrectTopology()
         {
-            TinkerGraph graph = new TinkerGraph();
+            var graph = new TinkerGraph();
 
-            using(var stream = typeof(GMLReaderTest).Assembly.GetManifestResourceStream(typeof(GMLReaderTest), "example.gml"))
+            using(var stream = typeof(GmlReaderTest).Assembly.GetManifestResourceStream(typeof(GmlReaderTest), "example.gml"))
             {
-                GMLReader.inputGraph(graph, stream);
+                GmlReader.InputGraph(graph, stream);
             }
 
-            Vertex v1 = graph.getVertex(1);
-            Vertex v2 = graph.getVertex(2);
-            Vertex v3 = graph.getVertex(3);
+            IVertex v1 = graph.GetVertex(1);
+            IVertex v2 = graph.GetVertex(2);
+            IVertex v3 = graph.GetVertex(3);
 
-            IEnumerable<Edge> out1 = v1.getEdges(Direction.OUT);
-            Edge e1 = out1.First();
-            Assert.AreEqual(v2, e1.getVertex(Direction.IN));
+            IEnumerable<IEdge> out1 = v1.GetEdges(Direction.Out);
+            IEdge e1 = out1.First();
+            Assert.AreEqual(v2, e1.GetVertex(Direction.In));
 
-            IEnumerable<Edge> out2 = v2.getEdges(Direction.OUT);
-            Edge e2 = out2.First();
-            Assert.AreEqual(v3, e2.getVertex(Direction.IN));
+            IEnumerable<IEdge> out2 = v2.GetEdges(Direction.Out);
+            IEdge e2 = out2.First();
+            Assert.AreEqual(v3, e2.GetVertex(Direction.In));
 
-            IEnumerable<Edge> out3 = v3.getEdges(Direction.OUT);
-            Edge e3 = out3.First();
-            Assert.AreEqual(v1, e3.getVertex(Direction.IN));
+            IEnumerable<IEdge> out3 = v3.GetEdges(Direction.Out);
+            IEdge e3 = out3.First();
+            Assert.AreEqual(v1, e3.GetVertex(Direction.In));
         }
 
         [Test]
-        public void exampleGmlGetsCorrectProperties(){
-            TinkerGraph graph = new TinkerGraph();
+        public void ExampleGmlGetsCorrectProperties(){
+            var graph = new TinkerGraph();
 
-            using(var stream = typeof(GMLReaderTest).Assembly.GetManifestResourceStream(typeof(GMLReaderTest), "example.gml"))
+            using(var stream = typeof(GmlReaderTest).Assembly.GetManifestResourceStream(typeof(GmlReaderTest), "example.gml"))
             {
-                GMLReader.inputGraph(graph, stream);
+                GmlReader.InputGraph(graph, stream);
             }
 
-            Vertex v1 = graph.getVertex(1);
-            Assert.AreEqual("Node 1", v1.getProperty(LABEL));
+            IVertex v1 = graph.GetVertex(1);
+            Assert.AreEqual("Node 1", v1.GetProperty(Label));
 
-            Vertex v2 = graph.getVertex(2);
-            Assert.AreEqual("Node 2", v2.getProperty(LABEL));
+            IVertex v2 = graph.GetVertex(2);
+            Assert.AreEqual("Node 2", v2.GetProperty(Label));
 
-            Vertex v3 = graph.getVertex(3);
-            Assert.AreEqual("Node 3", v3.getProperty(LABEL));
+            IVertex v3 = graph.GetVertex(3);
+            Assert.AreEqual("Node 3", v3.GetProperty(Label));
 
-            IEnumerable<Edge> out1 = v1.getEdges(Direction.OUT);
-            Edge e1 = out1.First();
-            Assert.AreEqual("Edge from node 1 to node 2", e1.getLabel());
+            IEnumerable<IEdge> out1 = v1.GetEdges(Direction.Out);
+            IEdge e1 = out1.First();
+            Assert.AreEqual("Edge from node 1 to node 2", e1.GetLabel());
 
-            IEnumerable<Edge> out2 = v2.getEdges(Direction.OUT);
-            Edge e2 = out2.First();
-            Assert.AreEqual("Edge from node 2 to node 3", e2.getLabel());
+            IEnumerable<IEdge> out2 = v2.GetEdges(Direction.Out);
+            IEdge e2 = out2.First();
+            Assert.AreEqual("Edge from node 2 to node 3", e2.GetLabel());
 
-            IEnumerable<Edge> out3 = v3.getEdges(Direction.OUT);
-            Edge e3 = out3.First();
-            Assert.AreEqual("Edge from node 3 to node 1", e3.getLabel());
+            IEnumerable<IEdge> out3 = v3.GetEdges(Direction.Out);
+            IEdge e3 = out3.First();
+            Assert.AreEqual("Edge from node 3 to node 1", e3.GetLabel());
         }
 
         [Test]
-        public void malformedThrowsIoException()
+        public void MalformedThrowsIoException()
         {
             try
             {
-                using (var stream = typeof(GMLReaderTest).Assembly.GetManifestResourceStream(typeof(GMLReaderTest), "malformed.gml"))
+                using (var stream = typeof(GmlReaderTest).Assembly.GetManifestResourceStream(typeof(GmlReaderTest), "malformed.gml"))
                 {
-                    GMLReader.inputGraph(new TinkerGraph(), stream);
+                    GmlReader.InputGraph(new TinkerGraph(), stream);
                 }
                 Assert.Fail();
             }
@@ -109,29 +107,29 @@ namespace Frontenac.Blueprints.Util.IO.GML
         }
 
         [Test]
-        public void example2GmlTestingMapParsing()
+        public void Example2GmlTestingMapParsing()
         {
-            TinkerGraph graph = new TinkerGraph();
+            var graph = new TinkerGraph();
 
-            using (var stream = typeof(GMLReaderTest).Assembly.GetManifestResourceStream(typeof(GMLReaderTest), "example2.gml"))
+            using (var stream = typeof(GmlReaderTest).Assembly.GetManifestResourceStream(typeof(GmlReaderTest), "example2.gml"))
             {
-                GMLReader.inputGraph(graph, stream);
+                GmlReader.InputGraph(graph, stream);
             }
 
-            Assert.AreEqual(2, graph.getVertices().Count());
-            Assert.AreEqual(1, graph.getEdges().Count());
+            Assert.AreEqual(2, graph.GetVertices().Count());
+            Assert.AreEqual(1, graph.GetEdges().Count());
 
-            object property = graph.getVertex(1).getProperty(GMLTokens.GRAPHICS);
+            object property = graph.GetVertex(1).GetProperty(GmlTokens.Graphics);
             Assert.True(property is IDictionary);
 
-            Dictionary<string, object> map = (Dictionary<string, object>) property;
+            var map = (Dictionary<string, object>) property;
             Assert.AreEqual(5, map.Count);
-            Assert.AreEqual(0.1f, map.get("x"));
+            Assert.AreEqual(0.1f, map.Get("x"));
             // NB comes back as int
-            Assert.AreEqual(0, map.get("y"));
-            Assert.AreEqual(0.1f, map.get("w"));
-            Assert.AreEqual(0.1f, map.get("h"));
-            Assert.AreEqual("earth.gif", map.get("bitmap"));
+            Assert.AreEqual(0, map.Get("y"));
+            Assert.AreEqual(0.1f, map.Get("w"));
+            Assert.AreEqual(0.1f, map.Get("h"));
+            Assert.AreEqual("earth.gif", map.Get("bitmap"));
         }
 
 

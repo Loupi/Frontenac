@@ -1,8 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Frontenac.Blueprints.Util.Wrappers.Event
 {
@@ -11,62 +8,62 @@ namespace Frontenac.Blueprints.Util.Wrappers.Event
     /// passes the GraphChangedListener to the edges and vertices returned from indices so that they may raise graph
     /// events.
     /// </summary>
-    /// <typeparam name="T"></typeparam>
-    public class EventIndex : Index
+    public class EventIndex : IIndex
     {
-        protected readonly Index rawIndex;
+        protected readonly IIndex RawIndex;
         readonly EventGraph _eventGraph;
 
-        public EventIndex(Index rawIndex, EventGraph eventGraph)
+        public EventIndex(IIndex rawIndex, EventGraph eventGraph)
         {
-            this.rawIndex = rawIndex;
+            RawIndex = rawIndex;
             _eventGraph = eventGraph;
         }
 
-        public void remove(string key, object value, Element element)
+        public void Remove(string key, object value, IElement element)
         {
-            rawIndex.remove(key, value, (element as EventElement).getBaseElement());
+            var eventElement = element as EventElement;
+            if (eventElement != null)
+                RawIndex.Remove(key, value, eventElement.GetBaseElement());
         }
 
-        public void put(string key, object value, Element element)
+        public void Put(string key, object value, IElement element)
         {
-            rawIndex.put(key, value, (element as EventElement).getBaseElement());
+            var eventElement = element as EventElement;
+            if (eventElement != null) RawIndex.Put(key, value, eventElement.GetBaseElement());
         }
 
-        public CloseableIterable<Element> get(string key, object value)
+        public ICloseableIterable<IElement> Get(string key, object value)
         {
-            if (typeof(Vertex).IsAssignableFrom(this.getIndexClass()))
-                return (CloseableIterable<Element>)new EventVertexIterable((IEnumerable<Vertex>)rawIndex.get(key, value), _eventGraph);
-            else
-                return (CloseableIterable<Element>)new EventEdgeIterable((IEnumerable<Edge>)rawIndex.get(key, value), _eventGraph);
+            if (typeof(IVertex).IsAssignableFrom(GetIndexClass()))
+                return new EventVertexIterable((IEnumerable<IVertex>)RawIndex.Get(key, value), _eventGraph);
+            return new EventEdgeIterable((IEnumerable<IEdge>)RawIndex.Get(key, value), _eventGraph);
         }
 
-        public CloseableIterable<Element> query(string key, object value)
+        public ICloseableIterable<IElement> Query(string key, object value)
         {
-            if (typeof(Vertex).IsAssignableFrom(this.getIndexClass()))
-                return (CloseableIterable<Element>)new EventVertexIterable((IEnumerable<Vertex>)rawIndex.query(key, value), _eventGraph);
-            else
-                return (CloseableIterable<Element>)new EventEdgeIterable((IEnumerable<Edge>)rawIndex.query(key, value), _eventGraph);
+            if (typeof(IVertex).IsAssignableFrom(GetIndexClass()))
+                return new EventVertexIterable((IEnumerable<IVertex>)RawIndex.Query(key, value), _eventGraph);
+            return new EventEdgeIterable((IEnumerable<IEdge>)RawIndex.Query(key, value), _eventGraph);
         }
 
-        public long count(string key, object value)
+        public long Count(string key, object value)
         {
-            return rawIndex.count(key, value);
+            return RawIndex.Count(key, value);
         }
 
-        public string getIndexName()
+        public string GetIndexName()
         {
-            return rawIndex.getIndexName();
+            return RawIndex.GetIndexName();
         }
 
-        public Type getIndexClass()
+        public Type GetIndexClass()
         {
-            return rawIndex.getIndexClass();
+            return RawIndex.GetIndexClass();
         }
 
         public override string ToString()
         {
-            return StringFactory.indexString(this);
+            return StringFactory.IndexString(this);
         }
     }
 }

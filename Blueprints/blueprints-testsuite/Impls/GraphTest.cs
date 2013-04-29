@@ -1,15 +1,9 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace Frontenac.Blueprints.Impls
+﻿namespace Frontenac.Blueprints.Impls
 {
     public abstract class GraphTest : BaseTest
     {
-        public abstract Graph generateGraph();
+        public abstract IGraph GenerateGraph();
 
-        public abstract Graph generateGraph(string graphDirectoryName);
+        public abstract IGraph GenerateGraph(string graphDirectoryName);
     }
 }

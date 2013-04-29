@@ -1,9 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
-using System.IO;
+﻿using System.IO;
 using System.IO.Pipes;
-using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 
 namespace Frontenac.Blueprints.Util.IO.GraphML
@@ -18,21 +14,21 @@ namespace Frontenac.Blueprints.Util.IO.GraphML
         /// </summary>
         /// <param name="fromGraph">the graph to take data from</param>
         /// <param name="toGraph">the graph to take data to</param>
-        public static void migrateGraph(Graph fromGraph, Graph toGraph)
+        public static void MigrateGraph(IGraph fromGraph, IGraph toGraph)
         {
-            const int PIPE_SIZE = 1024;
-            AnonymousPipeServerStream outPipe = new AnonymousPipeServerStream(PipeDirection.Out, HandleInheritability.Inheritable, PIPE_SIZE);
+            const int pipeSize = 1024;
+            var outPipe = new AnonymousPipeServerStream(PipeDirection.Out, HandleInheritability.Inheritable, pipeSize);
             {
-                using (AnonymousPipeClientStream inPipe = new AnonymousPipeClientStream(PipeDirection.In, outPipe.ClientSafePipeHandle))
+                using (var inPipe = new AnonymousPipeClientStream(PipeDirection.In, outPipe.ClientSafePipeHandle))
                 {
                     Task.Factory.StartNew(() =>
                     {
-                        GraphMLWriter.outputGraph(fromGraph, outPipe);
+                        GraphMlWriter.OutputGraph(fromGraph, outPipe);
                         outPipe.Flush();
                         outPipe.Close();
                     });
 
-                    GraphMLReader.inputGraph(toGraph, inPipe);
+                    GraphMlReader.InputGraph(toGraph, inPipe);
                 }
             }
         }

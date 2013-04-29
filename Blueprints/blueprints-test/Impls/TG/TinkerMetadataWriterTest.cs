@@ -1,10 +1,5 @@
 ﻿using NUnit.Framework;
-using System;
-using System.Collections.Generic;
 using System.IO;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Frontenac.Blueprints.Impls.TG
 {
@@ -12,53 +7,56 @@ namespace Frontenac.Blueprints.Impls.TG
     public class TinkerMetadataWriterTest
     {
         [Test]
-        public void testNormal()
+        public void TestNormal()
         {
-            TinkerGraph g = TinkerGraphFactory.createTinkerGraph();
-            createManualIndices(g);
-            createKeyIndices(g);
+            TinkerGraph g = TinkerGraphFactory.CreateTinkerGraph();
+            CreateManualIndices(g);
+            CreateKeyIndices(g);
 
             using (var bos = new MemoryStream())
             {
-                TinkerMetadataWriter.save(g, bos);
+                TinkerMetadataWriter.Save(g, bos);
 
                 using (var stream = typeof(TinkerMetadataWriterTest).Assembly.GetManifestResourceStream(typeof(TinkerMetadataWriterTest), "example-tinkergraph-metadata.dat"))
                 {
-                    var ms = new MemoryStream((int)stream.Length);
-                    stream.CopyTo(ms);
-
-                    byte[] expected = ms.ToArray();
-                    byte[] actual = bos.ToArray();
-
-                    Assert.AreEqual(expected.Length, actual.Length);
-
-                    for (int ix = 0; ix < actual.Length; ix++)
+                    if (stream != null)
                     {
-                        Assert.AreEqual(expected[ix], actual[ix]);
+                        var ms = new MemoryStream((int)stream.Length);
+                        stream.CopyTo(ms);
+
+                        byte[] expected = ms.ToArray();
+                        byte[] actual = bos.ToArray();
+
+                        Assert.AreEqual(expected.Length, actual.Length);
+
+                        for (int ix = 0; ix < actual.Length; ix++)
+                        {
+                            Assert.AreEqual(expected[ix], actual[ix]);
+                        }
                     }
                 }
             }
         }
 
-        void createKeyIndices(TinkerGraph g)
+        static void CreateKeyIndices(TinkerGraph g)
         {
-            g.createKeyIndex("name", typeof(Vertex));
-            g.createKeyIndex("weight", typeof(Edge));
+            g.CreateKeyIndex("name", typeof(IVertex));
+            g.CreateKeyIndex("weight", typeof(IEdge));
         }
 
-        void createManualIndices(TinkerGraph g)
+        static void CreateManualIndices(TinkerGraph g)
         {
-            Index idxAge = g.createIndex("age", typeof(Vertex));
-            Vertex v1 = g.getVertex(1);
-            Vertex v2 = g.getVertex(2);
-            idxAge.put("age", v1.getProperty("age"), v1);
-            idxAge.put("age", v2.getProperty("age"), v2);
+            IIndex idxAge = g.CreateIndex("age", typeof(IVertex));
+            IVertex v1 = g.GetVertex(1);
+            IVertex v2 = g.GetVertex(2);
+            idxAge.Put("age", v1.GetProperty("age"), v1);
+            idxAge.Put("age", v2.GetProperty("age"), v2);
 
-            Index idxWeight = g.createIndex("weight", typeof(Edge));
-            Edge e7 = g.getEdge(7);
-            Edge e12 = g.getEdge(12);
-            idxWeight.put("weight", e7.getProperty("weight"), e7);
-            idxWeight.put("weight", e12.getProperty("weight"), e12);
+            IIndex idxWeight = g.CreateIndex("weight", typeof(IEdge));
+            IEdge e7 = g.GetEdge(7);
+            IEdge e12 = g.GetEdge(12);
+            idxWeight.Put("weight", e7.GetProperty("weight"), e7);
+            idxWeight.Put("weight", e12.GetProperty("weight"), e12);
         }
     }
 }

@@ -1,63 +1,60 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Frontenac.Blueprints.Util.Wrappers.ReadOnly
 {
-    public abstract class ReadOnlyElement : Element
+    public abstract class ReadOnlyElement : IElement
     {
-        protected Element baseElement;
+        protected readonly IElement BaseElement;
 
-        protected ReadOnlyElement(Element baseElement)
+        protected ReadOnlyElement(IElement baseElement)
         {
-            this.baseElement = baseElement;
+            BaseElement = baseElement;
         }
 
-        public IEnumerable<string> getPropertyKeys()
+        public IEnumerable<string> GetPropertyKeys()
         {
-            return baseElement.getPropertyKeys();
+            return BaseElement.GetPropertyKeys();
         }
 
-        public object getId()
+        public object GetId()
         {
-            return baseElement.getId();
+            return BaseElement.GetId();
         }
 
-        public object removeProperty(string key)
+        public object RemoveProperty(string key)
         {
-            throw new InvalidOperationException(ReadOnlyTokens.MUTATE_ERROR_MESSAGE);
+            throw new InvalidOperationException(ReadOnlyTokens.MutateErrorMessage);
         }
 
-        public object getProperty(string key)
+        public object GetProperty(string key)
         {
-            return baseElement.getProperty(key);
+            return BaseElement.GetProperty(key);
         }
 
-        public void setProperty(string key, object value)
+        public void SetProperty(string key, object value)
         {
-            throw new InvalidOperationException(ReadOnlyTokens.MUTATE_ERROR_MESSAGE);
+            throw new InvalidOperationException(ReadOnlyTokens.MutateErrorMessage);
         }
 
         public override string ToString()
         {
-            return baseElement.ToString();
+            return BaseElement.ToString();
         }
 
         public override int GetHashCode()
         {
-            return baseElement.GetHashCode();
+            return BaseElement.GetHashCode();
         }
 
-        public void remove()
+        public void Remove()
         {
-            throw new InvalidOperationException(ReadOnlyTokens.MUTATE_ERROR_MESSAGE);
+            throw new InvalidOperationException(ReadOnlyTokens.MutateErrorMessage);
         }
 
         public override bool Equals(object obj)
         {
-            return ElementHelper.areEqual(this, obj);
+            return ElementHelper.AreEqual(this, obj);
         }
     }
 }

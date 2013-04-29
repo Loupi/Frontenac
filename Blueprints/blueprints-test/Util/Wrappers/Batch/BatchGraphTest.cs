@@ -1,9 +1,7 @@
-﻿using NUnit.Framework;
+﻿using System.Globalization;
+using NUnit.Framework;
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using Frontenac.Blueprints.Impls.TG;
 
 namespace Frontenac.Blueprints.Util.Wrappers.Batch
@@ -11,226 +9,222 @@ namespace Frontenac.Blueprints.Util.Wrappers.Batch
     [TestFixture(Category = "BatchGraphTest")]
     public class BatchGraphTest
     {
-        const string _UID = "uid";
+        const string Uid = "uid";
 
-        const string vertexIdKey = "vid";
-        const string edgeIdKey = "eid";
-        bool _assignKeys = false;
-        bool _ignoreIDs = false;
+        const string VertexIdKey = "vid";
+        const string EdgeIdKey = "eid";
+        bool _assignKeys;
+        bool _ignoreIDs;
 
         [Test]
-        public void testNumberIdLoading()
+        public void TestNumberIdLoading()
         {
-            loadingTest(5000, 100, VertexIDType.NUMBER, new NumberLoadingFactory());
-            loadingTest(200000, 10000, VertexIDType.NUMBER, new NumberLoadingFactory());
+            LoadingTest(5000, 100, VertexIdType.Number, new NumberLoadingFactory());
+            LoadingTest(200000, 10000, VertexIdType.Number, new NumberLoadingFactory());
 
             _assignKeys = true;
-            loadingTest(5000, 100, VertexIDType.NUMBER, new NumberLoadingFactory());
-            loadingTest(50000, 10000, VertexIDType.NUMBER, new NumberLoadingFactory());
+            LoadingTest(5000, 100, VertexIdType.Number, new NumberLoadingFactory());
+            LoadingTest(50000, 10000, VertexIdType.Number, new NumberLoadingFactory());
             _assignKeys = false;
 
             _ignoreIDs = true;
-            loadingTest(5000, 100, VertexIDType.NUMBER, new NumberLoadingFactory());
-            loadingTest(50000, 10000, VertexIDType.NUMBER, new NumberLoadingFactory());
+            LoadingTest(5000, 100, VertexIdType.Number, new NumberLoadingFactory());
+            LoadingTest(50000, 10000, VertexIdType.Number, new NumberLoadingFactory());
             _ignoreIDs = false;
         }
 
         [Test]
-        public void testObjectIdLoading()
+        public void TestObjectIdLoading()
         {
-            loadingTest(5000, 100, VertexIDType.OBJECT, new StringLoadingFactory());
-            loadingTest(200000, 10000, VertexIDType.OBJECT, new StringLoadingFactory());
+            LoadingTest(5000, 100, VertexIdType.Object, new StringLoadingFactory());
+            LoadingTest(200000, 10000, VertexIdType.Object, new StringLoadingFactory());
         }
 
         [Test]
-        public void testStringIdLoading()
+        public void TestStringIdLoading()
         {
-            loadingTest(5000, 100, VertexIDType.STRING, new StringLoadingFactory());
-            loadingTest(200000, 10000, VertexIDType.STRING, new StringLoadingFactory());
+            LoadingTest(5000, 100, VertexIdType.String, new StringLoadingFactory());
+            LoadingTest(200000, 10000, VertexIdType.String, new StringLoadingFactory());
         }
 
         [Test]
-        public void testUrlIdLoading()
+        public void TestUrlIdLoading()
         {
-            loadingTest(5000, 100, VertexIDType.URL, new URLLoadingFactory());
-            loadingTest(200000, 10000, VertexIDType.URL, new URLLoadingFactory());
+            LoadingTest(5000, 100, VertexIdType.Url, new UrlLoadingFactory());
+            LoadingTest(200000, 10000, VertexIdType.Url, new UrlLoadingFactory());
         }
 
         [Test]
-        public void testQuadLoading()
+        public void TestQuadLoading()
         {
-            int numEdges = 10000;
-            string[][] quads = generateQuads(100, numEdges, new string[]{"knows", "friend"});
-            TinkerGraph graph = new TinkerGraph();
-            BatchGraph bgraph = new BatchGraph(new WritethroughGraph(graph), VertexIDType.STRING, 1000);
+            const int numEdges = 10000;
+            string[][] quads = GenerateQuads(100, numEdges, new[]{"knows", "friend"});
+            var graph = new TinkerGraph();
+            var bgraph = new BatchGraph(new WritethroughGraph(graph), VertexIdType.String, 1000);
             foreach (string[] quad in quads)
             {
-                Vertex[] vertices = new Vertex[2];
+                var vertices = new IVertex[2];
                 for (int i = 0; i < 2; i++)
                 {
-                    vertices[i] = bgraph.getVertex(quad[i]);
-                    if (vertices[i] == null) vertices[i] = bgraph.addVertex(quad[i]);
+                    vertices[i] = bgraph.GetVertex(quad[i]);
+                    if (vertices[i] == null) vertices[i] = bgraph.AddVertex(quad[i]);
                 }
-                Edge edge = bgraph.addEdge(null, vertices[0], vertices[1], quad[2]);
-                edge.setProperty("annotation", quad[3]);
+                IEdge edge = bgraph.AddEdge(null, vertices[0], vertices[1], quad[2]);
+                edge.SetProperty("annotation", quad[3]);
             }
-            Assert.AreEqual(numEdges, BaseTest.count(graph.getEdges()));
+            Assert.AreEqual(numEdges, BaseTest.Count(graph.GetEdges()));
 
-            bgraph.shutdown();
+            bgraph.Shutdown();
         }
 
         [Test]
-        public void testLoadingWithExisting1()
+        public void TestLoadingWithExisting1()
         {
-            int numEdges = 1000;
-            string[][] quads = generateQuads(100, numEdges, new string[]{"knows", "friend"});
-            TinkerGraph tg = new TinkerGraph();
-            BatchGraph bg = new BatchGraph(new WritethroughGraph(tg), VertexIDType.STRING, 100);
-            bg.setLoadingFromScratch(false);
-            Graph graph = null;
+            const int numEdges = 1000;
+            string[][] quads = GenerateQuads(100, numEdges, new[]{"knows", "friend"});
+            var tg = new TinkerGraph();
+            var bg = new BatchGraph(new WritethroughGraph(tg), VertexIdType.String, 100);
+            bg.SetLoadingFromScratch(false);
             int counter = 0;
             foreach (string[] quad in quads)
             {
+                IGraph graph;
                 if (counter < numEdges / 2) graph = tg;
                 else graph = bg;
 
-                Vertex[] vertices = new Vertex[2];
+                var vertices = new IVertex[2];
                 for (int i = 0; i < 2; i++)
                 {
-                    vertices[i] = graph.getVertex(quad[i]);
-                    if (vertices[i] == null) vertices[i] = graph.addVertex(quad[i]);
+                    vertices[i] = graph.GetVertex(quad[i]);
+                    if (vertices[i] == null) vertices[i] = graph.AddVertex(quad[i]);
                 }
-                Edge edge = graph.addEdge(null, vertices[0], vertices[1], quad[2]);
-                edge.setProperty("annotation", quad[3]);
+                IEdge edge = graph.AddEdge(null, vertices[0], vertices[1], quad[2]);
+                edge.SetProperty("annotation", quad[3]);
                 counter++;
             }
-            Assert.AreEqual(numEdges, BaseTest.count(tg.getEdges()));
+            Assert.AreEqual(numEdges, BaseTest.Count(tg.GetEdges()));
 
-            bg.shutdown();
+            bg.Shutdown();
         }
 
         [Test]
-        public void testLoadingWithExisting2()
+        public void TestLoadingWithExisting2()
         {
-            int numEdges = 1000;
-            string[][] quads = generateQuads(100, numEdges, new string[]{"knows", "friend"});
+            const int numEdges = 1000;
+            string[][] quads = GenerateQuads(100, numEdges, new[]{"knows", "friend"});
             TinkerGraph tg = new IgnoreIdTinkerGraph();
-            BatchGraph bg = new BatchGraph(new WritethroughGraph(tg), VertexIDType.STRING, 100);
+            var bg = new BatchGraph(new WritethroughGraph(tg), VertexIdType.String, 100);
             try
             {
-                bg.setLoadingFromScratch(false);
+                bg.SetLoadingFromScratch(false);
                 Assert.Fail();
             }
             catch (InvalidOperationException)
             {
             }
-            bg.setVertexIdKey("uid");
-            bg.setLoadingFromScratch(false);
+            bg.SetVertexIdKey("uid");
+            bg.SetLoadingFromScratch(false);
             try
             {
-                bg.setVertexIdKey(null);
+                bg.SetVertexIdKey(null);
                 Assert.Fail();
             }
             catch (InvalidOperationException)
             {
             }
 
-            Graph graph = null;
             int counter = 0;
             foreach (string[] quad in quads)
             {
+                IGraph graph;
                 if (counter < numEdges / 2) graph = tg;
                 else graph = bg;
 
-                Vertex[] vertices = new Vertex[2];
+                var vertices = new IVertex[2];
                 for (int i = 0; i < 2; i++) {
-                    vertices[i] = graph.getVertex(quad[i]);
-                    if (vertices[i] == null) vertices[i] = graph.addVertex(quad[i]);
+                    vertices[i] = graph.GetVertex(quad[i]);
+                    if (vertices[i] == null) vertices[i] = graph.AddVertex(quad[i]);
                 }
-                Edge edge = graph.addEdge(null, vertices[0], vertices[1], quad[2]);
-                edge.setProperty("annotation", quad[3]);
+                IEdge edge = graph.AddEdge(null, vertices[0], vertices[1], quad[2]);
+                edge.SetProperty("annotation", quad[3]);
                 counter++;
             }
-            Assert.AreEqual(numEdges, BaseTest.count(tg.getEdges()));
+            Assert.AreEqual(numEdges, BaseTest.Count(tg.GetEdges()));
 
-            bg.shutdown();
+            bg.Shutdown();
         }
 
-        public static string[][] generateQuads(int numVertices, int numEdges, string[] labels)
+        public static string[][] GenerateQuads(int numVertices, int numEdges, string[] labels)
         {
-            Random random = new Random();
-            string[][] edges = new string[numEdges][];
+            var random = new Random();
+            var edges = new string[numEdges][];
             for (int i = 0; i < numEdges; i++)
             {
                 edges[i] = new string[4];
                 edges[i][0] = string.Concat("v", random.Next(numVertices), 1);
                 edges[i][1] = string.Concat("v", random.Next(numVertices), 1);
                 edges[i][2] = labels[random.Next(labels.Length)];
-                edges[i][3] = random.Next().ToString();
+                edges[i][3] = random.Next().ToString(CultureInfo.InvariantCulture);
             }
             return edges;
         }
 
-        public void loadingTest(int total, int bufferSize, VertexIDType type, LoadingFactory ids)
+        public void LoadingTest(int total, int bufferSize, VertexIdType type, ILoadingFactory ids)
         {
-            VertexEdgeCounter counter = new VertexEdgeCounter();
+            var counter = new VertexEdgeCounter();
 
-            MockTransactionalGraph tgraph = null;
-            if (_ignoreIDs)
-                tgraph = new MockTransactionalGraph(new IgnoreIdTinkerGraph());
-            else
-                tgraph = new MockTransactionalGraph(new TinkerGraph());
+            MockTransactionalGraph tgraph = _ignoreIDs ? new MockTransactionalGraph(new IgnoreIdTinkerGraph()) : new MockTransactionalGraph(new TinkerGraph());
 
-            BLGraph graph = new BLGraph(this, tgraph, counter, ids);
-            BatchGraph loader = new BatchGraph(graph, type, bufferSize);
+            var graph = new BlGraph(this, tgraph, counter, ids);
+            var loader = new BatchGraph(graph, type, bufferSize);
 
             if (_assignKeys)
-                loader.setVertexIdKey(vertexIdKey);
-                loader.setEdgeIdKey(edgeIdKey);
+                loader.SetVertexIdKey(VertexIdKey);
+                loader.SetEdgeIdKey(EdgeIdKey);
 
             //Create a chain
             int chainLength = total;
-            Vertex previous = null;
+            IVertex previous = null;
             for (int i = 0; i <= chainLength; i++)
             {
-                Vertex next = loader.addVertex(ids.getVertexId(i));
-                next.setProperty(_UID, i);
-                counter.numVertices++;
-                counter.totalVertices++;
+                IVertex next = loader.AddVertex(ids.GetVertexId(i));
+                next.SetProperty(Uid, i);
+                counter.NumVertices++;
+                counter.TotalVertices++;
                 if (previous != null)
                 {
-                    Edge e = loader.addEdge(ids.getEdgeId(i), loader.getVertex(previous.getId()), loader.getVertex(next.getId()), "next");
-                    e.setProperty(_UID, i);
-                    counter.numEdges++;
+                    IEdge e = loader.AddEdge(ids.GetEdgeId(i), loader.GetVertex(previous.GetId()), loader.GetVertex(next.GetId()), "next");
+                    e.SetProperty(Uid, i);
+                    counter.NumEdges++;
                 }
                 previous = next;
             }
 
-            loader.commit();
-            Assert.True(tgraph.allSuccessful());
+            loader.Commit();
+            Assert.True(tgraph.AllSuccessful());
 
-            loader.shutdown();
+            loader.Shutdown();
         }
 
         class VertexEdgeCounter
         {
-            public int numVertices = 0;
-            public int numEdges = 0;
-            public int totalVertices = 0;
+            public int NumVertices;
+            public int NumEdges;
+            public int TotalVertices;
         }
 
-        class BLGraph : TransactionalGraph
+        class BlGraph : ITransactionalGraph
         {
-            const int keepLast = 10;
+            const int KeepLast = 10;
 
             readonly VertexEdgeCounter _counter;
             bool _first = true;
-            readonly LoadingFactory _ids;
+            readonly ILoadingFactory _ids;
 
-            readonly TransactionalGraph _graph;
+            readonly ITransactionalGraph _graph;
             readonly BatchGraphTest _batchGraphTest;
 
-            public BLGraph(BatchGraphTest batchGraphTest, TransactionalGraph graph, VertexEdgeCounter counter, LoadingFactory ids)
+            public BlGraph(BatchGraphTest batchGraphTest, ITransactionalGraph graph, VertexEdgeCounter counter, ILoadingFactory ids)
             {
                 _batchGraphTest = batchGraphTest;
                 _graph = graph;
@@ -238,185 +232,185 @@ namespace Frontenac.Blueprints.Util.Wrappers.Batch
                 _ids = ids;
             }
 
-            static object parseId(object id)
+            static object ParseId(object id)
             {
-                if (id is string)
+                var s = id as string;
+                if (s != null)
                 {
                     try
                     {
-                        return int.Parse((string) id);
+                        return int.Parse(s);
                     }
                     catch (FormatException)
                     {
                         return id;
                     }
                 }
-                else 
-                    return id;
+                return id;
             }
 
-            public void commit()
+            public void Commit()
             {
-                _graph.commit();
-                verifyCounts();
+                _graph.Commit();
+                VerifyCounts();
             }
 
             
-            public void rollback()
+            public void Rollback()
             {
-                _graph.rollback();
-                verifyCounts();
+                _graph.Rollback();
+                VerifyCounts();
             }
 
-            void verifyCounts() 
+            void VerifyCounts() 
             {
                 //System.out.println("Committed (vertices/edges): " + counter.numVertices + " / " + counter.numEdges);
-                Assert.AreEqual(_counter.numVertices, BaseTest.count(_graph.getVertices()) - (_first ? 0 : keepLast));
-                Assert.AreEqual(_counter.numEdges, BaseTest.count(_graph.getEdges()));
-                foreach (Edge e in getEdges())
+                Assert.AreEqual(_counter.NumVertices, BaseTest.Count(_graph.GetVertices()) - (_first ? 0 : KeepLast));
+                Assert.AreEqual(_counter.NumEdges, BaseTest.Count(_graph.GetEdges()));
+                foreach (IEdge e in GetEdges())
                 {
-                    int id = (int)e.getProperty(_UID);
+                    var id = (int)e.GetProperty(Uid);
                     if (!_batchGraphTest._ignoreIDs)
-                        Assert.AreEqual(_ids.getEdgeId(id), parseId(e.getId()));
+                        Assert.AreEqual(_ids.GetEdgeId(id), ParseId(e.GetId()));
                     
-                    Assert.AreEqual(1, (int)e.getVertex(Direction.IN).getProperty(_UID) - (int)e.getVertex(Direction.OUT).getProperty(_UID));
+                    Assert.AreEqual(1, (int)e.GetVertex(Direction.In).GetProperty(Uid) - (int)e.GetVertex(Direction.Out).GetProperty(Uid));
                     if (_batchGraphTest._assignKeys)
-                        Assert.AreEqual(_ids.getEdgeId(id), e.getProperty(edgeIdKey));
+                        Assert.AreEqual(_ids.GetEdgeId(id), e.GetProperty(EdgeIdKey));
                 }
-                foreach (Vertex v in getVertices())
+                foreach (IVertex v in GetVertices())
                 {
-                    int id = (int)v.getProperty(_UID);
+                    var id = (int)v.GetProperty(Uid);
                     if (!_batchGraphTest._ignoreIDs)
-                        Assert.AreEqual(_ids.getVertexId(id), parseId(v.getId()));
+                        Assert.AreEqual(_ids.GetVertexId(id), ParseId(v.GetId()));
                     
-                    Assert.True(2 >= BaseTest.count(v.getEdges(Direction.BOTH)));
-                    Assert.True(1 >= BaseTest.count(v.getEdges(Direction.IN)));
-                    Assert.True(1 >= BaseTest.count(v.getEdges(Direction.OUT)));
+                    Assert.True(2 >= BaseTest.Count(v.GetEdges(Direction.Both)));
+                    Assert.True(1 >= BaseTest.Count(v.GetEdges(Direction.In)));
+                    Assert.True(1 >= BaseTest.Count(v.GetEdges(Direction.Out)));
 
                     if (_batchGraphTest._assignKeys)
-                        Assert.AreEqual(_ids.getVertexId(id), v.getProperty(vertexIdKey));
+                        Assert.AreEqual(_ids.GetVertexId(id), v.GetProperty(VertexIdKey));
                 }
-                foreach (Vertex v in getVertices())
+                foreach (IVertex v in GetVertices())
                 {
-                    int id = (int)v.getProperty(_UID);
-                    if (id < _counter.totalVertices - keepLast)
-                        removeVertex(v);
+                    var id = (int)v.GetProperty(Uid);
+                    if (id < _counter.TotalVertices - KeepLast)
+                        RemoveVertex(v);
                 }
-                foreach (Edge e in getEdges()) removeEdge(e);
-                Assert.AreEqual(keepLast, BaseTest.count(_graph.getVertices()));
-                _counter.numVertices = 0;
-                _counter.numEdges = 0;
+                foreach (IEdge e in GetEdges()) RemoveEdge(e);
+                Assert.AreEqual(KeepLast, BaseTest.Count(_graph.GetVertices()));
+                _counter.NumVertices = 0;
+                _counter.NumEdges = 0;
                 _first = false;
                 //System.out.println("------");
             }
 
-            public Features getFeatures()
+            public Features GetFeatures()
             {
-                return _graph.getFeatures();
+                return _graph.GetFeatures();
             }
 
-            public Vertex addVertex(object id)
+            public IVertex AddVertex(object id)
             {
-                return _graph.addVertex(id);
+                return _graph.AddVertex(id);
             }
 
-            public Vertex getVertex(object id)
+            public IVertex GetVertex(object id)
             {
-                return _graph.getVertex(id);
+                return _graph.GetVertex(id);
             }
 
-            public void removeVertex(Vertex vertex)
+            public void RemoveVertex(IVertex vertex)
             {
-                _graph.removeVertex(vertex);
+                _graph.RemoveVertex(vertex);
             }
 
-            public IEnumerable<Vertex> getVertices()
+            public IEnumerable<IVertex> GetVertices()
             {
-                return _graph.getVertices();
+                return _graph.GetVertices();
             }
 
-            public IEnumerable<Vertex> getVertices(string key, object value)
+            public IEnumerable<IVertex> GetVertices(string key, object value)
             {
-                return _graph.getVertices(key, value);
+                return _graph.GetVertices(key, value);
             }
 
-            public Edge addEdge(object id, Vertex outVertex, Vertex inVertex, string label)
+            public IEdge AddEdge(object id, IVertex outVertex, IVertex inVertex, string label)
             {
-                return _graph.addEdge(id, outVertex, inVertex, label);
+                return _graph.AddEdge(id, outVertex, inVertex, label);
             }
 
-            public Edge getEdge(object id)
+            public IEdge GetEdge(object id)
             {
-                return _graph.getEdge(id);
+                return _graph.GetEdge(id);
             }
 
-            public void removeEdge(Edge edge)
+            public void RemoveEdge(IEdge edge)
             {
-                _graph.removeEdge(edge);
+                _graph.RemoveEdge(edge);
             }
 
-            public IEnumerable<Edge> getEdges()
+            public IEnumerable<IEdge> GetEdges()
             {
-                return _graph.getEdges();
+                return _graph.GetEdges();
             }
 
-            public IEnumerable<Edge> getEdges(string key, object value)
+            public IEnumerable<IEdge> GetEdges(string key, object value)
             {
-                return _graph.getEdges(key, value);
+                return _graph.GetEdges(key, value);
             }
 
-            public void shutdown()
+            public void Shutdown()
             {
-                _graph.shutdown();
+                _graph.Shutdown();
             }
 
-            public GraphQuery query()
+            public IGraphQuery Query()
             {
-                return _graph.query();
+                return _graph.Query();
             }
         }
 
-        public interface LoadingFactory
+        public interface ILoadingFactory
         {
-            object getVertexId(int id);
+            object GetVertexId(int id);
 
-            object getEdgeId(int id);
+            object GetEdgeId(int id);
         }
 
-        class StringLoadingFactory : LoadingFactory
+        class StringLoadingFactory : ILoadingFactory
         {
-            public object getVertexId(int id)
+            public object GetVertexId(int id)
             {
                 return string.Concat("V", id);
             }
 
-            public object getEdgeId(int id)
+            public object GetEdgeId(int id)
             {
                 return string.Concat("E", id);
             }
         }
 
-        class NumberLoadingFactory : LoadingFactory
+        class NumberLoadingFactory : ILoadingFactory
         {
-            public object getVertexId(int id)
+            public object GetVertexId(int id)
             {
                 return id * 2;
             }
 
-            public object getEdgeId(int id)
+            public object GetEdgeId(int id)
             {
                 return id * 2 + 1;
             }
         }
 
-        class URLLoadingFactory : LoadingFactory
+        class UrlLoadingFactory : ILoadingFactory
         {
-            public object getVertexId(int id)
+            public object GetVertexId(int id)
             {
                 return string.Concat("http://www.tinkerpop.com/rdf/ns/vertex/", + id);
             }
 
-            public object getEdgeId(int id)
+            public object GetEdgeId(int id)
             {
                 return string.Concat("http://www.tinkerpop.com/rdf/ns/edge#", id);
             }

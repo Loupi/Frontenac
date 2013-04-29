@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace Frontenac.Blueprints
+﻿namespace Frontenac.Blueprints
 {
     public class Parameter
     {
@@ -17,17 +11,17 @@ namespace Frontenac.Blueprints
             _value = value;
         }
 
-        public object getKey()
+        public object GetKey()
         {
             return _key;
         }
 
-        public object getValue()
+        public object GetValue()
         {
             return _value;
         }
 
-        public object setValue(object value)
+        public object SetValue(object value)
         {
             _value = value;
             return value;
@@ -38,8 +32,8 @@ namespace Frontenac.Blueprints
             if (obj is Parameter)
             {
                 var param = obj as Parameter;
-                object otherKey = param.getKey();
-                object otherValue = param.getValue();
+                object otherKey = param.GetKey();
+                object otherValue = param.GetValue();
                 if (otherKey == null)
                 {
                     if (_key != null)
@@ -72,8 +66,10 @@ namespace Frontenac.Blueprints
         {
             const int prime = 31;
             int result = 1;
+// ReSharper disable NonReadonlyFieldInGetHashCode
             result = prime * result + ((_key == null) ? 0 : _key.GetHashCode());
             result = prime * result + ((_value == null) ? 0 : _value.GetHashCode());
+// ReSharper restore NonReadonlyFieldInGetHashCode
             return result;
         }
 
@@ -83,27 +79,27 @@ namespace Frontenac.Blueprints
         }
     }
 
-    public class Parameter<K, V> : Parameter
+    public class Parameter<TK, TV> : Parameter
     {
-        public Parameter(K key, V value)
+        public Parameter(TK key, TV value)
             : base(key, value)
         {
 
         }
 
-        public new K getKey()
+        public new TK GetKey()
         {
-            return (K)base.getKey();
+            return (TK)base.GetKey();
         }
 
-        public new V getValue()
+        public new TV GetValue()
         {
-            return (V)base.getValue();
+            return (TV)base.GetValue();
         }
 
-        public V setValue(V value)
+        public TV GetValue(TV value)
         {
-            return (V)base.setValue(value);
+            return (TV)SetValue(value);
         }
     }
 }

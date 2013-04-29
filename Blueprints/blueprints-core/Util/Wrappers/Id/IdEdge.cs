@@ -1,36 +1,30 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace Frontenac.Blueprints.Util.Wrappers.Id
+﻿namespace Frontenac.Blueprints.Util.Wrappers.Id
 {
-    public class IdEdge : IdElement, Edge
+    public class IdEdge : IdElement, IEdge
     {
-        public IdEdge(Edge baseEdge, IdGraph idGraph)
-            : base(baseEdge, idGraph, idGraph.getSupportEdgeIds())
+        public IdEdge(IEdge baseEdge, IdGraph idGraph)
+            : base(baseEdge, idGraph, idGraph.GetSupportEdgeIds())
         {
         }
 
-        public Edge getBaseEdge()
+        public IEdge GetBaseEdge()
         {
-            return (Edge)baseElement;
+            return (IEdge)BaseElement;
         }
 
-        public Vertex getVertex(Direction direction)
+        public IVertex GetVertex(Direction direction)
         {
-            return new IdVertex(((Edge)baseElement).getVertex(direction), idGraph);
+            return new IdVertex(((IEdge)BaseElement).GetVertex(direction), IdGraph);
         }
 
-        public string getLabel()
+        public string GetLabel()
         {
-            return ((Edge)baseElement).getLabel();
+            return ((IEdge)BaseElement).GetLabel();
         }
 
         public override string ToString()
         {
-            return StringFactory.edgeString(this);
+            return StringFactory.EdgeString(this);
         }
     }
 }

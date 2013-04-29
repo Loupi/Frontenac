@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace Frontenac.Blueprints
+﻿namespace Frontenac.Blueprints
 {
     /// <summary>
     /// ThreadedTransactionalGraph provides more fine grained control over the transactional context.
@@ -15,12 +9,12 @@ namespace Frontenac.Blueprints
     /// 
     /// Note, that one needs to call TransactionalGraph.Commit() or TransactionalGraph.Rollback() to close the transactions returned
     /// </summary>
-    public interface ThreadedTransactionalGraph : TransactionalGraph
+    public interface IThreadedTransactionalGraph : ITransactionalGraph
     {
         /// <summary>
         /// Returns a TransactionalGraph that represents a transactional context independent of the executing transaction.
         /// </summary>
         /// <returns>A transactional context. Invoking TransactionalGraph.shutdown() successfully commits the transaction.</returns>
-        TransactionalGraph newTransaction();
+        ITransactionalGraph NewTransaction();
     }
 }

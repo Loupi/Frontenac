@@ -1,11 +1,5 @@
-﻿using System;
-using System.Collections.Concurrent;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
+﻿using System.Collections.Concurrent;
 using System.Threading;
-using System.Threading.Tasks;
-using Frontenac.Blueprints.Util.Wrappers.Event.Listener;
 
 namespace Frontenac.Blueprints.Util.Wrappers.Event
 {
@@ -15,8 +9,8 @@ namespace Frontenac.Blueprints.Util.Wrappers.Event
         /// A queue of events that are triggered by change to the graph.  The queue builds
         /// up until the EventTrigger fires them in the order they were received.
         /// </summary>
-        readonly ThreadLocal<ConcurrentQueue<Listener.Event>> _eventQueue =
-            new ThreadLocal<ConcurrentQueue<Listener.Event>>(() => new ConcurrentQueue<Listener.Event>());
+        readonly ThreadLocal<ConcurrentQueue<Listener.IEvent>> _eventQueue =
+            new ThreadLocal<ConcurrentQueue<Listener.IEvent>>(() => new ConcurrentQueue<Listener.IEvent>());
 
         /// <summary>
         /// When set to true, events in the event queue will only be fired when a transaction
@@ -37,29 +31,29 @@ namespace Frontenac.Blueprints.Util.Wrappers.Event
         /// If the enqueEvents is false, then the queue fires and resets after each event
         /// </summary>
         /// <param name="evt">The event to add to the event queue</param>
-        public void addEvent(Listener.Event evt)
+        public void AddEvent(Listener.IEvent evt)
         {
             _eventQueue.Value.Enqueue(evt);
 
             if (!_enqueEvents)
             {
-                this.fireEventQueue();
-                this.resetEventQueue();
+                FireEventQueue();
+                ResetEventQueue();
             }
         }
 
-        public void resetEventQueue()
+        public void ResetEventQueue()
         {
-            _eventQueue.Value = new ConcurrentQueue<Listener.Event>();
+            _eventQueue.Value = new ConcurrentQueue<Listener.IEvent>();
         }
 
-        public void fireEventQueue()
+        public void FireEventQueue()
         {
-            ConcurrentQueue<Listener.Event> concurrentQueue = _eventQueue.Value;
-            Listener.Event event_;
+            ConcurrentQueue<Listener.IEvent> concurrentQueue = _eventQueue.Value;
+            Listener.IEvent event_;
             while (concurrentQueue.TryDequeue(out event_))
             {
-                event_.fireEvent(_graph.getListenerIterator());
+                event_.FireEvent(_graph.GetListenerIterator());
             }
         }
     }

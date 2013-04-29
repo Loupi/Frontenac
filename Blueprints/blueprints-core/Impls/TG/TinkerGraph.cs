@@ -1,10 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.IO;
 using System.Linq;
-using System.Runtime.Serialization.Formatters.Binary;
-using System.Text;
-using System.Threading.Tasks;
 using Frontenac.Blueprints.Util;
 
 namespace Frontenac.Blueprints.Impls.TG
@@ -13,73 +11,73 @@ namespace Frontenac.Blueprints.Impls.TG
     /// An in-memory, reference implementation of the property graph interfaces provided by Blueprints.
     /// </summary>
     [Serializable]
-    public class TinkerGraph : IndexableGraph, KeyIndexableGraph
+    public class TinkerGraph : IIndexableGraph, IKeyIndexableGraph
     {
-        internal long currentId = 0;
-        protected Dictionary<string, Vertex> vertices = new Dictionary<string, Vertex>();
-        protected Dictionary<string, Edge> edges = new Dictionary<string, Edge>();
-        internal Dictionary<string, TinkerIndex> indices = new Dictionary<string, TinkerIndex>();
+        internal long CurrentId = 0;
+        protected Dictionary<string, IVertex> Vertices = new Dictionary<string, IVertex>();
+        protected Dictionary<string, IEdge> Edges = new Dictionary<string, IEdge>();
+        internal Dictionary<string, TinkerIndex> Indices = new Dictionary<string, TinkerIndex>();
 
-        internal TinkerKeyIndex vertexKeyIndex;
-        internal TinkerKeyIndex edgeKeyIndex;
+        internal TinkerKeyIndex VertexKeyIndex;
+        internal TinkerKeyIndex EdgeKeyIndex;
 
         readonly string _directory;
         readonly FileType _fileType;
 
-        static readonly Features FEATURES = new Features();
-        static readonly Features PERSISTENT_FEATURES;
+        static readonly Features Features = new Features();
+        static readonly Features PersistentFeatures;
 
         public enum FileType
         {
-            JAVA,
-            GML,
-            GRAPHML,
-            GRAPHSON
+            Java,
+            Gml,
+            Graphml,
+            Graphson
         }
 
         static TinkerGraph()
         {
-            FEATURES.supportsDuplicateEdges = true;
-            FEATURES.supportsSelfLoops = true;
-            FEATURES.supportsSerializableObjectProperty = true;
-            FEATURES.supportsBooleanProperty = true;
-            FEATURES.supportsDoubleProperty = true;
-            FEATURES.supportsFloatProperty = true;
-            FEATURES.supportsIntegerProperty = true;
-            FEATURES.supportsPrimitiveArrayProperty = true;
-            FEATURES.supportsUniformListProperty = true;
-            FEATURES.supportsMixedListProperty = true;
-            FEATURES.supportsLongProperty = true;
-            FEATURES.supportsMapProperty = true;
-            FEATURES.supportsStringProperty = true;
+            Features.SupportsDuplicateEdges = true;
+            Features.SupportsSelfLoops = true;
+            Features.SupportsSerializableObjectProperty = true;
+            Features.SupportsBooleanProperty = true;
+            Features.SupportsDoubleProperty = true;
+            Features.SupportsFloatProperty = true;
+            Features.SupportsIntegerProperty = true;
+            Features.SupportsPrimitiveArrayProperty = true;
+            Features.SupportsUniformListProperty = true;
+            Features.SupportsMixedListProperty = true;
+            Features.SupportsLongProperty = true;
+            Features.SupportsMapProperty = true;
+            Features.SupportsStringProperty = true;
 
-            FEATURES.ignoresSuppliedIds = false;
-            FEATURES.isPersistent = false;
-            FEATURES.isRDFModel = false;
-            FEATURES.isWrapper = false;
+            Features.IgnoresSuppliedIds = false;
+            Features.IsPersistent = false;
+            Features.IsRdfModel = false;
+            Features.IsWrapper = false;
 
-            FEATURES.supportsIndices = true;
-            FEATURES.supportsKeyIndices = true;
-            FEATURES.supportsVertexKeyIndex = true;
-            FEATURES.supportsEdgeKeyIndex = true;
-            FEATURES.supportsVertexIndex = true;
-            FEATURES.supportsEdgeIndex = true;
-            FEATURES.supportsTransactions = false;
-            FEATURES.supportsVertexIteration = true;
-            FEATURES.supportsEdgeIteration = true;
-            FEATURES.supportsEdgeRetrieval = true;
-            FEATURES.supportsVertexProperties = true;
-            FEATURES.supportsEdgeProperties = true;
-            FEATURES.supportsThreadedTransactions = false;
+            Features.SupportsIndices = true;
+            Features.SupportsKeyIndices = true;
+            Features.SupportsVertexKeyIndex = true;
+            Features.SupportsEdgeKeyIndex = true;
+            Features.SupportsVertexIndex = true;
+            Features.SupportsEdgeIndex = true;
+            Features.SupportsTransactions = false;
+            Features.SupportsVertexIteration = true;
+            Features.SupportsEdgeIteration = true;
+            Features.SupportsEdgeRetrieval = true;
+            Features.SupportsVertexProperties = true;
+            Features.SupportsEdgeProperties = true;
+            Features.SupportsThreadedTransactions = false;
 
-            PERSISTENT_FEATURES = FEATURES.copyFeatures();
-            PERSISTENT_FEATURES.isPersistent = true;
+            PersistentFeatures = Features.CopyFeatures();
+            PersistentFeatures.IsPersistent = true;
         }
 
         public TinkerGraph(string directory, FileType fileType)
         {
-            vertexKeyIndex = new TinkerKeyIndex(typeof(TinkerVertex), this);
-            edgeKeyIndex = new TinkerKeyIndex(typeof(TinkerEdge), this);
+            VertexKeyIndex = new TinkerKeyIndex(typeof(TinkerVertex), this);
+            EdgeKeyIndex = new TinkerKeyIndex(typeof(TinkerEdge), this);
 
             _directory = directory;
             _fileType = fileType;
@@ -88,191 +86,187 @@ namespace Frontenac.Blueprints.Impls.TG
                 Directory.CreateDirectory(_directory);
             else
             {
-                TinkerStorage tinkerStorage = TinkerStorageFactory.getInstance().getTinkerStorage(fileType);
-                TinkerGraph graph = tinkerStorage.load(directory);
+                ITinkerStorage tinkerStorage = TinkerStorageFactory.GetInstance().GetTinkerStorage(fileType);
+                TinkerGraph graph = tinkerStorage.Load(directory);
 
-                vertices = graph.vertices;
-                edges = graph.edges;
-                currentId = graph.currentId;
-                indices = graph.indices;
-                vertexKeyIndex = graph.vertexKeyIndex;
-                edgeKeyIndex = graph.edgeKeyIndex;
+                Vertices = graph.Vertices;
+                Edges = graph.Edges;
+                CurrentId = graph.CurrentId;
+                Indices = graph.Indices;
+                VertexKeyIndex = graph.VertexKeyIndex;
+                EdgeKeyIndex = graph.EdgeKeyIndex;
             }
         }
 
         public TinkerGraph(string directory)
-            : this(directory, FileType.JAVA)
+            : this(directory, FileType.Java)
         {
 
         }
 
         public TinkerGraph()
         {
-            vertexKeyIndex = new TinkerKeyIndex(typeof(TinkerVertex), this);
-            edgeKeyIndex = new TinkerKeyIndex(typeof(TinkerEdge), this);
+            VertexKeyIndex = new TinkerKeyIndex(typeof(TinkerVertex), this);
+            EdgeKeyIndex = new TinkerKeyIndex(typeof(TinkerEdge), this);
             _directory = null;
-            _fileType = FileType.JAVA;
+            _fileType = FileType.Java;
         }
 
-        public virtual IEnumerable<Vertex> getVertices(string key, object value)
+        public virtual IEnumerable<IVertex> GetVertices(string key, object value)
         {
-            if (vertexKeyIndex.getIndexedKeys().Contains(key))
-                return vertexKeyIndex.get(key, value).Cast<Vertex>();
+            if (VertexKeyIndex.GetIndexedKeys().Contains(key))
+                return VertexKeyIndex.Get(key, value).Cast<IVertex>();
+            return new PropertyFilteredIterable<IVertex>(key, value, GetVertices());
+        }
+
+        public virtual IEnumerable<IEdge> GetEdges(string key, object value)
+        {
+            if (EdgeKeyIndex.GetIndexedKeys().Contains(key))
+                return EdgeKeyIndex.Get(key, value).Cast<IEdge>();
+            return new PropertyFilteredIterable<IEdge>(key, value, GetEdges());
+        }
+
+        public virtual void CreateKeyIndex(string key, Type elementClass, params Parameter[] indexParameters)
+        {
+            if (typeof(IVertex).IsAssignableFrom(elementClass))
+                VertexKeyIndex.CreateKeyIndex(key);
+            else if (typeof(IEdge).IsAssignableFrom(elementClass))
+                EdgeKeyIndex.CreateKeyIndex(key);
             else
-                return new PropertyFilteredIterable<Vertex>(key, value, this.getVertices());
+                throw ExceptionFactory.ClassIsNotIndexable(elementClass);
         }
 
-        public virtual IEnumerable<Edge> getEdges(string key, object value)
+        public virtual void DropKeyIndex(string key, Type elementClass)
         {
-            if (edgeKeyIndex.getIndexedKeys().Contains(key))
-                return edgeKeyIndex.get(key, value).Cast<Edge>();
+            if (typeof(IVertex).IsAssignableFrom(elementClass))
+                VertexKeyIndex.DropKeyIndex(key);
+            else if (typeof(IEdge).IsAssignableFrom(elementClass))
+                EdgeKeyIndex.DropKeyIndex(key);
             else
-                return new PropertyFilteredIterable<Edge>(key, value, this.getEdges());
+                throw ExceptionFactory.ClassIsNotIndexable(elementClass);
         }
 
-        public virtual void createKeyIndex(string key, Type elementClass, params Parameter[] indexParameters)
+        public virtual IEnumerable<string> GetIndexedKeys(Type elementClass)
         {
-            if (typeof(Vertex).IsAssignableFrom(elementClass))
-                vertexKeyIndex.createKeyIndex(key);
-            else if (typeof(Edge).IsAssignableFrom(elementClass))
-                edgeKeyIndex.createKeyIndex(key);
-            else
-                throw ExceptionFactory.classIsNotIndexable(elementClass);
+            if (typeof(IVertex).IsAssignableFrom(elementClass))
+                return VertexKeyIndex.GetIndexedKeys();
+            if (typeof(IEdge).IsAssignableFrom(elementClass))
+                return EdgeKeyIndex.GetIndexedKeys();
+            throw ExceptionFactory.ClassIsNotIndexable(elementClass);
         }
 
-        public virtual void dropKeyIndex(string key, Type elementClass)
+        public virtual IIndex CreateIndex(string indexName, Type indexClass, params Parameter[] indexParameters)
         {
-            if (typeof(Vertex).IsAssignableFrom(elementClass))
-                vertexKeyIndex.dropKeyIndex(key);
-            else if (typeof(Edge).IsAssignableFrom(elementClass))
-                edgeKeyIndex.dropKeyIndex(key);
-            else
-                throw ExceptionFactory.classIsNotIndexable(elementClass);
-        }
+            if (Indices.ContainsKey(indexName))
+                throw ExceptionFactory.IndexAlreadyExists(indexName);
 
-        public virtual IEnumerable<string> getIndexedKeys(Type elementClass)
-        {
-            if (typeof(Vertex).IsAssignableFrom(elementClass))
-                return vertexKeyIndex.getIndexedKeys();
-            else if (typeof(Edge).IsAssignableFrom(elementClass))
-                return edgeKeyIndex.getIndexedKeys();
-            else
-                throw ExceptionFactory.classIsNotIndexable(elementClass);
-        }
-
-        public virtual Index createIndex(string indexName, Type indexClass, params Parameter[] indexParameters)
-        {
-            if (indices.ContainsKey(indexName))
-                throw ExceptionFactory.indexAlreadyExists(indexName);
-
-            TinkerIndex index = new TinkerIndex(indexName, indexClass);
-            indices.put(index.getIndexName(), index);
+            var index = new TinkerIndex(indexName, indexClass);
+            Indices.Put(index.GetIndexName(), index);
             return index;
         }
 
-        public virtual Index getIndex(string indexName, Type indexClass)
+        public virtual IIndex GetIndex(string indexName, Type indexClass)
         {
-            Index index = indices.get(indexName);
+            IIndex index = Indices.Get(indexName);
             if (null == index)
                 return null;
-            if (!indexClass.IsAssignableFrom(index.getIndexClass()))
-                throw ExceptionFactory.indexDoesNotSupportClass(indexName, indexClass);
-            else
-                return index;
+            if (!indexClass.IsAssignableFrom(index.GetIndexClass()))
+                throw ExceptionFactory.IndexDoesNotSupportClass(indexName, indexClass);
+            return index;
         }
 
-        public virtual IEnumerable<Index> getIndices()
+        public virtual IEnumerable<IIndex> GetIndices()
         {
-            return indices.Values.ToList();
+            return Indices.Values.ToList();
         }
 
-        public virtual void dropIndex(string indexName)
+        public virtual void DropIndex(string indexName)
         {
-            indices.Remove(indexName);
+            Indices.Remove(indexName);
         }
 
-        public virtual Vertex addVertex(object id)
+        public virtual IVertex AddVertex(object id)
         {
             string idString = null;
-            Vertex vertex;
+            IVertex vertex;
             if (null != id)
             {
                 idString = id.ToString();
-                vertex = vertices.get(idString);
+                vertex = Vertices.Get(idString);
                 if (null != vertex)
-                    throw ExceptionFactory.vertexWithIdAlreadyExists(id);
+                    throw ExceptionFactory.VertexWithIdAlreadyExists(id);
             }
             else
             {
                 bool done = false;
                 while (!done)
                 {
-                    idString = this.getNextId();
-                    vertex = vertices.get(idString);
+                    idString = GetNextId();
+                    vertex = Vertices.Get(idString);
                     if (null == vertex)
                         done = true;
                 }
             }
 
             vertex = new TinkerVertex(idString, this);
-            vertices.put(vertex.getId().ToString(), vertex);
+            Vertices.Put(vertex.GetId().ToString(), vertex);
             return vertex;
         }
 
-        public virtual Vertex getVertex(object id)
+        public virtual IVertex GetVertex(object id)
         {
             if (null == id)
-                throw ExceptionFactory.vertexIdCanNotBeNull();
+                throw ExceptionFactory.VertexIdCanNotBeNull();
 
             string idString = id.ToString();
-            return vertices.get(idString);
+            return Vertices.Get(idString);
         }
 
-        public virtual Edge getEdge(object id)
+        public virtual IEdge GetEdge(object id)
         {
             if (null == id)
-                throw ExceptionFactory.edgeIdCanNotBeNull();
+                throw ExceptionFactory.EdgeIdCanNotBeNull();
 
             string idString = id.ToString();
-            return edges.get(idString);
+            return Edges.Get(idString);
         }
 
-        public virtual IEnumerable<Vertex> getVertices()
+        public virtual IEnumerable<IVertex> GetVertices()
         {
-            return new List<Vertex>(vertices.Values);
+            return new List<IVertex>(Vertices.Values);
         }
 
-        public virtual IEnumerable<Edge> getEdges()
+        public virtual IEnumerable<IEdge> GetEdges()
         {
-            return new List<Edge>(edges.Values);
+            return new List<IEdge>(Edges.Values);
         }
 
-        public virtual void removeVertex(Vertex vertex)
+        public virtual void RemoveVertex(IVertex vertex)
         {
-            foreach (Edge edge in vertex.getEdges(Direction.BOTH))
-                this.removeEdge(edge);
+            foreach (IEdge edge in vertex.GetEdges(Direction.Both))
+                RemoveEdge(edge);
 
-            vertexKeyIndex.removeElement((TinkerVertex)vertex);
-            foreach (var index in this.getIndices().Where(t => t.getIndexClass() == typeof(Vertex)))
+            VertexKeyIndex.RemoveElement(vertex);
+            foreach (var index in GetIndices().Where(t => t.GetIndexClass() == typeof(IVertex)))
             {
-                TinkerIndex idx = (TinkerIndex)index;
-                idx.removeElement(vertex);
+                var idx = (TinkerIndex)index;
+                idx.RemoveElement(vertex);
             }
 
-            vertices.Remove(vertex.getId().ToString());
+            Vertices.Remove(vertex.GetId().ToString());
         }
 
-        public virtual Edge addEdge(object id, Vertex outVertex, Vertex inVertex, string label)
+        public virtual IEdge AddEdge(object id, IVertex outVertex, IVertex inVertex, string label)
         {
             string idString = null;
-            Edge edge;
+            IEdge edge;
             if (null != id)
             {
                 idString = id.ToString();
-                edge = edges.get(idString);
+                edge = Edges.Get(idString);
                 if (null != edge)
                 {
-                    throw ExceptionFactory.edgeWithIdAlreadyExist(id);
+                    throw ExceptionFactory.EdgeWithIdAlreadyExist(id);
                 }
             }
             else
@@ -280,51 +274,51 @@ namespace Frontenac.Blueprints.Impls.TG
                 bool done = false;
                 while (!done)
                 {
-                    idString = this.getNextId();
-                    edge = edges.get(idString);
+                    idString = GetNextId();
+                    edge = Edges.Get(idString);
                     if (null == edge)
                         done = true;
                 }
             }
 
             edge = new TinkerEdge(idString, outVertex, inVertex, label, this);
-            edges.put(edge.getId().ToString(), edge);
-            TinkerVertex out_ = (TinkerVertex)outVertex;
-            TinkerVertex in_ = (TinkerVertex)inVertex;
-            out_.addOutEdge(label, edge);
-            in_.addInEdge(label, edge);
+            Edges.Put(edge.GetId().ToString(), edge);
+            var out_ = (TinkerVertex)outVertex;
+            var in_ = (TinkerVertex)inVertex;
+            out_.AddOutEdge(label, edge);
+            in_.AddInEdge(label, edge);
             return edge;
         }
 
-        public virtual void removeEdge(Edge edge)
+        public virtual void RemoveEdge(IEdge edge)
         {
-            TinkerVertex outVertex = (TinkerVertex)edge.getVertex(Direction.OUT);
-            TinkerVertex inVertex = (TinkerVertex)edge.getVertex(Direction.IN);
-            if (null != outVertex && null != outVertex.outEdges)
+            var outVertex = (TinkerVertex)edge.GetVertex(Direction.Out);
+            var inVertex = (TinkerVertex)edge.GetVertex(Direction.In);
+            if (null != outVertex && null != outVertex.OutEdges)
             {
-                HashSet<Edge> e = outVertex.outEdges.get(edge.getLabel());
+                HashSet<IEdge> e = outVertex.OutEdges.Get(edge.GetLabel());
                 if (null != e)
                     e.Remove(edge);
             }
-            if (null != inVertex && null != inVertex.inEdges)
+            if (null != inVertex && null != inVertex.InEdges)
             {
-                HashSet<Edge> e = inVertex.inEdges.get(edge.getLabel());
+                HashSet<IEdge> e = inVertex.InEdges.Get(edge.GetLabel());
                 if (null != e)
                     e.Remove(edge);
             }
 
 
-            edgeKeyIndex.removeElement((TinkerEdge)edge);
-            foreach (var index in this.getIndices().Where(t => t.getIndexClass() == typeof(Edge)))
+            EdgeKeyIndex.RemoveElement(edge);
+            foreach (var index in GetIndices().Where(t => t.GetIndexClass() == typeof(IEdge)))
             {
-                TinkerIndex idx = (TinkerIndex)index;
-                idx.removeElement(edge);
+                var idx = (TinkerIndex)index;
+                idx.RemoveElement(edge);
             }
 
-            edges.Remove(edge.getId().ToString());
+            Edges.Remove(edge.GetId().ToString());
         }
 
-        public virtual GraphQuery query()
+        public virtual IGraphQuery Query()
         {
             return new DefaultGraphQuery(this);
         }
@@ -332,49 +326,47 @@ namespace Frontenac.Blueprints.Impls.TG
         public override string ToString()
         {
             if (null == _directory)
-                return StringFactory.graphString(this, string.Concat("vertices:", vertices.LongCount().ToString(), " edges:", edges.LongCount().ToString()));
-            else
-                return StringFactory.graphString(this, string.Concat("vertices:", vertices.LongCount().ToString(), " edges:", edges.LongCount().ToString(), " directory:", _directory));
+                return StringFactory.GraphString(this, string.Concat("vertices:", Vertices.LongCount().ToString(CultureInfo.InvariantCulture), " edges:", Edges.LongCount().ToString(CultureInfo.InvariantCulture)));
+            return StringFactory.GraphString(this, string.Concat("vertices:", Vertices.LongCount().ToString(CultureInfo.InvariantCulture), " edges:", Edges.LongCount().ToString(CultureInfo.InvariantCulture), " directory:", _directory));
         }
 
-        public void clear()
+        public void Clear()
         {
-            vertices.Clear();
-            edges.Clear();
-            indices.Clear();
-            currentId = 0;
-            vertexKeyIndex = new TinkerKeyIndex(typeof(TinkerVertex), this);
-            edgeKeyIndex = new TinkerKeyIndex(typeof(TinkerEdge), this);
+            Vertices.Clear();
+            Edges.Clear();
+            Indices.Clear();
+            CurrentId = 0;
+            VertexKeyIndex = new TinkerKeyIndex(typeof(TinkerVertex), this);
+            EdgeKeyIndex = new TinkerKeyIndex(typeof(TinkerEdge), this);
         }
 
-        public virtual void shutdown()
+        public virtual void Shutdown()
         {
             if (null != _directory)
             {
-                TinkerStorage tinkerStorage = TinkerStorageFactory.getInstance().getTinkerStorage(_fileType);
-                tinkerStorage.save(this, _directory);
+                ITinkerStorage tinkerStorage = TinkerStorageFactory.GetInstance().GetTinkerStorage(_fileType);
+                tinkerStorage.Save(this, _directory);
             }
         }
 
-        string getNextId()
+        string GetNextId()
         {
             string idString;
             while (true)
             {
-                idString = currentId.ToString();
-                currentId++;
-                if (null == vertices.get(idString) || null == edges.get(idString) || currentId == long.MaxValue)
+                idString = CurrentId.ToString(CultureInfo.InvariantCulture);
+                CurrentId++;
+                if (null == Vertices.Get(idString) || null == Edges.Get(idString) || CurrentId == long.MaxValue)
                     break;
             }
             return idString;
         }
 
-        public virtual Features getFeatures()
+        public virtual Features GetFeatures()
         {
             if (null == _directory)
-                return FEATURES;
-            else
-                return PERSISTENT_FEATURES;
+                return Features;
+            return PersistentFeatures;
         }
 
         [Serializable]
@@ -389,50 +381,49 @@ namespace Frontenac.Blueprints.Impls.TG
                 _graph = graph;
             }
 
-            public void autoUpdate(string key, object newValue, object oldValue, TinkerElement element)
+            public void AutoUpdate(string key, object newValue, object oldValue, TinkerElement element)
             {
                 if (_indexedKeys.Contains(key))
                 {
                     if (oldValue != null)
-                        this.remove(key, oldValue, element);
-                    this.put(key, newValue, element);
+                        Remove(key, oldValue, element);
+                    Put(key, newValue, element);
                 }
             }
 
-            public void autoRemove(string key, object oldValue, TinkerElement element)
+            public void AutoRemove(string key, object oldValue, TinkerElement element)
             {
                 if (_indexedKeys.Contains(key))
-                    this.remove(key, oldValue, element);
+                    Remove(key, oldValue, element);
             }
 
-            public void createKeyIndex(string key)
+            public void CreateKeyIndex(string key)
             {
                 if (_indexedKeys.Contains(key))
                     return;
 
                 _indexedKeys.Add(key);
 
-                if (typeof(TinkerVertex) == indexClass)
-                    KeyIndexableGraphHelper.reIndexElements(_graph, _graph.getVertices(), new HashSet<string>(new string[] { key }));
+                if (typeof(TinkerVertex) == IndexClass)
+                    KeyIndexableGraphHelper.ReIndexElements(_graph, _graph.GetVertices(), new HashSet<string>(new[] { key }));
                 else
-                    KeyIndexableGraphHelper.reIndexElements(_graph, _graph.getEdges(), new HashSet<string>(new string[] { key }));
+                    KeyIndexableGraphHelper.ReIndexElements(_graph, _graph.GetEdges(), new HashSet<string>(new[] { key }));
             }
 
-            public void dropKeyIndex(string key)
+            public void DropKeyIndex(string key)
             {
                 if (!_indexedKeys.Contains(key))
                     return;
 
                 _indexedKeys.Remove(key);
-                index.Remove(key);
+                Index.Remove(key);
             }
 
-            public IEnumerable<string> getIndexedKeys()
+            public IEnumerable<string> GetIndexedKeys()
             {
                 if (null != _indexedKeys)
                     return new HashSet<string>(_indexedKeys);
-                else
-                    return Enumerable.Empty<string>();
+                return Enumerable.Empty<string>();
             }
         }
     }

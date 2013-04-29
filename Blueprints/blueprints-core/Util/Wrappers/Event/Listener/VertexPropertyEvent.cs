@@ -1,22 +1,18 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.Collections.Generic;
 
 namespace Frontenac.Blueprints.Util.Wrappers.Event.Listener
 {
     /// <summary>
     /// Base class for property changed events. 
     /// </summary>
-    public abstract class VertexPropertyEvent : Event
+    public abstract class VertexPropertyEvent : IEvent
     {
-        readonly Vertex _vertex;
+        readonly IVertex _vertex;
         readonly string _key;
         readonly object _oldValue;
         readonly object _newValue;
 
-        protected VertexPropertyEvent(Vertex vertex, string key, object oldValue, object newValue)
+        protected VertexPropertyEvent(IVertex vertex, string key, object oldValue, object newValue)
         {
             _vertex = vertex;
             _key = key;
@@ -24,13 +20,13 @@ namespace Frontenac.Blueprints.Util.Wrappers.Event.Listener
             _newValue = newValue;
         }
 
-        protected abstract void fire(GraphChangedListener listener, Vertex vertex, string key, object oldValue, object newValue);
+        protected abstract void Fire(IGraphChangedListener listener, IVertex vertex, string key, object oldValue, object newValue);
 
-        public void fireEvent(IEnumerator<GraphChangedListener> eventListeners)
+        public void FireEvent(IEnumerator<IGraphChangedListener> eventListeners)
         {
             while (eventListeners.MoveNext())
             {
-                fire(eventListeners.Current, _vertex, _key, _oldValue, _newValue);
+                Fire(eventListeners.Current, _vertex, _key, _oldValue, _newValue);
             }
         }
     }

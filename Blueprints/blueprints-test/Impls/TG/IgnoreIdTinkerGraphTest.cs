@@ -1,21 +1,13 @@
-﻿using Frontenac.Blueprints.Util.IO.GML;
-using Frontenac.Blueprints.Util.IO.GraphML;
-using Frontenac.Blueprints.Util.IO.GraphSON;
-using NUnit.Framework;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using NUnit.Framework;
 
 namespace Frontenac.Blueprints.Impls.TG
 {
     //Tests IgnoreIdTinkerGraph using the standard test suite.
     public class IgnoreIdTinkerGraphTestImpl : TinkerGraphTestImpl
     {
-        public override Graph generateGraph()
+        public override IGraph GenerateGraph()
         {
-            return new IgnoreIdTinkerGraph(IgnoreIdTinkerGraphTestImpl.getThinkerGraphDirectory());
+            return new IgnoreIdTinkerGraph(GetThinkerGraphDirectory());
         }
     }
 
@@ -74,27 +66,27 @@ namespace Frontenac.Blueprints.Impls.TG
     }
 
     [TestFixture(Category = "IgnoreIdTinkerGraphTestSuite")]
-    public class IgnoreIdTinkerGraphGMLReaderTestSuite : TinkerGraphGMLReaderTestSuite
+    public class IgnoreIdTinkerGraphGmlReaderTestSuite : TinkerGraphGmlReaderTestSuite
     {
-        public IgnoreIdTinkerGraphGMLReaderTestSuite()
+        public IgnoreIdTinkerGraphGmlReaderTestSuite()
             : base(new IgnoreIdTinkerGraphTestImpl())
         {
         }
     }
 
     [TestFixture(Category = "IgnoreIdTinkerGraphTestSuite")]
-    public class IgnoreIdTinkerGraphGraphMLReaderTestSuite : TinkerGraphGraphMLReaderTestSuite
+    public class IgnoreIdTinkerGraphGraphMlReaderTestSuite : TinkerGraphGraphMlReaderTestSuite
     {
-        public IgnoreIdTinkerGraphGraphMLReaderTestSuite()
+        public IgnoreIdTinkerGraphGraphMlReaderTestSuite()
             : base(new IgnoreIdTinkerGraphTestImpl())
         {
         }
     }
 
     [TestFixture(Category = "IgnoreIdTinkerGraphTestSuite")]
-    public class IgnoreIdTinkerGraphGraphSONReaderTestSuite : TinkerGraphGraphSONReaderTestSuite
+    public class IgnoreIdTinkerGraphGraphSonReaderTestSuite : TinkerGraphGraphSonReaderTestSuite
     {
-        public IgnoreIdTinkerGraphGraphSONReaderTestSuite()
+        public IgnoreIdTinkerGraphGraphSonReaderTestSuite()
             : base(new IgnoreIdTinkerGraphTestImpl())
         {
         }

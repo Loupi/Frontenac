@@ -1,8 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Frontenac.Blueprints.Util
 {
@@ -10,108 +7,105 @@ namespace Frontenac.Blueprints.Util
     /// For those graph engines that do not support the low-level querying of the edges of a vertex, then DefaultVertexQuery can be used.
     /// DefaultVertexQuery assumes, at minimum, that Vertex.getOutEdges() and Vertex.getInEdges() is implemented by the respective Vertex.
     /// </summary>
-    public class DefaultVertexQuery : DefaultQuery, VertexQuery
+    public class DefaultVertexQuery : DefaultQuery, IVertexQuery
     {
-        readonly Vertex _vertex;
+        readonly IVertex _vertex;
 
-        public DefaultVertexQuery(Vertex vertex)
+        public DefaultVertexQuery(IVertex vertex)
         {
             _vertex = vertex;
         }
 
-        public override Query has(string key, object value)
+        public override IQuery Has(string key, object value)
         {
-            this.hasContainers.Add(new HasContainer(key, value, Compare.EQUAL));
+            HasContainers.Add(new HasContainer(key, value, Compare.Equal));
             return this;
         }
 
-        public override Query has<T>(string key, Compare compare, T value)
+        public override IQuery Has<T>(string key, Compare compare, T value)
         {
-            this.hasContainers.Add(new HasContainer(key, value, compare));
+            HasContainers.Add(new HasContainer(key, value, compare));
             return this;
         }
 
-        public override Query interval<T>(string key, T startValue, T endValue)
+        public override IQuery Interval<T>(string key, T startValue, T endValue)
         {
-            this.hasContainers.Add(new HasContainer(key, startValue, Compare.GREATER_THAN_EQUAL));
-            this.hasContainers.Add(new HasContainer(key, endValue, Compare.LESS_THAN));
+            HasContainers.Add(new HasContainer(key, startValue, Compare.GreaterThanEqual));
+            HasContainers.Add(new HasContainer(key, endValue, Compare.LessThan));
             return this;
         }
 
-        public override IEnumerable<Edge> edges()
+        public override IEnumerable<IEdge> Edges()
         {
-            return new DefaultVertexQueryIterable<Edge>(this, false);
+            return new DefaultVertexQueryIterable<IEdge>(this, false);
         }
 
-        public override IEnumerable<Vertex> vertices()
+        public override IEnumerable<IVertex> Vertices()
         {
-            return new DefaultVertexQueryIterable<Vertex>(this, true);
+            return new DefaultVertexQueryIterable<IVertex>(this, true);
         }
 
-        public override Query limit(long max)
+        public override IQuery Limit(long max)
         {
-            _limit = max;
+            Innerlimit = max;
             return this;
         }
 
-        public new VertexQuery direction(Direction direction)
+        public new IVertexQuery Direction(Direction direction)
         {
-            base.direction = direction;
+            base.Direction = direction;
             return this;
         }
 
-        public VertexQuery labels(params string[] labels)
+        public new IVertexQuery Labels(params string[] labels)
         {
-            _labels = labels;
+            base.Labels = labels;
             return this;
         }
 
-        public long count()
+        public long Count()
         {
-            return this.edges().LongCount();
+            return Edges().LongCount();
         }
 
-        public object vertexIds()
+        public object VertexIds()
         {
-            List<object> list = new List<object>();
-            foreach (Vertex vertex in this.vertices())
-                list.Add(vertex.getId());
-            return list;
+            return Vertices().Select(vertex => vertex.GetId()).ToList();
         }
 
-        class DefaultVertexQueryIterable<T> : IEnumerable<T> where T : Element
+        class DefaultVertexQueryIterable<T> : IEnumerable<T> where T : IElement
         {
             readonly DefaultVertexQuery _defaultVertexQuery;
-            readonly IEnumerator<Edge> _itty;
+            readonly IEnumerator<IEdge> _itty;
             readonly bool _forVertex;
-            Edge _nextEdge = null;
-            long _count = 0;
+            IEdge _nextEdge;
+            long _count;
 
             public DefaultVertexQueryIterable(DefaultVertexQuery defaultVertexQuery, bool forVertex)
             {
                 _defaultVertexQuery = defaultVertexQuery;
                 _forVertex = forVertex;
-                _itty = _defaultVertexQuery._vertex.getEdges(((DefaultQuery) _defaultVertexQuery).direction, _defaultVertexQuery._labels).GetEnumerator();
+                _itty = _defaultVertexQuery._vertex.GetEdges(((DefaultQuery) _defaultVertexQuery).Direction, ((DefaultQuery) _defaultVertexQuery).Labels).GetEnumerator();
             }
 
             public IEnumerator<T> GetEnumerator()
             {
-                while (this.loadNext())
+                while (LoadNext())
                 {
-                    Edge temp = _nextEdge;
+                    IEdge temp = _nextEdge;
                     _nextEdge = null;
                     if (_forVertex)
                     {
-                        if (((DefaultQuery) _defaultVertexQuery).direction == Frontenac.Blueprints.Direction.OUT)
-                            yield return (T)temp.getVertex(Frontenac.Blueprints.Direction.IN);
-                        else if (((DefaultQuery) _defaultVertexQuery).direction == Frontenac.Blueprints.Direction.IN)
-                            yield return (T)temp.getVertex(Frontenac.Blueprints.Direction.OUT);
+                        if (((DefaultQuery) _defaultVertexQuery).Direction == Blueprints.Direction.Out)
+                            yield return (T)temp.GetVertex(Blueprints.Direction.In);
+                        else if (((DefaultQuery) _defaultVertexQuery).Direction == Blueprints.Direction.In)
+                            yield return (T)temp.GetVertex(Blueprints.Direction.Out);
                         else
                         {
-                            if (temp.getVertex(Frontenac.Blueprints.Direction.OUT).Equals(_defaultVertexQuery._vertex))
-                                yield return (T)temp.getVertex(Frontenac.Blueprints.Direction.IN);
+                            if (temp.GetVertex(Blueprints.Direction.Out).Equals(_defaultVertexQuery._vertex))
+                                yield return (T)temp.GetVertex(Blueprints.Direction.In);
                             else
-                                yield return (T)temp.getVertex(Frontenac.Blueprints.Direction.OUT);
+                                yield return (T)temp.GetVertex(Blueprints.Direction.Out);
                         }
                     }
                     else
@@ -121,25 +115,17 @@ namespace Frontenac.Blueprints.Util
 
             System.Collections.IEnumerator System.Collections.IEnumerable.GetEnumerator()
             {
-                return (this as IEnumerable<T>).GetEnumerator();
+                return GetEnumerator();
             }
 
-            private bool loadNext()
+            private bool LoadNext()
             {
                 _nextEdge = null;
-                if (_count >= _defaultVertexQuery._limit) return false;
+                if (_count >= _defaultVertexQuery.Innerlimit) return false;
                 while (_itty.MoveNext())
                 {
-                    Edge edge = _itty.Current;
-                    bool filter = false;
-                    foreach (HasContainer hasContainer in _defaultVertexQuery.hasContainers)
-                    {
-                        if (!hasContainer.isLegal(edge))
-                        {
-                            filter = true;
-                            break;
-                        }
-                    }
+                    IEdge edge = _itty.Current;
+                    bool filter = _defaultVertexQuery.HasContainers.Any(hasContainer => !hasContainer.IsLegal(edge));
                     if (!filter)
                     {
                         _nextEdge = edge;

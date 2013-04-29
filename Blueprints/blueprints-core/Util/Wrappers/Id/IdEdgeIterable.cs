@@ -1,18 +1,16 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Frontenac.Blueprints.Util.Wrappers.Id
 {
-    class IdEdgeIterable : CloseableIterable<Edge>
+    class IdEdgeIterable : ICloseableIterable<IEdge>
     {
-        readonly IEnumerable<Element> _iterable;
+        readonly IEnumerable<IElement> _iterable;
         readonly IdGraph _idGraph;
         bool _disposed;
 
-        public IdEdgeIterable(IEnumerable<Element> iterable, IdGraph idGraph)
+        public IdEdgeIterable(IEnumerable<IElement> iterable, IdGraph idGraph)
         {
             _iterable = iterable;
             _idGraph = idGraph;
@@ -43,15 +41,14 @@ namespace Frontenac.Blueprints.Util.Wrappers.Id
             _disposed = true;
         }
 
-        public IEnumerator<Edge> GetEnumerator()
+        public IEnumerator<IEdge> GetEnumerator()
         {
-            foreach (Edge edge in _iterable)
-                yield return new IdEdge(edge, _idGraph);
+            return (from IEdge edge in _iterable select new IdEdge(edge, _idGraph)).Cast<IEdge>().GetEnumerator();
         }
 
         System.Collections.IEnumerator System.Collections.IEnumerable.GetEnumerator()
         {
-            return (this as IEnumerable<Edge>).GetEnumerator();
+            return (this as IEnumerable<IEdge>).GetEnumerator();
         }
     }
 }

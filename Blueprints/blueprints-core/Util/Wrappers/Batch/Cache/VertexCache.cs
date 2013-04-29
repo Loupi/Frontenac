@@ -1,21 +1,15 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace Frontenac.Blueprints.Util.Wrappers.Batch.Cache
+﻿namespace Frontenac.Blueprints.Util.Wrappers.Batch.Cache
 {
-    public interface VertexCache
+    public interface IVertexCache
     {
-        object getEntry(object externalId);
+        object GetEntry(object externalId);
 
-        void set(Vertex vertex, object externalId);
+        void Set(IVertex vertex, object externalId);
 
-        void setId(object vertexId, object externalId);
+        void SetId(object vertexId, object externalId);
 
-        bool contains(object externalId);
+        bool Contains(object externalId);
 
-        void newTransaction();
+        void NewTransaction();
     }
 }

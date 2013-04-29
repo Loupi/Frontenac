@@ -1,77 +1,75 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using Frontenac.Blueprints.Util;
 
 namespace Frontenac.Blueprints.Impls.TG
 {
     [Serializable]
-    abstract class TinkerElement : Element
+    abstract class TinkerElement : IElement
     {
-        protected Dictionary<string, object> properties = new Dictionary<string, object>();
-        protected readonly string id;
-        protected readonly TinkerGraph graph;
+        protected Dictionary<string, object> Properties = new Dictionary<string, object>();
+        protected readonly string Id;
+        protected readonly TinkerGraph Graph;
 
         protected TinkerElement(string id, TinkerGraph graph)
         {
-            this.graph = graph;
-            this.id = id;
+            Graph = graph;
+            Id = id;
         }
 
-        public IEnumerable<string> getPropertyKeys()
+        public IEnumerable<string> GetPropertyKeys()
         {
-            return new HashSet<string>(properties.Keys);
+            return new HashSet<string>(Properties.Keys);
         }
 
-        public object getProperty(string key)
+        public object GetProperty(string key)
         {
-            return properties.get(key);
+            return Properties.Get(key);
         }
 
-        public void setProperty(string key, object value)
+        public void SetProperty(string key, object value)
         {
-            ElementHelper.validateProperty(this, key, value);
-            object oldValue = properties.put(key, value);
+            ElementHelper.ValidateProperty(this, key, value);
+            object oldValue = Properties.Put(key, value);
             if (this is TinkerVertex)
-                graph.vertexKeyIndex.autoUpdate(key, value, oldValue, (TinkerVertex)this);
+                Graph.VertexKeyIndex.AutoUpdate(key, value, oldValue, this);
             else
-                graph.edgeKeyIndex.autoUpdate(key, value, oldValue, (TinkerEdge)this);
+                Graph.EdgeKeyIndex.AutoUpdate(key, value, oldValue, this);
         }
 
-        public object removeProperty(string key)
+        public object RemoveProperty(string key)
         {
-            object oldValue = properties.javaRemove(key);
+            object oldValue = Properties.JavaRemove(key);
             if (this is TinkerVertex)
-                graph.vertexKeyIndex.autoRemove(key, oldValue, (TinkerVertex)this);
+                Graph.VertexKeyIndex.AutoRemove(key, oldValue, this);
             else
-                graph.edgeKeyIndex.autoRemove(key, oldValue, (TinkerEdge)this);
+                Graph.EdgeKeyIndex.AutoRemove(key, oldValue, this);
 
             return oldValue;
         }
 
         public override int GetHashCode()
         {
-            return id.GetHashCode();
+            return Id.GetHashCode();
         }
 
-        public object getId()
+        public object GetId()
         {
-            return id;
+            return Id;
         }
 
         public override bool Equals(object obj)
         {
-            return ElementHelper.areEqual(this, obj);
+            return ElementHelper.AreEqual(this, obj);
         }
 
-        public void remove()
+        public void Remove()
         {
-            if (this is Vertex)
-                graph.removeVertex((Vertex)this);
+            var vertex = this as IVertex;
+            if (vertex != null)
+                Graph.RemoveVertex(vertex);
             else
-                graph.removeEdge((Edge)this);
+                Graph.RemoveEdge((IEdge)this);
         }
     }
 }

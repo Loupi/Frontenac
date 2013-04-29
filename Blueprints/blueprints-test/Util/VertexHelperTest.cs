@@ -1,9 +1,4 @@
 ﻿using NUnit.Framework;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using Frontenac.Blueprints.Impls.TG;
 
 namespace Frontenac.Blueprints.Util
@@ -12,23 +7,23 @@ namespace Frontenac.Blueprints.Util
     public class VertexHelperTest : BaseTest
     {
         [Test]
-        public void testEdgeSetEquality()
+        public void TestEdgeSetEquality()
         {
-            Graph graph = TinkerGraphFactory.createTinkerGraph();
+            IGraph graph = TinkerGraphFactory.CreateTinkerGraph();
 
-            foreach (Vertex v in graph.getVertices())
+            foreach (IVertex v in graph.GetVertices())
             {
-                foreach (Vertex u in graph.getVertices())
+                foreach (IVertex u in graph.GetVertices())
                 {
-                    if (ElementHelper.areEqual(v, u))
+                    if (ElementHelper.AreEqual(v, u))
                     {
-                        Assert.True(VertexHelper.haveEqualEdges(v, u, true));
-                        Assert.True(VertexHelper.haveEqualEdges(v, u, false));
+                        Assert.True(VertexHelper.HaveEqualEdges(v, u, true));
+                        Assert.True(VertexHelper.HaveEqualEdges(v, u, false));
                     }
                     else
                     {
-                        Assert.False(VertexHelper.haveEqualEdges(v, u, true));
-                        Assert.False(VertexHelper.haveEqualEdges(v, u, false));
+                        Assert.False(VertexHelper.HaveEqualEdges(v, u, true));
+                        Assert.False(VertexHelper.HaveEqualEdges(v, u, false));
                     }
 
                 }
@@ -36,21 +31,21 @@ namespace Frontenac.Blueprints.Util
         }
 
         [Test]
-        public void testNeighborhoodEquality()
+        public void TestNeighborhoodEquality()
         {
-            Graph graph = TinkerGraphFactory.createTinkerGraph();
+            IGraph graph = TinkerGraphFactory.CreateTinkerGraph();
 
-            foreach (Vertex v in graph.getVertices())
+            foreach (IVertex v in graph.GetVertices())
             {
-                foreach (Vertex u in graph.getVertices())
+                foreach (IVertex u in graph.GetVertices())
                 {
-                    if (ElementHelper.areEqual(v, u))
+                    if (ElementHelper.AreEqual(v, u))
                     {
-                        Assert.True(VertexHelper.haveEqualNeighborhood(v, u, true));
-                        Assert.True(VertexHelper.haveEqualNeighborhood(v, u, false));
+                        Assert.True(VertexHelper.HaveEqualNeighborhood(v, u, true));
+                        Assert.True(VertexHelper.HaveEqualNeighborhood(v, u, false));
                     } else {
-                        Assert.False(VertexHelper.haveEqualNeighborhood(v, u, true));
-                        Assert.False(VertexHelper.haveEqualNeighborhood(v, u, false));
+                        Assert.False(VertexHelper.HaveEqualNeighborhood(v, u, true));
+                        Assert.False(VertexHelper.HaveEqualNeighborhood(v, u, false));
                     }
                 }
             }

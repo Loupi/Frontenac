@@ -1,30 +1,24 @@
-﻿using System;
-using System.Collections;
-using System.Collections.Generic;
-using System.Globalization;
+﻿using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Frontenac.Blueprints
 {
     public static class Portability
     {
-        public static TValue get<TKey, TValue>(this IDictionary<TKey, TValue> dictionary, TKey key)
+        public static TValue Get<TKey, TValue>(this IDictionary<TKey, TValue> dictionary, TKey key)
         {
             TValue ret;
             dictionary.TryGetValue(key, out ret);
             return ret;
         }
 
-        public static TValue get<TValue>(this IList<TValue> list, int at)
+        public static TValue Get<TValue>(this IList<TValue> list, int at)
         {
-            TValue ret;
-            ret = list.ElementAtOrDefault(at);
+            TValue ret = list.ElementAtOrDefault(at);
             return ret;
         }
 
-        public static TValue javaRemove<TKey, TValue>(this IDictionary<TKey, TValue> dictionary, TKey key)
+        public static TValue JavaRemove<TKey, TValue>(this IDictionary<TKey, TValue> dictionary, TKey key)
         {
             TValue ret = default(TValue);
             if (key != null)
@@ -35,7 +29,7 @@ namespace Frontenac.Blueprints
             return ret;
         }
 
-        public static TValue put<TKey, TValue>(this IDictionary<TKey, TValue> dictionary, TKey key, TValue value)
+        public static TValue Put<TKey, TValue>(this IDictionary<TKey, TValue> dictionary, TKey key, TValue value)
         {
             TValue ret;
             if (dictionary.TryGetValue(key, out ret))
@@ -45,7 +39,7 @@ namespace Frontenac.Blueprints
             return ret;
         }
 
-        public static bool isNumber(object expression)
+        public static bool IsNumber(object expression)
         {
             return expression is byte ||
                    expression is sbyte ||

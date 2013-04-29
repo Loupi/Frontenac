@@ -1,8 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Frontenac.Blueprints.Util.Wrappers.Id
 {
@@ -11,20 +9,19 @@ namespace Frontenac.Blueprints.Util.Wrappers.Id
     /// enabling custom element IDs even for those graphs which don't otherwise support them.
     /// 
     /// The base Graph must be an instance of KeyIndexableGraph.
-    /// It *may* be an instance of IndexableGraph, in which case its indices will be wrapped appropriately.
+    /// It *may* be an instance of IIndexableGraph, in which case its indices will be wrapped appropriately.
     /// It *may* be an instance of TransactionalGraph, in which case transaction operations will be passed through.
     /// For those graphs which support vertex indices but not edge indices (or vice versa),
     /// you may configure IdGraph to use custom IDs only for vertices or only for edges.
     /// </summary>
-    /// <typeparam name="T"></typeparam>
-    public class IdGraph : KeyIndexableGraph, WrapperGraph, IndexableGraph, TransactionalGraph
+    public class IdGraph : IKeyIndexableGraph, IWrapperGraph, IIndexableGraph, ITransactionalGraph
     {
         // Note: using "__id" instead of "_id" avoids collision with Rexster's "_id"
-        public const string ID = "__id";
+        public const string Id = "__id";
 
-        readonly KeyIndexableGraph _baseGraph;
-        IdFactory _vertexIdFactory;
-        IdFactory _edgeIdFactory;
+        readonly IKeyIndexableGraph _baseGraph;
+        IIdFactory _vertexIdFactory;
+        IIdFactory _edgeIdFactory;
         readonly Features _features;
         readonly bool _supportVertexIds, _supportEdgeIds;
         bool _uniqueIds = true;
@@ -34,7 +31,7 @@ namespace Frontenac.Blueprints.Util.Wrappers.Id
         /// supporting both custom vertex IDs and custom edge IDs.
         /// </summary>
         /// <param name="baseGraph">the base graph which does not necessarily support custom IDs</param>
-        public IdGraph(KeyIndexableGraph baseGraph)
+        public IdGraph(IKeyIndexableGraph baseGraph)
             : this(baseGraph, true, true)
         {
 
@@ -47,12 +44,12 @@ namespace Frontenac.Blueprints.Util.Wrappers.Id
         /// <param name="baseGraph">the base graph which does not necessarily support custom IDs</param>
         /// <param name="supportVertexIds">whether to support custom vertex IDs</param>
         /// <param name="supportEdgeIds">whether to support custom edge IDs</param>
-        public IdGraph(KeyIndexableGraph baseGraph, bool supportVertexIds, bool supportEdgeIds)
+        public IdGraph(IKeyIndexableGraph baseGraph, bool supportVertexIds, bool supportEdgeIds)
         {
             _baseGraph = baseGraph;
-            _features = _baseGraph.getFeatures().copyFeatures();
-            _features.isWrapper = true;
-            _features.ignoresSuppliedIds = false;
+            _features = _baseGraph.GetFeatures().CopyFeatures();
+            _features.IsWrapper = true;
+            _features.IgnoresSuppliedIds = false;
 
             _supportVertexIds = supportVertexIds;
             _supportEdgeIds = supportEdgeIds;
@@ -60,7 +57,7 @@ namespace Frontenac.Blueprints.Util.Wrappers.Id
             if (!supportVertexIds && !supportEdgeIds)
                 throw new ArgumentException("if neither custom vertex IDs nor custom edge IDs are supported, IdGraph can't help you!");
 
-            createIndices();
+            CreateIndices();
 
             _vertexIdFactory = new DefaultIdFactory();
             _edgeIdFactory = new DefaultIdFactory();
@@ -70,7 +67,7 @@ namespace Frontenac.Blueprints.Util.Wrappers.Id
         /// When vertices are created using null IDs, the actual IDs are chosen based on this factory.
         /// </summary>
         /// <param name="idFactory">A factory for new vertex IDs.</param>
-        public void setVertexIdFactory(IdFactory idFactory)
+        public void SetVertexIdFactory(IIdFactory idFactory)
         {
             _vertexIdFactory = idFactory;
         }
@@ -79,7 +76,7 @@ namespace Frontenac.Blueprints.Util.Wrappers.Id
         /// When edges are created using null IDs, the actual IDs are chosen based on this factory.
         /// </summary>
         /// <param name="idFactory">a factory for new edge IDs.</param>
-        public void setEdgeIdFactory(IdFactory idFactory)
+        public void SetEdgeIdFactory(IIdFactory idFactory)
         {
             _edgeIdFactory = idFactory;
         }
@@ -88,7 +85,7 @@ namespace Frontenac.Blueprints.Util.Wrappers.Id
         /// When edges are created using null IDs, the actual IDs are chosen based on this factory.
         /// </summary>
         /// <returns>the factory for new vertex IDs.</returns>
-        public IdFactory getVertexIdFactory()
+        public IIdFactory GetVertexIdFactory()
         {
             return _vertexIdFactory;
         }
@@ -98,261 +95,243 @@ namespace Frontenac.Blueprints.Util.Wrappers.Id
         /// When edges are created using null IDs, the actual IDs are chosen based on this factory.
         /// </summary>
         /// <returns>the factory for new edge IDs.</returns>
-        public IdFactory getEdgeIdFactory()
+        public IIdFactory GetEdgeIdFactory()
         {
             return _edgeIdFactory;
         }
 
-        public Features getFeatures()
+        public Features GetFeatures()
         {
             return _features;
         }
 
-        public Vertex addVertex(object id)
+        public IVertex AddVertex(object id)
         {
-            if (_uniqueIds && null != id && null != getVertex(id))
+            if (_uniqueIds && null != id && null != GetVertex(id))
                 throw new ArgumentException(string.Concat("vertex with given id already exists: '", id, "'"));
 
-            Vertex base_ = _baseGraph.addVertex(null);
+            IVertex base_ = _baseGraph.AddVertex(null);
 
             if (_supportVertexIds)
             {
-                object v = null == id ? _vertexIdFactory.createId() : id;
+                object v = id ?? _vertexIdFactory.CreateId();
 
                 if (null != v)
-                    base_.setProperty(ID, v);
+                    base_.SetProperty(Id, v);
             }
 
             return new IdVertex(base_, this);
         }
 
-        public Vertex getVertex(object id)
+        public IVertex GetVertex(object id)
         {
             if (null == id)
                 throw new ArgumentNullException("id");
 
             if (_supportVertexIds)
             {
-                IEnumerable<Vertex> i = _baseGraph.getVertices(ID, id);
-                IEnumerator<Vertex> iter = i.GetEnumerator();
+                IEnumerable<IVertex> i = _baseGraph.GetVertices(Id, id);
+                IEnumerator<IVertex> iter = i.GetEnumerator();
                 if (!iter.MoveNext())
                     return null;
-                else
-                {
-                    Vertex e = iter.Current;
+                var e = iter.Current;
 
-                    if (iter.MoveNext())
-                        throw new InvalidOperationException(string.Concat("multiple vertices exist with id '", id, "'"));
+                if (iter.MoveNext())
+                    throw new InvalidOperationException(string.Concat("multiple vertices exist with id '", id, "'"));
 
-                    return new IdVertex(e, this);
-                }
+                return new IdVertex(e, this);
             }
-            else
-            {
-                Vertex base_ = _baseGraph.getVertex(id);
-                return null == base_ ? null : new IdVertex(base_, this);
-            }
+            var base_ = _baseGraph.GetVertex(id);
+            return null == base_ ? null : new IdVertex(base_, this);
         }
 
-        public void removeVertex(Vertex vertex)
+        public void RemoveVertex(IVertex vertex)
         {
-            verifyNativeElement(vertex);
-            _baseGraph.removeVertex(((IdVertex)vertex).getBaseVertex());
+            VerifyNativeElement(vertex);
+            _baseGraph.RemoveVertex(((IdVertex)vertex).GetBaseVertex());
         }
 
-        public IEnumerable<Vertex> getVertices()
+        public IEnumerable<IVertex> GetVertices()
         {
-            return new IdVertexIterable(_baseGraph.getVertices(), this);
+            return new IdVertexIterable(_baseGraph.GetVertices(), this);
         }
 
-        public IEnumerable<Vertex> getVertices(string key, object value)
+        public IEnumerable<IVertex> GetVertices(string key, object value)
         {
-            if (_supportVertexIds && key == ID)
-                throw new ArgumentException(string.Concat("index key ", ID, " is reserved by IdGraph"));
-            else
-                return new IdVertexIterable(_baseGraph.getVertices(key, value), this);
+            if (_supportVertexIds && key == Id)
+                throw new ArgumentException(string.Concat("index key ", Id, " is reserved by IdGraph"));
+            return new IdVertexIterable(_baseGraph.GetVertices(key, value), this);
         }
 
-        public Edge addEdge(object id, Vertex outVertex, Vertex inVertex, string label)
+        public IEdge AddEdge(object id, IVertex outVertex, IVertex inVertex, string label)
         {
-            if (_uniqueIds && null != id && null != getEdge(id))
+            if (_uniqueIds && null != id && null != GetEdge(id))
                 throw new ArgumentException(string.Concat("edge with given id already exists: ", id));
 
-            verifyNativeElement(outVertex);
-            verifyNativeElement(inVertex);
+            VerifyNativeElement(outVertex);
+            VerifyNativeElement(inVertex);
 
-            Edge base_ = _baseGraph.addEdge(null, ((IdVertex)outVertex).getBaseVertex(), ((IdVertex)inVertex).getBaseVertex(), label);
+            IEdge base_ = _baseGraph.AddEdge(null, ((IdVertex)outVertex).GetBaseVertex(), ((IdVertex)inVertex).GetBaseVertex(), label);
 
             if (_supportEdgeIds)
             {
-                object v = null == id ? _edgeIdFactory.createId() : id;
+                object v = id ?? _edgeIdFactory.CreateId();
 
                 if (null != v)
-                    base_.setProperty(ID, v);
+                    base_.SetProperty(Id, v);
             }
 
             return new IdEdge(base_, this);
         }
 
-        public Edge getEdge(object id)
+        public IEdge GetEdge(object id)
         {
             if (null == id)
                 throw new ArgumentNullException("id");
 
             if (_supportEdgeIds)
             {
-                IEnumerable<Edge> i = _baseGraph.getEdges(ID, id);
-                IEnumerator<Edge> iter = i.GetEnumerator();
+                IEnumerable<IEdge> i = _baseGraph.GetEdges(Id, id);
+                IEnumerator<IEdge> iter = i.GetEnumerator();
                 if (!iter.MoveNext())
                     return null;
-                else
-                {
-                    Edge e = iter.Current;
+                var e = iter.Current;
 
-                    if (iter.MoveNext())
-                        throw new InvalidOperationException(string.Concat("multiple edges exist with id ", id));
+                if (iter.MoveNext())
+                    throw new InvalidOperationException(string.Concat("multiple edges exist with id ", id));
 
-                    return new IdEdge(e, this);
-                }
+                return new IdEdge(e, this);
             }
-            else
-            {
-                Edge base_ = _baseGraph.getEdge(id);
-                return null == base_ ? null : new IdEdge(base_, this);
-            }
+            var base_ = _baseGraph.GetEdge(id);
+            return null == base_ ? null : new IdEdge(base_, this);
         }
 
-        public void removeEdge(Edge edge)
+        public void RemoveEdge(IEdge edge)
         {
-            verifyNativeElement(edge);
-            _baseGraph.removeEdge(((IdEdge)edge).getBaseEdge());
+            VerifyNativeElement(edge);
+            _baseGraph.RemoveEdge(((IdEdge)edge).GetBaseEdge());
         }
 
-        public IEnumerable<Edge> getEdges()
+        public IEnumerable<IEdge> GetEdges()
         {
-            return new IdEdgeIterable(_baseGraph.getEdges(), this);
+            return new IdEdgeIterable(_baseGraph.GetEdges(), this);
         }
 
-        public IEnumerable<Edge> getEdges(string key, object value)
+        public IEnumerable<IEdge> GetEdges(string key, object value)
         {
-            if (_supportEdgeIds && key == ID)
-                throw new ArgumentException(string.Concat("index key ", ID, " is reserved by IdGraph"));
-            else
-                return new IdEdgeIterable(_baseGraph.getEdges(key, value), this);
+            if (_supportEdgeIds && key == Id)
+                throw new ArgumentException(string.Concat("index key ", Id, " is reserved by IdGraph"));
+            return new IdEdgeIterable(_baseGraph.GetEdges(key, value), this);
         }
 
-        public void rollback()
+        public void Rollback()
         {
-            if (this._baseGraph is TransactionalGraph)
-                (_baseGraph as TransactionalGraph).rollback();
+            if (_baseGraph is ITransactionalGraph)
+                (_baseGraph as ITransactionalGraph).Rollback();
         }
 
-        public void commit()
+        public void Commit()
         {
-            if (this._baseGraph is TransactionalGraph)
-                (_baseGraph as TransactionalGraph).commit();
+            if (_baseGraph is ITransactionalGraph)
+                (_baseGraph as ITransactionalGraph).Commit();
         }
 
-        public void shutdown()
+        public void Shutdown()
         {
-            _baseGraph.shutdown();
+            _baseGraph.Shutdown();
         }
 
         public override string ToString()
         {
-            return StringFactory.graphString(this, _baseGraph.ToString());
+            return StringFactory.GraphString(this, _baseGraph.ToString());
         }
 
-        public void dropKeyIndex(string key, Type elementClass)
+        public void DropKeyIndex(string key, Type elementClass)
         {
-            bool v = isVertexClass(elementClass);
+            bool v = IsVertexClass(elementClass);
             bool supported = ((v && _supportVertexIds) || (!v && _supportEdgeIds));
 
-            if (supported && key == ID)
-                throw new ArgumentException(string.Concat("index key ", ID, " is reserved by IdGraph"));
-            else
-                _baseGraph.dropKeyIndex(key, elementClass);
+            if (supported && key == Id)
+                throw new ArgumentException(string.Concat("index key ", Id, " is reserved by IdGraph"));
+            _baseGraph.DropKeyIndex(key, elementClass);
         }
 
-        public void createKeyIndex(string key, Type elementClass, params Parameter[] indexParameters)
+        public void CreateKeyIndex(string key, Type elementClass, params Parameter[] indexParameters)
         {
-            bool v = isVertexClass(elementClass);
+            bool v = IsVertexClass(elementClass);
             bool supported = ((v && _supportVertexIds) || (!v && _supportEdgeIds));
 
-            if (supported && key == ID)
-                throw new ArgumentException(string.Concat("index key ", ID, " is reserved by IdGraph"));
-            else
-                _baseGraph.createKeyIndex(key, elementClass, indexParameters);
+            if (supported && key == Id)
+                throw new ArgumentException(string.Concat("index key ", Id, " is reserved by IdGraph"));
+            _baseGraph.CreateKeyIndex(key, elementClass, indexParameters);
         }
 
-        public IEnumerable<string> getIndexedKeys(Type elementClass)
+        public IEnumerable<string> GetIndexedKeys(Type elementClass)
         {
-            bool v = isVertexClass(elementClass);
+            bool v = IsVertexClass(elementClass);
             bool supported = ((v && _supportVertexIds) || (!v && _supportEdgeIds));
 
             if (supported)
             {
-                ISet<string> keys = new HashSet<string>(_baseGraph.getIndexedKeys(elementClass));
-                keys.Remove(ID);
+                ISet<string> keys = new HashSet<string>(_baseGraph.GetIndexedKeys(elementClass));
+                keys.Remove(Id);
                 return keys;
             }
-            else
-                return _baseGraph.getIndexedKeys(elementClass);
+            return _baseGraph.GetIndexedKeys(elementClass);
         }
 
-        public Graph getBaseGraph()
+        public IGraph GetBaseGraph()
         {
             return _baseGraph;
         }
 
-        public void enforceUniqueIds(bool enforceUniqueIds)
+        public void EnforceUniqueIds(bool enforceUniqueIds)
         {
             _uniqueIds = enforceUniqueIds;
         }
 
-        public Index createIndex(string indexName, Type indexClass, params Parameter[] indexParameters)
+        public IIndex CreateIndex(string indexName, Type indexClass, params Parameter[] indexParameters)
         {
-            verifyBaseGraphIsIndexableGraph();
+            VerifyBaseGraphIsIndexableGraph();
 
-            if (isVertexClass(indexClass))
-                return new IdVertexIndex(((IndexableGraph)_baseGraph).createIndex(indexName, indexClass, indexParameters), this);
-            else
-                return new IdEdgeIndex(((IndexableGraph)_baseGraph).createIndex(indexName, indexClass, indexParameters), this);
+            if (IsVertexClass(indexClass))
+                return new IdVertexIndex(((IIndexableGraph)_baseGraph).CreateIndex(indexName, indexClass, indexParameters), this);
+            return new IdEdgeIndex(((IIndexableGraph)_baseGraph).CreateIndex(indexName, indexClass, indexParameters), this);
         }
 
-        public Index getIndex(string indexName, Type indexClass)
+        public IIndex GetIndex(string indexName, Type indexClass)
         {
-            verifyBaseGraphIsIndexableGraph();
+            VerifyBaseGraphIsIndexableGraph();
 
-            Index baseIndex = ((IndexableGraph)_baseGraph).getIndex(indexName, indexClass);
+            IIndex baseIndex = ((IIndexableGraph)_baseGraph).GetIndex(indexName, indexClass);
             return null == baseIndex ? null : new IdVertexIndex(baseIndex, this);
         }
 
-        public IEnumerable<Index> getIndices()
+        public IEnumerable<IIndex> GetIndices()
         {
             throw new InvalidOperationException("sorry, you currently can't get a list of indexes through IdGraph");
         }
 
-        public void dropIndex(string indexName)
+        public void DropIndex(string indexName)
         {
-            verifyBaseGraphIsIndexableGraph();
+            VerifyBaseGraphIsIndexableGraph();
 
-            ((IndexableGraph)_baseGraph).dropIndex(indexName);
+            ((IIndexableGraph)_baseGraph).DropIndex(indexName);
         }
 
-        public GraphQuery query()
+        public IGraphQuery Query()
         {
-            return new WrappedGraphQuery(_baseGraph.query(),
-                t => new IdEdgeIterable(t.edges(), this),
-                t => new IdVertexIterable(t.vertices(), this));
+            return new WrappedGraphQuery(_baseGraph.Query(),
+                t => new IdEdgeIterable(t.Edges(), this),
+                t => new IdVertexIterable(t.Vertices(), this));
         }
 
-        public bool getSupportVertexIds()
+        public bool GetSupportVertexIds()
         {
             return _supportVertexIds;
         }
 
-        public bool getSupportEdgeIds()
+        public bool GetSupportEdgeIds()
         {
             return _supportEdgeIds;
         }
@@ -360,41 +339,42 @@ namespace Frontenac.Blueprints.Util.Wrappers.Id
         /// <summary>
         /// A factory for IDs of newly-created vertices and edges (where an ID is not otherwise specified).
         /// </summary>
-        public interface IdFactory
+        public interface IIdFactory
         {
-            object createId();
+            object CreateId();
         }
 
-        class DefaultIdFactory : IdFactory
+        class DefaultIdFactory : IIdFactory
         {
-            public object createId()
+            public object CreateId()
             {
                 return Guid.NewGuid().ToString();
             }
         }
 
-        void verifyBaseGraphIsIndexableGraph()
+        void VerifyBaseGraphIsIndexableGraph()
         {
-            if (!(_baseGraph is IndexableGraph))
+            if (!(_baseGraph is IIndexableGraph))
                 throw new InvalidOperationException("base graph is not an indexable graph");
         }
 
-        bool isVertexClass(Type c)
+        static bool IsVertexClass(Type c)
         {
-            return typeof(Vertex).IsAssignableFrom(c);
+            return typeof(IVertex).IsAssignableFrom(c);
         }
 
-        void createIndices()
+        void CreateIndices()
         {
-            if (_supportVertexIds && !_baseGraph.getIndexedKeys(typeof(Vertex)).Contains(ID))
-                _baseGraph.createKeyIndex(ID, typeof(Vertex));
+            if (_supportVertexIds && !_baseGraph.GetIndexedKeys(typeof(IVertex)).Contains(Id))
+                _baseGraph.CreateKeyIndex(Id, typeof(IVertex));
 
-            if (_supportEdgeIds && !_baseGraph.getIndexedKeys(typeof(Edge)).Contains(ID))
-                _baseGraph.createKeyIndex(ID, typeof(Edge));
+            if (_supportEdgeIds && !_baseGraph.GetIndexedKeys(typeof(IEdge)).Contains(Id))
+                _baseGraph.CreateKeyIndex(Id, typeof(IEdge));
         }
 
-        static void verifyNativeElement(Element e)
+        static void VerifyNativeElement(IElement e)
         {
+            if (e == null) throw new ArgumentNullException("e");
             if (!(e is IdElement))
                 throw new ArgumentException("given element was not created in this graph");
         }

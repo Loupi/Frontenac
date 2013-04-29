@@ -1,9 +1,5 @@
 ﻿using NUnit.Framework;
-using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using Frontenac.Blueprints.Impls;
 
 namespace Frontenac.Blueprints
@@ -11,53 +7,52 @@ namespace Frontenac.Blueprints
     public class TestSuite : BaseTest
     {
         readonly string _name;
-        protected GraphTest graphTest;
+        protected GraphTest GraphTest;
 
         [TestFixtureSetUp]
-        public virtual void fixtureSetUp()
+        public virtual void FixtureSetUp()
         {
-            this.stopWatch();
+            StopWatch();
         }
 
         [TestFixtureTearDown]
-        public virtual void fixtureTearDown()
+        public virtual void FixtureTearDown()
         {
-            printTestPerformance(_name, this.stopWatch());
+            PrintTestPerformance(_name, StopWatch());
         }
 
         public TestSuite(string name, GraphTest graphTest)
         {
             _name = name;
-            this.graphTest = graphTest;
+            GraphTest = graphTest;
         }
 
-        protected string convertId(Graph graph, string id)
+        protected string ConvertId(IGraph graph, string id)
         {
-            if (graph.getFeatures().isRDFModel.Value)
+            if (graph.GetFeatures().IsRdfModel)
                 return string.Concat("blueprints:", id);
-            else
-                return id;
+            return id;
         }
 
-        protected void vertexCount(Graph graph, int expectedCount)
+        protected void VertexCount(IGraph graph, int expectedCount)
         {
-            if (graph.getFeatures().supportsVertexIteration.Value)
-                Assert.AreEqual(count(graph.getVertices()), expectedCount);
+            if (graph.GetFeatures().SupportsVertexIteration)
+                Assert.AreEqual(Count(graph.GetVertices()), expectedCount);
         }
 
-        protected void containsVertices(Graph graph, IEnumerable<Vertex> vertices)
+        protected void ContainsVertices(IGraph graph, IEnumerable<IVertex> vertices)
         {
-            foreach (Vertex v in vertices)
+            foreach (IVertex v in vertices)
             {
-                Vertex vp = graph.getVertex(v.getId());
-                if (vp == null || !vp.getId().Equals(v.getId())) Assert.Fail();
+                IVertex vp = graph.GetVertex(v.GetId());
+                if (vp == null || !vp.GetId().Equals(v.GetId())) Assert.Fail();
             }
         }
 
-        protected void edgeCount(Graph graph, int expectedCount)
+        protected void EdgeCount(IGraph graph, int expectedCount)
         {
-            if (graph.getFeatures().supportsEdgeIteration.Value)
-                Assert.AreEqual(count(graph.getEdges()), expectedCount);
+            if (graph.GetFeatures().SupportsEdgeIteration)
+                Assert.AreEqual(Count(graph.GetEdges()), expectedCount);
         }
     }
 }

@@ -4,115 +4,114 @@ using NUnit.Framework;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Frontenac.Blueprints.Util.IO.GraphML
 {
-    public abstract class GraphMLReaderTestSuite : TestSuite
+    public abstract class GraphMlReaderTestSuite : TestSuite
     {
-        protected GraphMLReaderTestSuite(GraphTest graphTest)
+        protected GraphMlReaderTestSuite(GraphTest graphTest)
             : base("GraphMLReaderTestSuite", graphTest)
         {
 
         }
 
         [Test]
-        public void testReadingTinkerGraph()
+        public void TestReadingTinkerGraph()
         {
-            Graph graph = graphTest.generateGraph();
-            if (!graph.getFeatures().ignoresSuppliedIds.Value)
+            IGraph graph = GraphTest.GenerateGraph();
+            if (!graph.GetFeatures().IgnoresSuppliedIds)
             {
-                this.stopWatch();
-                using (var stream = typeof(GraphMLReaderTestSuite).Assembly.GetManifestResourceStream(typeof(GraphMLReaderTestSuite), "graph-example-1.xml"))
+                StopWatch();
+                using (var stream = typeof(GraphMlReaderTestSuite).Assembly.GetManifestResourceStream(typeof(GraphMlReaderTestSuite), "graph-example-1.xml"))
                 {
-                    new GraphMLReader(graph).inputGraph(stream);
+                    new GraphMlReader(graph).InputGraph(stream);
                 }
-                printPerformance(graph.ToString(), null, "graph-example-1 loaded", this.stopWatch());
+                PrintPerformance(graph.ToString(), null, "graph-example-1 loaded", StopWatch());
 
-                Assert.AreEqual(count(graph.getVertex("1").getEdges(Direction.OUT)), 3);
-                Assert.AreEqual(count(graph.getVertex("1").getEdges(Direction.IN)), 0);
-                Vertex marko = graph.getVertex("1");
-                Assert.AreEqual(marko.getProperty("name"), "marko");
-                Assert.AreEqual(marko.getProperty("age"), 29);
+                Assert.AreEqual(Count(graph.GetVertex("1").GetEdges(Direction.Out)), 3);
+                Assert.AreEqual(Count(graph.GetVertex("1").GetEdges(Direction.In)), 0);
+                IVertex marko = graph.GetVertex("1");
+                Assert.AreEqual(marko.GetProperty("name"), "marko");
+                Assert.AreEqual(marko.GetProperty("age"), 29);
                 int counter = 0;
-                foreach (Edge e in graph.getVertex("1").getEdges(Direction.OUT))
+                foreach (IEdge e in graph.GetVertex("1").GetEdges(Direction.Out))
                 {
-                    if (e.getVertex(Direction.IN).getId().Equals("2"))
+                    if (e.GetVertex(Direction.In).GetId().Equals("2"))
                     {
                         // Assert.AreEqual(e.getProperty("weight"), 0.5);
-                        Assert.AreEqual(e.getLabel(), "knows");
-                        Assert.AreEqual(e.getId(), "7");
+                        Assert.AreEqual(e.GetLabel(), "knows");
+                        Assert.AreEqual(e.GetId(), "7");
                         counter++;
                     }
-                    else if (e.getVertex(Direction.IN).getId().Equals("3"))
+                    else if (e.GetVertex(Direction.In).GetId().Equals("3"))
                     {
-                        Assert.AreEqual(Math.Round(Convert.ToSingle(e.getProperty("weight"))), 0);
-                        Assert.AreEqual(e.getLabel(), "created");
-                        Assert.AreEqual(e.getId(), "9");
+                        Assert.AreEqual(Math.Round(Convert.ToSingle(e.GetProperty("weight"))), 0);
+                        Assert.AreEqual(e.GetLabel(), "created");
+                        Assert.AreEqual(e.GetId(), "9");
                         counter++;
                     }
-                    else if (e.getVertex(Direction.IN).getId().Equals("4"))
+                    else if (e.GetVertex(Direction.In).GetId().Equals("4"))
                     {
-                        Assert.AreEqual(Math.Round(Convert.ToSingle(e.getProperty("weight"))), 1);
-                        Assert.AreEqual(e.getLabel(), "knows");
-                        Assert.AreEqual(e.getId(), "8");
+                        Assert.AreEqual(Math.Round(Convert.ToSingle(e.GetProperty("weight"))), 1);
+                        Assert.AreEqual(e.GetLabel(), "knows");
+                        Assert.AreEqual(e.GetId(), "8");
                         counter++;
                     }
                 }
 
-                Assert.AreEqual(count(graph.getVertex("4").getEdges(Direction.OUT)), 2);
-                Assert.AreEqual(count(graph.getVertex("4").getEdges(Direction.IN)), 1);
-                Vertex josh = graph.getVertex("4");
-                Assert.AreEqual(josh.getProperty("name"), "josh");
-                Assert.AreEqual(josh.getProperty("age"), 32);
-                foreach (Edge e in graph.getVertex("4").getEdges(Direction.OUT))
+                Assert.AreEqual(Count(graph.GetVertex("4").GetEdges(Direction.Out)), 2);
+                Assert.AreEqual(Count(graph.GetVertex("4").GetEdges(Direction.In)), 1);
+                IVertex josh = graph.GetVertex("4");
+                Assert.AreEqual(josh.GetProperty("name"), "josh");
+                Assert.AreEqual(josh.GetProperty("age"), 32);
+                foreach (IEdge e in graph.GetVertex("4").GetEdges(Direction.Out))
                 {
-                    if (e.getVertex(Direction.IN).getId().Equals("3"))
+                    if (e.GetVertex(Direction.In).GetId().Equals("3"))
                     {
-                        Assert.AreEqual(Math.Round(Convert.ToSingle(e.getProperty("weight"))), 0);
-                        Assert.AreEqual(e.getLabel(), "created");
-                        Assert.AreEqual(e.getId(), "11");
+                        Assert.AreEqual(Math.Round(Convert.ToSingle(e.GetProperty("weight"))), 0);
+                        Assert.AreEqual(e.GetLabel(), "created");
+                        Assert.AreEqual(e.GetId(), "11");
                         counter++;
                     }
-                    else if (e.getVertex(Direction.IN).getId().Equals("5"))
+                    else if (e.GetVertex(Direction.In).GetId().Equals("5"))
                     {
-                        Assert.AreEqual(Math.Round(Convert.ToSingle(e.getProperty("weight"))), 1);
-                        Assert.AreEqual(e.getLabel(), "created");
-                        Assert.AreEqual(e.getId(), "10");
+                        Assert.AreEqual(Math.Round(Convert.ToSingle(e.GetProperty("weight"))), 1);
+                        Assert.AreEqual(e.GetLabel(), "created");
+                        Assert.AreEqual(e.GetId(), "10");
                         counter++;
                     }
                 }
 
                 Assert.AreEqual(counter, 5);
             }
-            graph.shutdown();
+            graph.Shutdown();
         }
 
         [Test]
-        public void testTinkerGraphEdges()
+        public void TestTinkerGraphEdges()
         {
-            Graph graph = this.graphTest.generateGraph();
-            if (graph.getFeatures().supportsEdgeIteration.Value)
+            IGraph graph = GraphTest.GenerateGraph();
+
+            if (graph.GetFeatures().SupportsEdgeIteration)
             {
-                this.stopWatch();
-                using (var stream = typeof(GraphMLReaderTestSuite).Assembly.GetManifestResourceStream(typeof(GraphMLReaderTestSuite), "graph-example-1.xml"))
+                StopWatch();
+                using (var stream = typeof(GraphMlReaderTestSuite).Assembly.GetManifestResourceStream(typeof(GraphMlReaderTestSuite), "graph-example-1.xml"))
                 {
-                    new GraphMLReader(graph).inputGraph(stream);
+                    new GraphMlReader(graph).InputGraph(stream);
                 }
-                printPerformance(graph.ToString(), null, "graph-example-1 loaded", this.stopWatch());
-                HashSet<string> edgeIds = new HashSet<string>();
-                HashSet<string> edgeKeys = new HashSet<string>();
-                HashSet<string> edgeValues = new HashSet<string>();
+                PrintPerformance(graph.ToString(), null, "graph-example-1 loaded", StopWatch());
+                var edgeIds = new HashSet<string>();
+                var edgeKeys = new HashSet<string>();
+                var edgeValues = new HashSet<string>();
                 int count = 0;
-                foreach (Edge e in graph.getEdges())
+                foreach (IEdge e in graph.GetEdges())
                 {
                     count++;
-                    edgeIds.Add(e.getId().ToString());
-                    foreach (string key in e.getPropertyKeys())
+                    edgeIds.Add(e.GetId().ToString());
+                    foreach (string key in e.GetPropertyKeys())
                     {
                         edgeKeys.Add(key);
-                        edgeValues.Add(e.getProperty(key).ToString());
+                        edgeValues.Add(e.GetProperty(key).ToString());
                     }
                 }
                 Assert.AreEqual(count, 6);
@@ -120,28 +119,29 @@ namespace Frontenac.Blueprints.Util.IO.GraphML
                 Assert.AreEqual(edgeKeys.Count(), 1);
                 Assert.AreEqual(edgeValues.Count(), 4);
             }
-            graph.shutdown();
+            graph.Shutdown();
         }
 
         [Test]
-        public void testTinkerGraphVertices()
+        public void TestTinkerGraphVertices()
         {
-            Graph graph = this.graphTest.generateGraph();
-            if (graph.getFeatures().supportsVertexIteration.Value)
-            {
-                this.stopWatch();
-                using (var stream = typeof(GraphMLReaderTestSuite).Assembly.GetManifestResourceStream(typeof(GraphMLReaderTestSuite), "graph-example-1.xml"))
-                {
-                    new GraphMLReader(graph).inputGraph(stream);
-                }
-                printPerformance(graph.ToString(), null, "graph-example-1 loaded", this.stopWatch());
+            IGraph graph = GraphTest.GenerateGraph();
 
-                HashSet<string> vertexNames = new HashSet<string>();
+            if (graph.GetFeatures().SupportsVertexIteration)
+            {
+                StopWatch();
+                using (var stream = typeof(GraphMlReaderTestSuite).Assembly.GetManifestResourceStream(typeof(GraphMlReaderTestSuite), "graph-example-1.xml"))
+                {
+                    new GraphMlReader(graph).InputGraph(stream);
+                }
+                PrintPerformance(graph.ToString(), null, "graph-example-1 loaded", StopWatch());
+
+                var vertexNames = new HashSet<string>();
                 int count = 0;
-                foreach (Vertex v in graph.getVertices())
+                foreach (IVertex v in graph.GetVertices())
                 {
                     count++;
-                    vertexNames.Add(v.getProperty("name").ToString());
+                    vertexNames.Add(v.GetProperty("name").ToString());
                     // System.out.println(v);
                 }
                 Assert.AreEqual(count, 6);
@@ -153,27 +153,28 @@ namespace Frontenac.Blueprints.Util.IO.GraphML
                 Assert.True(vertexNames.Contains("ripple"));
                 Assert.True(vertexNames.Contains("lop"));
             }
-            graph.shutdown();
+            graph.Shutdown();
         }
 
         [Test]
-        public void testTinkerGraphSoftwareVertices()
+        public void TestTinkerGraphSoftwareVertices()
         {
-            Graph graph = this.graphTest.generateGraph();
-            if (graph.getFeatures().supportsVertexIteration.Value)
+            IGraph graph = GraphTest.GenerateGraph();
+
+            if (graph.GetFeatures().SupportsVertexIteration)
             {
-                this.stopWatch();
-                using (var stream = typeof(GraphMLReaderTestSuite).Assembly.GetManifestResourceStream(typeof(GraphMLReaderTestSuite), "graph-example-1.xml"))
+                StopWatch();
+                using (var stream = typeof(GraphMlReaderTestSuite).Assembly.GetManifestResourceStream(typeof(GraphMlReaderTestSuite), "graph-example-1.xml"))
                 {
-                    new GraphMLReader(graph).inputGraph(stream);
+                    new GraphMlReader(graph).InputGraph(stream);
                 }
-                printPerformance(graph.ToString(), null, "graph-example-1 loaded", this.stopWatch());
-                HashSet<Vertex> softwareVertices = new HashSet<Vertex>();
+                PrintPerformance(graph.ToString(), null, "graph-example-1 loaded", StopWatch());
+                var softwareVertices = new HashSet<IVertex>();
                 int count = 0;
-                foreach (Vertex v in graph.getVertices())
+                foreach (IVertex v in graph.GetVertices())
                 {
                     count++;
-                    string name = v.getProperty("name").ToString();
+                    string name = v.GetProperty("name").ToString();
                     if (name == "lop" || name == "ripple")
                     {
                         softwareVertices.Add(v);
@@ -181,37 +182,38 @@ namespace Frontenac.Blueprints.Util.IO.GraphML
                 }
                 Assert.AreEqual(count, 6);
                 Assert.AreEqual(softwareVertices.Count(), 2);
-                foreach (Vertex v in softwareVertices)
+                foreach (IVertex v in softwareVertices)
                 {
-                    Assert.AreEqual(v.getProperty("lang"), "java");
+                    Assert.AreEqual(v.GetProperty("lang"), "java");
                 }
             }
-            graph.shutdown();
+            graph.Shutdown();
         }
 
         [Test]
-        public void testTinkerGraphVertexAndEdges()
+        public void TestTinkerGraphVertexAndEdges()
         {
-            Graph graph = this.graphTest.generateGraph();
-            if (graph.getFeatures().supportsVertexIteration.Value)
+            IGraph graph = GraphTest.GenerateGraph();
+
+            if (graph.GetFeatures().SupportsVertexIteration)
             {
-                this.stopWatch();
-                using (var stream = typeof(GraphMLReaderTestSuite).Assembly.GetManifestResourceStream(typeof(GraphMLReaderTestSuite), "graph-example-1.xml"))
+                StopWatch();
+                using (var stream = typeof(GraphMlReaderTestSuite).Assembly.GetManifestResourceStream(typeof(GraphMlReaderTestSuite), "graph-example-1.xml"))
                 {
-                    new GraphMLReader(graph).inputGraph(stream);
+                    new GraphMlReader(graph).InputGraph(stream);
                 }
-                printPerformance(graph.ToString(), null, "graph-example-1 loaded", this.stopWatch());
-                Vertex marko = null;
-                Vertex peter = null;
-                Vertex josh = null;
-                Vertex vadas = null;
-                Vertex lop = null;
-                Vertex ripple = null;
+                PrintPerformance(graph.ToString(), null, "graph-example-1 loaded", StopWatch());
+                IVertex marko = null;
+                IVertex peter = null;
+                IVertex josh = null;
+                IVertex vadas = null;
+                IVertex lop = null;
+                IVertex ripple = null;
                 int c = 0;
-                foreach (Vertex v in graph.getVertices())
+                foreach (IVertex v in graph.GetVertices())
                 {
                     c++;
-                    string name = v.getProperty("name").ToString();
+                    string name = v.GetProperty("name").ToString();
                     if (name == "marko")
                     {
                         marko = v;
@@ -249,223 +251,228 @@ namespace Frontenac.Blueprints.Util.IO.GraphML
                 Assert.True(null != lop);
                 Assert.True(null != ripple);
 
-                if (graph.getFeatures().supportsEdgeIteration.Value)
+                if (graph.GetFeatures().SupportsEdgeIteration)
                 {
-                    Assert.AreEqual(count(graph.getEdges()), 6);
+                    Assert.AreEqual(Count(graph.GetEdges()), 6);
                 }
 
                 // test marko
-                HashSet<Vertex> vertices = new HashSet<Vertex>();
-                Assert.AreEqual(marko.getProperty("name"), "marko");
-                Assert.AreEqual(marko.getProperty("age"), 29);
-                Assert.AreEqual(marko.getPropertyKeys().Count(), 2);
-                Assert.AreEqual(count(marko.getEdges(Direction.OUT)), 3);
-                Assert.AreEqual(count(marko.getEdges(Direction.IN)), 0);
-                foreach (Edge e in marko.getEdges(Direction.OUT))
+                var vertices = new HashSet<IVertex>();
+                Assert.AreEqual(marko.GetProperty("name"), "marko");
+                Assert.AreEqual(marko.GetProperty("age"), 29);
+                Assert.AreEqual(marko.GetPropertyKeys().Count(), 2);
+                Assert.AreEqual(Count(marko.GetEdges(Direction.Out)), 3);
+                Assert.AreEqual(Count(marko.GetEdges(Direction.In)), 0);
+                foreach (IEdge e in marko.GetEdges(Direction.Out))
                 {
-                    vertices.Add(e.getVertex(Direction.IN));
+                    vertices.Add(e.GetVertex(Direction.In));
                 }
                 Assert.AreEqual(vertices.Count(), 3);
-                Assert.True(vertices.Contains(lop));
-                Assert.True(vertices.Contains(josh));
-                Assert.True(vertices.Contains(vadas));
+                Assert.True(lop != null && vertices.Contains(lop));
+                Assert.True(josh != null && vertices.Contains(josh));
+                Assert.True(vadas != null && vertices.Contains(vadas));
                 // test peter
-                vertices = new HashSet<Vertex>();
-                Assert.AreEqual(peter.getProperty("name"), "peter");
-                Assert.AreEqual(peter.getProperty("age"), 35);
-                Assert.AreEqual(peter.getPropertyKeys().Count(), 2);
-                Assert.AreEqual(count(peter.getEdges(Direction.OUT)), 1);
-                Assert.AreEqual(count(peter.getEdges(Direction.IN)), 0);
-                foreach (Edge e in peter.getEdges(Direction.OUT))
+                vertices = new HashSet<IVertex>();
+                Assert.AreEqual(peter.GetProperty("name"), "peter");
+                Assert.AreEqual(peter.GetProperty("age"), 35);
+                Assert.AreEqual(peter.GetPropertyKeys().Count(), 2);
+                Assert.AreEqual(Count(peter.GetEdges(Direction.Out)), 1);
+                Assert.AreEqual(Count(peter.GetEdges(Direction.In)), 0);
+                foreach (IEdge e in peter.GetEdges(Direction.Out))
                 {
-                    vertices.Add(e.getVertex(Direction.IN));
+                    vertices.Add(e.GetVertex(Direction.In));
                 }
                 Assert.AreEqual(vertices.Count(), 1);
+// ReSharper disable AssignNullToNotNullAttribute
                 Assert.True(vertices.Contains(lop));
+// ReSharper restore AssignNullToNotNullAttribute
                 // test josh
-                vertices = new HashSet<Vertex>();
-                Assert.AreEqual(josh.getProperty("name"), "josh");
-                Assert.AreEqual(josh.getProperty("age"), 32);
-                Assert.AreEqual(josh.getPropertyKeys().Count(), 2);
-                Assert.AreEqual(count(josh.getEdges(Direction.OUT)), 2);
-                Assert.AreEqual(count(josh.getEdges(Direction.IN)), 1);
-                foreach (Edge e in josh.getEdges(Direction.OUT))
+                vertices = new HashSet<IVertex>();
+                Assert.AreEqual(josh.GetProperty("name"), "josh");
+                Assert.AreEqual(josh.GetProperty("age"), 32);
+                Assert.AreEqual(josh.GetPropertyKeys().Count(), 2);
+                Assert.AreEqual(Count(josh.GetEdges(Direction.Out)), 2);
+                Assert.AreEqual(Count(josh.GetEdges(Direction.In)), 1);
+                foreach (IEdge e in josh.GetEdges(Direction.Out))
                 {
-                    vertices.Add(e.getVertex(Direction.IN));
+                    vertices.Add(e.GetVertex(Direction.In));
                 }
                 Assert.AreEqual(vertices.Count(), 2);
+// ReSharper disable AssignNullToNotNullAttribute
                 Assert.True(vertices.Contains(lop));
+// ReSharper restore AssignNullToNotNullAttribute
+// ReSharper disable AssignNullToNotNullAttribute
                 Assert.True(vertices.Contains(ripple));
-                vertices = new HashSet<Vertex>();
-                foreach (Edge e in josh.getEdges(Direction.IN))
+// ReSharper restore AssignNullToNotNullAttribute
+                vertices = new HashSet<IVertex>();
+                foreach (IEdge e in josh.GetEdges(Direction.In))
                 {
-                    vertices.Add(e.getVertex(Direction.OUT));
+                    vertices.Add(e.GetVertex(Direction.Out));
                 }
                 Assert.AreEqual(vertices.Count(), 1);
                 Assert.True(vertices.Contains(marko));
                 // test vadas
-                vertices = new HashSet<Vertex>();
-                Assert.AreEqual(vadas.getProperty("name"), "vadas");
-                Assert.AreEqual(vadas.getProperty("age"), 27);
-                Assert.AreEqual(vadas.getPropertyKeys().Count(), 2);
-                Assert.AreEqual(count(vadas.getEdges(Direction.OUT)), 0);
-                Assert.AreEqual(count(vadas.getEdges(Direction.IN)), 1);
-                foreach (Edge e in vadas.getEdges(Direction.IN))
+                vertices = new HashSet<IVertex>();
+                Assert.AreEqual(vadas.GetProperty("name"), "vadas");
+                Assert.AreEqual(vadas.GetProperty("age"), 27);
+                Assert.AreEqual(vadas.GetPropertyKeys().Count(), 2);
+                Assert.AreEqual(Count(vadas.GetEdges(Direction.Out)), 0);
+                Assert.AreEqual(Count(vadas.GetEdges(Direction.In)), 1);
+                foreach (IEdge e in vadas.GetEdges(Direction.In))
                 {
-                    vertices.Add(e.getVertex(Direction.OUT));
+                    vertices.Add(e.GetVertex(Direction.Out));
                 }
                 Assert.AreEqual(vertices.Count(), 1);
                 Assert.True(vertices.Contains(marko));
                 // test lop
-                vertices = new HashSet<Vertex>();
-                Assert.AreEqual(lop.getProperty("name"), "lop");
-                Assert.AreEqual(lop.getProperty("lang"), "java");
-                Assert.AreEqual(lop.getPropertyKeys().Count(), 2);
-                Assert.AreEqual(count(lop.getEdges(Direction.OUT)), 0);
-                Assert.AreEqual(count(lop.getEdges(Direction.IN)), 3);
-                foreach (Edge e in lop.getEdges(Direction.IN))
+                vertices = new HashSet<IVertex>();
+                Assert.AreEqual(lop.GetProperty("name"), "lop");
+                Assert.AreEqual(lop.GetProperty("lang"), "java");
+                Assert.AreEqual(lop.GetPropertyKeys().Count(), 2);
+                Assert.AreEqual(Count(lop.GetEdges(Direction.Out)), 0);
+                Assert.AreEqual(Count(lop.GetEdges(Direction.In)), 3);
+                foreach (IEdge e in lop.GetEdges(Direction.In))
                 {
-                    vertices.Add(e.getVertex(Direction.OUT));
+                    vertices.Add(e.GetVertex(Direction.Out));
                 }
                 Assert.AreEqual(vertices.Count(), 3);
                 Assert.True(vertices.Contains(marko));
                 Assert.True(vertices.Contains(josh));
                 Assert.True(vertices.Contains(peter));
                 // test ripple
-                vertices = new HashSet<Vertex>();
-                Assert.AreEqual(ripple.getProperty("name"), "ripple");
-                Assert.AreEqual(ripple.getProperty("lang"), "java");
-                Assert.AreEqual(ripple.getPropertyKeys().Count(), 2);
-                Assert.AreEqual(count(ripple.getEdges(Direction.OUT)), 0);
-                Assert.AreEqual(count(ripple.getEdges(Direction.IN)), 1);
-                foreach (Edge e in ripple.getEdges(Direction.IN))
+                vertices = new HashSet<IVertex>();
+                Assert.AreEqual(ripple.GetProperty("name"), "ripple");
+                Assert.AreEqual(ripple.GetProperty("lang"), "java");
+                Assert.AreEqual(ripple.GetPropertyKeys().Count(), 2);
+                Assert.AreEqual(Count(ripple.GetEdges(Direction.Out)), 0);
+                Assert.AreEqual(Count(ripple.GetEdges(Direction.In)), 1);
+                foreach (IEdge e in ripple.GetEdges(Direction.In))
                 {
-                    vertices.Add(e.getVertex(Direction.OUT));
+                    vertices.Add(e.GetVertex(Direction.Out));
                 }
                 Assert.AreEqual(vertices.Count(), 1);
                 Assert.True(vertices.Contains(josh));
             }
-            graph.shutdown();
+            graph.Shutdown();
         }
 
         [Test]
-        public void testReadingTinkerGraphExample3()
+        public void TestReadingTinkerGraphExample3()
         {
-            Graph graph = this.graphTest.generateGraph();
-            if (!graph.getFeatures().ignoresSuppliedIds.Value &&
-                graph.getFeatures().supportsEdgeIteration.Value &&
-                graph.getFeatures().supportsVertexIteration.Value)
+            IGraph graph = GraphTest.GenerateGraph();
+            
+            if (!graph.GetFeatures().IgnoresSuppliedIds && graph.GetFeatures().SupportsEdgeIteration && graph.GetFeatures().SupportsVertexIteration)
             {
-                this.stopWatch();
-                using (var stream = typeof(GraphMLReaderTestSuite).Assembly.GetManifestResourceStream(typeof(GraphMLReaderTestSuite), "graph-example-3.xml"))
+                StopWatch();
+                using (var stream = typeof(GraphMlReaderTestSuite).Assembly.GetManifestResourceStream(typeof(GraphMlReaderTestSuite), "graph-example-3.xml"))
                 {
-                    new GraphMLReader(graph).inputGraph(stream);
+                    new GraphMlReader(graph).InputGraph(stream);
                 }
-                printPerformance(graph.ToString(), null, "graph-example-3 loaded", this.stopWatch());
+                PrintPerformance(graph.ToString(), null, "graph-example-3 loaded", StopWatch());
 
                 // Specific Graph Characteristics
 
-                Assert.AreEqual(count(graph.getVertex("1").getEdges(Direction.OUT)), 3);
-                Assert.AreEqual(count(graph.getVertex("1").getEdges(Direction.IN)), 0);
-                Vertex marko = graph.getVertex("1");
-                Assert.AreEqual(marko.getProperty("name"), "marko");
-                Assert.AreEqual(marko.getProperty("age"), 29);
-                Assert.AreEqual(marko.getProperty("_id"), 2);
+                Assert.AreEqual(Count(graph.GetVertex("1").GetEdges(Direction.Out)), 3);
+                Assert.AreEqual(Count(graph.GetVertex("1").GetEdges(Direction.In)), 0);
+                IVertex marko = graph.GetVertex("1");
+                Assert.AreEqual(marko.GetProperty("name"), "marko");
+                Assert.AreEqual(marko.GetProperty("age"), 29);
+                Assert.AreEqual(marko.GetProperty("_id"), 2);
                 int counter = 0;
-                foreach (Edge e in graph.getVertex("1").getEdges(Direction.OUT))
+                foreach (IEdge e in graph.GetVertex("1").GetEdges(Direction.Out))
                 {
-                    if (e.getVertex(Direction.IN).getId().Equals("2"))
+                    if (e.GetVertex(Direction.In).GetId().Equals("2"))
                     {
                         // Assert.AreEqual(e.getProperty("weight"), 0.5);
-                        Assert.AreEqual(e.getProperty("_id"), 8);
-                        Assert.AreEqual(e.getProperty("_label"), "has high fived");
-                        Assert.AreEqual(e.getLabel(), "knows");
-                        Assert.AreEqual(e.getId(), "7");
+                        Assert.AreEqual(e.GetProperty("_id"), 8);
+                        Assert.AreEqual(e.GetProperty("_label"), "has high fived");
+                        Assert.AreEqual(e.GetLabel(), "knows");
+                        Assert.AreEqual(e.GetId(), "7");
                         counter++;
                     }
-                    else if (e.getVertex(Direction.IN).getId().Equals("3"))
+                    else if (e.GetVertex(Direction.In).GetId().Equals("3"))
                     {
-                        Assert.AreEqual(Math.Round(Convert.ToSingle(e.getProperty("weight"))), 0);
-                        Assert.AreEqual(e.getProperty("_id"), 10);
-                        Assert.AreEqual(e.getProperty("_label"), "has high fived");
-                        Assert.AreEqual(e.getLabel(), "created");
-                        Assert.AreEqual(e.getId(), "9");
+                        Assert.AreEqual(Math.Round(Convert.ToSingle(e.GetProperty("weight"))), 0);
+                        Assert.AreEqual(e.GetProperty("_id"), 10);
+                        Assert.AreEqual(e.GetProperty("_label"), "has high fived");
+                        Assert.AreEqual(e.GetLabel(), "created");
+                        Assert.AreEqual(e.GetId(), "9");
                         counter++;
                     }
-                    else if (e.getVertex(Direction.IN).getId().Equals("4"))
+                    else if (e.GetVertex(Direction.In).GetId().Equals("4"))
                     {
-                        Assert.AreEqual(Math.Round(Convert.ToSingle(e.getProperty("weight"))), 1);
-                        Assert.AreEqual(e.getProperty("_id"), 9);
-                        Assert.AreEqual(e.getProperty("_label"), "has high fived");
-                        Assert.AreEqual(e.getLabel(), "knows");
-                        Assert.AreEqual(e.getId(), "8");
-                        counter++;
-                    }
-                }
-
-                Assert.AreEqual(count(graph.getVertex("2").getEdges(Direction.OUT)), 0);
-                Assert.AreEqual(count(graph.getVertex("2").getEdges(Direction.IN)), 1);
-                Vertex vadas = graph.getVertex("2");
-                Assert.AreEqual(vadas.getProperty("name"), "vadas");
-                Assert.AreEqual(vadas.getProperty("age"), 27);
-                Assert.AreEqual(vadas.getProperty("_id"), 3);
-
-                Assert.AreEqual(count(graph.getVertex("3").getEdges(Direction.OUT)), 0);
-                Assert.AreEqual(count(graph.getVertex("3").getEdges(Direction.IN)), 3);
-                Vertex lop = graph.getVertex("3");
-                Assert.AreEqual(lop.getProperty("name"), "lop");
-                Assert.AreEqual(lop.getProperty("lang"), "java");
-                Assert.AreEqual(lop.getProperty("_id"), 4);
-
-                Assert.AreEqual(count(graph.getVertex("4").getEdges(Direction.OUT)), 2);
-                Assert.AreEqual(count(graph.getVertex("4").getEdges(Direction.IN)), 1);
-                Vertex josh = graph.getVertex("4");
-                Assert.AreEqual(josh.getProperty("name"), "josh");
-                Assert.AreEqual(josh.getProperty("age"), 32);
-                foreach (Edge e in graph.getVertex("4").getEdges(Direction.OUT))
-                {
-                    if (e.getVertex(Direction.IN).getId().Equals("3"))
-                    {
-                        Assert.AreEqual(Math.Round(Convert.ToSingle(e.getProperty("weight"))), 0);
-                        Assert.AreEqual(e.getProperty("_id"), 13);
-                        Assert.AreEqual(e.getProperty("_label"), null);
-                        Assert.AreEqual(e.getLabel(), "created");
-                        Assert.AreEqual(e.getId(), "11");
-                        counter++;
-                    }
-                    else if (e.getVertex(Direction.IN).getId().Equals("5"))
-                    {
-                        Assert.AreEqual(Math.Round(Convert.ToSingle(e.getProperty("weight"))), 1);
-                        Assert.AreEqual(e.getProperty("_id"), 11);
-                        Assert.AreEqual(e.getProperty("_label"), "has high fived");
-                        Assert.AreEqual(e.getLabel(), "created");
-                        Assert.AreEqual(e.getId(), "10");
+                        Assert.AreEqual(Math.Round(Convert.ToSingle(e.GetProperty("weight"))), 1);
+                        Assert.AreEqual(e.GetProperty("_id"), 9);
+                        Assert.AreEqual(e.GetProperty("_label"), "has high fived");
+                        Assert.AreEqual(e.GetLabel(), "knows");
+                        Assert.AreEqual(e.GetId(), "8");
                         counter++;
                     }
                 }
 
-                Assert.AreEqual(count(graph.getVertex("5").getEdges(Direction.OUT)), 0);
-                Assert.AreEqual(count(graph.getVertex("5").getEdges(Direction.IN)), 1);
-                Vertex ripple = graph.getVertex("5");
-                Assert.AreEqual(ripple.getProperty("name"), "ripple");
-                Assert.AreEqual(ripple.getProperty("lang"), "java");
-                Assert.AreEqual(ripple.getProperty("_id"), 7);
+                Assert.AreEqual(Count(graph.GetVertex("2").GetEdges(Direction.Out)), 0);
+                Assert.AreEqual(Count(graph.GetVertex("2").GetEdges(Direction.In)), 1);
+                IVertex vadas = graph.GetVertex("2");
+                Assert.AreEqual(vadas.GetProperty("name"), "vadas");
+                Assert.AreEqual(vadas.GetProperty("age"), 27);
+                Assert.AreEqual(vadas.GetProperty("_id"), 3);
 
-                Assert.AreEqual(count(graph.getVertex("6").getEdges(Direction.OUT)), 1);
-                Assert.AreEqual(count(graph.getVertex("6").getEdges(Direction.IN)), 0);
-                Vertex peter = graph.getVertex("6");
-                Assert.AreEqual(peter.getProperty("name"), "peter");
-                Assert.AreEqual(peter.getProperty("age"), 35);
+                Assert.AreEqual(Count(graph.GetVertex("3").GetEdges(Direction.Out)), 0);
+                Assert.AreEqual(Count(graph.GetVertex("3").GetEdges(Direction.In)), 3);
+                IVertex lop = graph.GetVertex("3");
+                Assert.AreEqual(lop.GetProperty("name"), "lop");
+                Assert.AreEqual(lop.GetProperty("lang"), "java");
+                Assert.AreEqual(lop.GetProperty("_id"), 4);
 
-                foreach (Edge e in graph.getVertex("6").getEdges(Direction.OUT))
+                Assert.AreEqual(Count(graph.GetVertex("4").GetEdges(Direction.Out)), 2);
+                Assert.AreEqual(Count(graph.GetVertex("4").GetEdges(Direction.In)), 1);
+                IVertex josh = graph.GetVertex("4");
+                Assert.AreEqual(josh.GetProperty("name"), "josh");
+                Assert.AreEqual(josh.GetProperty("age"), 32);
+                foreach (IEdge e in graph.GetVertex("4").GetEdges(Direction.Out))
                 {
-                    if (e.getVertex(Direction.IN).getId().Equals("3"))
+                    if (e.GetVertex(Direction.In).GetId().Equals("3"))
                     {
-                        Assert.AreEqual(Math.Round(Convert.ToSingle(e.getProperty("weight"))), 0);
-                        Assert.AreEqual(e.getProperty("_id"), null);
-                        Assert.AreEqual(e.getProperty("_label"), null);
-                        Assert.AreEqual(e.getLabel(), "created");
-                        Assert.AreEqual(e.getId(), "12");
+                        Assert.AreEqual(Math.Round(Convert.ToSingle(e.GetProperty("weight"))), 0);
+                        Assert.AreEqual(e.GetProperty("_id"), 13);
+                        Assert.AreEqual(e.GetProperty("_label"), null);
+                        Assert.AreEqual(e.GetLabel(), "created");
+                        Assert.AreEqual(e.GetId(), "11");
+                        counter++;
+                    }
+                    else if (e.GetVertex(Direction.In).GetId().Equals("5"))
+                    {
+                        Assert.AreEqual(Math.Round(Convert.ToSingle(e.GetProperty("weight"))), 1);
+                        Assert.AreEqual(e.GetProperty("_id"), 11);
+                        Assert.AreEqual(e.GetProperty("_label"), "has high fived");
+                        Assert.AreEqual(e.GetLabel(), "created");
+                        Assert.AreEqual(e.GetId(), "10");
+                        counter++;
+                    }
+                }
+
+                Assert.AreEqual(Count(graph.GetVertex("5").GetEdges(Direction.Out)), 0);
+                Assert.AreEqual(Count(graph.GetVertex("5").GetEdges(Direction.In)), 1);
+                IVertex ripple = graph.GetVertex("5");
+                Assert.AreEqual(ripple.GetProperty("name"), "ripple");
+                Assert.AreEqual(ripple.GetProperty("lang"), "java");
+                Assert.AreEqual(ripple.GetProperty("_id"), 7);
+
+                Assert.AreEqual(Count(graph.GetVertex("6").GetEdges(Direction.Out)), 1);
+                Assert.AreEqual(Count(graph.GetVertex("6").GetEdges(Direction.In)), 0);
+                IVertex peter = graph.GetVertex("6");
+                Assert.AreEqual(peter.GetProperty("name"), "peter");
+                Assert.AreEqual(peter.GetProperty("age"), 35);
+
+                foreach (IEdge e in graph.GetVertex("6").GetEdges(Direction.Out))
+                {
+                    if (e.GetVertex(Direction.In).GetId().Equals("3"))
+                    {
+                        Assert.AreEqual(Math.Round(Convert.ToSingle(e.GetProperty("weight"))), 0);
+                        Assert.AreEqual(e.GetProperty("_id"), null);
+                        Assert.AreEqual(e.GetProperty("_label"), null);
+                        Assert.AreEqual(e.GetLabel(), "created");
+                        Assert.AreEqual(e.GetId(), "12");
                         counter++;
                     }
                 }
@@ -474,27 +481,27 @@ namespace Frontenac.Blueprints.Util.IO.GraphML
 
                 // General Graph Characteristics
 
-                HashSet<string> vertexIds = new HashSet<string>();
-                HashSet<string> vertexKeys = new HashSet<string>();
-                HashSet<string> vertexNames = new HashSet<string>();
+                var vertexIds = new HashSet<string>();
+                var vertexKeys = new HashSet<string>();
+                var vertexNames = new HashSet<string>();
                 int vertexCount = 0;
-                foreach (Vertex v in graph.getVertices())
+                foreach (IVertex v in graph.GetVertices())
                 {
                     vertexCount++;
-                    vertexIds.Add(v.getId().ToString());
-                    vertexNames.Add(v.getProperty("name").ToString());
-                    foreach (string key in v.getPropertyKeys())
+                    vertexIds.Add(v.GetId().ToString());
+                    vertexNames.Add(v.GetProperty("name").ToString());
+                    foreach (string key in v.GetPropertyKeys())
                         vertexKeys.Add(key);
                 }
 
-                HashSet<string> edgeIds = new HashSet<string>();
-                HashSet<string> edgeKeys = new HashSet<string>();
+                var edgeIds = new HashSet<string>();
+                var edgeKeys = new HashSet<string>();
                 int edgeCount = 0;
-                foreach (Edge e in graph.getEdges())
+                foreach (IEdge e in graph.GetEdges())
                 {
                     edgeCount++;
-                    edgeIds.Add(e.getId().ToString());
-                    foreach (string key in e.getPropertyKeys())
+                    edgeIds.Add(e.GetId().ToString());
+                    foreach (string key in e.GetPropertyKeys())
                         edgeKeys.Add(key);
                 }
 
@@ -513,47 +520,48 @@ namespace Frontenac.Blueprints.Util.IO.GraphML
                 Assert.AreEqual(edgeKeys.Contains("_label"), true);
                 Assert.AreEqual(edgeKeys.Count(), 3);
             }
-            graph.shutdown();
+            graph.Shutdown();
         }
 
         [Test]
-        public void testReadingTinkerGraphExample3MappingLabels()
+        public void TestReadingTinkerGraphExample3MappingLabels()
         {
-            Graph graph = this.graphTest.generateGraph();
-            if (graph.getFeatures().supportsEdgeIteration.Value && graph.getFeatures().supportsVertexIteration.Value)
-            {
-                this.stopWatch();
-                using (var stream = typeof(GraphMLReaderTestSuite).Assembly.GetManifestResourceStream(typeof(GraphMLReaderTestSuite), "graph-example-3.xml"))
-                {
-                    GraphMLReader r = new GraphMLReader(graph);
-                    r.setEdgeLabelKey("_label");
-                    r.inputGraph(stream, 1000);
-                }
-                printPerformance(graph.ToString(), null, "graph-example-3 loaded", this.stopWatch());
+            IGraph graph = GraphTest.GenerateGraph();
 
-                HashSet<string> vertexIds = new HashSet<string>();
-                HashSet<string> vertexKeys = new HashSet<string>();
-                HashSet<string> vertexNames = new HashSet<string>();
+            if (graph.GetFeatures().SupportsEdgeIteration && graph.GetFeatures().SupportsVertexIteration)
+            {
+                StopWatch();
+                using (var stream = typeof(GraphMlReaderTestSuite).Assembly.GetManifestResourceStream(typeof(GraphMlReaderTestSuite), "graph-example-3.xml"))
+                {
+                    var r = new GraphMlReader(graph);
+                    r.SetEdgeLabelKey("_label");
+                    r.InputGraph(stream, 1000);
+                }
+                PrintPerformance(graph.ToString(), null, "graph-example-3 loaded", StopWatch());
+
+                var vertexIds = new HashSet<string>();
+                var vertexKeys = new HashSet<string>();
+                var vertexNames = new HashSet<string>();
                 int vertexCount = 0;
-                foreach (Vertex v in graph.getVertices())
+                foreach (IVertex v in graph.GetVertices())
                 {
                     vertexCount++;
-                    vertexIds.Add(v.getId().ToString());
-                    vertexNames.Add(v.getProperty("name").ToString());
-                    foreach (string key in v.getPropertyKeys())
+                    vertexIds.Add(v.GetId().ToString());
+                    vertexNames.Add(v.GetProperty("name").ToString());
+                    foreach (string key in v.GetPropertyKeys())
                         vertexKeys.Add(key);
                 }
 
-                HashSet<string> edgeIds = new HashSet<string>();
-                HashSet<string> edgeKeys = new HashSet<string>();
-                HashSet<string> edgeLabels = new HashSet<string>();
+                var edgeIds = new HashSet<string>();
+                var edgeKeys = new HashSet<string>();
+                var edgeLabels = new HashSet<string>();
                 int edgeCount = 0;
-                foreach (Edge e in graph.getEdges())
+                foreach (IEdge e in graph.GetEdges())
                 {
                     edgeCount++;
-                    edgeIds.Add(e.getId().ToString());
-                    edgeLabels.Add(e.getLabel());
-                    foreach (string key in e.getPropertyKeys())
+                    edgeIds.Add(e.GetId().ToString());
+                    edgeLabels.Add(e.GetLabel());
+                    foreach (string key in e.GetPropertyKeys())
                         edgeKeys.Add(key);
                 }
 
@@ -582,48 +590,49 @@ namespace Frontenac.Blueprints.Util.IO.GraphML
                 Assert.AreEqual(edgeLabels.Contains("knows"), false);
                 Assert.AreEqual(edgeLabels.Contains("created"), true);
             }
-            graph.shutdown();
+            graph.Shutdown();
         }
 
         [Test]
-        public void testReadingTinkerGraphExample3MappingIDs()
+        public void TestReadingTinkerGraphExample3MappingIDs()
         {
-            Graph graph = this.graphTest.generateGraph();
-            if (graph.getFeatures().supportsEdgeIteration.Value && graph.getFeatures().supportsVertexIteration.Value)
-            {
-                this.stopWatch();
-                using (var stream = typeof(GraphMLReaderTestSuite).Assembly.GetManifestResourceStream(typeof(GraphMLReaderTestSuite), "graph-example-3.xml"))
-                {
-                    GraphMLReader r = new GraphMLReader(graph);
-                    r.setVertexIdKey("_id");
-                    r.setEdgeIdKey("_id");
-                    r.inputGraph(stream, 1000);
-                }
-                printPerformance(graph.ToString(), null, "graph-example-3 loaded", this.stopWatch());
+            IGraph graph = GraphTest.GenerateGraph();
 
-                HashSet<string> vertexIds = new HashSet<string>();
-                HashSet<string> vertexKeys = new HashSet<string>();
-                HashSet<string> vertexNames = new HashSet<string>();
+            if (graph.GetFeatures().SupportsEdgeIteration && graph.GetFeatures().SupportsVertexIteration)
+            {
+                StopWatch();
+                using (var stream = typeof(GraphMlReaderTestSuite).Assembly.GetManifestResourceStream(typeof(GraphMlReaderTestSuite), "graph-example-3.xml"))
+                {
+                    var r = new GraphMlReader(graph);
+                    r.SetVertexIdKey("_id");
+                    r.SetEdgeIdKey("_id");
+                    r.InputGraph(stream, 1000);
+                }
+                PrintPerformance(graph.ToString(), null, "graph-example-3 loaded", StopWatch());
+
+                var vertexIds = new HashSet<string>();
+                var vertexKeys = new HashSet<string>();
+                var vertexNames = new HashSet<string>();
                 int vertexCount = 0;
-                foreach (Vertex v in graph.getVertices())
+                foreach (IVertex v in graph.GetVertices())
                 {
                     vertexCount++;
-                    vertexIds.Add(v.getId().ToString());
-                    vertexNames.Add(v.getProperty("name").ToString());
-                    foreach (string key in v.getPropertyKeys())
+                    vertexIds.Add(v.GetId().ToString());
+                    vertexNames.Add(v.GetProperty("name").ToString());
+                    foreach (string key in v.GetPropertyKeys())
                         vertexKeys.Add(key);
                 }
 
-                HashSet<string> edgeIds = new HashSet<string>();
-                HashSet<string> edgeKeys = new HashSet<string>();
-                HashSet<string> edgeLabels = new HashSet<string>();
+                var edgeIds = new HashSet<string>();
+                var edgeKeys = new HashSet<string>();
+                var edgeLabels = new HashSet<string>();
                 int edgeCount = 0;
-                foreach (Edge e in graph.getEdges())
+                foreach (IEdge e in graph.GetEdges())
                 {
                     edgeCount++;
-                    edgeIds.Add(e.getId().ToString());
-                    edgeLabels.Add(e.getLabel());
-                    foreach (string key in e.getPropertyKeys())
+                    edgeIds.Add(e.GetId().ToString());
+                    edgeLabels.Add(e.GetLabel());
+                    foreach (string key in e.GetPropertyKeys())
                         edgeKeys.Add(key);
                 }
 
@@ -652,49 +661,50 @@ namespace Frontenac.Blueprints.Util.IO.GraphML
                 Assert.AreEqual(edgeLabels.Contains("knows"), true);
                 Assert.AreEqual(edgeLabels.Contains("created"), true);
             }
-            graph.shutdown();
+            graph.Shutdown();
         }
 
         [Test]
-        public void testReadingTinkerGraphExample3MappingAll()
+        public void TestReadingTinkerGraphExample3MappingAll()
         {
-            Graph graph = this.graphTest.generateGraph();
-            if (graph.getFeatures().supportsEdgeIteration.Value && graph.getFeatures().supportsVertexIteration.Value)
+            IGraph graph = GraphTest.GenerateGraph();
+            
+            if (graph.GetFeatures().SupportsEdgeIteration && graph.GetFeatures().SupportsVertexIteration)
             {
-                this.stopWatch();
-                using (var stream = typeof(GraphMLReaderTestSuite).Assembly.GetManifestResourceStream(typeof(GraphMLReaderTestSuite), "graph-example-3.xml"))
+                StopWatch();
+                using (var stream = typeof(GraphMlReaderTestSuite).Assembly.GetManifestResourceStream(typeof(GraphMlReaderTestSuite), "graph-example-3.xml"))
                 {
-                    GraphMLReader r = new GraphMLReader(graph);
-                    r.setVertexIdKey("_id");
-                    r.setEdgeIdKey("_id");
-                    r.setEdgeLabelKey("_label");
-                    r.inputGraph(stream, 1000);
+                    var r = new GraphMlReader(graph);
+                    r.SetVertexIdKey("_id");
+                    r.SetEdgeIdKey("_id");
+                    r.SetEdgeLabelKey("_label");
+                    r.InputGraph(stream, 1000);
                 }
-                printPerformance(graph.ToString(), null, "graph-example-3 loaded", this.stopWatch());
+                PrintPerformance(graph.ToString(), null, "graph-example-3 loaded", StopWatch());
 
-                HashSet<string> vertexIds = new HashSet<string>();
-                HashSet<string> vertexKeys = new HashSet<string>();
-                HashSet<string> vertexNames = new HashSet<string>();
+                var vertexIds = new HashSet<string>();
+                var vertexKeys = new HashSet<string>();
+                var vertexNames = new HashSet<string>();
                 int vertexCount = 0;
-                foreach (Vertex v in graph.getVertices())
+                foreach (IVertex v in graph.GetVertices())
                 {
                     vertexCount++;
-                    vertexIds.Add(v.getId().ToString());
-                    vertexNames.Add(v.getProperty("name").ToString());
-                    foreach (string key in v.getPropertyKeys())
+                    vertexIds.Add(v.GetId().ToString());
+                    vertexNames.Add(v.GetProperty("name").ToString());
+                    foreach (string key in v.GetPropertyKeys())
                         vertexKeys.Add(key);
                 }
 
-                HashSet<string> edgeIds = new HashSet<string>();
-                HashSet<string> edgeKeys = new HashSet<string>();
-                HashSet<string> edgeLabels = new HashSet<string>();
+                var edgeIds = new HashSet<string>();
+                var edgeKeys = new HashSet<string>();
+                var edgeLabels = new HashSet<string>();
                 int edgeCount = 0;
-                foreach (Edge e in graph.getEdges())
+                foreach (IEdge e in graph.GetEdges())
                 {
                     edgeCount++;
-                    edgeIds.Add(e.getId().ToString());
-                    edgeLabels.Add(e.getLabel());
-                    foreach (string key in e.getPropertyKeys())
+                    edgeIds.Add(e.GetId().ToString());
+                    edgeLabels.Add(e.GetLabel());
+                    foreach (string key in e.GetPropertyKeys())
                         edgeKeys.Add(key);
                 }
 
@@ -723,135 +733,134 @@ namespace Frontenac.Blueprints.Util.IO.GraphML
                 Assert.AreEqual(edgeLabels.Contains("knows"), false);
                 Assert.AreEqual(edgeLabels.Contains("created"), true);
             }
-            graph.shutdown();
+            graph.Shutdown();
         }
 
         [Test]
-        public void testMigratingTinkerGraphExample3()
+        public void TestMigratingTinkerGraphExample3()
         {
-            Graph graph = this.graphTest.generateGraph();
-            if (!graph.getFeatures().ignoresSuppliedIds.Value &&
-                graph.getFeatures().supportsEdgeIteration.Value &&
-                graph.getFeatures().supportsVertexIteration.Value)
+            IGraph graph = GraphTest.GenerateGraph();
+            
+            if (!graph.GetFeatures().IgnoresSuppliedIds && graph.GetFeatures().SupportsEdgeIteration && graph.GetFeatures().SupportsVertexIteration)
             {
 
-                this.stopWatch();
-                using (var stream = typeof(GraphMLReaderTestSuite).Assembly.GetManifestResourceStream(typeof(GraphMLReaderTestSuite), "graph-example-3.xml"))
+                StopWatch();
+                using (var stream = typeof(GraphMlReaderTestSuite).Assembly.GetManifestResourceStream(typeof(GraphMlReaderTestSuite), "graph-example-3.xml"))
                 {
-                    new GraphMLReader(graph).inputGraph(stream, 1000);
+                    new GraphMlReader(graph).InputGraph(stream, 1000);
                 }
-                printPerformance(graph.ToString(), null, "graph-example-3 loaded", this.stopWatch());
+                PrintPerformance(graph.ToString(), null, "graph-example-3 loaded", StopWatch());
 
-                this.stopWatch();
+                StopWatch();
                 // FIXME Should not explicitly define the Graph type (TinkerGraph)
                 // here. Need to accept 2 graphs as input params?
-                Graph toGraph = new TinkerGraph();
-                GraphMigrator.migrateGraph(graph, toGraph);
-                printPerformance(toGraph.ToString(), null, "graph-example-3 migrated", this.stopWatch());
+                IGraph toGraph = new TinkerGraph();
+                GraphMigrator.MigrateGraph(graph, toGraph);
+                PrintPerformance(toGraph.ToString(), null, "graph-example-3 migrated", StopWatch());
 
                 // Specific Graph Characteristics
 
-                Assert.AreEqual(count(toGraph.getVertex("1").getEdges(Direction.OUT)), 3);
-                Assert.AreEqual(count(toGraph.getVertex("1").getEdges(Direction.IN)), 0);
-                Vertex marko = toGraph.getVertex("1");
-                Assert.AreEqual(marko.getProperty("name"), "marko");
-                Assert.AreEqual(marko.getProperty("age"), 29);
-                Assert.AreEqual(marko.getProperty("_id"), 2);
+                Assert.AreEqual(Count(toGraph.GetVertex("1").GetEdges(Direction.Out)), 3);
+                Assert.AreEqual(Count(toGraph.GetVertex("1").GetEdges(Direction.In)), 0);
+                IVertex marko = toGraph.GetVertex("1");
+                Assert.AreEqual(marko.GetProperty("name"), "marko");
+                Assert.AreEqual(marko.GetProperty("age"), 29);
+                Assert.AreEqual(marko.GetProperty("_id"), 2);
                 int counter = 0;
-                foreach (Edge e in toGraph.getVertex("1").getEdges(Direction.OUT))
+                foreach (IEdge e in toGraph.GetVertex("1").GetEdges(Direction.Out))
                 {
-                    if (e.getVertex(Direction.IN).getId().Equals("2"))
+                    if (e.GetVertex(Direction.In).GetId().Equals("2"))
                     {
                         // Assert.AreEqual(e.getProperty("weight"), 0.5);
-                        Assert.AreEqual(e.getProperty("_id"), 8);
-                        Assert.AreEqual(e.getProperty("_label"), "has high fived");
-                        Assert.AreEqual(e.getLabel(), "knows");
-                        Assert.AreEqual(e.getId(), "7");
+                        Assert.AreEqual(e.GetProperty("_id"), 8);
+                        Assert.AreEqual(e.GetProperty("_label"), "has high fived");
+                        Assert.AreEqual(e.GetLabel(), "knows");
+                        Assert.AreEqual(e.GetId(), "7");
                         counter++;
                     }
-                    else if (e.getVertex(Direction.IN).getId().Equals("3"))
+                    else if (e.GetVertex(Direction.In).GetId().Equals("3"))
                     {
-                        Assert.AreEqual(Math.Round(Convert.ToSingle(e.getProperty("weight"))), 0);
-                        Assert.AreEqual(e.getProperty("_id"), 10);
-                        Assert.AreEqual(e.getProperty("_label"), "has high fived");
-                        Assert.AreEqual(e.getLabel(), "created");
-                        Assert.AreEqual(e.getId(), "9");
+                        Assert.AreEqual(Math.Round(Convert.ToSingle(e.GetProperty("weight"))), 0);
+                        Assert.AreEqual(e.GetProperty("_id"), 10);
+                        Assert.AreEqual(e.GetProperty("_label"), "has high fived");
+                        Assert.AreEqual(e.GetLabel(), "created");
+                        Assert.AreEqual(e.GetId(), "9");
                         counter++;
                     }
-                    else if (e.getVertex(Direction.IN).getId().Equals("4"))
+                    else if (e.GetVertex(Direction.In).GetId().Equals("4"))
                     {
-                        Assert.AreEqual(Math.Round(Convert.ToSingle(e.getProperty("weight"))), 1);
-                        Assert.AreEqual(e.getProperty("_id"), 9);
-                        Assert.AreEqual(e.getProperty("_label"), "has high fived");
-                        Assert.AreEqual(e.getLabel(), "knows");
-                        Assert.AreEqual(e.getId(), "8");
-                        counter++;
-                    }
-                }
-
-                Assert.AreEqual(count(toGraph.getVertex("2").getEdges(Direction.OUT)), 0);
-                Assert.AreEqual(count(toGraph.getVertex("2").getEdges(Direction.IN)), 1);
-                Vertex vadas = toGraph.getVertex("2");
-                Assert.AreEqual(vadas.getProperty("name"), "vadas");
-                Assert.AreEqual(vadas.getProperty("age"), 27);
-                Assert.AreEqual(vadas.getProperty("_id"), 3);
-
-                Assert.AreEqual(count(toGraph.getVertex("3").getEdges(Direction.OUT)), 0);
-                Assert.AreEqual(count(toGraph.getVertex("3").getEdges(Direction.IN)), 3);
-                Vertex lop = toGraph.getVertex("3");
-                Assert.AreEqual(lop.getProperty("name"), "lop");
-                Assert.AreEqual(lop.getProperty("lang"), "java");
-                Assert.AreEqual(lop.getProperty("_id"), 4);
-
-                Assert.AreEqual(count(toGraph.getVertex("4").getEdges(Direction.OUT)), 2);
-                Assert.AreEqual(count(toGraph.getVertex("4").getEdges(Direction.IN)), 1);
-                Vertex josh = toGraph.getVertex("4");
-                Assert.AreEqual(josh.getProperty("name"), "josh");
-                Assert.AreEqual(josh.getProperty("age"), 32);
-                foreach (Edge e in toGraph.getVertex("4").getEdges(Direction.OUT))
-                {
-                    if (e.getVertex(Direction.IN).getId().Equals("3"))
-                    {
-                        Assert.AreEqual(Math.Round(Convert.ToSingle(e.getProperty("weight"))), 0);
-                        Assert.AreEqual(e.getProperty("_id"), 13);
-                        Assert.AreEqual(e.getProperty("_label"), null);
-                        Assert.AreEqual(e.getLabel(), "created");
-                        Assert.AreEqual(e.getId(), "11");
-                        counter++;
-                    }
-                    else if (e.getVertex(Direction.IN).getId().Equals("5"))
-                    {
-                        Assert.AreEqual(Math.Round(Convert.ToSingle(e.getProperty("weight"))), 1);
-                        Assert.AreEqual(e.getProperty("_id"), 11);
-                        Assert.AreEqual(e.getProperty("_label"), "has high fived");
-                        Assert.AreEqual(e.getLabel(), "created");
-                        Assert.AreEqual(e.getId(), "10");
+                        Assert.AreEqual(Math.Round(Convert.ToSingle(e.GetProperty("weight"))), 1);
+                        Assert.AreEqual(e.GetProperty("_id"), 9);
+                        Assert.AreEqual(e.GetProperty("_label"), "has high fived");
+                        Assert.AreEqual(e.GetLabel(), "knows");
+                        Assert.AreEqual(e.GetId(), "8");
                         counter++;
                     }
                 }
 
-                Assert.AreEqual(count(toGraph.getVertex("5").getEdges(Direction.OUT)), 0);
-                Assert.AreEqual(count(toGraph.getVertex("5").getEdges(Direction.IN)), 1);
-                Vertex ripple = toGraph.getVertex("5");
-                Assert.AreEqual(ripple.getProperty("name"), "ripple");
-                Assert.AreEqual(ripple.getProperty("lang"), "java");
-                Assert.AreEqual(ripple.getProperty("_id"), 7);
+                Assert.AreEqual(Count(toGraph.GetVertex("2").GetEdges(Direction.Out)), 0);
+                Assert.AreEqual(Count(toGraph.GetVertex("2").GetEdges(Direction.In)), 1);
+                IVertex vadas = toGraph.GetVertex("2");
+                Assert.AreEqual(vadas.GetProperty("name"), "vadas");
+                Assert.AreEqual(vadas.GetProperty("age"), 27);
+                Assert.AreEqual(vadas.GetProperty("_id"), 3);
 
-                Assert.AreEqual(count(toGraph.getVertex("6").getEdges(Direction.OUT)), 1);
-                Assert.AreEqual(count(toGraph.getVertex("6").getEdges(Direction.IN)), 0);
-                Vertex peter = toGraph.getVertex("6");
-                Assert.AreEqual(peter.getProperty("name"), "peter");
-                Assert.AreEqual(peter.getProperty("age"), 35);
+                Assert.AreEqual(Count(toGraph.GetVertex("3").GetEdges(Direction.Out)), 0);
+                Assert.AreEqual(Count(toGraph.GetVertex("3").GetEdges(Direction.In)), 3);
+                IVertex lop = toGraph.GetVertex("3");
+                Assert.AreEqual(lop.GetProperty("name"), "lop");
+                Assert.AreEqual(lop.GetProperty("lang"), "java");
+                Assert.AreEqual(lop.GetProperty("_id"), 4);
 
-                foreach (Edge e in toGraph.getVertex("6").getEdges(Direction.OUT))
+                Assert.AreEqual(Count(toGraph.GetVertex("4").GetEdges(Direction.Out)), 2);
+                Assert.AreEqual(Count(toGraph.GetVertex("4").GetEdges(Direction.In)), 1);
+                IVertex josh = toGraph.GetVertex("4");
+                Assert.AreEqual(josh.GetProperty("name"), "josh");
+                Assert.AreEqual(josh.GetProperty("age"), 32);
+                foreach (IEdge e in toGraph.GetVertex("4").GetEdges(Direction.Out))
                 {
-                    if (e.getVertex(Direction.IN).getId().Equals("3"))
+                    if (e.GetVertex(Direction.In).GetId().Equals("3"))
                     {
-                        Assert.AreEqual(Math.Round(Convert.ToSingle(e.getProperty("weight"))), 0);
-                        Assert.AreEqual(e.getProperty("_id"), null);
-                        Assert.AreEqual(e.getProperty("_label"), null);
-                        Assert.AreEqual(e.getLabel(), "created");
-                        Assert.AreEqual(e.getId(), "12");
+                        Assert.AreEqual(Math.Round(Convert.ToSingle(e.GetProperty("weight"))), 0);
+                        Assert.AreEqual(e.GetProperty("_id"), 13);
+                        Assert.AreEqual(e.GetProperty("_label"), null);
+                        Assert.AreEqual(e.GetLabel(), "created");
+                        Assert.AreEqual(e.GetId(), "11");
+                        counter++;
+                    }
+                    else if (e.GetVertex(Direction.In).GetId().Equals("5"))
+                    {
+                        Assert.AreEqual(Math.Round(Convert.ToSingle(e.GetProperty("weight"))), 1);
+                        Assert.AreEqual(e.GetProperty("_id"), 11);
+                        Assert.AreEqual(e.GetProperty("_label"), "has high fived");
+                        Assert.AreEqual(e.GetLabel(), "created");
+                        Assert.AreEqual(e.GetId(), "10");
+                        counter++;
+                    }
+                }
+
+                Assert.AreEqual(Count(toGraph.GetVertex("5").GetEdges(Direction.Out)), 0);
+                Assert.AreEqual(Count(toGraph.GetVertex("5").GetEdges(Direction.In)), 1);
+                IVertex ripple = toGraph.GetVertex("5");
+                Assert.AreEqual(ripple.GetProperty("name"), "ripple");
+                Assert.AreEqual(ripple.GetProperty("lang"), "java");
+                Assert.AreEqual(ripple.GetProperty("_id"), 7);
+
+                Assert.AreEqual(Count(toGraph.GetVertex("6").GetEdges(Direction.Out)), 1);
+                Assert.AreEqual(Count(toGraph.GetVertex("6").GetEdges(Direction.In)), 0);
+                IVertex peter = toGraph.GetVertex("6");
+                Assert.AreEqual(peter.GetProperty("name"), "peter");
+                Assert.AreEqual(peter.GetProperty("age"), 35);
+
+                foreach (IEdge e in toGraph.GetVertex("6").GetEdges(Direction.Out))
+                {
+                    if (e.GetVertex(Direction.In).GetId().Equals("3"))
+                    {
+                        Assert.AreEqual(Math.Round(Convert.ToSingle(e.GetProperty("weight"))), 0);
+                        Assert.AreEqual(e.GetProperty("_id"), null);
+                        Assert.AreEqual(e.GetProperty("_label"), null);
+                        Assert.AreEqual(e.GetLabel(), "created");
+                        Assert.AreEqual(e.GetId(), "12");
                         counter++;
                     }
                 }
@@ -860,25 +869,25 @@ namespace Frontenac.Blueprints.Util.IO.GraphML
 
                 // General Graph Characteristics
 
-                HashSet<string> vertexIds = new HashSet<string>();
-                HashSet<string> vertexKeys = new HashSet<string>();
+                var vertexIds = new HashSet<string>();
+                var vertexKeys = new HashSet<string>();
                 int vertexCount = 0;
-                foreach (Vertex v in toGraph.getVertices())
+                foreach (IVertex v in toGraph.GetVertices())
                 {
                     vertexCount++;
-                    vertexIds.Add(v.getId().ToString());
-                    foreach (string key in v.getPropertyKeys())
+                    vertexIds.Add(v.GetId().ToString());
+                    foreach (string key in v.GetPropertyKeys())
                         vertexKeys.Add(key);
                 }
 
-                HashSet<string> edgeIds = new HashSet<string>();
-                HashSet<string> edgeKeys = new HashSet<string>();
+                var edgeIds = new HashSet<string>();
+                var edgeKeys = new HashSet<string>();
                 int edgeCount = 0;
-                foreach (Edge e in toGraph.getEdges())
+                foreach (IEdge e in toGraph.GetEdges())
                 {
                     edgeCount++;
-                    edgeIds.Add(e.getId().ToString());
-                    foreach (string key in e.getPropertyKeys())
+                    edgeIds.Add(e.GetId().ToString());
+                    foreach (string key in e.GetPropertyKeys())
                         edgeKeys.Add(key);
                 }
 
@@ -897,35 +906,36 @@ namespace Frontenac.Blueprints.Util.IO.GraphML
                 Assert.AreEqual(edgeKeys.Contains("_label"), true);
                 Assert.AreEqual(edgeKeys.Count(), 3);
             }
-            graph.shutdown();
+            graph.Shutdown();
         }
 
         [Test]
-        public void testAllGraphMLTypeCastsAndDataMappings()
+        public void TestAllGraphMlTypeCastsAndDataMappings()
         {
             // the "key" in the <data> element should map back to the "id" in the "key" element
-            Graph graph = graphTest.generateGraph();
-            if (!graph.getFeatures().ignoresSuppliedIds.Value)
-            {
-                this.stopWatch();
-                using (var stream = typeof(GraphMLReaderTestSuite).Assembly.GetManifestResourceStream(typeof(GraphMLReaderTestSuite), "graph-example-4.xml"))
-                {
-                    new GraphMLReader(graph).inputGraph(stream);
-                }
-                printPerformance(graph.ToString(), null, "graph-example-4 loaded", this.stopWatch());
+            IGraph graph = GraphTest.GenerateGraph();
 
-                Vertex onlyOne = graph.getVertex("1");
+            if (!graph.GetFeatures().IgnoresSuppliedIds)
+            {
+                StopWatch();
+                using (var stream = typeof(GraphMlReaderTestSuite).Assembly.GetManifestResourceStream(typeof(GraphMlReaderTestSuite), "graph-example-4.xml"))
+                {
+                    new GraphMlReader(graph).InputGraph(stream);
+                }
+                PrintPerformance(graph.ToString(), null, "graph-example-4 loaded", StopWatch());
+
+                IVertex onlyOne = graph.GetVertex("1");
                 Assert.NotNull(onlyOne);
-                Assert.AreEqual(123.45d, onlyOne.getProperty("d"));
-                Assert.AreEqual("some-string", onlyOne.getProperty("s"));
-                Assert.AreEqual(29, onlyOne.getProperty("i"));
-                Assert.AreEqual(true, onlyOne.getProperty("b"));
-                Assert.AreEqual(10000000, onlyOne.getProperty("l"));
-                Assert.AreEqual(123.54f, onlyOne.getProperty("f"));
-                Assert.AreEqual("junk", onlyOne.getProperty("n"));
+                Assert.AreEqual(123.45d, onlyOne.GetProperty("d"));
+                Assert.AreEqual("some-string", onlyOne.GetProperty("s"));
+                Assert.AreEqual(29, onlyOne.GetProperty("i"));
+                Assert.AreEqual(true, onlyOne.GetProperty("b"));
+                Assert.AreEqual(10000000, onlyOne.GetProperty("l"));
+                Assert.AreEqual(123.54f, onlyOne.GetProperty("f"));
+                Assert.AreEqual("junk", onlyOne.GetProperty("n"));
             }
 
-            graph.shutdown();
+            graph.Shutdown();
         }
     }
 }

@@ -1,9 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.IO;
+﻿using System.IO;
 using System.Linq;
 using System.Text;
-using System.Threading.Tasks;
 using Frontenac.Blueprints.Util.Wrappers.Batch;
 
 namespace Frontenac.Blueprints.Util.IO.GML
@@ -16,16 +13,16 @@ namespace Frontenac.Blueprints.Util.IO.GML
     /// It's not clear that all node have to have id's or that they have to be integers - we assume that this is the case. We
     /// also assume that only one graph can be defined in a file.
     /// </summary>
-    public class GMLReader
+    public class GmlReader
     {
-        public const string DEFAULT_LABEL = "undefined";
-        const int DEFAULT_BUFFER_SIZE = 1000;
+        public const string DefaultLabel = "undefined";
+        const int DefaultBufferSize = 1000;
 
-        readonly Graph _graph;
+        readonly IGraph _graph;
         readonly string _defaultEdgeLabel;
         string _vertexIdKey;
         string _edgeIdKey;
-        string _edgeLabelKey = GMLTokens.LABEL;
+        string _edgeLabelKey = GmlTokens.Label;
 
         /// <summary>
         /// Create a new GML reader
@@ -33,8 +30,8 @@ namespace Frontenac.Blueprints.Util.IO.GML
         /// (Uses default edge label DEFAULT_LABEL)
         /// </summary>
         /// <param name="graph">the graph to load data into</param>
-        public GMLReader(Graph graph)
-            : this(graph, DEFAULT_LABEL)
+        public GmlReader(IGraph graph)
+            : this(graph, DefaultLabel)
         {
 
         }
@@ -44,7 +41,7 @@ namespace Frontenac.Blueprints.Util.IO.GML
         /// </summary>
         /// <param name="graph">the graph to load data into</param>
         /// <param name="defaultEdgeLabel">the default edge label to be used if the GML edge does not define a label</param>
-        public GMLReader(Graph graph, string defaultEdgeLabel)
+        public GmlReader(IGraph graph, string defaultEdgeLabel)
         {
             _graph = graph;
             _defaultEdgeLabel = defaultEdgeLabel;
@@ -54,7 +51,7 @@ namespace Frontenac.Blueprints.Util.IO.GML
         /// gml property to use as id for vertices
         /// </summary>
         /// <param name="vertexIdKey"></param>
-        public void setVertexIdKey(string vertexIdKey)
+        public void SetVertexIdKey(string vertexIdKey)
         {
             _vertexIdKey = vertexIdKey;
         }
@@ -63,7 +60,7 @@ namespace Frontenac.Blueprints.Util.IO.GML
         /// gml property to use as id for edges
         /// </summary>
         /// <param name="edgeIdKey"></param>
-        public void setEdgeIdKey(string edgeIdKey)
+        public void SetEdgeIdKey(string edgeIdKey)
         {
             _edgeIdKey = edgeIdKey;
         }
@@ -72,7 +69,7 @@ namespace Frontenac.Blueprints.Util.IO.GML
         /// gml property to assign edge labels to
         /// </summary>
         /// <param name="edgeLabelKey"></param>
-        public void setEdgeLabelKey(string edgeLabelKey)
+        public void SetEdgeLabelKey(string edgeLabelKey)
         {
             _edgeLabelKey = edgeLabelKey;
         }
@@ -83,9 +80,9 @@ namespace Frontenac.Blueprints.Util.IO.GML
         /// If the file is malformed incomplete data can be loaded.
         /// </summary>
         /// <param name="inputStream"></param>
-        public void inputGraph(Stream inputStream)
+        public void InputGraph(Stream inputStream)
         {
-            GMLReader.inputGraph(_graph, inputStream, DEFAULT_BUFFER_SIZE, _defaultEdgeLabel,
+            InputGraph(_graph, inputStream, DefaultBufferSize, _defaultEdgeLabel,
                     _vertexIdKey, _edgeIdKey, _edgeLabelKey);
         }
 
@@ -95,9 +92,9 @@ namespace Frontenac.Blueprints.Util.IO.GML
         /// If the file is malformed incomplete data can be loaded.
         /// </summary>
         /// <param name="filename"></param>
-        public void inputGraph(string filename)
+        public void InputGraph(string filename)
         {
-            GMLReader.inputGraph(_graph, filename, DEFAULT_BUFFER_SIZE, _defaultEdgeLabel,
+            InputGraph(_graph, filename, DefaultBufferSize, _defaultEdgeLabel,
                     _vertexIdKey, _edgeIdKey, _edgeLabelKey);
         }
 
@@ -108,9 +105,9 @@ namespace Frontenac.Blueprints.Util.IO.GML
         /// </summary>
         /// <param name="inputStream"></param>
         /// <param name="bufferSize"></param>
-        public void inputGraph(Stream inputStream, int bufferSize)
+        public void InputGraph(Stream inputStream, int bufferSize)
         {
-            GMLReader.inputGraph(_graph, inputStream, bufferSize, _defaultEdgeLabel,
+            InputGraph(_graph, inputStream, bufferSize, _defaultEdgeLabel,
                     _vertexIdKey, _edgeIdKey, _edgeLabelKey);
         }
 
@@ -121,9 +118,9 @@ namespace Frontenac.Blueprints.Util.IO.GML
         /// </summary>
         /// <param name="filename"></param>
         /// <param name="bufferSize"></param>
-        public void inputGraph(string filename, int bufferSize)
+        public void InputGraph(string filename, int bufferSize)
         {
-            GMLReader.inputGraph(_graph, filename, bufferSize, _defaultEdgeLabel,
+            InputGraph(_graph, filename, bufferSize, _defaultEdgeLabel,
                     _vertexIdKey, _edgeIdKey, _edgeLabelKey);
         }
 
@@ -132,9 +129,9 @@ namespace Frontenac.Blueprints.Util.IO.GML
         /// </summary>
         /// <param name="graph">to receive the data</param>
         /// <param name="filename">GML file</param>
-        public static void inputGraph(Graph graph, string filename)
+        public static void InputGraph(IGraph graph, string filename)
         {
-            inputGraph(graph, filename, DEFAULT_BUFFER_SIZE, DEFAULT_LABEL, GMLTokens.BLUEPRINTS_ID, GMLTokens.BLUEPRINTS_ID, null);
+            InputGraph(graph, filename, DefaultBufferSize, DefaultLabel, GmlTokens.BlueprintsId, GmlTokens.BlueprintsId, null);
         }
 
         /// <summary>
@@ -142,9 +139,9 @@ namespace Frontenac.Blueprints.Util.IO.GML
         /// </summary>
         /// <param name="graph">to receive the data</param>
         /// <param name="inputStream">GML file</param>
-        public static void inputGraph(Graph graph, Stream inputStream)
+        public static void InputGraph(IGraph graph, Stream inputStream)
         {
-            inputGraph(graph, inputStream, DEFAULT_BUFFER_SIZE, DEFAULT_LABEL, GMLTokens.BLUEPRINTS_ID, GMLTokens.BLUEPRINTS_ID, null);
+            InputGraph(graph, inputStream, DefaultBufferSize, DefaultLabel, GmlTokens.BlueprintsId, GmlTokens.BlueprintsId, null);
         }
 
         /// <summary>
@@ -157,40 +154,40 @@ namespace Frontenac.Blueprints.Util.IO.GML
         /// <param name="vertexIdKey">if the id of a vertex is a &lt;data/&gt; property, fetch it from the data property.</param>
         /// <param name="edgeIdKey">if the id of an edge is a &lt;data/&gt; property, fetch it from the data property.</param>
         /// <param name="edgeLabelKey">if the label of an edge is a &lt;data/&gt; property, fetch it from the data property.</param>
-        public static void inputGraph(Graph inputGraph, string filename, int bufferSize,
+        public static void InputGraph(IGraph inputGraph, string filename, int bufferSize,
                                       string defaultEdgeLabel, string vertexIdKey, string edgeIdKey,
                                       string edgeLabelKey)
         {
             using (var fis = File.OpenRead(filename))
             {
-                GMLReader.inputGraph(inputGraph, fis, bufferSize, defaultEdgeLabel,
+                InputGraph(inputGraph, fis, bufferSize, defaultEdgeLabel,
                         vertexIdKey, edgeIdKey, edgeLabelKey);
             }
         }
 
-        public static void inputGraph(Graph inputGraph, Stream inputStream, int bufferSize,
+        public static void InputGraph(IGraph inputGraph, Stream inputStream, int bufferSize,
                                   string defaultEdgeLabel, string vertexIdKey, string edgeIdKey,
                                   string edgeLabelKey)
         {
-            BatchGraph graph = BatchGraph.wrap(inputGraph, bufferSize);
+            BatchGraph graph = BatchGraph.Wrap(inputGraph, bufferSize);
 
             using (var r = new StreamReader(inputStream, Encoding.GetEncoding("ISO-8859-1")))
             {
-                StreamTokenizer st = new StreamTokenizer(r);
+                var st = new StreamTokenizer(r);
 
                 try
                 {
-                    st.CommentChar(GMLTokens.COMMENT_CHAR);
+                    st.CommentChar(GmlTokens.CommentChar);
                     st.OrdinaryChar('[');
                     st.OrdinaryChar(']');
 
-                    string stringCharacters = "/\\(){}<>!£$%^&*-+=,.?:;@_`|~";
+                    const string stringCharacters = "/\\(){}<>!£$%^&*-+=,.?:;@_`|~";
                     for (int i = 0; i < stringCharacters.Length; i++)
                         st.WordChars(stringCharacters.ElementAt(i), stringCharacters.ElementAt(i));
 
-                    new GMLParser(graph, defaultEdgeLabel, vertexIdKey, edgeIdKey, edgeLabelKey).parse(st);
+                    new GmlParser(graph, defaultEdgeLabel, vertexIdKey, edgeIdKey, edgeLabelKey).Parse(st);
 
-                    graph.commit();
+                    graph.Commit();
                 }
                 catch (IOException e)
                 {

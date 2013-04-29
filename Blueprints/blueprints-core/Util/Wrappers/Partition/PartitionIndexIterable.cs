@@ -1,31 +1,27 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Frontenac.Blueprints.Util.Wrappers.Partition
 {
-    class PartitionIndexIterable : IEnumerable<Index>
+    class PartitionIndexIterable : IEnumerable<IIndex>
     {
-        readonly IEnumerable<Index> _iterable;
+        readonly IEnumerable<IIndex> _iterable;
         readonly PartitionGraph _graph;
 
-        public PartitionIndexIterable(IEnumerable<Index> iterable, PartitionGraph graph)
+        public PartitionIndexIterable(IEnumerable<IIndex> iterable, PartitionGraph graph)
         {
             _iterable = iterable;
             _graph = graph;
         }
 
-        public IEnumerator<Index> GetEnumerator()
+        public IEnumerator<IIndex> GetEnumerator()
         {
-            foreach (Index index in _iterable)
-                yield return new PartitionIndex(index, _graph);
+            return _iterable.Select(index => new PartitionIndex(index, _graph)).Cast<IIndex>().GetEnumerator();
         }
 
         System.Collections.IEnumerator System.Collections.IEnumerable.GetEnumerator()
         {
-            return (this as IEnumerable<Index>).GetEnumerator();
+            return (this as IEnumerable<IIndex>).GetEnumerator();
         }
     }
 }

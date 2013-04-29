@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.Collections.Generic;
 
 namespace Frontenac.Blueprints.Util
 {
@@ -15,12 +11,12 @@ namespace Frontenac.Blueprints.Util
         /// <param name="b">the second vertex </param>
         /// <param name="checkIdEquality">whether to check on vertex and edge ids </param>
         /// <returns>whether the two vertices are semantically the same </returns>
-        public static bool haveEqualNeighborhood(Vertex a, Vertex b, bool checkIdEquality)
+        public static bool HaveEqualNeighborhood(IVertex a, IVertex b, bool checkIdEquality)
         {
-            if (checkIdEquality && !ElementHelper.haveEqualIds(a, b))
+            if (checkIdEquality && !ElementHelper.HaveEqualIds(a, b))
                 return false;
 
-            return ElementHelper.haveEqualProperties(a, b) && haveEqualEdges(a, b, checkIdEquality);
+            return ElementHelper.HaveEqualProperties(a, b) && HaveEqualEdges(a, b, checkIdEquality);
         }
 
         /// <summary>
@@ -30,50 +26,50 @@ namespace Frontenac.Blueprints.Util
         /// <param name="b">the second vertex</param>
         /// <param name="checkIdEquality">whether to check on vertex and edge ids</param>
         /// <returns>whether the two vertices have the same edge sets</returns>
-        public static bool haveEqualEdges(Vertex a, Vertex b, bool checkIdEquality)
+        public static bool HaveEqualEdges(IVertex a, IVertex b, bool checkIdEquality)
         {
-            HashSet<Edge> aEdgeSet = new HashSet<Edge>(a.getEdges(Direction.OUT));
-            HashSet<Edge> bEdgeSet = new HashSet<Edge>(b.getEdges(Direction.OUT));
+            var aEdgeSet = new HashSet<IEdge>(a.GetEdges(Direction.Out));
+            var bEdgeSet = new HashSet<IEdge>(b.GetEdges(Direction.Out));
 
-            if (!hasEqualEdgeSets(aEdgeSet, bEdgeSet, checkIdEquality))
+            if (!HasEqualEdgeSets(aEdgeSet, bEdgeSet, checkIdEquality))
                 return false;
 
             aEdgeSet.Clear();
             bEdgeSet.Clear();
 
-            foreach (Edge edge in a.getEdges(Direction.IN))
+            foreach (IEdge edge in a.GetEdges(Direction.In))
                 aEdgeSet.Add(edge);
 
-            foreach (Edge edge in b.getEdges(Direction.IN))
+            foreach (IEdge edge in b.GetEdges(Direction.In))
                 bEdgeSet.Add(edge);
 
-            return hasEqualEdgeSets(aEdgeSet, bEdgeSet, checkIdEquality);
+            return HasEqualEdgeSets(aEdgeSet, bEdgeSet, checkIdEquality);
         }
 
-        static bool hasEqualEdgeSets(HashSet<Edge> aEdgeSet, HashSet<Edge> bEdgeSet, bool checkIdEquality)
+        static bool HasEqualEdgeSets(HashSet<IEdge> aEdgeSet, HashSet<IEdge> bEdgeSet, bool checkIdEquality)
         {
             if (aEdgeSet.Count != bEdgeSet.Count)
                 return false;
 
-            foreach (Edge aEdge in aEdgeSet)
+            foreach (IEdge aEdge in aEdgeSet)
             {
-                Edge tempEdge = null;
-                foreach (Edge bEdge in bEdgeSet)
+                IEdge tempEdge = null;
+                foreach (IEdge bEdge in bEdgeSet)
                 {
-                    if (bEdge.getLabel() == aEdge.getLabel())
+                    if (bEdge.GetLabel() == aEdge.GetLabel())
                     {
                         if (checkIdEquality)
                         {
-                            if (ElementHelper.haveEqualIds(aEdge, bEdge) &&
-                                ElementHelper.haveEqualIds(aEdge.getVertex(Direction.IN), bEdge.getVertex(Direction.IN)) &&
-                                ElementHelper.haveEqualIds(aEdge.getVertex(Direction.OUT), bEdge.getVertex(Direction.OUT)) &&
-                                ElementHelper.haveEqualProperties(aEdge, bEdge))
+                            if (ElementHelper.HaveEqualIds(aEdge, bEdge) &&
+                                ElementHelper.HaveEqualIds(aEdge.GetVertex(Direction.In), bEdge.GetVertex(Direction.In)) &&
+                                ElementHelper.HaveEqualIds(aEdge.GetVertex(Direction.Out), bEdge.GetVertex(Direction.Out)) &&
+                                ElementHelper.HaveEqualProperties(aEdge, bEdge))
                             {
                                 tempEdge = bEdge;
                                 break;
                             }
                         }
-                        else if (ElementHelper.haveEqualProperties(aEdge, bEdge))
+                        else if (ElementHelper.HaveEqualProperties(aEdge, bEdge))
                         {
                             tempEdge = bEdge;
                             break;
@@ -82,8 +78,7 @@ namespace Frontenac.Blueprints.Util
                 }
                 if (tempEdge == null)
                     return false;
-                else
-                    bEdgeSet.Remove(tempEdge);
+                bEdgeSet.Remove(tempEdge);
             }
             return bEdgeSet.Count == 0;
         }

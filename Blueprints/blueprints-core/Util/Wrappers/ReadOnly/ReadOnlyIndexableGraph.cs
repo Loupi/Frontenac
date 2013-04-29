@@ -1,40 +1,37 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Frontenac.Blueprints.Util.Wrappers.ReadOnly
 {
-    public class ReadOnlyIndexableGraph : ReadOnlyGraph, IndexableGraph, WrapperGraph
+    public class ReadOnlyIndexableGraph : ReadOnlyGraph, IIndexableGraph
     {
-        readonly IndexableGraph _baseIndexableGraph;
+        readonly IIndexableGraph _baseIndexableGraph;
 
-        public ReadOnlyIndexableGraph(IndexableGraph baseIndexableGraph)
+        public ReadOnlyIndexableGraph(IIndexableGraph baseIndexableGraph)
             : base(baseIndexableGraph)
         {
             _baseIndexableGraph = baseIndexableGraph;
         }
 
-        public void dropIndex(string indexName)
+        public void DropIndex(string indexName)
         {
-            throw new InvalidOperationException(ReadOnlyTokens.MUTATE_ERROR_MESSAGE);
+            throw new InvalidOperationException(ReadOnlyTokens.MutateErrorMessage);
         }
 
-        public Index createIndex(string indexName, Type indexClass, params Parameter[] indexParameters)
+        public IIndex CreateIndex(string indexName, Type indexClass, params Parameter[] indexParameters)
         {
-            throw new InvalidOperationException(ReadOnlyTokens.MUTATE_ERROR_MESSAGE);
+            throw new InvalidOperationException(ReadOnlyTokens.MutateErrorMessage);
         }
 
-        public Index getIndex(string indexName, Type indexClass)
+        public IIndex GetIndex(string indexName, Type indexClass)
         {
-            Index index = _baseIndexableGraph.getIndex(indexName, indexClass);
+            IIndex index = _baseIndexableGraph.GetIndex(indexName, indexClass);
             return new ReadOnlyIndex(index);
         }
 
-        public IEnumerable<Index> getIndices()
+        public IEnumerable<IIndex> GetIndices()
         {
-            return new ReadOnlyIndexIterable(_baseIndexableGraph.getIndices());
+            return new ReadOnlyIndexIterable(_baseIndexableGraph.GetIndices());
         }
     }
 }

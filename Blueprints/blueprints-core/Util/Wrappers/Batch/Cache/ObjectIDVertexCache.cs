@@ -1,45 +1,42 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Frontenac.Blueprints.Util.Wrappers.Batch.Cache
 {
-    public class ObjectIDVertexCache : VertexCache
+    public class ObjectIdVertexCache : IVertexCache
     {
-        const int INITIAL_CAPACITY = 1000;
+        const int InitialCapacity = 1000;
 
         Dictionary<object, object> _map;
 
-        public ObjectIDVertexCache()
+        public ObjectIdVertexCache()
         {
-            _map = new Dictionary<object, object>(INITIAL_CAPACITY);
+            _map = new Dictionary<object, object>(InitialCapacity);
         }
 
-        public object getEntry(object externalId)
+        public object GetEntry(object externalId)
         {
-            return _map.get(externalId);
+            return _map.Get(externalId);
         }
 
-        public void set(Vertex vertex, object externalId)
+        public void Set(IVertex vertex, object externalId)
         {
-            setId(vertex, externalId);
+            SetId(vertex, externalId);
         }
 
-        public void setId(object vertexId, object externalId)
+        public void SetId(object vertexId, object externalId)
         {
             _map[externalId] = vertexId;
         }
 
-        public bool contains(object externalId)
+        public bool Contains(object externalId)
         {
             return _map.ContainsKey(externalId);
         }
 
-        public void newTransaction()
+        public void NewTransaction()
         {
-            _map = _map.ToDictionary(t => t.Key, t => t.Value is Vertex ? (t.Value as Vertex).getId() : t.Value);
+            _map = _map.ToDictionary(t => t.Key, t => t.Value is IVertex ? (t.Value as IVertex).GetId() : t.Value);
         }
     }
 }

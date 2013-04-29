@@ -1,31 +1,27 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Frontenac.Blueprints.Util.Wrappers.Event
 {
-    public class EventTransactionalGraph : EventGraph, TransactionalGraph, WrapperGraph
+    public class EventTransactionalGraph : EventGraph, ITransactionalGraph
     {
-        protected readonly TransactionalGraph _TransactionalGraph;
+        protected readonly ITransactionalGraph _TransactionalGraph;
 
-        public EventTransactionalGraph(TransactionalGraph baseGraph)
+        public EventTransactionalGraph(ITransactionalGraph baseGraph)
             : base(baseGraph)
         {
-            trigger = new EventTrigger(this, true);
+            Trigger = new EventTrigger(this, true);
         }
 
         /// <summary>
         /// A commit only fires the event queue on successful operation.  If the commit operation to the underlying
         /// graph fails, the event queue will not fire and the queue will not be reset.
         /// </summary>
-        public void commit()
+        public void Commit()
         {
             bool transactionFailure = false;
             try
             {
-                _TransactionalGraph.commit();
+                _TransactionalGraph.Commit();
             }
             catch (Exception)
             {
@@ -36,8 +32,8 @@ namespace Frontenac.Blueprints.Util.Wrappers.Event
             {
                 if (!transactionFailure)
                 {
-                    trigger.fireEventQueue();
-                    trigger.resetEventQueue();
+                    Trigger.FireEventQueue();
+                    Trigger.ResetEventQueue();
                 }
             }
         }
@@ -46,12 +42,12 @@ namespace Frontenac.Blueprints.Util.Wrappers.Event
         /// A rollback only resets the event queue on successful operation.  If the rollback operation to the underlying
         /// graph fails, the event queue will not be reset.
         /// </summary>
-        public void rollback()
+        public void Rollback()
         {
             bool transactionFailure = false;
             try
             {
-                _TransactionalGraph.rollback();
+                _TransactionalGraph.Rollback();
             }
             catch (Exception)
             {
@@ -62,7 +58,7 @@ namespace Frontenac.Blueprints.Util.Wrappers.Event
             {
                 if (!transactionFailure)
                 {
-                    trigger.resetEventQueue();
+                    Trigger.ResetEventQueue();
                 }
             }
         }

@@ -1,29 +1,25 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Frontenac.Blueprints.Util.Wrappers.Wrapped
 {
-    class WrappedIndexIterable : IEnumerable<Index>
+    class WrappedIndexIterable : IEnumerable<IIndex>
     {
-        readonly IEnumerable<Index> _iterable;
+        readonly IEnumerable<IIndex> _iterable;
 
-        public WrappedIndexIterable(IEnumerable<Index> iterable)
+        public WrappedIndexIterable(IEnumerable<IIndex> iterable)
         {
             _iterable = iterable;
         }
 
-        public IEnumerator<Index> GetEnumerator()
+        public IEnumerator<IIndex> GetEnumerator()
         {
-            foreach (Index index in _iterable)
-                yield return new WrappedIndex(index);
+            return _iterable.Select(index => new WrappedIndex(index)).Cast<IIndex>().GetEnumerator();
         }
 
         System.Collections.IEnumerator System.Collections.IEnumerable.GetEnumerator()
         {
-            return (this as IEnumerable<Index>).GetEnumerator();
+            return (this as IEnumerable<IIndex>).GetEnumerator();
         }
     }
 }

@@ -1,33 +1,27 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace Frontenac.Blueprints.Util.IO.GraphSON
+﻿namespace Frontenac.Blueprints.Util.IO.GraphSON
 {
-    public static class GraphSONTokens
+    public static class GraphSonTokens
     {
-        public const string VERTEX = "vertex";
-        public const string EDGE = "edge";
-        public const string _ID = "_id";
-        public const string _LABEL = "_label";
-        public const string _TYPE = "_type";
-        public const string _OUT_V = "_outV";
-        public const string _IN_V = "_inV";
-        public const string VALUE = "value";
-        public const string TYPE = "type";
-        public const string TYPE_LIST = "list";
-        public const string TYPE_STRING = "string";
-        public const string TYPE_DOUBLE = "double";
-        public const string TYPE_INTEGER = "integer";
-        public const string TYPE_FLOAT = "float";
-        public const string TYPE_MAP = "map";
-        public const string TYPE_BOOLEAN = "boolean";
-        public const string TYPE_LONG = "long";
-        public const string TYPE_UNKNOWN = "unknown";
-        public const string VERTICES = "vertices";
-        public const string EDGES = "edges";
-        public const string MODE = "mode";
+        public const string Vertex = "vertex";
+        public const string Edge = "edge";
+        public const string Id = "_id";
+        public const string Label = "_label";
+        public const string UnderscoreType = "_type";
+        public const string OutV = "_outV";
+        public const string InV = "_inV";
+        public const string Value = "value";
+        public const string Type = "type";
+        public const string TypeList = "list";
+        public const string TypeString = "string";
+        public const string TypeDouble = "double";
+        public const string TypeInteger = "integer";
+        public const string TypeFloat = "float";
+        public const string TypeMap = "map";
+        public const string TypeBoolean = "boolean";
+        public const string TypeLong = "long";
+        public const string TypeUnknown = "unknown";
+        public const string Vertices = "vertices";
+        public const string Edges = "edges";
+        public const string Mode = "mode";
     }
 }

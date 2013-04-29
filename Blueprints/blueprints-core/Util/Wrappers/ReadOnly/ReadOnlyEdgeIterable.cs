@@ -1,17 +1,15 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Frontenac.Blueprints.Util.Wrappers.ReadOnly
 {
-    class ReadOnlyEdgeIterable : CloseableIterable<Edge>
+    class ReadOnlyEdgeIterable : ICloseableIterable<IEdge>
     {
-        readonly IEnumerable<Edge> _iterable;
+        readonly IEnumerable<IEdge> _iterable;
         bool _disposed;
 
-        public ReadOnlyEdgeIterable(IEnumerable<Edge> iterable)
+        public ReadOnlyEdgeIterable(IEnumerable<IEdge> iterable)
         {
             _iterable = iterable;
         }
@@ -41,15 +39,14 @@ namespace Frontenac.Blueprints.Util.Wrappers.ReadOnly
             _disposed = true;
         }
 
-        public IEnumerator<Edge> GetEnumerator()
+        public IEnumerator<IEdge> GetEnumerator()
         {
-            foreach (Edge edge in _iterable)
-                yield return new ReadOnlyEdge(edge);
+            return _iterable.Select(edge => new ReadOnlyEdge(edge)).Cast<IEdge>().GetEnumerator();
         }
 
         System.Collections.IEnumerator System.Collections.IEnumerable.GetEnumerator()
         {
-            return (this as IEnumerable<Edge>).GetEnumerator();
+            return (this as IEnumerable<IEdge>).GetEnumerator();
         }
     }
 }

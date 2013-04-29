@@ -1,17 +1,15 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Frontenac.Blueprints.Util.Wrappers.ReadOnly
 {
-    class ReadOnlyVertexIterable : CloseableIterable<Vertex>
+    class ReadOnlyVertexIterable : ICloseableIterable<IVertex>
     {
-        readonly IEnumerable<Vertex> _iterable;
+        readonly IEnumerable<IVertex> _iterable;
         bool _disposed;
 
-        public ReadOnlyVertexIterable(IEnumerable<Vertex> iterable)
+        public ReadOnlyVertexIterable(IEnumerable<IVertex> iterable)
         {
             _iterable = iterable;
         }
@@ -41,15 +39,14 @@ namespace Frontenac.Blueprints.Util.Wrappers.ReadOnly
             _disposed = true;
         }
 
-        public IEnumerator<Vertex> GetEnumerator()
+        public IEnumerator<IVertex> GetEnumerator()
         {
-            foreach (Vertex v in _iterable)
-                yield return new ReadOnlyVertex(v);
+            return _iterable.Select(v => new ReadOnlyVertex(v)).Cast<IVertex>().GetEnumerator();
         }
 
         System.Collections.IEnumerator System.Collections.IEnumerable.GetEnumerator()
         {
-            return (this as IEnumerable<Vertex>).GetEnumerator();
+            return (this as IEnumerable<IVertex>).GetEnumerator();
         }
     }
 }

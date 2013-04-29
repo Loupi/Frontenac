@@ -1,48 +1,45 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Frontenac.Blueprints.Util.Wrappers.Partition
 {
-    public class PartitionIndexableGraph : PartitionGraph, IndexableGraph
+    public class PartitionIndexableGraph : PartitionGraph, IIndexableGraph
     {
-        protected IndexableGraph baseIndexableGraph;
+        protected IIndexableGraph BaseIndexableGraph;
 
-        public PartitionIndexableGraph(IndexableGraph baseIndexableGraph, string writeGraphKey, string writeGraph, IEnumerable<string> readGraphs)
+        public PartitionIndexableGraph(IIndexableGraph baseIndexableGraph, string writeGraphKey, string writeGraph, IEnumerable<string> readGraphs)
             : base(baseIndexableGraph, writeGraphKey, writeGraph, readGraphs)
         {
-            this.baseIndexableGraph = baseIndexableGraph;
+            BaseIndexableGraph = baseIndexableGraph;
         }
 
-        public PartitionIndexableGraph(IndexableGraph baseIndexableGraph, string writeGraphKey, string readWriteGraph)
+        public PartitionIndexableGraph(IIndexableGraph baseIndexableGraph, string writeGraphKey, string readWriteGraph)
             : base(baseIndexableGraph, writeGraphKey, readWriteGraph)
         {
         }
 
-        public void dropIndex(string indexName)
+        public void DropIndex(string indexName)
         {
-            baseIndexableGraph.dropIndex(indexName);
+            BaseIndexableGraph.DropIndex(indexName);
         }
 
-        public IEnumerable<Index> getIndices()
+        public IEnumerable<IIndex> GetIndices()
         {
-            return new PartitionIndexIterable(baseIndexableGraph.getIndices(), this);
+            return new PartitionIndexIterable(BaseIndexableGraph.GetIndices(), this);
         }
 
-        public Index getIndex(string indexName, Type indexClass)
+        public IIndex GetIndex(string indexName, Type indexClass)
         {
-            Index index = baseIndexableGraph.getIndex(indexName, indexClass);
+            IIndex index = BaseIndexableGraph.GetIndex(indexName, indexClass);
             if (null == index)
                 return null;
 
             return new PartitionIndex(index, this);
         }
 
-        public Index createIndex(string indexName, Type indexClass, params Parameter[] indexParameters)
+        public IIndex CreateIndex(string indexName, Type indexClass, params Parameter[] indexParameters)
         {
-            return new PartitionIndex(baseIndexableGraph.createIndex(indexName, indexClass, indexParameters), this);
+            return new PartitionIndex(BaseIndexableGraph.CreateIndex(indexName, indexClass, indexParameters), this);
         }
     }
 }

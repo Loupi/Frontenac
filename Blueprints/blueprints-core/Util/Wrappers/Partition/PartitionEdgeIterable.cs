@@ -1,18 +1,15 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Frontenac.Blueprints.Util.Wrappers.Partition
 {
-    class PartitionEdgeIterable : CloseableIterable<Edge>
+    class PartitionEdgeIterable : ICloseableIterable<IEdge>
     {
-        readonly IEnumerable<Edge> _iterable;
+        readonly IEnumerable<IEdge> _iterable;
         readonly PartitionGraph _graph;
         bool _disposed;
 
-        public PartitionEdgeIterable(IEnumerable<Edge> iterable, PartitionGraph graph)
+        public PartitionEdgeIterable(IEnumerable<IEdge> iterable, PartitionGraph graph)
         {
             _iterable = iterable;
             _graph = graph;
@@ -43,15 +40,15 @@ namespace Frontenac.Blueprints.Util.Wrappers.Partition
             _disposed = true;
         }
 
-        public IEnumerator<Edge> GetEnumerator()
+        public IEnumerator<IEdge> GetEnumerator()
         {
             return new InnerPartitionEdgeIterable(this).GetEnumerator();
         }
 
-        class InnerPartitionEdgeIterable : IEnumerable<Edge>
+        class InnerPartitionEdgeIterable : IEnumerable<IEdge>
         {
             readonly PartitionEdgeIterable _partitionEdgeIterable;
-            readonly IEnumerator<Edge> _itty;
+            readonly IEnumerator<IEdge> _itty;
             PartitionEdge _nextEdge;
 
             public InnerPartitionEdgeIterable(PartitionEdgeIterable partitionEdgeIterable)
@@ -60,9 +57,9 @@ namespace Frontenac.Blueprints.Util.Wrappers.Partition
                 _itty = _partitionEdgeIterable._iterable.GetEnumerator();
             }
 
-            public IEnumerator<Edge> GetEnumerator()
+            public IEnumerator<IEdge> GetEnumerator()
             {
-                while (hasNext())
+                while (HasNext())
                 {
                     if (null != _nextEdge)
                     {
@@ -74,23 +71,23 @@ namespace Frontenac.Blueprints.Util.Wrappers.Partition
                     {
                         while (_itty.MoveNext())
                         {
-                            Edge edge = _itty.Current;
-                            if (_partitionEdgeIterable._graph.isInPartition(edge))
+                            IEdge edge = _itty.Current;
+                            if (_partitionEdgeIterable._graph.IsInPartition(edge))
                                 yield return new PartitionEdge(edge, _partitionEdgeIterable._graph);
                         }
                     }
                 }
             }
 
-            bool hasNext()
+            bool HasNext()
             {
                 if (null != _nextEdge)
                     return true;
 
                 while (_itty.MoveNext())
                 {
-                    Edge edge = _itty.Current;
-                    if (_partitionEdgeIterable._graph.isInPartition(edge))
+                    IEdge edge = _itty.Current;
+                    if (_partitionEdgeIterable._graph.IsInPartition(edge))
                     {
                         _nextEdge = new PartitionEdge(edge, _partitionEdgeIterable._graph);
                         return true;
@@ -101,13 +98,13 @@ namespace Frontenac.Blueprints.Util.Wrappers.Partition
 
             System.Collections.IEnumerator System.Collections.IEnumerable.GetEnumerator()
             {
-                return (this as IEnumerable<Edge>).GetEnumerator();
+                return GetEnumerator();
             }
         }
 
         System.Collections.IEnumerator System.Collections.IEnumerable.GetEnumerator()
         {
-            return (this as IEnumerable<Edge>).GetEnumerator();
+            return (this as IEnumerable<IEdge>).GetEnumerator();
         }
     }
 }

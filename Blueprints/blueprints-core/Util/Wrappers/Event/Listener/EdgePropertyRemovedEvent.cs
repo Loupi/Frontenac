@@ -1,25 +1,19 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace Frontenac.Blueprints.Util.Wrappers.Event.Listener
+﻿namespace Frontenac.Blueprints.Util.Wrappers.Event.Listener
 {
     /// <summary>
     /// Event fired when an edge property is removed. 
     /// </summary>
     public class EdgePropertyRemovedEvent : EdgePropertyEvent
     {
-        public EdgePropertyRemovedEvent(Edge vertex, string key, object oldValue)
+        public EdgePropertyRemovedEvent(IEdge vertex, string key, object oldValue)
             : base(vertex, key, oldValue, null)
         {
 
         }
 
-        protected override void fire(GraphChangedListener listener, Edge edge, string key, object oldValue, object newValue)
+        protected override void Fire(IGraphChangedListener listener, IEdge edge, string key, object oldValue, object newValue)
         {
-            listener.edgePropertyRemoved(edge, key, oldValue);
+            listener.EdgePropertyRemoved(edge, key, oldValue);
         }
     }
 }

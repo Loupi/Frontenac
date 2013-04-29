@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.Collections.Generic;
 
 namespace Frontenac.Blueprints
 {
@@ -12,7 +8,7 @@ namespace Frontenac.Blueprints
     /// The incoming edges are those edges for which the vertex is the head.
     /// Diagrammatically, ---inEdges---> vertex ---outEdges--->.
     /// </summary>
-    public interface Vertex : Element
+    public interface IVertex : IElement
     {
         /// <summary>
         /// Return the edges incident to the vertex according to the provided direction and edge labels.
@@ -20,7 +16,7 @@ namespace Frontenac.Blueprints
         /// <param name="direction">the direction of the edges to retrieve</param>
         /// <param name="labels">the labels of the edges to retrieve</param>
         /// <returns>an IEnumerable of incident edges</returns>
-        IEnumerable<Edge> getEdges(Direction direction, params string[] labels);
+        IEnumerable<IEdge> GetEdges(Direction direction, params string[] labels);
 
         /// <summary>
         /// Return the vertices adjacent to the vertex according to the provided direction and edge labels.
@@ -29,20 +25,20 @@ namespace Frontenac.Blueprints
         /// <param name="direction">the direction of the edges of the adjacent vertices</param>
         /// <param name="labels">the labels of the edges of the adjacent vertices</param>
         /// <returns>an IEnumerable of adjacent vertices</returns>
-        IEnumerable<Vertex> getVertices(Direction direction, params string[] labels);
+        IEnumerable<IVertex> GetVertices(Direction direction, params string[] labels);
 
         /// <summary>
         /// Generate a query object that can be used to fine tune which edges/vertices are retrieved that are incident/adjacent to this vertex.
         /// </summary>
         /// <returns>a vertex query object with methods for constraining which data is pulled from the underlying graph</returns>
-        VertexQuery query();
+        IVertexQuery Query();
 
         /// <summary>
         /// Add a new outgoing edge from this vertex to the parameter vertex with provided edge label.
         /// </summary>
         /// <param name="label">the label of the edge</param>
-        /// <param name="vertex">the vertex to connect to with an incoming edge </param>
+        /// <param name="inVertex"></param>
         /// <returns>the newly created edge</returns>
-        Edge addEdge(string label, Vertex inVertex);
+        IEdge AddEdge(string label, IVertex inVertex);
     }
 }

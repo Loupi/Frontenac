@@ -1,30 +1,27 @@
-﻿using System;
-using System.Collections.Concurrent;
+﻿using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using System.Threading;
-using System.Threading.Tasks;
 
 namespace Frontenac.Blueprints.Util.Wrappers.Event.Listener
 {
     /// <summary>
     /// An event listener that acts as a counter for changes to the graph. 
     /// </summary>
-    public class StubGraphChangedListener : GraphChangedListener
+    public class StubGraphChangedListener : IGraphChangedListener
     {
-        long _addEdgeEvent = 0;
-        long _addVertexEvent = 0;
-        long _vertexPropertyChangedEvent = 0;
-        long _vertexPropertyRemovedEvent = 0;
-        long _vertexRemovedEvent = 0;
-        long _edgePropertyChangedEvent = 0;
-        long _edgePropertyRemovedEvent = 0;
-        long _edgeRemovedEvent = 0;
+        long _addEdgeEvent;
+        long _addVertexEvent;
+        long _vertexPropertyChangedEvent;
+        long _vertexPropertyRemovedEvent;
+        long _vertexRemovedEvent;
+        long _edgePropertyChangedEvent;
+        long _edgePropertyRemovedEvent;
+        long _edgeRemovedEvent;
 
         ConcurrentQueue<string> _order = new ConcurrentQueue<string>();
 
-        public void reset()
+        public void Reset()
         {
             Interlocked.Exchange(ref _addEdgeEvent, 0);
             Interlocked.Exchange(ref _addVertexEvent, 0);
@@ -38,95 +35,95 @@ namespace Frontenac.Blueprints.Util.Wrappers.Event.Listener
             _order = new ConcurrentQueue<string>();
         }
 
-        public List<string> getOrder()
+        public List<string> GetOrder()
         {
-            return this._order.ToList();
+            return _order.ToList();
         }
 
-        public void vertexAdded(Vertex vertex)
+        public void VertexAdded(IVertex vertex)
         {
             Interlocked.Increment(ref _addVertexEvent);
-            _order.Enqueue(string.Concat("v-added-", vertex.getId()));
+            _order.Enqueue(string.Concat("v-added-", vertex.GetId()));
         }
 
-        public void vertexPropertyChanged(Vertex vertex, string s, object o, object n)
+        public void VertexPropertyChanged(IVertex vertex, string s, object o, object n)
         {
             Interlocked.Increment(ref _vertexPropertyChangedEvent);
-            _order.Enqueue(string.Concat("v-property-changed-", vertex.getId(), "-", s, ":", o, "->", n));
+            _order.Enqueue(string.Concat("v-property-changed-", vertex.GetId(), "-", s, ":", o, "->", n));
         }
 
-        public void vertexPropertyRemoved(Vertex vertex, string s, object o)
+        public void VertexPropertyRemoved(IVertex vertex, string s, object o)
         {
             Interlocked.Increment(ref _vertexPropertyRemovedEvent);
-            _order.Enqueue(string.Concat("v-property-removed-", vertex.getId(), "-", s, ":", o));
+            _order.Enqueue(string.Concat("v-property-removed-", vertex.GetId(), "-", s, ":", o));
         }
 
-        public void vertexRemoved(Vertex vertex, IDictionary<string, object> props)
+        public void VertexRemoved(IVertex vertex, IDictionary<string, object> props)
         {
             Interlocked.Increment(ref _vertexRemovedEvent);
-            _order.Enqueue(string.Concat("v-removed-", vertex.getId()));
+            _order.Enqueue(string.Concat("v-removed-", vertex.GetId()));
         }
 
-        public void edgeAdded(Edge edge)
+        public void EdgeAdded(IEdge edge)
         {
             Interlocked.Increment(ref _addEdgeEvent);
-            _order.Enqueue(string.Concat("e-added-", edge.getId()));
+            _order.Enqueue(string.Concat("e-added-", edge.GetId()));
         }
 
-        public void edgePropertyChanged(Edge edge, string s, object o, object n)
+        public void EdgePropertyChanged(IEdge edge, string s, object o, object n)
         {
             Interlocked.Increment(ref _edgePropertyChangedEvent);
-            _order.Enqueue(string.Concat("e-property-changed-", edge.getId(), "-", s, ":", o, "->", n));
+            _order.Enqueue(string.Concat("e-property-changed-", edge.GetId(), "-", s, ":", o, "->", n));
         }
 
-        public void edgePropertyRemoved(Edge edge, string s, object o)
+        public void EdgePropertyRemoved(IEdge edge, string s, object o)
         {
             Interlocked.Increment(ref _edgePropertyRemovedEvent);
-            _order.Enqueue(string.Concat("e-property-removed-", edge.getId(), "-", s, ":", o));
+            _order.Enqueue(string.Concat("e-property-removed-", edge.GetId(), "-", s, ":", o));
         }
 
-        public void edgeRemoved(Edge edge, IDictionary<string, object> props)
+        public void EdgeRemoved(IEdge edge, IDictionary<string, object> props)
         {
             Interlocked.Increment(ref _edgeRemovedEvent);
-            _order.Enqueue(string.Concat("e-removed-", edge.getId()));
+            _order.Enqueue(string.Concat("e-removed-", edge.GetId()));
         }
 
-        public long addEdgeEventRecorded()
+        public long AddEdgeEventRecorded()
         {
             return Interlocked.Read(ref _addEdgeEvent);
         }
 
-        public long addVertexEventRecorded()
+        public long AddVertexEventRecorded()
         {
             return Interlocked.Read(ref _addVertexEvent);
         }
 
-        public long vertexPropertyChangedEventRecorded()
+        public long VertexPropertyChangedEventRecorded()
         {
             return Interlocked.Read(ref _vertexPropertyChangedEvent);
         }
 
-        public long vertexPropertyRemovedEventRecorded()
+        public long VertexPropertyRemovedEventRecorded()
         {
             return Interlocked.Read(ref _vertexPropertyRemovedEvent);
         }
 
-        public long vertexRemovedEventRecorded()
+        public long VertexRemovedEventRecorded()
         {
             return Interlocked.Read(ref _vertexRemovedEvent);
         }
 
-        public long edgePropertyChangedEventRecorded()
+        public long EdgePropertyChangedEventRecorded()
         {
             return Interlocked.Read(ref _edgePropertyChangedEvent);
         }
 
-        public long edgePropertyRemovedEventRecorded()
+        public long EdgePropertyRemovedEventRecorded()
         {
             return Interlocked.Read(ref _edgePropertyRemovedEvent);
         }
 
-        public long edgeRemovedEventRecorded()
+        public long EdgeRemovedEventRecorded()
         {
             return Interlocked.Read(ref _edgeRemovedEvent);
         }

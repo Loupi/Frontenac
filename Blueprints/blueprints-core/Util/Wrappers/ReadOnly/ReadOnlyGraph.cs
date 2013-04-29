@@ -1,8 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Frontenac.Blueprints.Util.Wrappers.ReadOnly
 {
@@ -10,100 +7,99 @@ namespace Frontenac.Blueprints.Util.Wrappers.ReadOnly
     /// A ReadOnlyGraph wraps a Graph and overrides the underlying graph's mutating methods.
     /// In this way, a ReadOnlyGraph can only be read from, not written to.
     /// </summary>
-    /// <typeparam name="T"></typeparam>
-    public class ReadOnlyGraph : Graph, WrapperGraph
+    public class ReadOnlyGraph : IGraph, IWrapperGraph
     {
-        protected Graph baseGraph;
+        protected IGraph BaseGraph;
         readonly Features _features;
 
-        public ReadOnlyGraph(Graph baseGraph)
+        public ReadOnlyGraph(IGraph baseGraph)
         {
-            this.baseGraph = baseGraph;
-            _features = this.baseGraph.getFeatures().copyFeatures();
-            _features.isWrapper = true;
+            BaseGraph = baseGraph;
+            _features = BaseGraph.GetFeatures().CopyFeatures();
+            _features.IsWrapper = true;
         }
 
-        public void removeVertex(Vertex vertex)
+        public void RemoveVertex(IVertex vertex)
         {
-            throw new InvalidOperationException(ReadOnlyTokens.MUTATE_ERROR_MESSAGE);
+            throw new InvalidOperationException(ReadOnlyTokens.MutateErrorMessage);
         }
 
-        public Edge addEdge(object id, Vertex outVertex, Vertex inVertex, string label)
+        public IEdge AddEdge(object id, IVertex outVertex, IVertex inVertex, string label)
         {
-            throw new InvalidOperationException(ReadOnlyTokens.MUTATE_ERROR_MESSAGE);
+            throw new InvalidOperationException(ReadOnlyTokens.MutateErrorMessage);
         }
 
-        public Vertex getVertex(object id)
+        public IVertex GetVertex(object id)
         {
-            Vertex vertex = baseGraph.getVertex(id);
+            IVertex vertex = BaseGraph.GetVertex(id);
             if (null == vertex)
                 return null;
 
             return new ReadOnlyVertex(vertex);
         }
 
-        public void removeEdge(Edge edge)
+        public void RemoveEdge(IEdge edge)
         {
-            throw new InvalidOperationException(ReadOnlyTokens.MUTATE_ERROR_MESSAGE);
+            throw new InvalidOperationException(ReadOnlyTokens.MutateErrorMessage);
         }
 
-        public IEnumerable<Edge> getEdges()
+        public IEnumerable<IEdge> GetEdges()
         {
-            return new ReadOnlyEdgeIterable(baseGraph.getEdges());
+            return new ReadOnlyEdgeIterable(BaseGraph.GetEdges());
         }
 
-        public IEnumerable<Edge> getEdges(string key, object value)
+        public IEnumerable<IEdge> GetEdges(string key, object value)
         {
-            return new ReadOnlyEdgeIterable(baseGraph.getEdges(key, value));
+            return new ReadOnlyEdgeIterable(BaseGraph.GetEdges(key, value));
         }
 
-        public Edge getEdge(object id)
+        public IEdge GetEdge(object id)
         {
-            Edge edge = baseGraph.getEdge(id);
+            IEdge edge = BaseGraph.GetEdge(id);
             if (null == edge)
                 return null;
 
             return new ReadOnlyEdge(edge);
         }
 
-        public IEnumerable<Vertex> getVertices()
+        public IEnumerable<IVertex> GetVertices()
         {
-            return new ReadOnlyVertexIterable(baseGraph.getVertices());
+            return new ReadOnlyVertexIterable(BaseGraph.GetVertices());
         }
 
-        public IEnumerable<Vertex> getVertices(string key, object value)
+        public IEnumerable<IVertex> GetVertices(string key, object value)
         {
-            return new ReadOnlyVertexIterable(baseGraph.getVertices(key, value));
+            return new ReadOnlyVertexIterable(BaseGraph.GetVertices(key, value));
         }
 
-        public Vertex addVertex(object id)
+        public IVertex AddVertex(object id)
         {
-            throw new InvalidOperationException(ReadOnlyTokens.MUTATE_ERROR_MESSAGE);
+            throw new InvalidOperationException(ReadOnlyTokens.MutateErrorMessage);
         }
 
-        public void shutdown()
+        public void Shutdown()
         {
-            baseGraph.shutdown();
+            BaseGraph.Shutdown();
         }
 
         public override string ToString()
         {
-            return StringFactory.graphString(this, baseGraph.ToString());
+            return StringFactory.GraphString(this, BaseGraph.ToString());
         }
 
-        public Graph getBaseGraph()
+        public IGraph GetBaseGraph()
         {
-            return baseGraph;
+            return BaseGraph;
         }
 
-        public GraphQuery query()
+        public IGraphQuery Query()
         {
-            return new WrappedGraphQuery(baseGraph.query(),
-                t => new ReadOnlyEdgeIterable(t.edges()),
-                t => new ReadOnlyVertexIterable(t.vertices()));
+            return new WrappedGraphQuery(BaseGraph.Query(),
+                t => new ReadOnlyEdgeIterable(t.Edges()),
+                t => new ReadOnlyVertexIterable(t.Vertices()));
         }
 
-        public Features getFeatures()
+        public Features GetFeatures()
         {
             return _features;
         }

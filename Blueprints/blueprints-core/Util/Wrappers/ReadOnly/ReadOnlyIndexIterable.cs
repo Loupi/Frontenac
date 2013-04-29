@@ -1,29 +1,25 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Frontenac.Blueprints.Util.Wrappers.ReadOnly
 {
-    class ReadOnlyIndexIterable : IEnumerable<Index>
+    class ReadOnlyIndexIterable : IEnumerable<IIndex>
     {
-        readonly IEnumerable<Index> _iterable;
+        readonly IEnumerable<IIndex> _iterable;
 
-        public ReadOnlyIndexIterable(IEnumerable<Index> iterable)
+        public ReadOnlyIndexIterable(IEnumerable<IIndex> iterable)
         {
             _iterable = iterable;
         }
 
-        public IEnumerator<Index> GetEnumerator()
+        public IEnumerator<IIndex> GetEnumerator()
         {
-            foreach (Index index in _iterable)
-                yield return new ReadOnlyIndex(index);
+            return _iterable.Select(index => new ReadOnlyIndex(index)).Cast<IIndex>().GetEnumerator();
         }
 
         System.Collections.IEnumerator System.Collections.IEnumerable.GetEnumerator()
         {
-            return (this as IEnumerable<Index>).GetEnumerator();
+            return (this as IEnumerable<IIndex>).GetEnumerator();
         }
     }
 }

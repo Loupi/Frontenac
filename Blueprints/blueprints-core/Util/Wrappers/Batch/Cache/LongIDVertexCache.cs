@@ -1,54 +1,51 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Globalization;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Frontenac.Blueprints.Util.Wrappers.Batch.Cache
 {
-    public class LongIDVertexCache : VertexCache
+    public class LongIdVertexCache : IVertexCache
     {
-        const int INITIAL_CAPACITY = 1000;
+        const int InitialCapacity = 1000;
 
         IDictionary<long, object> _map;
 
-        public LongIDVertexCache()
+        public LongIdVertexCache()
         {
-            _map = new Dictionary<long, object>(INITIAL_CAPACITY);
+            _map = new Dictionary<long, object>(InitialCapacity);
         }
 
-        static long getId(object externalID)
+        static long GetId(object externalId)
         {
-            if (!(Portability.isNumber(externalID))) throw new ArgumentException("Number expected.");
-            return Convert.ToInt64(externalID);
+            if (!(Portability.IsNumber(externalId))) throw new ArgumentException("Number expected.");
+            return Convert.ToInt64(externalId);
         }
 
-        public object getEntry(object externalId)
+        public object GetEntry(object externalId)
         {
-            long id = getId(externalId);
-            return _map.get(id);
+            long id = GetId(externalId);
+            return _map.Get(id);
         }
 
-        public void set(Vertex vertex, object externalId)
+        public void Set(IVertex vertex, object externalId)
         {
-            setId(vertex, externalId);
+            SetId(vertex, externalId);
         }
 
-        public void setId(object vertexId, object externalId)
+        public void SetId(object vertexId, object externalId)
         {
-            long id = getId(externalId);
+            long id = GetId(externalId);
             _map[id] = vertexId;
         }
 
-        public bool contains(object externalId)
+        public bool Contains(object externalId)
         {
-            return _map.ContainsKey(getId(externalId));
+            return _map.ContainsKey(GetId(externalId));
         }
 
-        public void newTransaction()
+        public void NewTransaction()
         {
-            _map = _map.ToDictionary(t => t.Key, t => t.Value is Vertex ? (t.Value as Vertex).getId() : t.Value);
+            _map = _map.ToDictionary(t => t.Key, t => t.Value is IVertex ? (t.Value as IVertex).GetId() : t.Value);
         }
     }
 }

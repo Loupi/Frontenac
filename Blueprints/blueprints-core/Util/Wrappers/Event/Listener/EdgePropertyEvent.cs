@@ -1,19 +1,15 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.Collections.Generic;
 
 namespace Frontenac.Blueprints.Util.Wrappers.Event.Listener
 {
-    public abstract class EdgePropertyEvent : Event
+    public abstract class EdgePropertyEvent : IEvent
     {
-        readonly Edge _edge;
+        readonly IEdge _edge;
         readonly string _key;
         readonly object _oldValue;
         readonly object _newValue;
 
-        protected EdgePropertyEvent(Edge edge, string key, object oldValue, object newValue)
+        protected EdgePropertyEvent(IEdge edge, string key, object oldValue, object newValue)
         {
             _edge = edge;
             _key = key;
@@ -21,13 +17,13 @@ namespace Frontenac.Blueprints.Util.Wrappers.Event.Listener
             _newValue = newValue;
         }
 
-        protected abstract void fire(GraphChangedListener listener, Edge edge, string key, object oldValue, object newValue);
+        protected abstract void Fire(IGraphChangedListener listener, IEdge edge, string key, object oldValue, object newValue);
 
-        public void fireEvent(IEnumerator<GraphChangedListener> eventListeners)
+        public void FireEvent(IEnumerator<IGraphChangedListener> eventListeners)
         {
             while (eventListeners.MoveNext())
             {
-                fire(eventListeners.Current, _edge, _key, _oldValue, _newValue);
+                Fire(eventListeners.Current, _edge, _key, _oldValue, _newValue);
             }
         }
     }

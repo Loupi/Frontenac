@@ -1,16 +1,11 @@
 ﻿using Frontenac.Blueprints.Util.IO.GraphML;
 using NUnit.Framework;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Frontenac.Blueprints.Impls.TG
 {
     public abstract class TinkerBenchmarkTestSuite : TestSuite
     {
-        const int TOTAL_RUNS = 10;
+        const int TotalRuns = 10;
 
         protected TinkerBenchmarkTestSuite(GraphTest graphTest)
             : base("TinkerBenchmarkTestSuite", graphTest)
@@ -19,47 +14,47 @@ namespace Frontenac.Blueprints.Impls.TG
         }
 
         [Test]
-        public void testTinkerGraph()
+        public void TestTinkerGraph()
         {
             double totalTime = 0.0d;
-            Graph graph = graphTest.generateGraph();
-            using (var stream = typeof(GraphMLReader).Assembly.GetManifestResourceStream(typeof(GraphMLReader), "graph-example-2.xml"))
+            IGraph graph = GraphTest.GenerateGraph();
+            using (var stream = typeof(GraphMlReader).Assembly.GetManifestResourceStream(typeof(GraphMlReader), "graph-example-2.xml"))
             {
-                GraphMLReader.inputGraph(graph, stream);
+                GraphMlReader.InputGraph(graph, stream);
             }
 
-            for (int i = 0; i < TOTAL_RUNS; i++)
+            for (int i = 0; i < TotalRuns; i++)
             {
-                this.stopWatch();
+                StopWatch();
                 int counter = 0;
-                foreach (Vertex vertex in graph.getVertices())
+                foreach (IVertex vertex in graph.GetVertices())
                 {
                     counter++;
-                    foreach (Edge edge in vertex.getEdges(Direction.OUT))
+                    foreach (IEdge edge in vertex.GetEdges(Direction.Out))
                     {
                         counter++;
-                        Vertex vertex2 = edge.getVertex(Direction.IN);
+                        IVertex vertex2 = edge.GetVertex(Direction.In);
                         counter++;
-                        foreach (Edge edge2 in vertex2.getEdges(Direction.OUT))
+                        foreach (IEdge edge2 in vertex2.GetEdges(Direction.Out))
                         {
                             counter++;
-                            Vertex vertex3 = edge2.getVertex(Direction.IN);
+                            IVertex vertex3 = edge2.GetVertex(Direction.In);
                             counter++;
-                            foreach (Edge edge3 in vertex3.getEdges(Direction.OUT))
+                            foreach (IEdge edge3 in vertex3.GetEdges(Direction.Out))
                             {
                                 counter++;
-                                edge3.getVertex(Direction.OUT);
+                                edge3.GetVertex(Direction.Out);
                                 counter++;
                             }
                         }
                     }
                 }
-                long currentTime = this.stopWatch();
+                long currentTime = StopWatch();
                 totalTime = totalTime + currentTime;
-                BaseTest.printPerformance(graph.ToString(), counter, "TinkerGraph elements touched", currentTime);
-                graph.shutdown();
+                PrintPerformance(graph.ToString(), counter, "TinkerGraph elements touched", currentTime);
+                graph.Shutdown();
             }
-            BaseTest.printPerformance("TinkerGraph", 1, "TinkerGraph experiment average", (long)(totalTime / TOTAL_RUNS));
+            PrintPerformance("TinkerGraph", 1, "TinkerGraph experiment average", (long)(totalTime / TotalRuns));
         }
     }
 }

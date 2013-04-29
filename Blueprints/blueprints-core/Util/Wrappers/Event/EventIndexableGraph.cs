@@ -1,8 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Frontenac.Blueprints.Util.Wrappers.Event
 {
@@ -12,38 +9,38 @@ namespace Frontenac.Blueprints.Util.Wrappers.Event
     /// following events: new vertex/edge, vertex/edge property changed, vertex/edge property removed,
     /// vertex/edge removed.
     /// </summary>
-    public class EventIndexableGraph : EventGraph, IndexableGraph, WrapperGraph
+    public class EventIndexableGraph : EventGraph, IIndexableGraph
     {
-        readonly IndexableGraph _baseIndexableGraph;
+        readonly IIndexableGraph _baseIndexableGraph;
 
-        public EventIndexableGraph(IndexableGraph baseIndexableGraph)
+        public EventIndexableGraph(IIndexableGraph baseIndexableGraph)
             : base(baseIndexableGraph)
         {
             _baseIndexableGraph = baseIndexableGraph;
         }
 
-        public void dropIndex(string indexName)
+        public void DropIndex(string indexName)
         {
-            _baseIndexableGraph.dropIndex(indexName);
+            _baseIndexableGraph.DropIndex(indexName);
         }
 
-        public Index createIndex(string indexName, Type indexClass, params Parameter[] indexParameters)
+        public IIndex CreateIndex(string indexName, Type indexClass, params Parameter[] indexParameters)
         {
-            return new EventIndex(_baseIndexableGraph.createIndex(indexName, indexClass, indexParameters), this);
+            return new EventIndex(_baseIndexableGraph.CreateIndex(indexName, indexClass, indexParameters), this);
         }
 
-        public Index getIndex(string indexName, Type indexClass)
+        public IIndex GetIndex(string indexName, Type indexClass)
         {
-            Index index = _baseIndexableGraph.getIndex(indexName, indexClass);
+            IIndex index = _baseIndexableGraph.GetIndex(indexName, indexClass);
             if (null == index)
                 return null;
 
             return new EventIndex(index, this);
         }
 
-        public IEnumerable<Index> getIndices()
+        public IEnumerable<IIndex> GetIndices()
         {
-            return new EventIndexIterable(_baseIndexableGraph.getIndices(), this);
+            return new EventIndexIterable(_baseIndexableGraph.GetIndices(), this);
         }
     }
 }

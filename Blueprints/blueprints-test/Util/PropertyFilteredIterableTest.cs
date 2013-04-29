@@ -1,9 +1,6 @@
 ﻿using NUnit.Framework;
-using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using Frontenac.Blueprints.Impls.TG;
 
 namespace Frontenac.Blueprints.Util
@@ -12,38 +9,38 @@ namespace Frontenac.Blueprints.Util
     public class PropertyFilteredIterableTest : BaseTest
     {
         [Test]
-        public void testBasicFunctionality()
+        public void TestBasicFunctionality()
         {
-            TinkerGraph graph = new TinkerGraph();
-            Vertex a = graph.addVertex("a");
-            a.setProperty("age", 29);
-            Vertex b = graph.addVertex("b");
-            b.setProperty("age", 29);
-            Vertex c = graph.addVertex("c");
-            c.setProperty("age", 30);
-            Vertex d = graph.addVertex("d");
-            d.setProperty("age", 31);
+            var graph = new TinkerGraph();
+            IVertex a = graph.AddVertex("a");
+            a.SetProperty("age", 29);
+            IVertex b = graph.AddVertex("b");
+            b.SetProperty("age", 29);
+            IVertex c = graph.AddVertex("c");
+            c.SetProperty("age", 30);
+            IVertex d = graph.AddVertex("d");
+            d.SetProperty("age", 31);
 
             // throw a vertex without the expected key in the mix
-            Vertex e = graph.addVertex("e");
-            List<Vertex> list = new List<Vertex>{a, b, c, d, e};
+            IVertex e = graph.AddVertex("e");
+            var list = new List<IVertex>{a, b, c, d, e};
 
-            PropertyFilteredIterable<Vertex> iterable = new PropertyFilteredIterable<Vertex>("age", 29, list);
-            Assert.AreEqual(count(iterable), 2);
-            Assert.AreEqual(count(iterable), 2);
-            foreach (Vertex vertex in iterable)
+            var iterable = new PropertyFilteredIterable<IVertex>("age", 29, list);
+            Assert.AreEqual(Count(iterable), 2);
+            Assert.AreEqual(Count(iterable), 2);
+            foreach (IVertex vertex in iterable)
                 Assert.True(vertex.Equals(a) || vertex.Equals(b));
             
-            iterable = new PropertyFilteredIterable<Vertex>("age", 30, list);
-            Assert.AreEqual(count(iterable), 1);
+            iterable = new PropertyFilteredIterable<IVertex>("age", 30, list);
+            Assert.AreEqual(Count(iterable), 1);
             Assert.AreEqual(iterable.First(), c);
 
-            iterable = new PropertyFilteredIterable<Vertex>("age", 30, graph.getVertices());
-            Assert.AreEqual(count(iterable), 1);
+            iterable = new PropertyFilteredIterable<IVertex>("age", 30, graph.GetVertices());
+            Assert.AreEqual(Count(iterable), 1);
             Assert.AreEqual(iterable.First(), c);
 
-            iterable = new PropertyFilteredIterable<Vertex>("age", 37, list);
-            Assert.AreEqual(count(iterable), 0);
+            iterable = new PropertyFilteredIterable<IVertex>("age", 37, list);
+            Assert.AreEqual(Count(iterable), 0);
         }
     }
 }

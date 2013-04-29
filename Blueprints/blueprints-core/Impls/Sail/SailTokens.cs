@@ -1,41 +1,35 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace Frontenac.Blueprints.Impls.Sail
+﻿namespace Frontenac.Blueprints.Impls.Sail
 {
     public static class SailTokens
     {
-        public const string NAMESPACE_SEPARATOR = ":";
-        public const string FORWARD_SLASH = "/";
-        public const string POUND = "#";
-        public const string XSD_PREFIX = "xsd";
-        public const string XSD_NS = "http://www.w3.org/2001/XMLSchema#";
-        public const string RDF_PREFIX = "rdf";
-        public const string RDF_NS = "http://www.w3.org/1999/02/22-rdf-syntax-ns#";
-        public const string RDFS_PREFIX = "rdfs";
-        public const string RDFS_NS = "http://www.w3.org/2000/01/rdf-schema#";
-        public const string OWL_PREFIX = "owl";
-        public const string OWL_NS = "http://www.w3.org/2002/07/owl#";
-        public const string FOAF_PREFIX = "foaf";
-        public const string FOAF_NS = "http://xmlns.com/foaf/0.1/";
-        public const string BLANK_NODE_PREFIX = "_:";
-        public const string URN_UUID_PREFIX = "urn:uuid:";
+        public const string NamespaceSeparator = ":";
+        public const string ForwardSlash = "/";
+        public const string Pound = "#";
+        public const string XsdPrefix = "xsd";
+        public const string XsdNs = "http://www.w3.org/2001/XMLSchema#";
+        public const string RdfPrefix = "rdf";
+        public const string RdfNs = "http://www.w3.org/1999/02/22-rdf-syntax-ns#";
+        public const string RdfsPrefix = "rdfs";
+        public const string RdfsNs = "http://www.w3.org/2000/01/rdf-schema#";
+        public const string OwlPrefix = "owl";
+        public const string OwlNs = "http://www.w3.org/2002/07/owl#";
+        public const string FoafPrefix = "foaf";
+        public const string FoafNs = "http://xmlns.com/foaf/0.1/";
+        public const string BlankNodePrefix = "_:";
+        public const string UrnUuidPrefix = "urn:uuid:";
 
-        public const string DATATYPE = "type";
-        public const string LANGUAGE = "lang";
-        public const string VALUE = "value";
-        public const string KIND = "kind";
-        public const string NAMED_GRAPH = "ng";
+        public const string Datatype = "type";
+        public const string Language = "lang";
+        public const string Value = "value";
+        public const string Kind = "kind";
+        public const string NamedGraph = "ng";
 
-        public const string URI = "uri";
-        public const string BNODE = "bnode";
-        public const string LITERAL = "literal";
+        public const string Uri = "uri";
+        public const string Bnode = "bnode";
+        public const string Literal = "literal";
 
-        public const string PREFIX_SPACE = "PREFIX ";
-        public const string COLON_LESSTHAN = ": <";
-        public const string GREATERTHAN_NEWLINE = ">\n";
+        public const string PrefixSpace = "PREFIX ";
+        public const string ColonLessthan = ": <";
+        public const string GreaterthanNewline = ">\n";
     }
 }

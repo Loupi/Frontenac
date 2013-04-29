@@ -1,24 +1,21 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Frontenac.Blueprints.Util.IO.GML
 {
-    class GMLParser
+    class GmlParser
     {
         readonly Dictionary<object, object> _vertexMappedIdMap = new Dictionary<object, object>();
         readonly string _defaultEdgeLabel;
-        readonly Graph _graph;
+        readonly IGraph _graph;
         readonly string _vertexIdKey;
         readonly string _edgeIdKey;
         readonly string _edgeLabelKey;
-        bool _directed = false;
-        int _edgeCount = 0;
+        bool _directed;
+        int _edgeCount;
 
-        public GMLParser(Graph graph, string defaultEdgeLabel, string vertexIdKey, string edgeIdKey, string edgeLabelKey)
+        public GmlParser(IGraph graph, string defaultEdgeLabel, string vertexIdKey, string edgeIdKey, string edgeLabelKey)
         {
             _graph = graph;
             _vertexIdKey = vertexIdKey;
@@ -27,18 +24,18 @@ namespace Frontenac.Blueprints.Util.IO.GML
             _defaultEdgeLabel = defaultEdgeLabel;
         }
 
-        public void parse(StreamTokenizer st)
+        public void Parse(StreamTokenizer st)
         {
-            while (hasNext(st))
+            while (HasNext(st))
             {
-                int type = st.ttype;
-                if (notLineBreak(type))
+                int type = st.Ttype;
+                if (NotLineBreak(type))
                 {
                     string value = st.StringValue;
-                    if (GMLTokens.GRAPH == value)
+                    if (GmlTokens.Graph == value)
                     {
-                        parseGraph(st);
-                        if (!hasNext(st))
+                        ParseGraph(st);
+                        if (!HasNext(st))
                             return;
                     }
                 }
@@ -46,68 +43,64 @@ namespace Frontenac.Blueprints.Util.IO.GML
             throw new IOException("Graph not complete");
         }
 
-        void parseGraph(StreamTokenizer st)
+        void ParseGraph(StreamTokenizer st)
         {
-            checkValid(st, GMLTokens.GRAPH);
-            while (hasNext(st))
+            CheckValid(st, GmlTokens.Graph);
+            while (HasNext(st))
             {
                 // st.nextToken();
-                int type = st.ttype;
-                if (notLineBreak(type))
+                int type = st.Ttype;
+                if (NotLineBreak(type))
                 {
                     if (type == ']')
                         return;
+                    string key = st.StringValue;
+                    if (GmlTokens.Node == key)
+                        AddNode(ParseNode(st));
+                    else if (GmlTokens.Edge == key)
+                        AddEdge(ParseEdge(st));
+                    else if (GmlTokens.Directed == key)
+                        _directed = ParseBoolean(st);
                     else
                     {
-                        string key = st.StringValue;
-                        if (GMLTokens.NODE == key)
-                            addNode(parseNode(st));
-                        else if (GMLTokens.EDGE == key)
-                            addEdge(parseEdge(st));
-                        else if (GMLTokens.DIRECTED == key)
-                            _directed = parseBoolean(st);
-                        else
-                        {
-                            // IGNORE
-                            parseValue("ignore", st);
-                        }
+                        // IGNORE
+                        ParseValue("ignore", st);
                     }
                 }
             }
             throw new IOException("Graph not complete");
         }
 
-        void addNode(Dictionary<string, object> map)
+        void AddNode(Dictionary<string, object> map)
         {
-            object id = map.javaRemove(GMLTokens.ID);
+            object id = map.JavaRemove(GmlTokens.Id);
             if (id != null)
             {
-                Vertex vertex = createVertex(map, id);
-                addProperties(vertex, map);
+                IVertex vertex = CreateVertex(map, id);
+                AddProperties(vertex, map);
             }
             else
                 throw new IOException("No id found for node");
         }
 
-        Vertex createVertex(Dictionary<string, object> map, object id)
+        IVertex CreateVertex(Dictionary<string, object> map, object id)
         {
             //final object vertexId = vertexIdKey == null ? (graph.getFeatures().ignoresSuppliedIds ? null : id) : map.remove(vertexIdKey);
             object vertexId = id;
             if (_vertexIdKey != null)
             {
-                vertexId = map.javaRemove(_vertexIdKey);
-                if (vertexId == null) vertexId = id;
+                vertexId = map.JavaRemove(_vertexIdKey) ?? id;
                 _vertexMappedIdMap[id] = vertexId;
             }
-            Vertex createdVertex = _graph.addVertex(vertexId);
+            IVertex createdVertex = _graph.AddVertex(vertexId);
 
             return createdVertex;
         }
 
-        void addEdge(Dictionary<string, object> map)
+        void AddEdge(Dictionary<string, object> map)
         {
-            object source = map.javaRemove(GMLTokens.SOURCE);
-            object target = map.javaRemove(GMLTokens.TARGET);
+            object source = map.JavaRemove(GmlTokens.Source);
+            object target = map.JavaRemove(GmlTokens.Target);
 
             if (source == null)
                 throw new IOException("Edge has no source");
@@ -121,26 +114,26 @@ namespace Frontenac.Blueprints.Util.IO.GML
                 _vertexMappedIdMap.TryGetValue(target, out target);
             }
 
-            Vertex outVertex = _graph.getVertex(source);
-            Vertex inVertex = _graph.getVertex(target);
+            IVertex outVertex = _graph.GetVertex(source);
+            IVertex inVertex = _graph.GetVertex(target);
             if (outVertex == null)
                 throw new IOException(string.Concat("Edge source ", source, " not found"));
 
             if (inVertex == null)
                 throw new IOException(string.Concat("Edge target ", target, " not found"));
 
-            object label = map.javaRemove(_edgeLabelKey);
+            object label = map.JavaRemove(_edgeLabelKey);
             if (label == null)
             {
                 // try standard label key
-                label = map.javaRemove(GMLTokens.LABEL);
+                label = map.JavaRemove(GmlTokens.Label);
             }
             else
             {
                 // remove label in case edge label key is not label
                 // label is reserved and cannot be added as a property
                 // if so this data will be lost
-                map.Remove(GMLTokens.LABEL);
+                map.Remove(GmlTokens.Label);
             }
 
             if (label == null)
@@ -149,7 +142,7 @@ namespace Frontenac.Blueprints.Util.IO.GML
             object edgeId = _edgeCount++;
             if (_edgeIdKey != null)
             {
-                object mappedKey = map.javaRemove(_edgeIdKey);
+                object mappedKey = map.JavaRemove(_edgeIdKey);
                 if (mappedKey != null)
                     edgeId = mappedKey;
                 // else use edgecount - could fail if mapped ids overlap with edge count
@@ -157,114 +150,107 @@ namespace Frontenac.Blueprints.Util.IO.GML
 
             // remove id as reserved property - can be left is edgeIdKey in not id
             // This data will be lost
-            map.Remove(GMLTokens.ID);
+            map.Remove(GmlTokens.Id);
 
-            Edge edge = _graph.addEdge(edgeId, outVertex, inVertex, label.ToString());
+            IEdge edge = _graph.AddEdge(edgeId, outVertex, inVertex, label.ToString());
             if (_directed)
-                edge.setProperty(GMLTokens.DIRECTED, _directed);
+                edge.SetProperty(GmlTokens.Directed, _directed);
 
-            addProperties(edge, map);
+            AddProperties(edge, map);
         }
 
-        void addProperties(Element element, Dictionary<string, object> map)
+        void AddProperties(IElement element, Dictionary<string, object> map)
         {
             foreach (var entry in map)
-                element.setProperty(entry.Key, entry.Value);
+                element.SetProperty(entry.Key, entry.Value);
         }
 
-        object parseValue(string key, StreamTokenizer st)
+        object ParseValue(string key, StreamTokenizer st)
         {
-            while (hasNext(st))
+            while (HasNext(st))
             {
-                int type = st.ttype;
-                if (notLineBreak(type))
+                int type = st.Ttype;
+                if (NotLineBreak(type))
                 {
-                    if (type == StreamTokenizer.TT_NUMBER)
+                    if (type == StreamTokenizer.TtNumber)
                     {
                         double doubleValue = st.NumberValue;
                         
                         if (doubleValue == Math.Floor(doubleValue))
                             return (int)doubleValue;
-                        else
-                            return (float)doubleValue;
+                        return (float)doubleValue;
                     }
-                    else
-                    {
-                        if (type == '[')
-                            return parseMap(key, st);
-                        else if (type == '"')
-                            return st.StringValue;
-                    }
+                    if (type == '[')
+                        return ParseMap(key, st);
+                    if (type == '"')
+                        return st.StringValue;
                 }
             }
             throw new IOException("value not found");
         }
 
-        bool parseBoolean(StreamTokenizer st)
+        bool ParseBoolean(StreamTokenizer st)
         {
-            while (hasNext(st))
+            while (HasNext(st))
             {
-                int type = st.ttype;
-                if (notLineBreak(type))
+                int type = st.Ttype;
+                if (NotLineBreak(type))
                 {
-                    if (type == StreamTokenizer.TT_NUMBER)
+                    if (type == StreamTokenizer.TtNumber)
                         return st.NumberValue == 1.0;
                 }
             }
             throw new IOException("boolean not found");
         }
 
-        Dictionary<string, object> parseNode(StreamTokenizer st)
+        Dictionary<string, object> ParseNode(StreamTokenizer st)
         {
-            return parseElement(st, GMLTokens.NODE);
+            return ParseElement(st, GmlTokens.Node);
         }
 
-        Dictionary<string, object> parseEdge(StreamTokenizer st)
+        Dictionary<string, object> ParseEdge(StreamTokenizer st)
         {
-            return parseElement(st, GMLTokens.EDGE);
+            return ParseElement(st, GmlTokens.Edge);
         }
 
-        Dictionary<string, object> parseElement(StreamTokenizer st, string node)
+        Dictionary<string, object> ParseElement(StreamTokenizer st, string node)
         {
-            checkValid(st, node);
-            return parseMap(node, st);
+            CheckValid(st, node);
+            return ParseMap(node, st);
         }
 
-        Dictionary<string, object> parseMap(string node, StreamTokenizer st)
+        Dictionary<string, object> ParseMap(string node, StreamTokenizer st)
         {
-            Dictionary<string, object> map = new Dictionary<string, object>();
-            while (hasNext(st))
+            var map = new Dictionary<string, object>();
+            while (HasNext(st))
             {
-                int type = st.ttype;
-                if (notLineBreak(type))
+                int type = st.Ttype;
+                if (NotLineBreak(type))
                 {
                     if (type == ']')
                         return map;
-                    else
-                    {
-                        string key = st.StringValue;
-                        object value = parseValue(key, st);
-                        map[key] = value;
-                    }
+                    string key = st.StringValue;
+                    object value = ParseValue(key, st);
+                    map[key] = value;
                 }
             }
             throw new IOException(string.Concat(node, " incomplete"));
         }
 
-        void checkValid(StreamTokenizer st, string token)
+        static void CheckValid(StreamTokenizer st, string token)
         {
             if (st.NextToken() != '[')
                 throw new IOException(string.Concat(token, " not followed by ["));
         }
 
-        bool hasNext(StreamTokenizer st)
+        static bool HasNext(StreamTokenizer st)
         {
-            return st.NextToken() != StreamTokenizer.TT_EOF;
+            return st.NextToken() != StreamTokenizer.TtEof;
         }
 
-        bool notLineBreak(int type)
+        static bool NotLineBreak(int type)
         {
-            return type != StreamTokenizer.TT_EOL;
+            return type != StreamTokenizer.TtEol;
         }
     }
 }

@@ -1,46 +1,43 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Text;
-using System.Threading.Tasks;
 using NUnit.Framework;
 using Frontenac.Blueprints.Impls.TG;
-using System.Collections;
 
 namespace Frontenac.Blueprints.Util.IO.GraphSON
 {
     [TestFixture(Category = "GraphSONReaderTest")]
-    public class GraphSONReaderTest
+    public class GraphSonReaderTest
     {
         [Test]
-        public void inputGraphModeExtended()
+        public void InputGraphModeExtended()
         {
-            TinkerGraph graph = new TinkerGraph();
+            var graph = new TinkerGraph();
 
-            string json = "{ \"mode\":\"EXTENDED\", \"vertices\": [ {\"_id\":1, \"_type\":\"vertex\", \"test\": { \"type\":\"string\", \"value\":\"please work\"}, \"testlist\":{\"type\":\"list\", \"value\":[{\"type\":\"int\", \"value\":1}, {\"type\":\"int\",\"value\":2}, {\"type\":\"int\",\"value\":3}]}, \"testmap\":{\"type\":\"map\", \"value\":{\"big\":{\"type\":\"long\", \"value\":10000000000}, \"small\":{\"type\":\"double\", \"value\":0.4954959595959}}}}, {\"_id\":2, \"_type\":\"vertex\", \"testagain\":{\"type\":\"string\", \"value\":\"please work again\"}}], \"edges\":[{\"_id\":100, \"_type\":\"edge\", \"_outV\":1, \"_inV\":2, \"_label\":\"works\", \"teste\": {\"type\":\"string\", \"value\":\"please worke\"}}]}";
+            const string json = "{ \"mode\":\"EXTENDED\", \"vertices\": [ {\"_id\":1, \"_type\":\"vertex\", \"test\": { \"type\":\"string\", \"value\":\"please work\"}, \"testlist\":{\"type\":\"list\", \"value\":[{\"type\":\"int\", \"value\":1}, {\"type\":\"int\",\"value\":2}, {\"type\":\"int\",\"value\":3}]}, \"testmap\":{\"type\":\"map\", \"value\":{\"big\":{\"type\":\"long\", \"value\":10000000000}, \"small\":{\"type\":\"double\", \"value\":0.4954959595959}}}}, {\"_id\":2, \"_type\":\"vertex\", \"testagain\":{\"type\":\"string\", \"value\":\"please work again\"}}], \"edges\":[{\"_id\":100, \"_type\":\"edge\", \"_outV\":1, \"_inV\":2, \"_label\":\"works\", \"teste\": {\"type\":\"string\", \"value\":\"please worke\"}}]}";
 
-            byte[] bytes = System.Text.Encoding.Default.GetBytes(json);
+            byte[] bytes = Encoding.Default.GetBytes(json);
             using (var inputStream = new MemoryStream(bytes))
             {
-                GraphSONReader.inputGraph(graph, inputStream);
+                GraphSonReader.InputGraph(graph, inputStream);
             }
 
-            Assert.AreEqual(2, graph.getVertices().Count());
-            Assert.AreEqual(1, graph.getEdges().Count());
+            Assert.AreEqual(2, graph.GetVertices().Count());
+            Assert.AreEqual(1, graph.GetEdges().Count());
 
-            Vertex v1 = graph.getVertex(1);
+            IVertex v1 = graph.GetVertex(1);
             Assert.NotNull(v1);
-            Assert.AreEqual("please work", v1.getProperty("test"));
+            Assert.AreEqual("please work", v1.GetProperty("test"));
 
-            var map = (IDictionary<string, object>)v1.getProperty("testmap");
+            var map = (IDictionary<string, object>)v1.GetProperty("testmap");
             Assert.NotNull(map);
-            Assert.AreEqual(10000000000, long.Parse(map.get("big").ToString()));
-            Assert.AreEqual(0.4954959595959, double.Parse(map.get("small").ToString()), 0);
+            Assert.AreEqual(10000000000, long.Parse(map.Get("big").ToString()));
+            Assert.AreEqual(0.4954959595959, double.Parse(map.Get("small").ToString()), 0);
             //Assert.assertNull(map.get("nullKey"));
 
-            IList<object> list = (IList<object>)v1.getProperty("testlist");
+            var list = (IList<object>)v1.GetProperty("testlist");
             Assert.AreEqual(3, list.Count);
 
             //Porting Note: looking at the JSON input, there is no null value in that list. Just disable this test for now.
@@ -56,52 +53,52 @@ namespace Frontenac.Blueprints.Util.IO.GraphSON
 
             Assert.True(foundNull);*/
 
-            Vertex v2 = graph.getVertex(2);
+            IVertex v2 = graph.GetVertex(2);
             Assert.NotNull(v2);
-            Assert.AreEqual("please work again", v2.getProperty("testagain"));
+            Assert.AreEqual("please work again", v2.GetProperty("testagain"));
 
-            Edge e = graph.getEdge(100);
+            IEdge e = graph.GetEdge(100);
             Assert.NotNull(e);
-            Assert.AreEqual("works", e.getLabel());
-            Assert.AreEqual(v1, e.getVertex(Direction.OUT));
-            Assert.AreEqual(v2, e.getVertex(Direction.IN));
-            Assert.AreEqual("please worke", e.getProperty("teste"));
+            Assert.AreEqual("works", e.GetLabel());
+            Assert.AreEqual(v1, e.GetVertex(Direction.Out));
+            Assert.AreEqual(v2, e.GetVertex(Direction.In));
+            Assert.AreEqual("please worke", e.GetProperty("teste"));
             //Assert.assertNull(e.getProperty("keyNull"));
         }
 
         [Test]
-        public void inputGraphModeNormal()
+        public void InputGraphModeNormal()
         {
-            TinkerGraph graph = new TinkerGraph();
+            var graph = new TinkerGraph();
 
-            string json = "{ \"mode\":\"NORMAL\",\"vertices\": [ {\"_id\":1, \"_type\":\"vertex\", \"test\": \"please work\", \"testlist\":[1, 2, 3, null], \"testmap\":{\"big\":10000000000, \"small\":0.4954959595959}}, {\"_id\":2, \"_type\":\"vertex\", \"testagain\":\"please work again\"}], \"edges\":[{\"_id\":100, \"_type\":\"edge\", \"_outV\":1, \"_inV\":2, \"_label\":\"works\", \"teste\": \"please worke\"}]}";
+            const string json = "{ \"mode\":\"NORMAL\",\"vertices\": [ {\"_id\":1, \"_type\":\"vertex\", \"test\": \"please work\", \"testlist\":[1, 2, 3, null], \"testmap\":{\"big\":10000000000, \"small\":0.4954959595959}}, {\"_id\":2, \"_type\":\"vertex\", \"testagain\":\"please work again\"}], \"edges\":[{\"_id\":100, \"_type\":\"edge\", \"_outV\":1, \"_inV\":2, \"_label\":\"works\", \"teste\": \"please worke\"}]}";
 
-            byte[] bytes = System.Text.Encoding.Default.GetBytes(json);
+            byte[] bytes = Encoding.Default.GetBytes(json);
             using (var inputStream = new MemoryStream(bytes))
             {
-                GraphSONReader.inputGraph(graph, inputStream);
+                GraphSonReader.InputGraph(graph, inputStream);
             }
 
-            Assert.AreEqual(2, graph.getVertices().Count());
-            Assert.AreEqual(1, graph.getEdges().Count());
+            Assert.AreEqual(2, graph.GetVertices().Count());
+            Assert.AreEqual(1, graph.GetEdges().Count());
 
-            Vertex v1 = graph.getVertex(1);
+            IVertex v1 = graph.GetVertex(1);
             Assert.NotNull(v1);
-            Assert.AreEqual("please work", v1.getProperty("test"));
+            Assert.AreEqual("please work", v1.GetProperty("test"));
 
-            var map = (IDictionary<string, object>)v1.getProperty("testmap");
+            var map = (IDictionary<string, object>)v1.GetProperty("testmap");
             Assert.NotNull(map);
-            Assert.AreEqual(10000000000, long.Parse(map.get("big").ToString()));
-            Assert.AreEqual(0.4954959595959, double.Parse(map.get("small").ToString()), 0);
-            Assert.Null(map.get("nullKey"));
+            Assert.AreEqual(10000000000, long.Parse(map.Get("big").ToString()));
+            Assert.AreEqual(0.4954959595959, double.Parse(map.Get("small").ToString()), 0);
+            Assert.Null(map.Get("nullKey"));
 
-            var list = (IList<object>)v1.getProperty("testlist");
+            var list = (IList<object>)v1.GetProperty("testlist");
             Assert.AreEqual(4, list.Count);
 
             bool foundNull = false;
             for (int ix = 0; ix < list.Count; ix++)
             {
-                if (list.get(ix) == null)
+                if (list.Get(ix) == null)
                 {
                     foundNull = true;
                     break;
@@ -110,52 +107,52 @@ namespace Frontenac.Blueprints.Util.IO.GraphSON
 
             Assert.True(foundNull);
 
-            Vertex v2 = graph.getVertex(2);
+            IVertex v2 = graph.GetVertex(2);
             Assert.NotNull(v2);
-            Assert.AreEqual("please work again", v2.getProperty("testagain"));
+            Assert.AreEqual("please work again", v2.GetProperty("testagain"));
 
-            Edge e = graph.getEdge(100);
+            IEdge e = graph.GetEdge(100);
             Assert.NotNull(e);
-            Assert.AreEqual("works", e.getLabel());
-            Assert.AreEqual(v1, e.getVertex(Direction.OUT));
-            Assert.AreEqual(v2, e.getVertex(Direction.IN));
-            Assert.AreEqual("please worke", e.getProperty("teste"));
-            Assert.Null(e.getProperty("keyNull"));
+            Assert.AreEqual("works", e.GetLabel());
+            Assert.AreEqual(v1, e.GetVertex(Direction.Out));
+            Assert.AreEqual(v2, e.GetVertex(Direction.In));
+            Assert.AreEqual("please worke", e.GetProperty("teste"));
+            Assert.Null(e.GetProperty("keyNull"));
         }
 
         [Test]
-        public void inputGraphModeCompact()
+        public void InputGraphModeCompact()
         {
-            TinkerGraph graph = new TinkerGraph();
+            var graph = new TinkerGraph();
 
-            String json = "{ \"mode\":\"COMPACT\",\"vertices\": [ {\"_id\":1, \"test\": \"please work\", \"testlist\":[1, 2, 3, null], \"testmap\":{\"big\":10000000000, \"small\":0.4954959595959}}, {\"_id\":2, \"testagain\":\"please work again\"}], \"edges\":[{\"_id\":100, \"_outV\":1, \"_inV\":2, \"_label\":\"works\", \"teste\": \"please worke\"}]}";
+            const string json = "{ \"mode\":\"COMPACT\",\"vertices\": [ {\"_id\":1, \"test\": \"please work\", \"testlist\":[1, 2, 3, null], \"testmap\":{\"big\":10000000000, \"small\":0.4954959595959}}, {\"_id\":2, \"testagain\":\"please work again\"}], \"edges\":[{\"_id\":100, \"_outV\":1, \"_inV\":2, \"_label\":\"works\", \"teste\": \"please worke\"}]}";
 
-            byte[] bytes = System.Text.Encoding.Default.GetBytes(json);
+            byte[] bytes = Encoding.Default.GetBytes(json);
             using (var inputStream = new MemoryStream(bytes))
             {
-                GraphSONReader.inputGraph(graph, inputStream);
+                GraphSonReader.InputGraph(graph, inputStream);
             }
 
-            Assert.AreEqual(2, graph.getVertices().Count());
-            Assert.AreEqual(1, graph.getEdges().Count());
+            Assert.AreEqual(2, graph.GetVertices().Count());
+            Assert.AreEqual(1, graph.GetEdges().Count());
 
-            Vertex v1 = graph.getVertex(1);
+            IVertex v1 = graph.GetVertex(1);
             Assert.NotNull(v1);
-            Assert.AreEqual("please work", v1.getProperty("test"));
+            Assert.AreEqual("please work", v1.GetProperty("test"));
 
-            var map = (IDictionary<string, object>)v1.getProperty("testmap");
+            var map = (IDictionary<string, object>)v1.GetProperty("testmap");
             Assert.NotNull(map);
-            Assert.AreEqual(10000000000, long.Parse(map.get("big").ToString()));
-            Assert.AreEqual(0.4954959595959, double.Parse(map.get("small").ToString()), 0);
+            Assert.AreEqual(10000000000, long.Parse(map.Get("big").ToString()));
+            Assert.AreEqual(0.4954959595959, double.Parse(map.Get("small").ToString()), 0);
             // Assert.assertNull(map.get("nullKey"));
 
-            var list = (IList<object>)v1.getProperty("testlist");
+            var list = (IList<object>)v1.GetProperty("testlist");
             Assert.AreEqual(4, list.Count);
 
             bool foundNull = false;
             for (int ix = 0; ix < list.Count; ix++)
             {
-                if (list.get(ix) == null)
+                if (list.Get(ix) == null)
                 {
                     foundNull = true;
                     break;
@@ -164,145 +161,143 @@ namespace Frontenac.Blueprints.Util.IO.GraphSON
 
             Assert.True(foundNull);
 
-            Vertex v2 = graph.getVertex(2);
+            IVertex v2 = graph.GetVertex(2);
             Assert.NotNull(v2);
-            Assert.AreEqual("please work again", v2.getProperty("testagain"));
+            Assert.AreEqual("please work again", v2.GetProperty("testagain"));
 
-            Edge e = graph.getEdge(100);
+            IEdge e = graph.GetEdge(100);
             Assert.NotNull(e);
-            Assert.AreEqual("works", e.getLabel());
-            Assert.AreEqual(v1, e.getVertex(Direction.OUT));
-            Assert.AreEqual(v2, e.getVertex(Direction.IN));
-            Assert.AreEqual("please worke", e.getProperty("teste"));
-            Assert.Null(e.getProperty("keyNull"));
+            Assert.AreEqual("works", e.GetLabel());
+            Assert.AreEqual(v1, e.GetVertex(Direction.Out));
+            Assert.AreEqual(v2, e.GetVertex(Direction.In));
+            Assert.AreEqual("please worke", e.GetProperty("teste"));
+            Assert.Null(e.GetProperty("keyNull"));
 
         }
 
         [Test]
-        public void inputGraphExtendedFullCycle()
+        public void InputGraphExtendedFullCycle()
         {
-            TinkerGraph graph = TinkerGraphFactory.createTinkerGraph();
-            TinkerGraph emptyGraph = new TinkerGraph();
+            TinkerGraph graph = TinkerGraphFactory.CreateTinkerGraph();
+            var emptyGraph = new TinkerGraph();
 
             using (var stream = new MemoryStream())
             {
-                GraphSONWriter writer = new GraphSONWriter(graph);
-                writer.outputGraph(stream, null, null, GraphSONMode.EXTENDED);
+                var writer = new GraphSonWriter(graph);
+                writer.OutputGraph(stream, null, null, GraphSonMode.EXTENDED);
 
                 stream.Position = 0;
 
-                GraphSONReader.inputGraph(emptyGraph, stream);
+                GraphSonReader.InputGraph(emptyGraph, stream);
             }
 
-            Assert.AreEqual(7, emptyGraph.getVertices().Count());
-            Assert.AreEqual(6, emptyGraph.getEdges().Count());
+            Assert.AreEqual(7, emptyGraph.GetVertices().Count());
+            Assert.AreEqual(6, emptyGraph.GetEdges().Count());
 
-            foreach (Vertex v in graph.getVertices())
+            foreach (IVertex v in graph.GetVertices())
             {
-                Vertex found = emptyGraph.getVertex(v.getId());
+                IVertex found = emptyGraph.GetVertex(v.GetId());
 
                 Assert.NotNull(v);
 
-                foreach (string key in found.getPropertyKeys())
+                foreach (string key in found.GetPropertyKeys())
                 {
-                    Assert.AreEqual(v.getProperty(key), found.getProperty(key));
+                    Assert.AreEqual(v.GetProperty(key), found.GetProperty(key));
                 }
             }
 
-            foreach (Edge e in graph.getEdges())
+            foreach (IEdge e in graph.GetEdges())
             {
-                Edge found = emptyGraph.getEdge(e.getId());
+                IEdge found = emptyGraph.GetEdge(e.GetId());
 
                 Assert.NotNull(e);
 
-                foreach (string key in found.getPropertyKeys())
+                foreach (string key in found.GetPropertyKeys())
                 {
-                    Assert.AreEqual(e.getProperty(key), found.getProperty(key));
+                    Assert.AreEqual(e.GetProperty(key), found.GetProperty(key));
                 }
             }
         }
 
         [Test]
-        public void inputGraphCompactFullCycle()
+        public void InputGraphCompactFullCycle()
         {
-            TinkerGraph graph = TinkerGraphFactory.createTinkerGraph();
-            TinkerGraph emptyGraph = new TinkerGraph();
+            TinkerGraph graph = TinkerGraphFactory.CreateTinkerGraph();
+            var emptyGraph = new TinkerGraph();
 
-            HashSet<string> edgeKeys = new HashSet<string>();
-            edgeKeys.Add(GraphSONTokens._ID);
-            edgeKeys.Add(GraphSONTokens._IN_V);
-            edgeKeys.Add(GraphSONTokens._OUT_V);
-            edgeKeys.Add(GraphSONTokens._LABEL);
+            var edgeKeys = new HashSet<string>
+                {
+                    GraphSonTokens.Id,
+                    GraphSonTokens.InV,
+                    GraphSonTokens.OutV,
+                    GraphSonTokens.Label
+                };
 
-            HashSet<string> vertexKeys = new HashSet<string>();
-            vertexKeys.Add(GraphSONTokens._ID);
+            var vertexKeys = new HashSet<string> {GraphSonTokens.Id};
 
             using (var stream = new MemoryStream())
             {
-                GraphSONWriter writer = new GraphSONWriter(graph);
-                writer.outputGraph(stream, vertexKeys, edgeKeys, GraphSONMode.COMPACT);
+                var writer = new GraphSonWriter(graph);
+                writer.OutputGraph(stream, vertexKeys, edgeKeys, GraphSonMode.COMPACT);
 
                 stream.Position = 0;
 
-                GraphSONReader.inputGraph(emptyGraph, stream);
+                GraphSonReader.InputGraph(emptyGraph, stream);
             }
 
-            Assert.AreEqual(7, emptyGraph.getVertices().Count());
-            Assert.AreEqual(6, emptyGraph.getEdges().Count());
+            Assert.AreEqual(7, emptyGraph.GetVertices().Count());
+            Assert.AreEqual(6, emptyGraph.GetEdges().Count());
 
-            foreach (Vertex v in graph.getVertices())
+            foreach (IVertex v in graph.GetVertices())
             {
-                Vertex found = emptyGraph.getVertex(v.getId());
+                IVertex found = emptyGraph.GetVertex(v.GetId());
 
                 Assert.NotNull(v);
 
-                foreach (string key in found.getPropertyKeys())
+                foreach (string key in found.GetPropertyKeys())
                 {
-                    Assert.AreEqual(v.getProperty(key), found.getProperty(key));
+                    Assert.AreEqual(v.GetProperty(key), found.GetProperty(key));
                 }
 
                 // no properties should be here
-                Assert.AreEqual(null, found.getProperty("name"));
+                Assert.AreEqual(null, found.GetProperty("name"));
             }
 
-            foreach (Edge e in graph.getEdges())
+            foreach (IEdge e in graph.GetEdges())
             {
-                Edge found = emptyGraph.getEdge(e.getId());
+                IEdge found = emptyGraph.GetEdge(e.GetId());
 
                 Assert.NotNull(e);
 
-                foreach (string key in found.getPropertyKeys())
+                foreach (string key in found.GetPropertyKeys())
                 {
-                    Assert.AreEqual(e.getProperty(key), found.getProperty(key));
+                    Assert.AreEqual(e.GetProperty(key), found.GetProperty(key));
                 }
 
                 // no properties should be here
-                Assert.AreEqual(null, found.getProperty("weight"));
+                Assert.AreEqual(null, found.GetProperty("weight"));
             }
         }
 
         [Test]
         [ExpectedException(typeof(ArgumentException))]
-        public void inputGraphCompactFullCycleBroken()
+        public void InputGraphCompactFullCycleBroken()
         {
-            TinkerGraph graph = TinkerGraphFactory.createTinkerGraph();
-            TinkerGraph emptyGraph = new TinkerGraph();
+            TinkerGraph graph = TinkerGraphFactory.CreateTinkerGraph();
+            var emptyGraph = new TinkerGraph();
 
-            HashSet<string> edgeKeys = new HashSet<string>();
-            edgeKeys.Add(GraphSONTokens._IN_V);
-            edgeKeys.Add(GraphSONTokens._OUT_V);
-            edgeKeys.Add(GraphSONTokens._LABEL);
+            var edgeKeys = new HashSet<string> {GraphSonTokens.InV, GraphSonTokens.OutV, GraphSonTokens.Label};
 
-            HashSet<string> vertexKeys = new HashSet<string>();
+            var vertexKeys = new HashSet<string>();
 
             using (var stream = new MemoryStream())
             {
-                GraphSONWriter writer = new GraphSONWriter(graph);
-                writer.outputGraph(stream, vertexKeys, edgeKeys, GraphSONMode.COMPACT);
+                var writer = new GraphSonWriter(graph);
+                writer.OutputGraph(stream, vertexKeys, edgeKeys, GraphSonMode.COMPACT);
 
                 stream.Position = 0;
 
-                GraphSONReader.inputGraph(emptyGraph, stream);
+                GraphSonReader.InputGraph(emptyGraph, stream);
             }
         }
     }

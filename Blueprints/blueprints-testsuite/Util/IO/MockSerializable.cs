@@ -1,8 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Frontenac.Blueprints.Util.IO
 {
@@ -11,12 +7,12 @@ namespace Frontenac.Blueprints.Util.IO
     {
         string _testField;
 
-        public string getTestField() 
+        public string GetTestField() 
         {
             return _testField;
         }
 
-        public void setTestField(string testField)
+        public void SetTestField(string testField)
         {
             _testField = testField;
         }
@@ -24,13 +20,12 @@ namespace Frontenac.Blueprints.Util.IO
         public override bool Equals(object obj)
         {
             if (this == obj) return true;
-            else if (obj == null) return false;
-            else if (!GetType().IsInstanceOfType(obj)) return false;
-            MockSerializable m = (MockSerializable)obj;
+            if (obj == null) return false;
+            if (!GetType().IsInstanceOfType(obj)) return false;
+            var m = (MockSerializable)obj;
             if (_testField == null)
                 return (m._testField == null);
-            else
-                return _testField == m._testField;
+            return _testField == m._testField;
         }
 
         public override int GetHashCode()

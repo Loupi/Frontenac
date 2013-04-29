@@ -3,9 +3,6 @@ using Newtonsoft.Json.Linq;
 using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using Frontenac.Blueprints.Util.Wrappers.Batch;
 
 namespace Frontenac.Blueprints.Util.IO.GraphSON
@@ -13,15 +10,15 @@ namespace Frontenac.Blueprints.Util.IO.GraphSON
     /// <summary>
     /// GraphSONReader reads the data from a TinkerPop JSON stream to a graph.
     /// </summary>
-    public class GraphSONReader
+    public class GraphSonReader
     {
-        readonly Graph _graph;
+        readonly IGraph _graph;
 
         /// <summary>
         /// 
         /// </summary>
         /// <param name="graph">the graph to populate with the JSON data</param>
-        public GraphSONReader(Graph graph)
+        public GraphSonReader(IGraph graph)
         {
             _graph = graph;
         }
@@ -31,9 +28,9 @@ namespace Frontenac.Blueprints.Util.IO.GraphSON
         /// In practice, usually the provided graph is empty.
         /// </summary>
         /// <param name="jsonInputStream">a Stream of JSON data</param>
-        public void inputGraph(Stream jsonInputStream)
+        public void InputGraph(Stream jsonInputStream)
         {
-            GraphSONReader.inputGraph(_graph, jsonInputStream, 1000);
+            InputGraph(_graph, jsonInputStream, 1000);
         }
 
         /// <summary>
@@ -41,9 +38,9 @@ namespace Frontenac.Blueprints.Util.IO.GraphSON
         /// In practice, usually the provided graph is empty.
         /// </summary>
         /// <param name="filename">name of a file of JSON data</param>
-        public void inputGraph(string filename)
+        public void InputGraph(string filename)
         {
-            GraphSONReader.inputGraph(_graph, filename, 1000);
+            InputGraph(_graph, filename, 1000);
         }
 
         /// <summary>
@@ -52,9 +49,9 @@ namespace Frontenac.Blueprints.Util.IO.GraphSON
         /// </summary>
         /// <param name="jsonInputStream">an Stream of JSON data</param>
         /// <param name="bufferSize">the amount of elements to hold in memory before committing a transactions (only valid for TransactionalGraphs)</param>
-        public void inputGraph(Stream jsonInputStream, int bufferSize)
+        public void InputGraph(Stream jsonInputStream, int bufferSize)
         {
-            GraphSONReader.inputGraph(_graph, jsonInputStream, bufferSize);
+            InputGraph(_graph, jsonInputStream, bufferSize);
         }
 
         /// <summary>
@@ -63,9 +60,9 @@ namespace Frontenac.Blueprints.Util.IO.GraphSON
         /// </summary>
         /// <param name="filename">name of a file of JSON data</param>
         /// <param name="bufferSize">the amount of elements to hold in memory before committing a transactions (only valid for TransactionalGraphs)</param>
-        public void inputGraph(string filename, int bufferSize)
+        public void InputGraph(string filename, int bufferSize)
         {
-            GraphSONReader.inputGraph(_graph, filename, bufferSize);
+            InputGraph(_graph, filename, bufferSize);
         }
 
         /// <summary>
@@ -74,9 +71,9 @@ namespace Frontenac.Blueprints.Util.IO.GraphSON
         /// </summary>
         /// <param name="graph">the graph to populate with the JSON data</param>
         /// <param name="jsonInputStream">a Stream of JSON data</param>
-        public static void inputGraph(Graph graph, Stream jsonInputStream)
+        public static void InputGraph(IGraph graph, Stream jsonInputStream)
         {
-            inputGraph(graph, jsonInputStream, 1000);
+            InputGraph(graph, jsonInputStream, 1000);
         }
 
         /// <summary>
@@ -85,19 +82,19 @@ namespace Frontenac.Blueprints.Util.IO.GraphSON
         /// </summary>
         /// <param name="graph">the graph to populate with the JSON data</param>
         /// <param name="filename">name of a file of JSON data</param>
-        public static void inputGraph(Graph graph, string filename)
+        public static void InputGraph(IGraph graph, string filename)
         {
-            inputGraph(graph, filename, 1000);
+            InputGraph(graph, filename, 1000);
         }
 
-        public static void inputGraph(Graph inputGraph, Stream jsonInputStream, int bufferSize)
+        public static void InputGraph(IGraph inputGraph, Stream jsonInputStream, int bufferSize)
         {
-            GraphSONReader.inputGraph(inputGraph, jsonInputStream, bufferSize, null, null);
+            InputGraph(inputGraph, jsonInputStream, bufferSize, null, null);
         }
 
-        public static void inputGraph(Graph inputGraph, string filename, int bufferSize)
+        public static void InputGraph(IGraph inputGraph, string filename, int bufferSize)
         {
-            GraphSONReader.inputGraph(inputGraph, filename, bufferSize, null, null);
+            InputGraph(inputGraph, filename, bufferSize, null, null);
         }
 
         /// <summary>
@@ -107,12 +104,14 @@ namespace Frontenac.Blueprints.Util.IO.GraphSON
         /// <param name="inputGraph">the graph to populate with the JSON data</param>
         /// <param name="filename">name of a file of JSON data</param>
         /// <param name="bufferSize">the amount of elements to hold in memory before committing a transactions (only valid for TransactionalGraphs)</param>
-        public static void inputGraph(Graph inputGraph, string filename, int bufferSize,
+        /// <param name="edgePropertyKeys"></param>
+        /// <param name="vertexPropertyKeys"></param>
+        public static void InputGraph(IGraph inputGraph, string filename, int bufferSize,
                                   IEnumerable<string> edgePropertyKeys, IEnumerable<string> vertexPropertyKeys)
         {
             using (FileStream fis = File.OpenRead(filename))
             {
-                GraphSONReader.inputGraph(inputGraph, fis, bufferSize, edgePropertyKeys, vertexPropertyKeys);
+                InputGraph(inputGraph, fis, bufferSize, edgePropertyKeys, vertexPropertyKeys);
             }
         }
 
@@ -123,54 +122,60 @@ namespace Frontenac.Blueprints.Util.IO.GraphSON
         /// <param name="inputGraph">the graph to populate with the JSON data</param>
         /// <param name="jsonInputStream">a Stream of JSON data</param>
         /// <param name="bufferSize">the amount of elements to hold in memory before committing a transactions (only valid for TransactionalGraphs)</param>
-        public static void inputGraph(Graph inputGraph, Stream jsonInputStream, int bufferSize,
+        /// <param name="edgePropertyKeys"></param>
+        /// <param name="vertexPropertyKeys"></param>
+        public static void InputGraph(IGraph inputGraph, Stream jsonInputStream, int bufferSize,
                                   IEnumerable<string> edgePropertyKeys, IEnumerable<string> vertexPropertyKeys)
         {
 
-            using (StreamReader sr = new StreamReader(jsonInputStream))
+            using (var sr = new StreamReader(jsonInputStream))
             {
-                using (JsonTextReader jp = new JsonTextReader(sr))
+                using (var jp = new JsonTextReader(sr))
                 {
                     // if this is a transactional graph then we're buffering
-                    BatchGraph graph = BatchGraph.wrap(inputGraph, bufferSize);
+                    BatchGraph graph = BatchGraph.Wrap(inputGraph, bufferSize);
 
-                    ElementFactory elementFactory = new GraphElementFactory(graph);
-                    GraphSONUtility graphson = new GraphSONUtility(GraphSONMode.NORMAL, elementFactory,
-                            vertexPropertyKeys, edgePropertyKeys);
+                    IElementFactory elementFactory = new GraphElementFactory(graph);
+                    
+// ReSharper disable PossibleMultipleEnumeration
+                    var graphson = new GraphSonUtility(GraphSonMode.NORMAL, elementFactory, vertexPropertyKeys, edgePropertyKeys);
+// ReSharper restore PossibleMultipleEnumeration
 
-                    JsonSerializer serializer = JsonSerializer.Create(null);
+                    var serializer = JsonSerializer.Create(null);
 
                     while (jp.Read() && jp.TokenType != JsonToken.EndObject)
                     {
                         string fieldname = Convert.ToString(jp.Value);
-                        if (fieldname == GraphSONTokens.MODE)
+                        if (fieldname == GraphSonTokens.Mode)
                         {
-                            GraphSONMode mode = (GraphSONMode)Enum.Parse(typeof(GraphSONMode), jp.ReadAsString());
-                            graphson = new GraphSONUtility(mode, elementFactory, vertexPropertyKeys, edgePropertyKeys);
+                            var mode = (GraphSonMode)Enum.Parse(typeof(GraphSonMode), jp.ReadAsString());
+// ReSharper disable PossibleMultipleEnumeration
+                            graphson = new GraphSonUtility(mode, elementFactory, vertexPropertyKeys, edgePropertyKeys);
+// ReSharper restore PossibleMultipleEnumeration
                         }
-                        else if (fieldname == GraphSONTokens.VERTICES)
+                        else if (fieldname == GraphSonTokens.Vertices)
                         {
                             jp.Read();
                             while (jp.Read() && jp.TokenType != JsonToken.EndArray)
                             {
-                                JObject node = (JObject) serializer.Deserialize(jp);
-                                graphson.vertexFromJson(node);
+                                var node = (JObject) serializer.Deserialize(jp);
+                                graphson.VertexFromJson(node);
                             }
                         }
-                        else if (fieldname == GraphSONTokens.EDGES)
+                        else if (fieldname == GraphSonTokens.Edges)
                         {
                             jp.Read();
                             while (jp.Read() && jp.TokenType != JsonToken.EndArray)
                             {
-                                JObject node = (JObject)serializer.Deserialize(jp);
-                                Vertex inV = graph.getVertex(GraphSONUtility.getTypedValueFromJsonNode(node[GraphSONTokens._IN_V]));
-                                Vertex outV = graph.getVertex(GraphSONUtility.getTypedValueFromJsonNode(node[GraphSONTokens._OUT_V]));
-                                graphson.edgeFromJson(node, outV, inV);
+                                var node = (JObject)serializer.Deserialize(jp);
+                                IVertex inV = graph.GetVertex(GraphSonUtility.GetTypedValueFromJsonNode(node[GraphSonTokens.InV]));
+                                IVertex outV = graph.GetVertex(GraphSonUtility.GetTypedValueFromJsonNode(node[GraphSonTokens.OutV]));
+                                graphson.EdgeFromJson(node, outV, inV);
                             }
                         }
                     }
 
-                    graph.commit();
+                    graph.Commit();
                 }
             }
         }

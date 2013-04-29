@@ -1,9 +1,4 @@
 ﻿using NUnit.Framework;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using Frontenac.Blueprints.Impls.TG;
 
 namespace Frontenac.Blueprints.Util
@@ -12,23 +7,23 @@ namespace Frontenac.Blueprints.Util
     public class IndexableGraphHelperTest : BaseTest
     {
         [Test]
-        public void testAddUniqueVertex()
+        public void TestAddUniqueVertex()
         {
-            IndexableGraph graph = new TinkerGraph();
-            Vertex marko = graph.addVertex(0);
-            marko.setProperty("name", "marko");
-            Index index = graph.createIndex("txIdx", typeof(Vertex));
-            index.put("name", "marko", marko);
-            Vertex vertex = IndexableGraphHelper.addUniqueVertex(graph, null, index, "name", "marko");
-            Assert.AreEqual(vertex.getProperty("name"), "marko");
-            Assert.AreEqual(vertex, graph.getVertex(0));
-            Assert.AreEqual(count(graph.getVertices()), 1);
-            Assert.AreEqual(count(graph.getEdges()), 0);
+            IIndexableGraph graph = new TinkerGraph();
+            IVertex marko = graph.AddVertex(0);
+            marko.SetProperty("name", "marko");
+            IIndex index = graph.CreateIndex("txIdx", typeof(IVertex));
+            index.Put("name", "marko", marko);
+            IVertex vertex = IndexableGraphHelper.AddUniqueVertex(graph, null, index, "name", "marko");
+            Assert.AreEqual(vertex.GetProperty("name"), "marko");
+            Assert.AreEqual(vertex, graph.GetVertex(0));
+            Assert.AreEqual(Count(graph.GetVertices()), 1);
+            Assert.AreEqual(Count(graph.GetEdges()), 0);
 
-            vertex = IndexableGraphHelper.addUniqueVertex(graph, null, index, "name", "darrick");
-            Assert.AreEqual(vertex.getProperty("name"), "darrick");
-            Assert.AreEqual(count(graph.getVertices()), 2);
-            Assert.AreEqual(vertex.getId(), "1");
+            vertex = IndexableGraphHelper.AddUniqueVertex(graph, null, index, "name", "darrick");
+            Assert.AreEqual(vertex.GetProperty("name"), "darrick");
+            Assert.AreEqual(Count(graph.GetVertices()), 2);
+            Assert.AreEqual(vertex.GetId(), "1");
         }
     }
 }

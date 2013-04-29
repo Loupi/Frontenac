@@ -1,68 +1,64 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.Collections.Generic;
 
 namespace Frontenac.Blueprints.Util.Wrappers.Wrapped
 {
-    public abstract class WrappedElement : Element
+    public abstract class WrappedElement : IElement
     {
-        protected Element baseElement;
+        protected readonly IElement BaseElement;
 
-        protected WrappedElement(Element baseElement)
+        protected WrappedElement(IElement baseElement)
         {
-            this.baseElement = baseElement;
+            BaseElement = baseElement;
         }
 
-        public void setProperty(string key, object value)
+        public void SetProperty(string key, object value)
         {
-            baseElement.setProperty(key, value);
+            BaseElement.SetProperty(key, value);
         }
 
-        public object getProperty(string key)
+        public object GetProperty(string key)
         {
-            return baseElement.getProperty(key);
+            return BaseElement.GetProperty(key);
         }
 
-        public object removeProperty(string key)
+        public object RemoveProperty(string key)
         {
-            return baseElement.removeProperty(key);
+            return BaseElement.RemoveProperty(key);
         }
 
-        public IEnumerable<string> getPropertyKeys()
+        public IEnumerable<string> GetPropertyKeys()
         {
-            return baseElement.getPropertyKeys();
+            return BaseElement.GetPropertyKeys();
         }
 
-        public object getId()
+        public object GetId()
         {
-            return baseElement.getId();
+            return BaseElement.GetId();
         }
 
         public override bool Equals(object obj)
         {
-            return ElementHelper.areEqual(this, obj);
+            return ElementHelper.AreEqual(this, obj);
         }
 
         public override int GetHashCode()
         {
-            return baseElement.GetHashCode();
+            return BaseElement.GetHashCode();
         }
 
-        public Element getBaseElement()
+        public IElement GetBaseElement()
         {
-            return baseElement;
+            return BaseElement;
         }
 
-        public void remove()
+        public void Remove()
         {
-            baseElement.remove();
+            BaseElement.Remove();
         }
 
         public override string ToString()
         {
-            return baseElement.ToString();
+            return BaseElement.ToString();
         }
     }
 }

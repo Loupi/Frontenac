@@ -1,10 +1,6 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.IO;
-using System.Linq;
 using System.Runtime.Serialization.Formatters.Binary;
-using System.Text;
-using System.Threading.Tasks;
 using Frontenac.Blueprints.Util.IO.GML;
 using Frontenac.Blueprints.Util.IO.GraphML;
 using Frontenac.Blueprints.Util.IO.GraphSON;
@@ -16,31 +12,28 @@ namespace Frontenac.Blueprints.Impls.TG
     /// </summary>
     class TinkerStorageFactory
     {
-        static TinkerStorageFactory factory;
+        static TinkerStorageFactory _factory;
 
         private TinkerStorageFactory()
         {
         }
 
-        public static TinkerStorageFactory getInstance()
+        public static TinkerStorageFactory GetInstance()
         {
-            if (factory == null)
-                factory = new TinkerStorageFactory();
-
-            return factory;
+            return _factory ?? (_factory = new TinkerStorageFactory());
         }
 
-        public TinkerStorage getTinkerStorage(TinkerGraph.FileType fileType)
+        public ITinkerStorage GetTinkerStorage(TinkerGraph.FileType fileType)
         {
             switch (fileType)
             {
-                case TinkerGraph.FileType.GML:
-                    return new GMLTinkerStorage();
-                case TinkerGraph.FileType.GRAPHML:
-                    return new GraphMLTinkerStorage();
-                case TinkerGraph.FileType.GRAPHSON:
-                    return new GraphSONTinkerStorage();
-                case TinkerGraph.FileType.JAVA:
+                case TinkerGraph.FileType.Gml:
+                    return new GmlTinkerStorage();
+                case TinkerGraph.FileType.Graphml:
+                    return new GraphMlTinkerStorage();
+                case TinkerGraph.FileType.Graphson:
+                    return new GraphSonTinkerStorage();
+                case TinkerGraph.FileType.Java:
                     return new JavaTinkerStorage();
             }
 
@@ -50,20 +43,20 @@ namespace Frontenac.Blueprints.Impls.TG
         /// <summary>
         /// Base class for loading and saving a TinkerGraph.
         /// </summary>
-        abstract class AbstractTinkerStorage : TinkerStorage
+        abstract class AbstractTinkerStorage : ITinkerStorage
         {
             /// <summary>
             /// Clean up the directory that houses the TinkerGraph.
             /// </summary>
             /// <param name="path"></param>
-            protected void deleteFile(string path)
+            protected void DeleteFile(string path)
             {
                 if (File.Exists(path))
                     File.Delete(path);
             }
 
-            public abstract TinkerGraph load(string directory);
-            public abstract void save(TinkerGraph graph, string directory);
+            public abstract TinkerGraph Load(string directory);
+            public abstract void Save(TinkerGraph graph, string directory);
         }
 
         /// <summary>
@@ -72,102 +65,102 @@ namespace Frontenac.Blueprints.Impls.TG
         /// </summary>
         abstract class AbstractSeparateTinkerStorage : AbstractTinkerStorage
         {
-            protected const string GRAPH_FILE_METADATA = "/tinkergraph-metadata.dat";
+            private const string GraphFileMetadata = "/tinkergraph-metadata.dat";
 
             /// <summary>
             /// Save the data of the graph with the specific file format of the implementation.
             /// </summary>
-            public abstract void saveGraphData(TinkerGraph graph, string directory);
+            public abstract void SaveGraphData(TinkerGraph graph, string directory);
 
             /// <summary>
             /// Load the data from the graph with the specific file format of the implementation.
             /// </summary>
-            public abstract void loadGraphData(TinkerGraph graph, string directory);
+            public abstract void LoadGraphData(TinkerGraph graph, string directory);
 
-            public override TinkerGraph load(string directory)
+            public override TinkerGraph Load(string directory)
             {
                 if (!Directory.Exists(directory))
                     throw new Exception(string.Concat("Directory ", directory, " does not exist"));
 
-                TinkerGraph graph = new TinkerGraph();
-                loadGraphData(graph, directory);
+                var graph = new TinkerGraph();
+                LoadGraphData(graph, directory);
 
-                string filePath = string.Concat(directory, GRAPH_FILE_METADATA);
+                string filePath = string.Concat(directory, GraphFileMetadata);
                 if (File.Exists(filePath))
-                    TinkerMetadataReader.load(graph, filePath);
+                    TinkerMetadataReader.Load(graph, filePath);
 
                 return graph;
             }
 
-            public override void save(TinkerGraph graph, string directory)
+            public override void Save(TinkerGraph graph, string directory)
             {
                 if (!Directory.Exists(directory))
                     Directory.CreateDirectory(directory);
 
-                saveGraphData(graph, directory);
-                string filePath = string.Concat(directory, GRAPH_FILE_METADATA);
-                deleteFile(filePath);
-                TinkerMetadataWriter.save(graph, filePath);
+                SaveGraphData(graph, directory);
+                string filePath = string.Concat(directory, GraphFileMetadata);
+                DeleteFile(filePath);
+                TinkerMetadataWriter.Save(graph, filePath);
             }
         }
 
         /// <summary>
         /// Reads and writes a TinkerGraph to GML as the format for the data.
         /// </summary>
-        class GMLTinkerStorage : AbstractSeparateTinkerStorage
+        class GmlTinkerStorage : AbstractSeparateTinkerStorage
         {
-            const string GRAPH_FILE_GML = "/tinkergraph.gml";
+            const string GraphFileGml = "/tinkergraph.gml";
 
-            public override void loadGraphData(TinkerGraph graph, string directory)
+            public override void LoadGraphData(TinkerGraph graph, string directory)
             {
-                GMLReader.inputGraph(graph, string.Concat(directory, GRAPH_FILE_GML));
+                GmlReader.InputGraph(graph, string.Concat(directory, GraphFileGml));
             }
 
-            public override void saveGraphData(TinkerGraph graph, string directory)
+            public override void SaveGraphData(TinkerGraph graph, string directory)
             {
-                string filePath = string.Concat(directory, GRAPH_FILE_GML);
-                deleteFile(filePath);
-                GMLWriter.outputGraph(graph, filePath);
+                string filePath = string.Concat(directory, GraphFileGml);
+                DeleteFile(filePath);
+                GmlWriter.OutputGraph(graph, filePath);
             }
         }
 
         /// <summary>
         /// Reads and writes a TinkerGraph to GraphSON as the format for the data.
         /// </summary>
-        class GraphSONTinkerStorage : AbstractSeparateTinkerStorage
+        class GraphSonTinkerStorage : AbstractSeparateTinkerStorage
         {
-            const string GRAPH_FILE_GRAPHSON = "/tinkergraph.json";
+            const string GraphFileGraphson = "/tinkergraph.json";
 
-            public override void loadGraphData(TinkerGraph graph, string directory)
+            public override void LoadGraphData(TinkerGraph graph, string directory)
             {
-                GraphSONReader.inputGraph(graph, string.Concat(directory, GRAPH_FILE_GRAPHSON));
+                GraphSonReader.InputGraph(graph, string.Concat(directory, GraphFileGraphson));
             }
 
-            public override void saveGraphData(TinkerGraph graph, string directory)
+            public override void SaveGraphData(TinkerGraph graph, string directory)
             {
-                string filePath = string.Concat(directory, GRAPH_FILE_GRAPHSON);
-                deleteFile(filePath);
-                GraphSONWriter.outputGraph(graph, filePath, GraphSONMode.EXTENDED);
+                string filePath = string.Concat(directory, GraphFileGraphson);
+                DeleteFile(filePath);
+                GraphSonWriter.OutputGraph(graph, filePath, GraphSonMode.EXTENDED);
             }
         }
 
         /// <summary>
         /// Reads and writes a TinkerGraph to GraphML as the format for the data.
         /// </summary>
-        class GraphMLTinkerStorage : AbstractSeparateTinkerStorage
+        class GraphMlTinkerStorage : AbstractSeparateTinkerStorage
         {
-            const string GRAPH_FILE_GRAPHML = "/tinkergraph.xml";
+            const string GraphFileGraphml = "/tinkergraph.xml";
 
-            public override void loadGraphData(TinkerGraph graph, string directory)
+            public override void LoadGraphData(TinkerGraph graph, string directory)
             {
-                GraphMLReader.inputGraph(graph, string.Concat(directory, GRAPH_FILE_GRAPHML));
+                GraphMlReader.InputGraph(graph, string.Concat(directory, GraphFileGraphml));
             }
 
-            public override void saveGraphData(TinkerGraph graph, string directory)
+            public override void SaveGraphData(TinkerGraph graph, string directory)
             {
-                string filePath = string.Concat(directory, GRAPH_FILE_GRAPHML);
-                deleteFile(filePath);
-                GraphMLWriter.outputGraph(graph, filePath);
+                string filePath = string.Concat(directory, GraphFileGraphml);
+                DeleteFile(filePath);
+                GraphMlWriter.OutputGraph(graph, filePath);
             }
         }
 
@@ -176,24 +169,24 @@ namespace Frontenac.Blueprints.Impls.TG
         /// </summary>
         class JavaTinkerStorage : AbstractTinkerStorage
         {
-            const string GRAPH_FILE_JAVA = "/tinkergraph.dat";
+            const string GraphFileJava = "/tinkergraph.dat";
 
-            public override TinkerGraph load(string directory)
+            public override TinkerGraph Load(string directory)
             {
-                using (var stream = File.OpenRead(string.Concat(directory, GRAPH_FILE_JAVA)))
+                using (var stream = File.OpenRead(string.Concat(directory, GraphFileJava)))
                 {
-                    BinaryFormatter formatter = new BinaryFormatter();
+                    var formatter = new BinaryFormatter();
                     return (TinkerGraph)formatter.Deserialize(stream);
                 }
             }
 
-            public override void save(TinkerGraph graph, string directory)
+            public override void Save(TinkerGraph graph, string directory)
             {
-                string filePath = string.Concat(directory, GRAPH_FILE_JAVA);
-                deleteFile(filePath);
-                using (var stream = File.Create(string.Concat(directory, GRAPH_FILE_JAVA)))
+                string filePath = string.Concat(directory, GraphFileJava);
+                DeleteFile(filePath);
+                using (var stream = File.Create(string.Concat(directory, GraphFileJava)))
                 {
-                    BinaryFormatter formatter = new BinaryFormatter();
+                    var formatter = new BinaryFormatter();
                     formatter.Serialize(stream, graph);
                 }
             }

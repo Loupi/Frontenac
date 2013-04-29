@@ -1,43 +1,40 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Frontenac.Blueprints.Util.Wrappers.Wrapped
 {
-    public class WrappedIndexableGraph : WrappedGraph, IndexableGraph, WrapperGraph
+    public class WrappedIndexableGraph : WrappedGraph, IIndexableGraph
     {
-        readonly IndexableGraph _baseIndexableGraph;
+        readonly IIndexableGraph _baseIndexableGraph;
 
-        public WrappedIndexableGraph(IndexableGraph baseIndexableGraph)
+        public WrappedIndexableGraph(IIndexableGraph baseIndexableGraph)
             : base(baseIndexableGraph)
         {
             _baseIndexableGraph = baseIndexableGraph;
         }
 
-        public void dropIndex(string indexName)
+        public void DropIndex(string indexName)
         {
-            _baseIndexableGraph.dropIndex(indexName);
+            _baseIndexableGraph.DropIndex(indexName);
         }
 
-        public IEnumerable<Index> getIndices()
+        public IEnumerable<IIndex> GetIndices()
         {
-            return new WrappedIndexIterable(_baseIndexableGraph.getIndices());
+            return new WrappedIndexIterable(_baseIndexableGraph.GetIndices());
         }
 
-        public Index getIndex(string indexName, Type indexClass)
+        public IIndex GetIndex(string indexName, Type indexClass)
         {
-            Index index = _baseIndexableGraph.getIndex(indexName, indexClass);
+            IIndex index = _baseIndexableGraph.GetIndex(indexName, indexClass);
             if (null == index)
                 return null;
 
             return new WrappedIndex(index);
         }
 
-        public Index createIndex(string indexName, Type indexClass, params Parameter[] indexParameters)
+        public IIndex CreateIndex(string indexName, Type indexClass, params Parameter[] indexParameters)
         {
-            return new WrappedIndex(_baseIndexableGraph.createIndex(indexName, indexClass, indexParameters));
+            return new WrappedIndex(_baseIndexableGraph.CreateIndex(indexName, indexClass, indexParameters));
         }
     }
 }

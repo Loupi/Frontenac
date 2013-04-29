@@ -1,34 +1,27 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace Frontenac.Blueprints
+﻿namespace Frontenac.Blueprints
 {
     public enum Direction
     {
-        OUT,
-        IN,
-        BOTH
+        Out,
+        In,
+        Both
     }
 
     public static class Directions
     {
-        public static readonly Direction[] proper = new Direction[]
+        public static readonly Direction[] Proper = new[]
         {
-            Direction.OUT,
-            Direction.IN
+            Direction.Out,
+            Direction.In
         };
 
-        public static Direction opposite(this Direction direction)
+        public static Direction Opposite(this Direction direction)
         {
-            if (direction == Direction.OUT)
-                return Direction.IN;
-            else if (direction == Direction.IN)
-                return Direction.OUT;
-            else
-                return Direction.BOTH;
+            if (direction == Direction.Out)
+                return Direction.In;
+            if (direction == Direction.In)
+                return Direction.Out;
+            return Direction.Both;
         }
     }
 }

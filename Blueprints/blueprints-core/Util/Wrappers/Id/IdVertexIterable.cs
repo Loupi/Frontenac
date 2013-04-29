@@ -1,18 +1,16 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Frontenac.Blueprints.Util.Wrappers.Id
 {
-    class IdVertexIterable : CloseableIterable<Vertex>
+    class IdVertexIterable : ICloseableIterable<IVertex>
     {
-        readonly IEnumerable<Element> _iterable;
+        readonly IEnumerable<IElement> _iterable;
         readonly IdGraph _idGraph;
         bool _disposed;
 
-        public IdVertexIterable(IEnumerable<Element> iterable, IdGraph idGraph)
+        public IdVertexIterable(IEnumerable<IElement> iterable, IdGraph idGraph)
         {
             _iterable = iterable;
             _idGraph = idGraph;
@@ -43,15 +41,14 @@ namespace Frontenac.Blueprints.Util.Wrappers.Id
             _disposed = true;
         }
 
-        public IEnumerator<Vertex> GetEnumerator()
+        public IEnumerator<IVertex> GetEnumerator()
         {
-            foreach (Vertex v in _iterable)
-                yield return new IdVertex(v, _idGraph);
+            return (from IVertex v in _iterable select new IdVertex(v, _idGraph)).Cast<IVertex>().GetEnumerator();
         }
 
         System.Collections.IEnumerator System.Collections.IEnumerable.GetEnumerator()
         {
-            return (this as IEnumerable<Vertex>).GetEnumerator();
+            return (this as IEnumerable<IVertex>).GetEnumerator();
         }
     }
 }

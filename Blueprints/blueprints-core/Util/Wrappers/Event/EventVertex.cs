@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.Collections.Generic;
 
 namespace Frontenac.Blueprints.Util.Wrappers.Event
 {
@@ -10,39 +6,48 @@ namespace Frontenac.Blueprints.Util.Wrappers.Event
     /// An vertex with a GraphChangedListener attached.  Those listeners are notified when changes occur to
     /// the properties of the vertex.
     /// </summary>
-    public class EventVertex : EventElement, Vertex
+    public class EventVertex : EventElement, IVertex
     {
-        public EventVertex(Vertex baseVertex, EventGraph eventGraph)
+        public EventVertex(IVertex baseVertex, EventGraph eventGraph)
             : base(baseVertex, eventGraph)
         {
 
         }
 
-        public IEnumerable<Edge> getEdges(Direction direction, params string[] labels)
+        public IEnumerable<IEdge> GetEdges(Direction direction, params string[] labels)
         {
-            return new EventEdgeIterable((baseElement as Vertex).getEdges(direction, labels), eventGraph);
+            var vertex = BaseElement as IVertex;
+            if (vertex != null)
+                return new EventEdgeIterable(vertex.GetEdges(direction, labels), EventGraph);
+            return null;
         }
 
-        public IEnumerable<Vertex> getVertices(Direction direction, params string[] labels)
+        public IEnumerable<IVertex> GetVertices(Direction direction, params string[] labels)
         {
-            return new EventVertexIterable((baseElement as Vertex).getVertices(direction, labels), eventGraph);
+            var vertex = BaseElement as IVertex;
+            if (vertex != null)
+                return new EventVertexIterable(vertex.GetVertices(direction, labels), EventGraph);
+            return null;
         }
 
-        public VertexQuery query()
+        public IVertexQuery Query()
         {
-            return new WrapperVertexQuery((baseElement as Vertex).query(),
-                t => new EventEdgeIterable(t.edges(), eventGraph),
-                t => new EventVertexIterable(t.vertices(), eventGraph));
+            var vertex = BaseElement as IVertex;
+            if (vertex != null)
+                return new WrapperVertexQuery(vertex.Query(),
+                                              t => new EventEdgeIterable(t.Edges(), EventGraph),
+                                              t => new EventVertexIterable(t.Vertices(), EventGraph));
+            return null;
         }
 
-        public Edge addEdge(string label, Vertex vertex)
+        public IEdge AddEdge(string label, IVertex vertex)
         {
-            return eventGraph.addEdge(null, this, vertex, label);
+            return EventGraph.AddEdge(null, this, vertex, label);
         }
 
-        public Vertex getBaseVertex()
+        public IVertex GetBaseVertex()
         {
-            return this.baseElement as Vertex;
+            return BaseElement as IVertex;
         }
     }
 }

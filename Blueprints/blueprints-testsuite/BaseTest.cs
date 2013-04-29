@@ -4,16 +4,14 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Frontenac.Blueprints
 {
     public abstract class BaseTest
     {
-        Stopwatch _timer = null;
+        Stopwatch _timer;
 
-        public static T getOnlyElement<T>(IEnumerator<T> iterator)
+        public static T GetOnlyElement<T>(IEnumerator<T> iterator)
         {
             if (!iterator.MoveNext()) return default(T);
             T element = iterator.Current;
@@ -21,12 +19,12 @@ namespace Frontenac.Blueprints
             return element;
         }
 
-        public static T getOnlyElement<T>(IEnumerable<T> iterable)
+        public static T GetOnlyElement<T>(IEnumerable<T> iterable)
         {
-            return getOnlyElement(iterable.GetEnumerator());
+            return GetOnlyElement(iterable.GetEnumerator());
         }
 
-        public static int count(IEnumerator iterator)
+        public static int Count(IEnumerator iterator)
         {
             int counter = 0;
             while (iterator.MoveNext())
@@ -35,50 +33,45 @@ namespace Frontenac.Blueprints
             return counter;
         }
 
-        public static int count(IEnumerable iterable)
+        public static int Count(IEnumerable iterable)
         {
-            return count(iterable.GetEnumerator());
+            return Count(iterable.GetEnumerator());
         }
 
-        public static int count<T>(CloseableIterable<T> iterable)
+        public static int Count<T>(ICloseableIterable<T> iterable)
         {
-            return count(iterable.GetEnumerator());
+            return Count(iterable.GetEnumerator());
         }
 
-        public static List<T> asList<T>(IEnumerable<T> iterable)
+        public static List<T> AsList<T>(IEnumerable<T> iterable)
         {
-            List<T> list = new List<T>();
-            foreach (T object_ in iterable)
-                list.Add(object_);
-            
-            return list;
+            return iterable.ToList();
         }
 
-        public long stopWatch()
+        public long StopWatch()
         {
             if (_timer == null)
             {
                 _timer = Stopwatch.StartNew();
                 return -1;
             }
-            else
-                return _timer.ElapsedMilliseconds;
+            return _timer.ElapsedMilliseconds;
         }
 
-        public static void printPerformance(string name, object events, string eventName, long timeInMilliseconds)
+        public static void PrintPerformance(string name, object events, string eventName, long timeInMilliseconds)
         {
-            if (null != events)
-                Console.WriteLine(string.Concat("\t", name, ": ", (int)events, " ", eventName, " in ", timeInMilliseconds, "ms"));
-            else
-                Console.WriteLine(string.Concat("\t", name, ": ", eventName, " in ", timeInMilliseconds, "ms"));
+            Console.WriteLine(null != events
+                                  ? string.Concat("\t", name, ": ", (int) events, " ", eventName, " in ",
+                                                  timeInMilliseconds, "ms")
+                                  : string.Concat("\t", name, ": ", eventName, " in ", timeInMilliseconds, "ms"));
         }
 
-        public static void printTestPerformance(string testName, long timeInMilliseconds)
+        public static void PrintTestPerformance(string testName, long timeInMilliseconds)
         {
             Console.WriteLine(string.Concat("*** TOTAL TIME [", testName, "]: ", timeInMilliseconds, " ***"));
         }
 
-        protected static void deleteDirectory(string directory)
+        protected static void DeleteDirectory(string directory)
         {
             if (Directory.Exists(directory))
                 Directory.Delete(directory, true);
@@ -90,9 +83,11 @@ namespace Frontenac.Blueprints
                 throw new Exception(string.Concat("unable to delete directory ", Path.GetFullPath(directory)));
         }
 
-        public string computeTestDataRoot()
+        public string ComputeTestDataRoot()
         {
-            return this.GetType().Namespace.Replace('.', '\\');
+            var ns = GetType().Namespace;
+            if (ns != null) return ns.Replace('.', '\\');
+            return null;
         }
     }
 }

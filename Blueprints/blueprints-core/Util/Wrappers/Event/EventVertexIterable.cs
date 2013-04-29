@@ -1,21 +1,19 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Frontenac.Blueprints.Util.Wrappers.Event
 {
     /// <summary>
     /// A sequence of vertices that applies the list of listeners into each vertex.
     /// </summary>
-    public class EventVertexIterable : CloseableIterable<Vertex>
+    public class EventVertexIterable : ICloseableIterable<IVertex>
     {
-        readonly IEnumerable<Vertex> _iterable;
+        readonly IEnumerable<IVertex> _iterable;
         readonly EventGraph _eventGraph;
         bool _disposed;
 
-        public EventVertexIterable(IEnumerable<Vertex> iterable, EventGraph eventGraph)
+        public EventVertexIterable(IEnumerable<IVertex> iterable, EventGraph eventGraph)
         {
             _iterable = iterable;
             _eventGraph = eventGraph;
@@ -46,15 +44,14 @@ namespace Frontenac.Blueprints.Util.Wrappers.Event
             _disposed = true;
         }
 
-        public IEnumerator<Vertex> GetEnumerator()
+        public IEnumerator<IVertex> GetEnumerator()
         {
-            foreach (Vertex v in _iterable)
-                yield return new EventVertex(v, _eventGraph);
+            return _iterable.Select(v => new EventVertex(v, _eventGraph)).Cast<IVertex>().GetEnumerator();
         }
 
         System.Collections.IEnumerator System.Collections.IEnumerable.GetEnumerator()
         {
-            return (this as IEnumerable<Vertex>).GetEnumerator();
+            return (this as IEnumerable<IVertex>).GetEnumerator();
         }
     }
 }

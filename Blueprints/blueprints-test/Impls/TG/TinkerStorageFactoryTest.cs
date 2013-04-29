@@ -3,8 +3,6 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Frontenac.Blueprints.Impls.TG
 {
@@ -12,93 +10,89 @@ namespace Frontenac.Blueprints.Impls.TG
     public class TinkerStorageFactoryTest : BaseTest
     {
         [Test]
-        public void storageFactoryIsSingleton()
+        public void StorageFactoryIsSingleton()
         {
-            TinkerStorageFactory factory = TinkerStorageFactory.getInstance();
-            Assert.AreSame(factory, TinkerStorageFactory.getInstance());
+            TinkerStorageFactory factory = TinkerStorageFactory.GetInstance();
+            Assert.AreSame(factory, TinkerStorageFactory.GetInstance());
         }
 
         [Test]
-        public void testGMLStorage()
+        public void TestGmlStorage()
         {
-            string path = getDirectory() + "/" + "storage-test-gml";
-            createDirectory(path);
+            string path = GetDirectory() + "/" + "storage-test-gml";
+            CreateDirectory(path);
 
-            TinkerStorage storage = TinkerStorageFactory.getInstance().getTinkerStorage(TinkerGraph.FileType.GML);
-            TinkerGraph graph = TinkerGraphFactory.createTinkerGraph();
-            storage.save(graph, path);
+            ITinkerStorage storage = TinkerStorageFactory.GetInstance().GetTinkerStorage(TinkerGraph.FileType.Gml);
+            TinkerGraph graph = TinkerGraphFactory.CreateTinkerGraph();
+            storage.Save(graph, path);
 
-            Assert.AreEqual(1, findFilesByExt(path, "gml").Count());
-            Assert.AreEqual(1, findFilesByExt(path, "dat").Count());
+            Assert.AreEqual(1, FindFilesByExt(path, "gml").Count());
+            Assert.AreEqual(1, FindFilesByExt(path, "dat").Count());
         }
 
         [Test]
-        public void testGraphMLStorage()
+        public void TestGraphMlStorage()
         {
-            string path = getDirectory() + "/" + "storage-test-graphml";
-            createDirectory(path);
+            string path = GetDirectory() + "/" + "storage-test-graphml";
+            CreateDirectory(path);
 
-            TinkerStorage storage = TinkerStorageFactory.getInstance().getTinkerStorage(TinkerGraph.FileType.GRAPHML);
-            TinkerGraph graph = TinkerGraphFactory.createTinkerGraph();
-            storage.save(graph, path);
+            ITinkerStorage storage = TinkerStorageFactory.GetInstance().GetTinkerStorage(TinkerGraph.FileType.Graphml);
+            TinkerGraph graph = TinkerGraphFactory.CreateTinkerGraph();
+            storage.Save(graph, path);
 
-            Assert.AreEqual(1, findFilesByExt(path, "xml").Count());
-            Assert.AreEqual(1, findFilesByExt(path, "dat").Count());
+            Assert.AreEqual(1, FindFilesByExt(path, "xml").Count());
+            Assert.AreEqual(1, FindFilesByExt(path, "dat").Count());
         }
 
         [Test]
-        public void testGraphSONStorageFactory()
+        public void TestGraphSonStorageFactory()
         {
-            string path = getDirectory() + "/" + "storage-test-graphson";
-            createDirectory(path);
+            string path = GetDirectory() + "/" + "storage-test-graphson";
+            CreateDirectory(path);
 
-            TinkerStorage storage = TinkerStorageFactory.getInstance().getTinkerStorage(TinkerGraph.FileType.GRAPHSON);
-            TinkerGraph graph = TinkerGraphFactory.createTinkerGraph();
-            storage.save(graph, path);
+            ITinkerStorage storage = TinkerStorageFactory.GetInstance().GetTinkerStorage(TinkerGraph.FileType.Graphson);
+            TinkerGraph graph = TinkerGraphFactory.CreateTinkerGraph();
+            storage.Save(graph, path);
 
-            Assert.AreEqual(1, findFilesByExt(path, "json").Count());
-            Assert.AreEqual(1, findFilesByExt(path, "dat").Count());
+            Assert.AreEqual(1, FindFilesByExt(path, "json").Count());
+            Assert.AreEqual(1, FindFilesByExt(path, "dat").Count());
         }
 
         [Test]
-        public void testJavaStorageFactory()
+        public void TestJavaStorageFactory()
         {
-            string path = getDirectory() + "/" + "storage-test-java";
-            createDirectory(path);
+            string path = GetDirectory() + "/" + "storage-test-java";
+            CreateDirectory(path);
 
-            TinkerStorage storage = TinkerStorageFactory.getInstance().getTinkerStorage(TinkerGraph.FileType.JAVA);
-            TinkerGraph graph = TinkerGraphFactory.createTinkerGraph();
-            storage.save(graph, path);
+            ITinkerStorage storage = TinkerStorageFactory.GetInstance().GetTinkerStorage(TinkerGraph.FileType.Java);
+            TinkerGraph graph = TinkerGraphFactory.CreateTinkerGraph();
+            storage.Save(graph, path);
 
-            Assert.AreEqual(1, findFilesByExt(path, "dat").Count());
+            Assert.AreEqual(1, FindFilesByExt(path, "dat").Count());
         }
 
-        void createDirectory(string dir)
+        static void CreateDirectory(string dir)
         {
             if (Directory.Exists(dir))
             {
-                deleteDirectory(dir);
+                DeleteDirectory(dir);
             }
 
             Directory.CreateDirectory(dir);
         }
 
-        string getDirectory()
+        string GetDirectory()
         {
-            String directory = System.Environment.GetEnvironmentVariable("tinkerGraphDirectory");
-            if (directory == null)
-            {
-                directory = this.getWorkingDirectory();
-            }
+            String directory = Environment.GetEnvironmentVariable("tinkerGraphDirectory") ?? GetWorkingDirectory();
             return directory;
         }
 
-        string getWorkingDirectory()
+        string GetWorkingDirectory()
         {
-            return this.computeTestDataRoot();
+            return ComputeTestDataRoot();
         }
 
-        static IEnumerable<string> findFilesByExt(string path, string ext)
+        static IEnumerable<string> FindFilesByExt(string path, string ext)
         {
             return Directory.EnumerateFiles(path, string.Concat("*.", ext), SearchOption.AllDirectories);
         }

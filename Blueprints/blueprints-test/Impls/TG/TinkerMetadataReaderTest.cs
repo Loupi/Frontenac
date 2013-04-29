@@ -1,77 +1,73 @@
 ﻿using NUnit.Framework;
-using System;
-using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Frontenac.Blueprints.Impls.TG
 {
     [TestFixture(Category = "TinkerMetadataReaderTest")]
     public class TinkerMetadataReaderTest
     {
-        TinkerGraph graph;
+        TinkerGraph _graph;
 
         [SetUp]
-        public void beforeTest()
+        public void BeforeTest()
         {
-            this.graph = TinkerGraphFactory.createTinkerGraph();
+            _graph = TinkerGraphFactory.CreateTinkerGraph();
         }
 
         [Test]
-        public void exampleMetadataGetsCorrectCurrentId()
+        public void ExampleMetadataGetsCorrectCurrentId()
         {
             using (var stream = typeof(TinkerMetadataReaderTest).Assembly.GetManifestResourceStream(typeof(TinkerMetadataReaderTest), "example-tinkergraph-metadata.dat"))
             {
-                TinkerMetadataReader.load(this.graph, stream);
+                TinkerMetadataReader.Load(_graph, stream);
             }
 
-            Assert.AreEqual(this.graph.currentId, 0);
+            Assert.AreEqual(_graph.CurrentId, 0);
         }
 
         [Test]
-        public void exampleMetadataGetsCorrectIndices()
+        public void ExampleMetadataGetsCorrectIndices()
         {
             using (var stream = typeof(TinkerMetadataReaderTest).Assembly.GetManifestResourceStream(typeof(TinkerMetadataReaderTest), "example-tinkergraph-metadata.dat"))
             {
-                TinkerMetadataReader.load(this.graph, stream);
+                TinkerMetadataReader.Load(_graph, stream);
             }
             
-            Assert.AreEqual(2, this.graph.indices.Count());
+            Assert.AreEqual(2, _graph.Indices.Count());
 
-            Index idxAge = this.graph.getIndex("age", typeof(Vertex));
-            CloseableIterable<Element> vertices = idxAge.get("age", 27);
+            IIndex idxAge = _graph.GetIndex("age", typeof(IVertex));
+            ICloseableIterable<IElement> vertices = idxAge.Get("age", 27);
             Assert.AreEqual(1, vertices.Count());
             vertices.Dispose();
 
-            Index idxWeight = this.graph.getIndex("weight", typeof(Edge));
-            CloseableIterable<Element> edges = idxWeight.get("weight", 0.5f);
+            IIndex idxWeight = _graph.GetIndex("weight", typeof(IEdge));
+            ICloseableIterable<IElement> edges = idxWeight.Get("weight", 0.5f);
             Assert.AreEqual(1, edges.Count());
             edges.Dispose();
         }
 
         [Test]
-        public void exampleMetadataGetsCorrectVertexKeyIndices()
+        public void ExampleMetadataGetsCorrectVertexKeyIndices()
         {
             using (var stream = typeof(TinkerMetadataReaderTest).Assembly.GetManifestResourceStream(typeof(TinkerMetadataReaderTest), "example-tinkergraph-metadata.dat"))
             {
-                TinkerMetadataReader.load(this.graph, stream);
+                TinkerMetadataReader.Load(_graph, stream);
             }
             
-            Assert.AreEqual(1, this.graph.vertexKeyIndex.index.Count());
-            Assert.AreEqual(1, graph.getVertices("age", 27).Count());
+            Assert.AreEqual(1, _graph.VertexKeyIndex.Index.Count());
+            Assert.AreEqual(1, _graph.GetVertices("age", 27).Count());
         }
 
         [Test]
-        public void exampleMetadataGetsCorrectEdgeKeyIndices()
+        public void ExampleMetadataGetsCorrectEdgeKeyIndices()
         {
             using (var stream = typeof(TinkerMetadataReaderTest).Assembly.GetManifestResourceStream(typeof(TinkerMetadataReaderTest), "example-tinkergraph-metadata.dat"))
             {
-                TinkerMetadataReader.load(this.graph, stream);
+                TinkerMetadataReader.Load(_graph, stream);
             }
             
-            Assert.AreEqual(1, this.graph.edgeKeyIndex.index.Count());
-            Assert.AreEqual(1, graph.getEdges("weight", 0.5f).Count());
+            Assert.AreEqual(1, _graph.EdgeKeyIndex.Index.Count());
+            Assert.AreEqual(1, _graph.GetEdges("weight", 0.5f).Count());
         }
     }
 }

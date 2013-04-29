@@ -1,9 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
+﻿using System.IO;
 using System.Text;
-using System.Threading.Tasks;
 
 namespace Frontenac.Blueprints.Util.IO.GraphML
 {
@@ -12,7 +8,7 @@ namespace Frontenac.Blueprints.Util.IO.GraphML
     /// </summary>
     public class EncodingStreamWriter : StreamWriter
     {
-        Encoding _encoding;
+        readonly Encoding _encoding;
 
         public EncodingStreamWriter(Stream stm, Encoding encoding)
             : base(stm)

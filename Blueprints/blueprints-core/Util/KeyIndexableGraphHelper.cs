@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.Collections.Generic;
 
 namespace Frontenac.Blueprints.Util
 {
@@ -19,22 +15,22 @@ namespace Frontenac.Blueprints.Util
         /// <param name="elements">the elements to index into the key indices</param>
         /// <param name="keys">the keys of the key indices</param>
         /// <returns>the number of element properties that were indexed</returns>
-        public static long reIndexElements<T>(Graph graph, IEnumerable<T> elements, IEnumerable<string> keys) where T : Element
+        public static long ReIndexElements<T>(IGraph graph, IEnumerable<T> elements, IEnumerable<string> keys) where T : IElement
         {
-            bool isTransactional = graph is TransactionalGraph;
+            bool isTransactional = graph is ITransactionalGraph;
             long counter = 0;
-            foreach (Element element in elements)
+            foreach (T element in elements)
             {
                 foreach (string key in keys)
                 {
-                    object value = element.removeProperty(key);
+                    object value = element.RemoveProperty(key);
                     if (null != value)
                     {
                         counter++;
-                        element.setProperty(key, value);
+                        element.SetProperty(key, value);
 
                         if (isTransactional && (counter % 1000 == 0))
-                            ((TransactionalGraph)graph).commit();
+                            ((ITransactionalGraph)graph).Commit();
                     }
                 }
             }

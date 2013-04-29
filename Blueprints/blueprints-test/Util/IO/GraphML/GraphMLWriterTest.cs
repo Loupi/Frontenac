@@ -1,71 +1,71 @@
 ﻿using Frontenac.Blueprints.Impls.TG;
-using Frontenac.Blueprints.Util.IO.GML;
 using NUnit.Framework;
-using System;
-using System.Collections.Generic;
 using System.IO;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Frontenac.Blueprints.Util.IO.GraphML
 {
     [TestFixture(Category = "GraphMLWriterTest")]
-    public class GraphMLWriterTest
+    public class GraphMlWriterTest
     {
         [Test]
-        public void testNormal()
+        public void TestNormal()
         {
-            TinkerGraph g = new TinkerGraph();
+            var g = new TinkerGraph();
 
-            using (var stream = typeof(GraphMLReader).Assembly.GetManifestResourceStream(typeof(GraphMLReader),
+            using (var stream = typeof(GraphMlReader).Assembly.GetManifestResourceStream(typeof(GraphMlReader),
                                                                                            "graph-example-1.xml"))
             {
-                GraphMLReader.inputGraph(g, stream);
+                GraphMlReader.InputGraph(g, stream);
             }
 
             using (var bos = new MemoryStream())
             {
-                GraphMLWriter w = new GraphMLWriter(g);
-                w.setNormalize(true);
-                w.outputGraph(bos);
+                var w = new GraphMlWriter(g);
+                w.SetNormalize(true);
+                w.OutputGraph(bos);
                 bos.Position = 0;
-                string outGraphML = new StreamReader(bos).ReadToEnd();
+                string outGraphMl = new StreamReader(bos).ReadToEnd();
 
-                using (var stream = typeof (GraphMLWriterTest).Assembly.GetManifestResourceStream(typeof (GraphMLWriterTest),
+                using (var stream = typeof (GraphMlWriterTest).Assembly.GetManifestResourceStream(typeof (GraphMlWriterTest),
                                                                                            "graph-example-1-normalized.xml"))
                 {
-                    string expected = new StreamReader(stream).ReadToEnd();
-                    Assert.AreEqual(expected.Replace("\n", "").Replace("\r", ""), outGraphML.Replace("\n", "").Replace("\r", ""));
+                    if (stream != null)
+                    {
+                        string expected = new StreamReader(stream).ReadToEnd();
+                        Assert.AreEqual(expected.Replace("\n", "").Replace("\r", ""), outGraphMl.Replace("\n", "").Replace("\r", ""));
+                    }
                 }
             }
         }
 
         [Test]
-        public void testWithEdgeLabel()
+        public void TestWithEdgeLabel()
         {
-            TinkerGraph g = new TinkerGraph();
+            var g = new TinkerGraph();
             
-            using (var stream = typeof(GraphMLReader).Assembly.GetManifestResourceStream(typeof(GraphMLReader),
+            using (var stream = typeof(GraphMlReader).Assembly.GetManifestResourceStream(typeof(GraphMlReader),
                                                                                            "graph-example-1.xml"))
             {
-                GraphMLReader.inputGraph(g, stream);
+                GraphMlReader.InputGraph(g, stream);
             }
 
             using (var bos = new MemoryStream())
             {
-                GraphMLWriter w = new GraphMLWriter(g);
-                w.setEdgeLabelKey("label");
-                w.setNormalize(true);
-                w.outputGraph(bos);
+                var w = new GraphMlWriter(g);
+                w.SetEdgeLabelKey("label");
+                w.SetNormalize(true);
+                w.OutputGraph(bos);
                 bos.Position = 0;
-                string outGraphML = new StreamReader(bos).ReadToEnd();
+                string outGraphMl = new StreamReader(bos).ReadToEnd();
 
-                using (var stream = typeof (GraphMLWriterTest).Assembly.GetManifestResourceStream(typeof (GraphMLWriterTest),
+                using (var stream = typeof (GraphMlWriterTest).Assembly.GetManifestResourceStream(typeof (GraphMlWriterTest),
                                                                                            "graph-example-1-schema-valid.xml"))
                 {
-                    string expected = new StreamReader(stream).ReadToEnd();
-                    Assert.AreEqual(expected.Replace("\n", "").Replace("\r", ""), outGraphML.Replace("\n", "").Replace("\r", ""));
+                    if (stream != null)
+                    {
+                        string expected = new StreamReader(stream).ReadToEnd();
+                        Assert.AreEqual(expected.Replace("\n", "").Replace("\r", ""), outGraphMl.Replace("\n", "").Replace("\r", ""));
+                    }
                 }
             }
         }
@@ -75,24 +75,24 @@ namespace Frontenac.Blueprints.Util.IO.GraphML
         // cause parse errors for GraphMLReader.
         // However, this happens uncommonly enough that is not yet known which characters those are.
         [Test]
-        public void testEncoding()
+        public void TestEncoding()
         {
-            Graph g = new TinkerGraph();
-            Vertex v = g.addVertex(1);
-            v.setProperty("text", "\u00E9");
+            IGraph g = new TinkerGraph();
+            IVertex v = g.AddVertex(1);
+            v.SetProperty("text", "\u00E9");
 
-            Graph g2 = new TinkerGraph();
-            using (MemoryStream bos = new MemoryStream())
+            IGraph g2 = new TinkerGraph();
+            using (var bos = new MemoryStream())
             {
-                GraphMLWriter w = new GraphMLWriter(g);
-                w.outputGraph(bos);
+                var w = new GraphMlWriter(g);
+                w.OutputGraph(bos);
                 bos.Position = 0;
-                GraphMLReader r = new GraphMLReader(g2);
-                r.inputGraph(bos);
+                var r = new GraphMlReader(g2);
+                r.InputGraph(bos);
             }
 
-            Vertex v2 = g2.getVertex(1);
-            Assert.AreEqual("\u00E9", v2.getProperty("text"));
+            IVertex v2 = g2.GetVertex(1);
+            Assert.AreEqual("\u00E9", v2.GetProperty("text"));
         }
     }
 }

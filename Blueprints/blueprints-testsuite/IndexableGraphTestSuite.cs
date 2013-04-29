@@ -2,89 +2,89 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using Frontenac.Blueprints.Impls;
 
 namespace Frontenac.Blueprints
 {
     public abstract class IndexableGraphTestSuite : TestSuite
     {
-        public IndexableGraphTestSuite(GraphTest graphTest)
+        protected IndexableGraphTestSuite(GraphTest graphTest)
             : base("IndexableGraphTestSuite", graphTest)
         {
 
         }
 
         [Test]
-        public void testNoIndicesOnStartup()
+        public void TestNoIndicesOnStartup()
         {
-            IndexableGraph graph = (IndexableGraph)graphTest.generateGraph();
-            if (graph.getFeatures().supportsVertexIndex.Value)
+            var graph = (IIndexableGraph)GraphTest.GenerateGraph();
+            if (graph.GetFeatures().SupportsVertexIndex)
             {
-                Assert.AreEqual(count(graph.getIndices()), 0);
-                graph.createIndex("myIdx", typeof(Vertex));
-                Assert.AreEqual(count(graph.getIndices()), 1);
+                Assert.AreEqual(Count(graph.GetIndices()), 0);
+                graph.CreateIndex("myIdx", typeof(IVertex));
+                Assert.AreEqual(Count(graph.GetIndices()), 1);
 
                 // test to make sure its a semantically correct iterable
-                IEnumerable<Index> idx = graph.getIndices();
-                Assert.AreEqual(count(idx), 1);
-                Assert.AreEqual(count(idx), 1);
-                Assert.AreEqual(count(idx), 1);
+                IEnumerable<IIndex> idx = graph.GetIndices();
+                Assert.AreEqual(Count(idx), 1);
+                Assert.AreEqual(Count(idx), 1);
+                Assert.AreEqual(Count(idx), 1);
             }
-            graph.shutdown();
+            graph.Shutdown();
         }
 
         [Test]
-        public void testKeyIndicesAreNotIndices()
+        public void TestKeyIndicesAreNotIndices()
         {
-            IndexableGraph graph = (IndexableGraph)graphTest.generateGraph();
-            Assert.AreEqual(count(graph.getIndices()), 0);
-            if (!graph.getFeatures().isWrapper.Value && graph.getFeatures().supportsKeyIndices.Value && graph.getFeatures().supportsVertexKeyIndex.Value)
+            var graph = (IIndexableGraph)GraphTest.GenerateGraph();
+            Assert.AreEqual(Count(graph.GetIndices()), 0);
+            if (!graph.GetFeatures().IsWrapper && graph.GetFeatures().SupportsKeyIndices && graph.GetFeatures().SupportsVertexKeyIndex)
             {
-                ((KeyIndexableGraph)graph).createKeyIndex("name", typeof(Vertex));
-                ((KeyIndexableGraph)graph).createKeyIndex("age", typeof(Vertex));
-                Assert.AreEqual(((KeyIndexableGraph)graph).getIndexedKeys(typeof(Vertex)).Count(), 2);
+                ((IKeyIndexableGraph)graph).CreateKeyIndex("name", typeof(IVertex));
+                ((IKeyIndexableGraph)graph).CreateKeyIndex("age", typeof(IVertex));
+                Assert.AreEqual(((IKeyIndexableGraph)graph).GetIndexedKeys(typeof(IVertex)).Count(), 2);
             }
-            if (!graph.getFeatures().isWrapper.Value && graph.getFeatures().supportsKeyIndices.Value && graph.getFeatures().supportsEdgeKeyIndex.Value)
+
+            if (graph.GetFeatures().SupportsEdgeKeyIndex && !graph.GetFeatures().IsWrapper && graph.GetFeatures().SupportsEdgeKeyIndex)
             {
-                ((KeyIndexableGraph)graph).createKeyIndex("weight", typeof(Edge));
-                ((KeyIndexableGraph)graph).createKeyIndex("since", typeof(Edge));
-                Assert.AreEqual(((KeyIndexableGraph)graph).getIndexedKeys(typeof(Edge)).Count(), 2);
+                ((IKeyIndexableGraph)graph).CreateKeyIndex("weight", typeof(IEdge));
+                ((IKeyIndexableGraph)graph).CreateKeyIndex("since", typeof(IEdge));
+                Assert.AreEqual(((IKeyIndexableGraph)graph).GetIndexedKeys(typeof(IEdge)).Count(), 2);
             }
-            Assert.AreEqual(count(graph.getIndices()), 0);
-            graph.shutdown();
+            Assert.AreEqual(Count(graph.GetIndices()), 0);
+            graph.Shutdown();
         }
 
         [Test]
-        public void testCreateDropIndices()
+        public void TestCreateDropIndices()
         {
-            IndexableGraph graph = (IndexableGraph)graphTest.generateGraph();
-            if (graph.getFeatures().supportsVertexIndex.Value && graph.getFeatures().supportsIndices.Value)
+            var graph = (IIndexableGraph)GraphTest.GenerateGraph();
+
+            if (graph.GetFeatures().SupportsVertexIndex && graph.GetFeatures().SupportsIndices)
             {
-                this.stopWatch();
+                StopWatch();
                 for (int i = 0; i < 10; i++)
-                    graph.createIndex(i + "blah", typeof(Vertex));
+                    graph.CreateIndex(i + "blah", typeof(IVertex));
 
-                Assert.AreEqual(count(graph.getIndices()), 10);
+                Assert.AreEqual(Count(graph.GetIndices()), 10);
                 for (int i = 0; i < 10; i++)
-                    graph.dropIndex(i + "blah");
+                    graph.DropIndex(i + "blah");
 
-                Assert.AreEqual(count(graph.getIndices()), 0);
-                printPerformance(graph.ToString(), 10, "indices created and then dropped", this.stopWatch());
+                Assert.AreEqual(Count(graph.GetIndices()), 0);
+                PrintPerformance(graph.ToString(), 10, "indices created and then dropped", StopWatch());
 
-                this.stopWatch();
-                Index index1 = graph.createIndex("index1", typeof(Vertex));
-                Index index2 = graph.createIndex("index2", typeof(Vertex));
-                printPerformance(graph.ToString(), 2, "indices created", this.stopWatch());
-                Assert.AreEqual(count(graph.getIndices()), 2);
-                Assert.AreEqual(graph.getIndex("index1", typeof(Vertex)).getIndexName(), "index1");
-                Assert.AreEqual(graph.getIndex("index2", typeof(Vertex)).getIndexName(), "index2");
-                Assert.AreEqual(graph.getIndex("index1", typeof(Vertex)).getIndexClass(), typeof(Vertex));
-                Assert.AreEqual(graph.getIndex("index2", typeof(Vertex)).getIndexClass(), typeof(Vertex));
+                StopWatch();
+                var index1 = graph.CreateIndex("index1", typeof(IVertex));
+                var index2 = graph.CreateIndex("index2", typeof(IVertex));
+                PrintPerformance(graph.ToString(), 2, "indices created", StopWatch());
+                Assert.AreEqual(Count(graph.GetIndices()), 2);
+                Assert.AreEqual(graph.GetIndex("index1", typeof(IVertex)).GetIndexName(), "index1");
+                Assert.AreEqual(graph.GetIndex("index2", typeof(IVertex)).GetIndexName(), "index2");
+                Assert.AreEqual(graph.GetIndex("index1", typeof(IVertex)).GetIndexClass(), typeof(IVertex));
+                Assert.AreEqual(graph.GetIndex("index2", typeof(IVertex)).GetIndexClass(), typeof(IVertex));
                 try
                 {
-                    Assert.AreEqual(graph.getIndex("index1", typeof(Edge)).getIndexClass(), typeof(Edge));
+                    Assert.AreEqual(graph.GetIndex("index1", typeof(IEdge)).GetIndexClass(), typeof(IEdge));
                     Assert.False(true);
                 }
                 catch (Exception)
@@ -92,109 +92,112 @@ namespace Frontenac.Blueprints
                     Assert.True(true);
                 }
 
-                this.stopWatch();
-                graph.dropIndex(index1.getIndexName());
-                Assert.Null(graph.getIndex("index1", typeof(Vertex)));
-                Assert.AreEqual(count(graph.getIndices()), 1);
-                foreach (Index index in graph.getIndices())
-                    Assert.AreEqual(index.getIndexName(), index2.getIndexName());
+                StopWatch();
+                graph.DropIndex(index1.GetIndexName());
+                Assert.Null(graph.GetIndex("index1", typeof(IVertex)));
+                Assert.AreEqual(Count(graph.GetIndices()), 1);
+                foreach (IIndex index in graph.GetIndices())
+                    Assert.AreEqual(index.GetIndexName(), index2.GetIndexName());
 
-                graph.dropIndex(index2.getIndexName());
-                Assert.Null(graph.getIndex("index1", typeof(Vertex)));
-                Assert.Null(graph.getIndex("index2", typeof(Vertex)));
-                Assert.AreEqual(count(graph.getIndices()), 0);
+                graph.DropIndex(index2.GetIndexName());
+                Assert.Null(graph.GetIndex("index1", typeof(IVertex)));
+                Assert.Null(graph.GetIndex("index2", typeof(IVertex)));
+                Assert.AreEqual(Count(graph.GetIndices()), 0);
 
-                printPerformance(graph.ToString(), 2, "indices dropped and index iterable checked for consistency", this.stopWatch());
+                PrintPerformance(graph.ToString(), 2, "indices dropped and index iterable checked for consistency", StopWatch());
             }
-            graph.shutdown();
+            graph.Shutdown();
         }
 
         [Test]
-        public void testNonExistentIndices()
+        public void TestNonExistentIndices()
         {
-            IndexableGraph graph = (IndexableGraph)graphTest.generateGraph();
-            if (graph.getFeatures().supportsVertexIndex.Value && graph.getFeatures().supportsEdgeIndex.Value && graph.getFeatures().supportsIndices.Value)
+            var graph = (IIndexableGraph)GraphTest.GenerateGraph();
+
+            if (graph.GetFeatures().SupportsVertexIndex && graph.GetFeatures().SupportsEdgeIndex && graph.GetFeatures().SupportsIndices)
             {
-                this.stopWatch();
-                Assert.Null(graph.getIndex("bloop", typeof(Vertex)));
-                Assert.Null(graph.getIndex("bam", typeof(Edge)));
-                Assert.Null(graph.getIndex("blah blah", typeof(Edge)));
-                printPerformance(graph.ToString(), 3, "non-existent indices retrieved", this.stopWatch());
+                StopWatch();
+                Assert.Null(graph.GetIndex("bloop", typeof(IVertex)));
+                Assert.Null(graph.GetIndex("bam", typeof(IEdge)));
+                Assert.Null(graph.GetIndex("blah blah", typeof(IEdge)));
+                PrintPerformance(graph.ToString(), 3, "non-existent indices retrieved", StopWatch());
             }
-            graph.shutdown();
+            graph.Shutdown();
         }
 
         [Test]
-        public void testIndexPersistence()
+        public void TestIndexPersistence()
         {
-            IndexableGraph graph = (IndexableGraph)graphTest.generateGraph();
-            if (graph.getFeatures().isPersistent.Value && graph.getFeatures().supportsVertexIndex.Value && graph.getFeatures().supportsElementProperties() && graph.getFeatures().supportsIndices.Value)
+            var graph = (IIndexableGraph)GraphTest.GenerateGraph();
+
+            if (graph.GetFeatures().IsPersistent && graph.GetFeatures().SupportsVertexIndex && graph.GetFeatures().SupportsElementProperties() && graph.GetFeatures().SupportsIndices)
             {
-                this.stopWatch();
-                graph.createIndex("testIndex", typeof(Vertex));
-                Index manualIndex = graph.getIndex("testIndex", typeof(Vertex));
-                Assert.AreEqual(manualIndex.getIndexName(), "testIndex");
-                Vertex vertex = graph.addVertex(null);
-                vertex.setProperty("name", "marko");
-                object id = vertex.getId();
-                manualIndex.put("key", "value", vertex);
-                Assert.AreEqual(count(manualIndex.get("key", "value")), 1);
-                Assert.AreEqual(manualIndex.get("key", "value").First().getId(), id);
-                printPerformance(graph.ToString(), 1, "index created and 1 vertex added and checked", this.stopWatch());
-                graph.shutdown();
+                StopWatch();
+                graph.CreateIndex("testIndex", typeof(IVertex));
+                IIndex manualIndex = graph.GetIndex("testIndex", typeof(IVertex));
+                Assert.AreEqual(manualIndex.GetIndexName(), "testIndex");
+                IVertex vertex = graph.AddVertex(null);
+                vertex.SetProperty("name", "marko");
+                object id = vertex.GetId();
+                manualIndex.Put("key", "value", vertex);
+                Assert.AreEqual(Count(manualIndex.Get("key", "value")), 1);
+                Assert.AreEqual(manualIndex.Get("key", "value").First().GetId(), id);
+                PrintPerformance(graph.ToString(), 1, "index created and 1 vertex added and checked", StopWatch());
+                graph.Shutdown();
 
-                graph = (IndexableGraph)graphTest.generateGraph();
-                this.stopWatch();
-                manualIndex = graph.getIndex("testIndex", typeof(Vertex));
-                Assert.AreEqual(count(manualIndex.get("key", "value")), 1);
-                Assert.AreEqual(manualIndex.get("key", "value").First().getId(), id);
-                printPerformance(graph.ToString(), 1, "index reloaded and 1 vertex checked", this.stopWatch());
-                graph.shutdown();
+                graph = (IIndexableGraph)GraphTest.GenerateGraph();
+                StopWatch();
+                manualIndex = graph.GetIndex("testIndex", typeof(IVertex));
+                Assert.AreEqual(Count(manualIndex.Get("key", "value")), 1);
+                Assert.AreEqual(manualIndex.Get("key", "value").First().GetId(), id);
+                PrintPerformance(graph.ToString(), 1, "index reloaded and 1 vertex checked", StopWatch());
+                graph.Shutdown();
 
-                graph = (IndexableGraph)graphTest.generateGraph();
-                this.stopWatch();
-                manualIndex = graph.getIndex("testIndex", typeof(Vertex));
-                vertex = (Vertex)manualIndex.get("key", "value").First();
-                Assert.AreEqual(vertex.getId(), id);
-                graph.removeVertex(vertex);
-                Assert.AreEqual(0, count(manualIndex.get("key", "value")));
-                printPerformance(graph.ToString(), 1, "index reloaded and 1 vertex checked and then removed", this.stopWatch());
-                graph.shutdown();
+                graph = (IIndexableGraph)GraphTest.GenerateGraph();
+                StopWatch();
+                manualIndex = graph.GetIndex("testIndex", typeof(IVertex));
+                vertex = (IVertex)manualIndex.Get("key", "value").First();
+                Assert.AreEqual(vertex.GetId(), id);
+                graph.RemoveVertex(vertex);
+                Assert.AreEqual(0, Count(manualIndex.Get("key", "value")));
+                PrintPerformance(graph.ToString(), 1, "index reloaded and 1 vertex checked and then removed", StopWatch());
+                graph.Shutdown();
 
-                graph = (IndexableGraph)graphTest.generateGraph();
-                this.stopWatch();
-                manualIndex = graph.getIndex("testIndex", typeof(Vertex));
-                Assert.AreEqual(count(manualIndex.get("key", "value")), 0);
-                printPerformance(graph.ToString(), 1, "index reloaded and checked to ensure empty", this.stopWatch());
+                graph = (IIndexableGraph)GraphTest.GenerateGraph();
+                StopWatch();
+                manualIndex = graph.GetIndex("testIndex", typeof(IVertex));
+                Assert.AreEqual(Count(manualIndex.Get("key", "value")), 0);
+                PrintPerformance(graph.ToString(), 1, "index reloaded and checked to ensure empty", StopWatch());
             }
-            graph.shutdown();
+            graph.Shutdown();
         }
 
         [Test]
-        public void testExceptionOnIndexOverwrite()
+        public void TestExceptionOnIndexOverwrite()
         {
-            IndexableGraph graph = (IndexableGraph)graphTest.generateGraph();
-            if (graph.getFeatures().supportsIndices.Value && graph.getFeatures().supportsVertexIndex.Value)
+            var graph = (IIndexableGraph)GraphTest.GenerateGraph();
+            
+            if (graph.GetFeatures().SupportsIndices && graph.GetFeatures().SupportsVertexIndex)
             {
                 int loop = 1;
-                if (graph.getFeatures().isPersistent.Value)
+                if (graph.GetFeatures().IsPersistent)
                     loop = 5;
-                graph.shutdown();
-                this.stopWatch();
+                graph.Shutdown();
+                StopWatch();
                 string graphName = "";
                 for (int i = 0; i < loop; i++)
                 {
-                    graph = (IndexableGraph)graphTest.generateGraph();
-                    graph.createIndex(i + "atest", typeof(Vertex));
+                    graph = (IIndexableGraph)GraphTest.GenerateGraph();
+                    graph.CreateIndex(i + "atest", typeof(IVertex));
                     graphName = graph.ToString();
                     int counter = 0;
                     int exceptionCounter = 0;
-                    foreach (Index index in graph.getIndices())
+                    foreach (IIndex index in graph.GetIndices())
                     {
                         try
                         {
                             counter++;
-                            graph.createIndex(index.getIndexName(), index.getIndexClass());
+                            graph.CreateIndex(index.GetIndexName(), index.GetIndexClass());
                         }
                         catch (Exception)
                         {
@@ -203,42 +206,43 @@ namespace Frontenac.Blueprints
                     }
                     Assert.AreEqual(counter, exceptionCounter);
                     Assert.True(counter > 0);
-                    graph.shutdown();
+                    graph.Shutdown();
                 }
-                printPerformance(graphName, loop, "attempt(s) to overwrite existing indices", this.stopWatch());
+                PrintPerformance(graphName, loop, "attempt(s) to overwrite existing indices", StopWatch());
             }
 
-            graph.shutdown();
+            graph.Shutdown();
         }
 
         [Test]
-        public void testIndexDropPersistence()
+        public void TestIndexDropPersistence()
         {
-            IndexableGraph graph = (IndexableGraph)graphTest.generateGraph();
-            if (graph.getFeatures().isPersistent.Value && graph.getFeatures().supportsIndices.Value && graph.getFeatures().supportsVertexIndex.Value)
+            var graph = (IIndexableGraph)GraphTest.GenerateGraph();
+
+            if (graph.GetFeatures().IsPersistent && graph.GetFeatures().SupportsIndices && graph.GetFeatures().SupportsVertexIndex)
             {
-                graph.createIndex("blah", typeof(Vertex));
-                graph.createIndex("bleep", typeof(Vertex));
-                HashSet<string> indexNames = new HashSet<string>();
-                foreach (Index index in graph.getIndices())
+                graph.CreateIndex("blah", typeof(IVertex));
+                graph.CreateIndex("bleep", typeof(IVertex));
+                var indexNames = new HashSet<string>();
+                foreach (IIndex index in graph.GetIndices())
                 {
-                    indexNames.Add(index.getIndexName());
+                    indexNames.Add(index.GetIndexName());
                 }
-                Assert.AreEqual(count(graph.getIndices()), 2);
-                Assert.AreEqual(count(graph.getIndices()), indexNames.Count());
-                this.stopWatch();
+                Assert.AreEqual(Count(graph.GetIndices()), 2);
+                Assert.AreEqual(Count(graph.GetIndices()), indexNames.Count());
+                StopWatch();
                 foreach (string indexName in indexNames)
                 {
-                    graph.dropIndex(indexName);
+                    graph.DropIndex(indexName);
                 }
-                printPerformance(graph.ToString(), indexNames.Count(), "indices dropped", this.stopWatch());
-                Assert.AreEqual(count(graph.getIndices()), 0);
-                graph.shutdown();
+                PrintPerformance(graph.ToString(), indexNames.Count(), "indices dropped", StopWatch());
+                Assert.AreEqual(Count(graph.GetIndices()), 0);
+                graph.Shutdown();
 
-                graph = (IndexableGraph)graphTest.generateGraph();
-                Assert.AreEqual(count(graph.getIndices()), 0);
+                graph = (IIndexableGraph)GraphTest.GenerateGraph();
+                Assert.AreEqual(Count(graph.GetIndices()), 0);
             }
-            graph.shutdown();
+            graph.Shutdown();
         }
     }
 }

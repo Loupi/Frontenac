@@ -1,35 +1,29 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace Frontenac.Blueprints.Util.Wrappers.Event
+﻿namespace Frontenac.Blueprints.Util.Wrappers.Event
 {
     /// <summary>
     /// An edge with a GraphChangedListener attached.  Those listeners are notified when changes occur to
     /// the properties of the edge.
     /// </summary>
-    public class EventEdge : EventElement, Edge
+    public class EventEdge : EventElement, IEdge
     {
-        public EventEdge(Edge baseEdge, EventGraph eventGraph)
+        public EventEdge(IEdge baseEdge, EventGraph eventGraph)
             : base(baseEdge, eventGraph)
         {
         }
 
-        public Vertex getVertex(Direction direction)
+        public IVertex GetVertex(Direction direction)
         {
-            return new EventVertex(this.getBaseEdge().getVertex(direction), eventGraph);
+            return new EventVertex(GetBaseEdge().GetVertex(direction), EventGraph);
         }
 
-        public string getLabel()
+        public string GetLabel()
         {
-            return ((Edge)baseElement).getLabel();
+            return ((IEdge)BaseElement).GetLabel();
         }
 
-        public Edge getBaseEdge()
+        public IEdge GetBaseEdge()
         {
-            return (Edge)baseElement;
+            return (IEdge)BaseElement;
         }
     }
 }

@@ -1,32 +1,26 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace Frontenac.Blueprints.Util.IO.GraphSON
+﻿namespace Frontenac.Blueprints.Util.IO.GraphSON
 {
     /// <summary>
     /// The standard factory used for most graph element creation.  It uses an actual
     /// Graph implementation to construct vertices and edges
     /// </summary>
-    public class GraphElementFactory : ElementFactory
+    public class GraphElementFactory : IElementFactory
     {
-        readonly Graph _graph;
+        readonly IGraph _graph;
 
-        public GraphElementFactory(Graph g)
+        public GraphElementFactory(IGraph g)
         {
             _graph = g;
         }
 
-        public Edge createEdge(object id, Vertex out_, Vertex in_, string label)
+        public IEdge CreateEdge(object id, IVertex out_, IVertex in_, string label)
         {
-            return _graph.addEdge(id, out_, in_, label);
+            return _graph.AddEdge(id, out_, in_, label);
         }
 
-        public Vertex createVertex(object id)
+        public IVertex CreateVertex(object id)
         {
-            return _graph.addVertex(id);
+            return _graph.AddVertex(id);
         }
     }
 }

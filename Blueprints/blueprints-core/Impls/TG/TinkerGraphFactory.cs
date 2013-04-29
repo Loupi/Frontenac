@@ -1,54 +1,48 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace Frontenac.Blueprints.Impls.TG
+﻿namespace Frontenac.Blueprints.Impls.TG
 {
     public static class TinkerGraphFactory
     {
-        public static TinkerGraph createTinkerGraph()
+        public static TinkerGraph CreateTinkerGraph()
         {
-            TinkerGraph graph = new TinkerGraph();
+            var graph = new TinkerGraph();
 
-            Vertex marko = graph.addVertex("1");
-            marko.setProperty("name", "marko");
-            marko.setProperty("age", 29);
+            IVertex marko = graph.AddVertex("1");
+            marko.SetProperty("name", "marko");
+            marko.SetProperty("age", 29);
 
-            Vertex vadas = graph.addVertex("2");
-            vadas.setProperty("name", "vadas");
-            vadas.setProperty("age", 27);
+            IVertex vadas = graph.AddVertex("2");
+            vadas.SetProperty("name", "vadas");
+            vadas.SetProperty("age", 27);
 
-            Vertex lop = graph.addVertex("3");
-            lop.setProperty("name", "lop");
-            lop.setProperty("lang", "java");
+            IVertex lop = graph.AddVertex("3");
+            lop.SetProperty("name", "lop");
+            lop.SetProperty("lang", "java");
 
-            Vertex josh = graph.addVertex("4");
-            josh.setProperty("name", "josh");
-            josh.setProperty("age", 32);
+            IVertex josh = graph.AddVertex("4");
+            josh.SetProperty("name", "josh");
+            josh.SetProperty("age", 32);
 
-            Vertex ripple = graph.addVertex("5");
-            ripple.setProperty("name", "ripple");
-            ripple.setProperty("lang", "java");
+            IVertex ripple = graph.AddVertex("5");
+            ripple.SetProperty("name", "ripple");
+            ripple.SetProperty("lang", "java");
 
-            Vertex peter = graph.addVertex("6");
-            peter.setProperty("name", "peter");
-            peter.setProperty("age", 35);
+            IVertex peter = graph.AddVertex("6");
+            peter.SetProperty("name", "peter");
+            peter.SetProperty("age", 35);
 
-            Vertex loupi = graph.addVertex("7");
-            loupi.setProperty("name", "loupi");
-            loupi.setProperty("age", 33);
-            loupi.setProperty("lang", "c#");
+            IVertex loupi = graph.AddVertex("7");
+            loupi.SetProperty("name", "loupi");
+            loupi.SetProperty("age", 33);
+            loupi.SetProperty("lang", "c#");
 
-            graph.addEdge("7", marko, vadas, "knows").setProperty("weight", 0.5f);
-            graph.addEdge("8", marko, josh, "knows").setProperty("weight", 1.0f);
-            graph.addEdge("9", marko, lop, "created").setProperty("weight", 0.4f);
+            graph.AddEdge("7", marko, vadas, "knows").SetProperty("weight", 0.5f);
+            graph.AddEdge("8", marko, josh, "knows").SetProperty("weight", 1.0f);
+            graph.AddEdge("9", marko, lop, "created").SetProperty("weight", 0.4f);
 
-            graph.addEdge("10", josh, ripple, "created").setProperty("weight", 1.0f);
-            graph.addEdge("11", josh, lop, "created").setProperty("weight", 0.4f);
+            graph.AddEdge("10", josh, ripple, "created").SetProperty("weight", 1.0f);
+            graph.AddEdge("11", josh, lop, "created").SetProperty("weight", 0.4f);
 
-            graph.addEdge("12", peter, lop, "created").setProperty("weight", 0.2f);
+            graph.AddEdge("12", peter, lop, "created").SetProperty("weight", 0.2f);
 
             return graph;
         }

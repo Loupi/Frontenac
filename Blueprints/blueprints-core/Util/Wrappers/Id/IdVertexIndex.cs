@@ -1,17 +1,13 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Frontenac.Blueprints.Util.Wrappers.Id
 {
-    public class IdVertexIndex : Index
+    public class IdVertexIndex : IIndex
     {
-        readonly Index _baseIndex;
+        readonly IIndex _baseIndex;
         readonly IdGraph _idGraph;
 
-        public IdVertexIndex(Index baseIndex, IdGraph idGraph)
+        public IdVertexIndex(IIndex baseIndex, IdGraph idGraph)
         {
             if (null == baseIndex)
                 throw new ArgumentException("null base index");
@@ -20,49 +16,49 @@ namespace Frontenac.Blueprints.Util.Wrappers.Id
             _baseIndex = baseIndex;
         }
 
-        public string getIndexName()
+        public string GetIndexName()
         {
-            return _baseIndex.getIndexName();
+            return _baseIndex.GetIndexName();
         }
 
-        public Type getIndexClass()
+        public Type GetIndexClass()
         {
-            return _baseIndex.getIndexClass();
+            return _baseIndex.GetIndexClass();
         }
 
-        public void put(string key, object value, Element element)
+        public void Put(string key, object value, IElement element)
         {
-            _baseIndex.put(key, value, GetBaseElement(element));
+            _baseIndex.Put(key, value, GetBaseElement(element));
         }
 
-        public CloseableIterable<Element> get(string key, object value)
+        public ICloseableIterable<IElement> Get(string key, object value)
         {
-            return (CloseableIterable<Element>)new IdVertexIterable(_baseIndex.get(key, value), _idGraph);
+            return new IdVertexIterable(_baseIndex.Get(key, value), _idGraph);
         }
 
-        public CloseableIterable<Element> query(string key, object value)
+        public ICloseableIterable<IElement> Query(string key, object value)
         {
-            return (CloseableIterable<Element>)new IdVertexIterable(_baseIndex.query(key, value), _idGraph);
+            return new IdVertexIterable(_baseIndex.Query(key, value), _idGraph);
         }
 
-        public long count(string key, object value)
+        public long Count(string key, object value)
         {
-            return _baseIndex.count(key, value);
+            return _baseIndex.Count(key, value);
         }
 
-        public void remove(string key, object value, Element element)
+        public void Remove(string key, object value, IElement element)
         {
-            _baseIndex.remove(key, value, GetBaseElement(element));
+            _baseIndex.Remove(key, value, GetBaseElement(element));
         }
 
-        Vertex GetBaseElement(Element e)
+        IVertex GetBaseElement(IElement e)
         {
-            return ((IdVertex)e).getBaseVertex();
+            return ((IdVertex)e).GetBaseVertex();
         }
 
         public override string ToString()
         {
-            return StringFactory.indexString(this);
+            return StringFactory.IndexString(this);
         }
     }
 }

@@ -1,66 +1,66 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Frontenac.Blueprints.Util.Wrappers.Partition
 {
-    public class PartitionIndex : Index
+    public class PartitionIndex : IIndex
     {
-        protected Index rawIndex;
-        protected PartitionGraph graph;
+        protected IIndex RawIndex;
+        protected PartitionGraph Graph;
 
-        public PartitionIndex(Index rawIndex, PartitionGraph graph)
+        public PartitionIndex(IIndex rawIndex, PartitionGraph graph)
         {
-            this.rawIndex = rawIndex;
-            this.graph = graph;
+            RawIndex = rawIndex;
+            Graph = graph;
         }
 
-        public string getIndexName()
+        public string GetIndexName()
         {
-            return rawIndex.getIndexName();
+            return RawIndex.GetIndexName();
         }
 
-        public Type getIndexClass()
+        public Type GetIndexClass()
         {
-            return rawIndex.getIndexClass();
+            return RawIndex.GetIndexClass();
         }
 
-        public long count(string key, object value)
+        public long Count(string key, object value)
         {
-            return this.get(key, value).LongCount();
+            return Get(key, value).LongCount();
         }
 
-        public void remove(string key, object value, Element element)
+        public void Remove(string key, object value, IElement element)
         {
-            rawIndex.remove(key, value, (element as PartitionElement).getBaseElement());
+            var partitionElement = element as PartitionElement;
+            if (partitionElement != null)
+                RawIndex.Remove(key, value, partitionElement.GetBaseElement());
         }
 
-        public void put(string key, object value, Element element)
+        public void Put(string key, object value, IElement element)
         {
-            rawIndex.put(key, value, (element as PartitionElement).getBaseElement());
+            var partitionElement = element as PartitionElement;
+            if (partitionElement != null)
+                RawIndex.Put(key, value, partitionElement.GetBaseElement());
         }
 
-        public CloseableIterable<Element> get(string key, object value)
+        public ICloseableIterable<IElement> Get(string key, object value)
         {
-            if (typeof(Vertex).IsAssignableFrom(this.getIndexClass()))
-                return (CloseableIterable<Element>)new PartitionVertexIterable((IEnumerable<Vertex>)rawIndex.get(key, value), graph);
-            else
-                return (CloseableIterable<Element>)new PartitionEdgeIterable((IEnumerable<Edge>)rawIndex.get(key, value), graph);
+            if (typeof(IVertex).IsAssignableFrom(GetIndexClass()))
+                return new PartitionVertexIterable((IEnumerable<IVertex>)RawIndex.Get(key, value), Graph);
+            return new PartitionEdgeIterable((IEnumerable<IEdge>)RawIndex.Get(key, value), Graph);
         }
 
-        public CloseableIterable<Element> query(string key, object value)
+        public ICloseableIterable<IElement> Query(string key, object value)
         {
-            if (typeof(Vertex).IsAssignableFrom(this.getIndexClass()))
-                return (CloseableIterable<Element>)new PartitionVertexIterable((IEnumerable<Vertex>)rawIndex.query(key, value), graph);
-            else
-                return (CloseableIterable<Element>)new PartitionEdgeIterable((IEnumerable<Edge>)rawIndex.query(key, value), graph);
+            if (typeof(IVertex).IsAssignableFrom(GetIndexClass()))
+                return new PartitionVertexIterable((IEnumerable<IVertex>)RawIndex.Query(key, value), Graph);
+            return new PartitionEdgeIterable((IEnumerable<IEdge>)RawIndex.Query(key, value), Graph);
         }
 
         public override string ToString()
         {
-            return StringFactory.indexString(this);
+            return StringFactory.IndexString(this);
         }
     }
 }

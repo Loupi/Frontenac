@@ -1,8 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Frontenac.Blueprints
 {
@@ -10,7 +7,7 @@ namespace Frontenac.Blueprints
     /// A CloseableIterable is required where it is necessary to deallocate resources from an IEnumerable.
     /// </summary>
     /// <typeparam name="T"></typeparam>
-    public interface CloseableIterable<out T> : IDisposable, IEnumerable<T>
+    public interface ICloseableIterable<out T> : IDisposable, IEnumerable<T>
     {
         
     }

@@ -1,89 +1,87 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Frontenac.Blueprints.Util.Wrappers.Id
 {
-    public abstract class IdElement : Element
+    public abstract class IdElement : IElement
     {
-        protected readonly Element baseElement;
-        protected readonly IdGraph idGraph;
-        protected readonly bool propertyBased;
+        protected readonly IElement BaseElement;
+        protected readonly IdGraph IdGraph;
+        protected readonly bool PropertyBased;
 
-        protected IdElement(Element baseElement, IdGraph idGraph, bool propertyBased)
+        protected IdElement(IElement baseElement, IdGraph idGraph, bool propertyBased)
         {
-            this.baseElement = baseElement;
-            this.idGraph = idGraph;
-            this.propertyBased = propertyBased;
+            BaseElement = baseElement;
+            IdGraph = idGraph;
+            PropertyBased = propertyBased;
         }
 
-        public object getProperty(string key)
+        public object GetProperty(string key)
         {
-            if (propertyBased && key == IdGraph.ID)
+            if (PropertyBased && key == IdGraph.Id)
                 return null;
 
-            return baseElement.getProperty(key);
+            return BaseElement.GetProperty(key);
         }
 
-        public IEnumerable<string> getPropertyKeys()
+        public IEnumerable<string> GetPropertyKeys()
         {
-            if (propertyBased)
+            if (PropertyBased)
             {
-                IEnumerable<string> keys = baseElement.getPropertyKeys();
-                HashSet<string> s = new HashSet<string>(keys);
-                s.Remove(IdGraph.ID);
+                IEnumerable<string> keys = BaseElement.GetPropertyKeys();
+                var s = new HashSet<string>(keys);
+                s.Remove(IdGraph.Id);
                 return s;
             }
 
-            return baseElement.getPropertyKeys();
+            return BaseElement.GetPropertyKeys();
         }
 
-        public void setProperty(string key, object value)
+        public void SetProperty(string key, object value)
         {
-            if (propertyBased && key == IdGraph.ID)
-                throw new ArgumentException(string.Concat("Unable to set value for reserved property ", IdGraph.ID));
+            if (PropertyBased && key == IdGraph.Id)
+                throw new ArgumentException(string.Concat("Unable to set value for reserved property ", IdGraph.Id));
 
-            baseElement.setProperty(key, value);
+            BaseElement.SetProperty(key, value);
         }
 
-        public object removeProperty(string key)
+        public object RemoveProperty(string key)
         {
-            if (propertyBased && key == IdGraph.ID)
-                throw new ArgumentException(string.Concat("Unable to remove value for reserved property ", IdGraph.ID));
+            if (PropertyBased && key == IdGraph.Id)
+                throw new ArgumentException(string.Concat("Unable to remove value for reserved property ", IdGraph.Id));
 
-            return baseElement.removeProperty(key);
+            return BaseElement.RemoveProperty(key);
         }
 
-        public object getId()
+        public object GetId()
         {
-            return propertyBased
-                ? baseElement.getProperty(IdGraph.ID)
-                : baseElement.getId();
+            return PropertyBased
+                ? BaseElement.GetProperty(IdGraph.Id)
+                : BaseElement.GetId();
         }
 
         public override int GetHashCode()
         {
-            return baseElement.GetHashCode();
+            return BaseElement.GetHashCode();
         }
 
         public override bool Equals(object obj)
         {
-            return ElementHelper.areEqual(this, obj);
+            return ElementHelper.AreEqual(this, obj);
         }
 
-        public void remove()
+        public void Remove()
         {
-            if (this is Vertex)
-                idGraph.removeVertex((Vertex)this);
+            var vertex = this as IVertex;
+            if (vertex != null)
+                IdGraph.RemoveVertex(vertex);
             else
-                idGraph.removeEdge((Edge)this);
+                IdGraph.RemoveEdge((IEdge)this);
         }
 
         public override string ToString()
         {
-            return baseElement.ToString();
+            return BaseElement.ToString();
         }
     }
 }

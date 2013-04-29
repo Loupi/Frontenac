@@ -3,7 +3,6 @@ using NUnit.Framework;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -17,496 +16,504 @@ namespace Frontenac.Blueprints
         }
 
         [Test]
-        public void testRepeatedTransactionStopException()
+        public void TestRepeatedTransactionStopException()
         {
-            TransactionalGraph graph = (TransactionalGraph)graphTest.generateGraph();
-            graph.commit();
-            graph.rollback();
-            graph.commit();
-            graph.shutdown();
+            var graph = (ITransactionalGraph)GraphTest.GenerateGraph();
+            graph.Commit();
+            graph.Rollback();
+            graph.Commit();
+            graph.Shutdown();
         }
 
         [Test]
-        public void testAutoStartTransaction()
+        public void TestAutoStartTransaction()
         {
-            TransactionalGraph graph = (TransactionalGraph)graphTest.generateGraph();
-            Vertex v1 = graph.addVertex(null);
-            vertexCount(graph, 1);
-            Assert.AreEqual(v1.getId(), graph.getVertex(v1.getId()).getId());
-            graph.commit();
-            vertexCount(graph, 1);
-            Assert.AreEqual(v1.getId(), graph.getVertex(v1.getId()).getId());
-            graph.shutdown();
+            var graph = (ITransactionalGraph)GraphTest.GenerateGraph();
+            IVertex v1 = graph.AddVertex(null);
+            VertexCount(graph, 1);
+            Assert.AreEqual(v1.GetId(), graph.GetVertex(v1.GetId()).GetId());
+            graph.Commit();
+            VertexCount(graph, 1);
+            Assert.AreEqual(v1.GetId(), graph.GetVertex(v1.GetId()).GetId());
+            graph.Shutdown();
         }
 
         [Test]
-        public void testTransactionsForVertices()
+        public void TestTransactionsForVertices()
         {
-            TransactionalGraph graph = (TransactionalGraph)graphTest.generateGraph();
-            List<Vertex> vin = new List<Vertex>();
-            List<Vertex> vout = new List<Vertex>();
-            vin.Add(graph.addVertex(null));
-            graph.commit();
-            vertexCount(graph, 1);
-            containsVertices(graph, vin);
+            var graph = (ITransactionalGraph)GraphTest.GenerateGraph();
+            var vin = new List<IVertex>();
+            var vout = new List<IVertex>();
+            vin.Add(graph.AddVertex(null));
+            graph.Commit();
+            VertexCount(graph, 1);
+            ContainsVertices(graph, vin);
 
-            this.stopWatch();
-            vout.Add(graph.addVertex(null));
-            vertexCount(graph, 2);
-            containsVertices(graph, vin);
-            containsVertices(graph, vout);
-            graph.rollback();
+            StopWatch();
+            vout.Add(graph.AddVertex(null));
+            VertexCount(graph, 2);
+            ContainsVertices(graph, vin);
+            ContainsVertices(graph, vout);
+            graph.Rollback();
 
-            containsVertices(graph, vin);
-            vertexCount(graph, 1);
-            printPerformance(graph.ToString(), 1, "vertex not added in failed transaction", this.stopWatch());
+            ContainsVertices(graph, vin);
+            VertexCount(graph, 1);
+            PrintPerformance(graph.ToString(), 1, "vertex not added in failed transaction", StopWatch());
 
-            this.stopWatch();
-            vin.Add(graph.addVertex(null));
-            vertexCount(graph, 2);
-            containsVertices(graph, vin);
-            graph.commit();
-            printPerformance(graph.ToString(), 1, "vertex added in successful transaction", this.stopWatch());
-            vertexCount(graph, 2);
-            containsVertices(graph, vin);
+            StopWatch();
+            vin.Add(graph.AddVertex(null));
+            VertexCount(graph, 2);
+            ContainsVertices(graph, vin);
+            graph.Commit();
+            PrintPerformance(graph.ToString(), 1, "vertex added in successful transaction", StopWatch());
+            VertexCount(graph, 2);
+            ContainsVertices(graph, vin);
 
-            graph.shutdown();
+            graph.Shutdown();
         }
 
         [Test]
-        public void testBasicVertexEdgeTransactions()
+        public void TestBasicVertexEdgeTransactions()
         {
-            TransactionalGraph graph = (TransactionalGraph)graphTest.generateGraph();
-            Vertex v = graph.addVertex(null);
-            graph.addEdge(null, v, v, convertId(graph, "self"));
-            Assert.AreEqual(count(v.getEdges(Direction.IN)), 1);
-            Assert.AreEqual(count(v.getEdges(Direction.OUT)), 1);
-            Assert.AreEqual(v.getEdges(Direction.IN).First(), v.getEdges(Direction.OUT).First());
-            graph.commit();
-            v = graph.getVertex(v.getId());
-            Assert.AreEqual(count(v.getEdges(Direction.IN)), 1);
-            Assert.AreEqual(count(v.getEdges(Direction.OUT)), 1);
-            Assert.AreEqual(v.getEdges(Direction.IN).First(), v.getEdges(Direction.OUT).First());
-            graph.commit();
-            v = graph.getVertex(v.getId());
-            Assert.AreEqual(count(v.getVertices(Direction.IN)), 1);
-            Assert.AreEqual(count(v.getVertices(Direction.OUT)), 1);
-            Assert.AreEqual(v.getVertices(Direction.IN).First(), v.getVertices(Direction.OUT).First());
-            graph.commit();
-            graph.shutdown();
+            var graph = (ITransactionalGraph)GraphTest.GenerateGraph();
+            IVertex v = graph.AddVertex(null);
+            graph.AddEdge(null, v, v, ConvertId(graph, "self"));
+            Assert.AreEqual(Count(v.GetEdges(Direction.In)), 1);
+            Assert.AreEqual(Count(v.GetEdges(Direction.Out)), 1);
+            Assert.AreEqual(v.GetEdges(Direction.In).First(), v.GetEdges(Direction.Out).First());
+            graph.Commit();
+            v = graph.GetVertex(v.GetId());
+            Assert.AreEqual(Count(v.GetEdges(Direction.In)), 1);
+            Assert.AreEqual(Count(v.GetEdges(Direction.Out)), 1);
+            Assert.AreEqual(v.GetEdges(Direction.In).First(), v.GetEdges(Direction.Out).First());
+            graph.Commit();
+            v = graph.GetVertex(v.GetId());
+            Assert.AreEqual(Count(v.GetVertices(Direction.In)), 1);
+            Assert.AreEqual(Count(v.GetVertices(Direction.Out)), 1);
+            Assert.AreEqual(v.GetVertices(Direction.In).First(), v.GetVertices(Direction.Out).First());
+            graph.Commit();
+            graph.Shutdown();
         }
 
         [Test]
-        public void testBruteVertexTransactions()
+        public void TestBruteVertexTransactions()
         {
-            TransactionalGraph graph = (TransactionalGraph)graphTest.generateGraph();
-            List<Vertex> vin = new List<Vertex>(), vout = new List<Vertex>();
-            this.stopWatch();
+            var graph = (ITransactionalGraph)GraphTest.GenerateGraph();
+            List<IVertex> vin = new List<IVertex>(), vout = new List<IVertex>();
+            StopWatch();
             for (int i = 0; i < 100; i++)
             {
-                vin.Add(graph.addVertex(null));
-                graph.commit();
+                vin.Add(graph.AddVertex(null));
+                graph.Commit();
             }
-            printPerformance(graph.ToString(), 100, "vertices added in 100 successful transactions", this.stopWatch());
-            vertexCount(graph, 100);
-            containsVertices(graph, vin);
+            PrintPerformance(graph.ToString(), 100, "vertices added in 100 successful transactions", StopWatch());
+            VertexCount(graph, 100);
+            ContainsVertices(graph, vin);
 
-            this.stopWatch();
+            StopWatch();
             for (int i = 0; i < 100; i++)
             {
-                vout.Add(graph.addVertex(null));
-                graph.rollback();
+                vout.Add(graph.AddVertex(null));
+                graph.Rollback();
             }
-            printPerformance(graph.ToString(), 100, "vertices not added in 100 failed transactions", this.stopWatch());
+            PrintPerformance(graph.ToString(), 100, "vertices not added in 100 failed transactions", StopWatch());
 
-            vertexCount(graph, 100);
-            containsVertices(graph, vin);
-            graph.rollback();
-            vertexCount(graph, 100);
-            containsVertices(graph, vin);
+            VertexCount(graph, 100);
+            ContainsVertices(graph, vin);
+            graph.Rollback();
+            VertexCount(graph, 100);
+            ContainsVertices(graph, vin);
 
 
-            this.stopWatch();
+            StopWatch();
             for (int i = 0; i < 100; i++)
             {
-                vin.Add(graph.addVertex(null));
+                vin.Add(graph.AddVertex(null));
             }
-            vertexCount(graph, 200);
-            containsVertices(graph, vin);
-            graph.commit();
-            printPerformance(graph.ToString(), 100, "vertices added in 1 successful transactions", this.stopWatch());
-            vertexCount(graph, 200);
-            containsVertices(graph, vin);
+            VertexCount(graph, 200);
+            ContainsVertices(graph, vin);
+            graph.Commit();
+            PrintPerformance(graph.ToString(), 100, "vertices added in 1 successful transactions", StopWatch());
+            VertexCount(graph, 200);
+            ContainsVertices(graph, vin);
 
-            this.stopWatch();
+            StopWatch();
             for (int i = 0; i < 100; i++)
             {
-                vout.Add(graph.addVertex(null));
+                vout.Add(graph.AddVertex(null));
             }
-            vertexCount(graph, 300);
-            containsVertices(graph, vin);
-            containsVertices(graph, vout.GetRange(100, 100));
-            graph.rollback();
-            printPerformance(graph.ToString(), 100, "vertices not added in 1 failed transactions", this.stopWatch());
-            vertexCount(graph, 200);
-            containsVertices(graph, vin);
-            graph.shutdown();
+            VertexCount(graph, 300);
+            ContainsVertices(graph, vin);
+            ContainsVertices(graph, vout.GetRange(100, 100));
+            graph.Rollback();
+            PrintPerformance(graph.ToString(), 100, "vertices not added in 1 failed transactions", StopWatch());
+            VertexCount(graph, 200);
+            ContainsVertices(graph, vin);
+            graph.Shutdown();
         }
 
         [Test]
-        public void testTransactionsForEdges()
+        public void TestTransactionsForEdges()
         {
-            TransactionalGraph graph = (TransactionalGraph)graphTest.generateGraph();
+            var graph = (ITransactionalGraph)GraphTest.GenerateGraph();
 
-            Vertex v = graph.addVertex(null);
-            Vertex u = graph.addVertex(null);
-            graph.commit();
+            IVertex v = graph.AddVertex(null);
+            IVertex u = graph.AddVertex(null);
+            graph.Commit();
 
-            this.stopWatch();
-            Edge e = graph.addEdge(null, graph.getVertex(v.getId()), graph.getVertex(u.getId()), convertId(graph, "test"));
+            StopWatch();
+            IEdge e = graph.AddEdge(null, graph.GetVertex(v.GetId()), graph.GetVertex(u.GetId()), ConvertId(graph, "test"));
 
 
-            Assert.AreEqual(graph.getVertex(v.getId()), v);
-            Assert.AreEqual(graph.getVertex(u.getId()), u);
-            if (graph.getFeatures().supportsEdgeRetrieval.Value)
-                Assert.AreEqual(graph.getEdge(e.getId()), e);
+            Assert.AreEqual(graph.GetVertex(v.GetId()), v);
+            Assert.AreEqual(graph.GetVertex(u.GetId()), u);
 
-            vertexCount(graph, 2);
-            edgeCount(graph, 1);
+            if (graph.GetFeatures().SupportsEdgeRetrieval)
+                Assert.AreEqual(graph.GetEdge(e.GetId()), e);
 
-            graph.rollback();
-            printPerformance(graph.ToString(), 1, "edge not added in failed transaction (w/ iteration)", this.stopWatch());
+            VertexCount(graph, 2);
+            EdgeCount(graph, 1);
 
-            Assert.AreEqual(graph.getVertex(v.getId()), v);
-            Assert.AreEqual(graph.getVertex(u.getId()), u);
-            if (graph.getFeatures().supportsEdgeRetrieval.Value)
-                Assert.Null(graph.getEdge(e.getId()));
+            graph.Rollback();
+            PrintPerformance(graph.ToString(), 1, "edge not added in failed transaction (w/ iteration)", StopWatch());
 
-            if (graph.getFeatures().supportsVertexIteration.Value)
-                Assert.AreEqual(count(graph.getVertices()), 2);
-            if (graph.getFeatures().supportsEdgeIteration.Value)
-                Assert.AreEqual(count(graph.getEdges()), 0);
+            Assert.AreEqual(graph.GetVertex(v.GetId()), v);
+            Assert.AreEqual(graph.GetVertex(u.GetId()), u);
 
-            this.stopWatch();
+            if (graph.GetFeatures().SupportsEdgeRetrieval)
+                Assert.Null(graph.GetEdge(e.GetId()));
 
-            e = graph.addEdge(null, graph.getVertex(u.getId()), graph.getVertex(v.getId()), convertId(graph, "test"));
+            if (graph.GetFeatures().SupportsVertexIteration)
+                Assert.AreEqual(Count(graph.GetVertices()), 2);
 
-            Assert.AreEqual(graph.getVertex(v.getId()), v);
-            Assert.AreEqual(graph.getVertex(u.getId()), u);
-            if (graph.getFeatures().supportsEdgeRetrieval.Value)
-                Assert.AreEqual(graph.getEdge(e.getId()), e);
+            if (graph.GetFeatures().SupportsEdgeIteration)
+                Assert.AreEqual(Count(graph.GetEdges()), 0);
 
-            if (graph.getFeatures().supportsVertexIteration.Value)
-                Assert.AreEqual(count(graph.getVertices()), 2);
-            if (graph.getFeatures().supportsEdgeIteration.Value)
-                Assert.AreEqual(count(graph.getEdges()), 1);
-            Assert.AreEqual(e, getOnlyElement(graph.getVertex(u.getId()).getEdges(Direction.OUT)));
-            graph.commit();
-            printPerformance(graph.ToString(), 1, "edge added in successful transaction (w/ iteration)", this.stopWatch());
+            StopWatch();
 
-            if (graph.getFeatures().supportsVertexIteration.Value)
-                Assert.AreEqual(count(graph.getVertices()), 2);
-            if (graph.getFeatures().supportsEdgeIteration.Value)
-                Assert.AreEqual(count(graph.getEdges()), 1);
+            e = graph.AddEdge(null, graph.GetVertex(u.GetId()), graph.GetVertex(v.GetId()), ConvertId(graph, "test"));
 
-            Assert.AreEqual(graph.getVertex(v.getId()), v);
-            Assert.AreEqual(graph.getVertex(u.getId()), u);
-            if (graph.getFeatures().supportsEdgeRetrieval.Value)
-                Assert.AreEqual(graph.getEdge(e.getId()), e);
-            Assert.AreEqual(e, getOnlyElement(graph.getVertex(u.getId()).getEdges(Direction.OUT)));
+            Assert.AreEqual(graph.GetVertex(v.GetId()), v);
+            Assert.AreEqual(graph.GetVertex(u.GetId()), u);
 
-            graph.shutdown();
+            if (graph.GetFeatures().SupportsEdgeRetrieval)
+                Assert.AreEqual(graph.GetEdge(e.GetId()), e);
+
+            if (graph.GetFeatures().SupportsVertexIteration)
+                Assert.AreEqual(Count(graph.GetVertices()), 2);
+
+            if (graph.GetFeatures().SupportsEdgeIteration)
+                Assert.AreEqual(Count(graph.GetEdges()), 1);
+
+            Assert.AreEqual(e, GetOnlyElement(graph.GetVertex(u.GetId()).GetEdges(Direction.Out)));
+            graph.Commit();
+            PrintPerformance(graph.ToString(), 1, "edge added in successful transaction (w/ iteration)", StopWatch());
+
+            if (graph.GetFeatures().SupportsVertexIteration)
+                Assert.AreEqual(Count(graph.GetVertices()), 2);
+
+            if (graph.GetFeatures().SupportsEdgeIteration)
+                Assert.AreEqual(Count(graph.GetEdges()), 1);
+
+            Assert.AreEqual(graph.GetVertex(v.GetId()), v);
+            Assert.AreEqual(graph.GetVertex(u.GetId()), u);
+            if (graph.GetFeatures().SupportsEdgeRetrieval)
+                Assert.AreEqual(graph.GetEdge(e.GetId()), e);
+            Assert.AreEqual(e, GetOnlyElement(graph.GetVertex(u.GetId()).GetEdges(Direction.Out)));
+
+            graph.Shutdown();
         }
 
         [Test]
-        public void testBruteEdgeTransactions()
+        public void TestBruteEdgeTransactions()
         {
-            TransactionalGraph graph = (TransactionalGraph)graphTest.generateGraph();
-            this.stopWatch();
+            var graph = (ITransactionalGraph)GraphTest.GenerateGraph();
+            StopWatch();
             for (int i = 0; i < 100; i++)
             {
-                Vertex v = graph.addVertex(null);
-                Vertex u = graph.addVertex(null);
-                graph.addEdge(null, v, u, convertId(graph, "test"));
-                graph.commit();
+                IVertex v = graph.AddVertex(null);
+                IVertex u = graph.AddVertex(null);
+                graph.AddEdge(null, v, u, ConvertId(graph, "test"));
+                graph.Commit();
             }
-            printPerformance(graph.ToString(), 100, "edges added in 100 successful transactions (2 vertices added for each edge)", this.stopWatch());
-            vertexCount(graph, 200);
-            edgeCount(graph, 100);
+            PrintPerformance(graph.ToString(), 100, "edges added in 100 successful transactions (2 vertices added for each edge)", StopWatch());
+            VertexCount(graph, 200);
+            EdgeCount(graph, 100);
 
-            this.stopWatch();
+            StopWatch();
             for (int i = 0; i < 100; i++)
             {
-                Vertex v = graph.addVertex(null);
-                Vertex u = graph.addVertex(null);
-                graph.addEdge(null, v, u, convertId(graph, "test"));
-                graph.rollback();
+                IVertex v = graph.AddVertex(null);
+                IVertex u = graph.AddVertex(null);
+                graph.AddEdge(null, v, u, ConvertId(graph, "test"));
+                graph.Rollback();
             }
-            printPerformance(graph.ToString(), 100, "edges not added in 100 failed transactions (2 vertices added for each edge)", this.stopWatch());
-            vertexCount(graph, 200);
-            edgeCount(graph, 100);
+            PrintPerformance(graph.ToString(), 100, "edges not added in 100 failed transactions (2 vertices added for each edge)", StopWatch());
+            VertexCount(graph, 200);
+            EdgeCount(graph, 100);
 
-            this.stopWatch();
+            StopWatch();
             for (int i = 0; i < 100; i++)
             {
-                Vertex v = graph.addVertex(null);
-                Vertex u = graph.addVertex(null);
-                graph.addEdge(null, v, u, convertId(graph, "test"));
+                IVertex v = graph.AddVertex(null);
+                IVertex u = graph.AddVertex(null);
+                graph.AddEdge(null, v, u, ConvertId(graph, "test"));
             }
-            vertexCount(graph, 400);
-            edgeCount(graph, 200);
-            graph.commit();
-            printPerformance(graph.ToString(), 100, "edges added in 1 successful transactions (2 vertices added for each edge)", this.stopWatch());
-            vertexCount(graph, 400);
-            edgeCount(graph, 200);
+            VertexCount(graph, 400);
+            EdgeCount(graph, 200);
+            graph.Commit();
+            PrintPerformance(graph.ToString(), 100, "edges added in 1 successful transactions (2 vertices added for each edge)", StopWatch());
+            VertexCount(graph, 400);
+            EdgeCount(graph, 200);
 
-            this.stopWatch();
+            StopWatch();
             for (int i = 0; i < 100; i++)
             {
-                Vertex v = graph.addVertex(null);
-                Vertex u = graph.addVertex(null);
-                graph.addEdge(null, v, u, convertId(graph, "test"));
+                IVertex v = graph.AddVertex(null);
+                IVertex u = graph.AddVertex(null);
+                graph.AddEdge(null, v, u, ConvertId(graph, "test"));
             }
-            vertexCount(graph, 600);
-            edgeCount(graph, 300);
+            VertexCount(graph, 600);
+            EdgeCount(graph, 300);
 
-            graph.rollback();
-            printPerformance(graph.ToString(), 100, "edges not added in 1 failed transactions (2 vertices added for each edge)", this.stopWatch());
-            vertexCount(graph, 400);
-            edgeCount(graph, 200);
+            graph.Rollback();
+            PrintPerformance(graph.ToString(), 100, "edges not added in 1 failed transactions (2 vertices added for each edge)", StopWatch());
+            VertexCount(graph, 400);
+            EdgeCount(graph, 200);
 
 
-            graph.shutdown();
+            graph.Shutdown();
         }
 
         [Test]
-        public void testPropertyTransactions()
+        public void TestPropertyTransactions()
         {
-            TransactionalGraph graph = (TransactionalGraph)graphTest.generateGraph();
-            if (graph.getFeatures().supportsElementProperties())
+            var graph = (ITransactionalGraph)GraphTest.GenerateGraph();
+            if (graph.GetFeatures().SupportsElementProperties())
             {
-                this.stopWatch();
-                Vertex v = graph.addVertex(null);
-                Object id = v.getId();
-                v.setProperty("name", "marko");
-                graph.commit();
-                printPerformance(graph.ToString(), 1, "vertex added with string property in a successful transaction", this.stopWatch());
+                StopWatch();
+                IVertex v = graph.AddVertex(null);
+                Object id = v.GetId();
+                v.SetProperty("name", "marko");
+                graph.Commit();
+                PrintPerformance(graph.ToString(), 1, "vertex added with string property in a successful transaction", StopWatch());
 
 
-                this.stopWatch();
-                v = graph.getVertex(id);
+                StopWatch();
+                v = graph.GetVertex(id);
                 Assert.NotNull(v);
-                Assert.AreEqual(v.getProperty("name"), "marko");
-                v.setProperty("age", 30);
-                Assert.AreEqual(v.getProperty("age"), 30);
-                graph.rollback();
-                printPerformance(graph.ToString(), 1, "integer property not added in a failed transaction", this.stopWatch());
+                Assert.AreEqual(v.GetProperty("name"), "marko");
+                v.SetProperty("age", 30);
+                Assert.AreEqual(v.GetProperty("age"), 30);
+                graph.Rollback();
+                PrintPerformance(graph.ToString(), 1, "integer property not added in a failed transaction", StopWatch());
 
-                this.stopWatch();
-                v = graph.getVertex(id);
+                StopWatch();
+                v = graph.GetVertex(id);
                 Assert.NotNull(v);
-                Assert.AreEqual(v.getProperty("name"), "marko");
-                Assert.Null(v.getProperty("age"));
-                printPerformance(graph.ToString(), 2, "vertex properties checked in a successful transaction", this.stopWatch());
+                Assert.AreEqual(v.GetProperty("name"), "marko");
+                Assert.Null(v.GetProperty("age"));
+                PrintPerformance(graph.ToString(), 2, "vertex properties checked in a successful transaction", StopWatch());
 
-                Edge edge = graph.addEdge(null, v, graph.addVertex(null), "test");
-                edgeCount(graph, 1);
-                graph.commit();
-                edgeCount(graph, 1);
-                edge = getOnlyElement(graph.getVertex(v.getId()).getEdges(Direction.OUT));
+                EdgeCount(graph, 1);
+                graph.Commit();
+                EdgeCount(graph, 1);
+                IEdge edge = GetOnlyElement(graph.GetVertex(v.GetId()).GetEdges(Direction.Out));
                 Assert.NotNull(edge);
 
-                this.stopWatch();
-                edge.setProperty("transaction-1", "success");
-                Assert.AreEqual(edge.getProperty("transaction-1"), "success");
-                graph.commit();
-                printPerformance(graph.ToString(), 1, "edge property added and checked in a successful transaction", this.stopWatch());
-                edge = getOnlyElement(graph.getVertex(v.getId()).getEdges(Direction.OUT));
-                Assert.AreEqual(edge.getProperty("transaction-1"), "success");
+                StopWatch();
+                edge.SetProperty("transaction-1", "success");
+                Assert.AreEqual(edge.GetProperty("transaction-1"), "success");
+                graph.Commit();
+                PrintPerformance(graph.ToString(), 1, "edge property added and checked in a successful transaction", StopWatch());
+                edge = GetOnlyElement(graph.GetVertex(v.GetId()).GetEdges(Direction.Out));
+                Assert.AreEqual(edge.GetProperty("transaction-1"), "success");
 
-                this.stopWatch();
-                edge.setProperty("transaction-2", "failure");
-                Assert.AreEqual(edge.getProperty("transaction-1"), "success");
-                Assert.AreEqual(edge.getProperty("transaction-2"), "failure");
-                graph.rollback();
-                printPerformance(graph.ToString(), 1, "edge property added and checked in a failed transaction", this.stopWatch());
-                edge = getOnlyElement(graph.getVertex(v.getId()).getEdges(Direction.OUT));
-                Assert.AreEqual(edge.getProperty("transaction-1"), "success");
-                Assert.Null(edge.getProperty("transaction-2"));
+                StopWatch();
+                edge.SetProperty("transaction-2", "failure");
+                Assert.AreEqual(edge.GetProperty("transaction-1"), "success");
+                Assert.AreEqual(edge.GetProperty("transaction-2"), "failure");
+                graph.Rollback();
+                PrintPerformance(graph.ToString(), 1, "edge property added and checked in a failed transaction", StopWatch());
+                edge = GetOnlyElement(graph.GetVertex(v.GetId()).GetEdges(Direction.Out));
+                Assert.AreEqual(edge.GetProperty("transaction-1"), "success");
+                Assert.Null(edge.GetProperty("transaction-2"));
             }
-            graph.shutdown();
+            graph.Shutdown();
         }
 
         [Test]
-        public void testIndexTransactions()
+        public void TestIndexTransactions()
         {
-            TransactionalGraph graph = (TransactionalGraph)graphTest.generateGraph();
-            if (graph.getFeatures().supportsVertexIndex.Value)
+            var graph = (ITransactionalGraph)GraphTest.GenerateGraph();
+
+            if (graph.GetFeatures().SupportsVertexIndex)
             {
-                this.stopWatch();
-                Index index = ((IndexableGraph)graph).createIndex("txIdx", typeof(Vertex));
-                Vertex v = graph.addVertex(null);
-                Object id = v.getId();
-                v.setProperty("name", "marko");
-                index.put("name", "marko", v);
-                vertexCount(graph, 1);
-                v = (Vertex)getOnlyElement(((IndexableGraph)graph).getIndex("txIdx", typeof(Vertex)).get("name", "marko"));
-                Assert.AreEqual(v.getId(), id);
-                Assert.AreEqual(v.getProperty("name"), "marko");
-                graph.commit();
-                printPerformance(graph.ToString(), 1, "vertex added and retrieved from index in a successful transaction", this.stopWatch());
+                StopWatch();
+                IIndex index = ((IIndexableGraph)graph).CreateIndex("txIdx", typeof(IVertex));
+                IVertex v = graph.AddVertex(null);
+                Object id = v.GetId();
+                v.SetProperty("name", "marko");
+                index.Put("name", "marko", v);
+                VertexCount(graph, 1);
+                v = (IVertex)GetOnlyElement(((IIndexableGraph)graph).GetIndex("txIdx", typeof(IVertex)).Get("name", "marko"));
+                Assert.AreEqual(v.GetId(), id);
+                Assert.AreEqual(v.GetProperty("name"), "marko");
+                graph.Commit();
+                PrintPerformance(graph.ToString(), 1, "vertex added and retrieved from index in a successful transaction", StopWatch());
 
 
-                this.stopWatch();
-                vertexCount(graph, 1);
-                v = (Vertex)getOnlyElement(((IndexableGraph)graph).getIndex("txIdx", typeof(Vertex)).get("name", "marko"));
-                Assert.AreEqual(v.getId(), id);
-                Assert.AreEqual(v.getProperty("name"), "marko");
-                printPerformance(graph.ToString(), 1, "vertex retrieved from index outside successful transaction", this.stopWatch());
+                StopWatch();
+                VertexCount(graph, 1);
+                v = (IVertex)GetOnlyElement(((IIndexableGraph)graph).GetIndex("txIdx", typeof(IVertex)).Get("name", "marko"));
+                Assert.AreEqual(v.GetId(), id);
+                Assert.AreEqual(v.GetProperty("name"), "marko");
+                PrintPerformance(graph.ToString(), 1, "vertex retrieved from index outside successful transaction", StopWatch());
 
 
-                this.stopWatch();
-                v = graph.addVertex(null);
-                v.setProperty("name", "pavel");
-                index.put("name", "pavel", v);
-                vertexCount(graph, 2);
-                v = (Vertex)getOnlyElement(((IndexableGraph)graph).getIndex("txIdx", typeof(Vertex)).get("name", "marko"));
-                Assert.AreEqual(v.getProperty("name"), "marko");
-                v = (Vertex)getOnlyElement(((IndexableGraph)graph).getIndex("txIdx", typeof(Vertex)).get("name", "pavel"));
-                Assert.AreEqual(v.getProperty("name"), "pavel");
-                graph.rollback();
-                printPerformance(graph.ToString(), 1, "vertex not added in a failed transaction", this.stopWatch());
+                StopWatch();
+                v = graph.AddVertex(null);
+                v.SetProperty("name", "pavel");
+                index.Put("name", "pavel", v);
+                VertexCount(graph, 2);
+                v = (IVertex)GetOnlyElement(((IIndexableGraph)graph).GetIndex("txIdx", typeof(IVertex)).Get("name", "marko"));
+                Assert.AreEqual(v.GetProperty("name"), "marko");
+                v = (IVertex)GetOnlyElement(((IIndexableGraph)graph).GetIndex("txIdx", typeof(IVertex)).Get("name", "pavel"));
+                Assert.AreEqual(v.GetProperty("name"), "pavel");
+                graph.Rollback();
+                PrintPerformance(graph.ToString(), 1, "vertex not added in a failed transaction", StopWatch());
 
-                this.stopWatch();
-                vertexCount(graph, 1);
-                Assert.AreEqual(count(((IndexableGraph)graph).getIndex("txIdx", typeof(Vertex)).get("name", "pavel")), 0);
-                printPerformance(graph.ToString(), 1, "vertex not retrieved in a successful transaction", this.stopWatch());
-                v = (Vertex)getOnlyElement(((IndexableGraph)graph).getIndex("txIdx", typeof(Vertex)).get("name", "marko"));
-                Assert.AreEqual(v.getProperty("name"), "marko");
+                StopWatch();
+                VertexCount(graph, 1);
+                Assert.AreEqual(Count(((IIndexableGraph)graph).GetIndex("txIdx", typeof(IVertex)).Get("name", "pavel")), 0);
+                PrintPerformance(graph.ToString(), 1, "vertex not retrieved in a successful transaction", StopWatch());
+                v = (IVertex)GetOnlyElement(((IIndexableGraph)graph).GetIndex("txIdx", typeof(IVertex)).Get("name", "marko"));
+                Assert.AreEqual(v.GetProperty("name"), "marko");
             }
-            graph.shutdown();
+            graph.Shutdown();
         }
 
         [Test]
-        public void testAutomaticSuccessfulTransactionOnShutdown()
+        public void TestAutomaticSuccessfulTransactionOnShutdown()
         {
-            TransactionalGraph graph = (TransactionalGraph)graphTest.generateGraph();
-            if (graph.getFeatures().isPersistent.Value && graph.getFeatures().supportsVertexProperties.Value)
+            var graph = (ITransactionalGraph)GraphTest.GenerateGraph();
+
+            if (graph.GetFeatures().IsPersistent && graph.GetFeatures().SupportsVertexProperties)
             {
-                Vertex v = graph.addVertex(null);
-                Object id = v.getId();
-                v.setProperty("count", "1");
-                v.setProperty("count", "2");
-                graph.shutdown();
-                graph = (TransactionalGraph)graphTest.generateGraph();
-                Vertex reloadedV = graph.getVertex(id);
-                Assert.AreEqual("2", reloadedV.getProperty("count"));
+                IVertex v = graph.AddVertex(null);
+                Object id = v.GetId();
+                v.SetProperty("count", "1");
+                v.SetProperty("count", "2");
+                graph.Shutdown();
+                graph = (ITransactionalGraph)GraphTest.GenerateGraph();
+                IVertex reloadedV = graph.GetVertex(id);
+                Assert.AreEqual("2", reloadedV.GetProperty("count"));
 
             }
-            graph.shutdown();
+            graph.Shutdown();
         }
 
         [Test]
-        public void testVertexCountOnPreTransactionCommit()
+        public void TestVertexCountOnPreTransactionCommit()
         {
-            TransactionalGraph graph = (TransactionalGraph)graphTest.generateGraph();
-            Vertex v1 = graph.addVertex(null);
-            graph.commit();
+            var graph = (ITransactionalGraph)GraphTest.GenerateGraph();
+            IVertex v1 = graph.AddVertex(null);
+            graph.Commit();
 
-            vertexCount(graph, 1);
+            VertexCount(graph, 1);
 
-            Vertex v2 = graph.addVertex(null);
-            v1 = graph.getVertex(v1.getId());
-            graph.addEdge(null, v1, v2, convertId(graph, "friend"));
+            IVertex v2 = graph.AddVertex(null);
+            v1 = graph.GetVertex(v1.GetId());
+            graph.AddEdge(null, v1, v2, ConvertId(graph, "friend"));
 
-            vertexCount(graph, 2);
+            VertexCount(graph, 2);
 
-            graph.commit();
+            graph.Commit();
 
-            vertexCount(graph, 2);
-            graph.shutdown();
+            VertexCount(graph, 2);
+            graph.Shutdown();
         }
 
         [Test]
-        public void testBulkTransactionsOnEdges()
+        public void TestBulkTransactionsOnEdges()
         {
-            TransactionalGraph graph = (TransactionalGraph)graphTest.generateGraph();
+            var graph = (ITransactionalGraph)GraphTest.GenerateGraph();
             for (int i = 0; i < 5; i++)
             {
-                graph.addEdge(null, graph.addVertex(null), graph.addVertex(null), convertId(graph, "test"));
+                graph.AddEdge(null, graph.AddVertex(null), graph.AddVertex(null), ConvertId(graph, "test"));
             }
-            edgeCount(graph, 5);
-            graph.rollback();
-            edgeCount(graph, 0);
+            EdgeCount(graph, 5);
+            graph.Rollback();
+            EdgeCount(graph, 0);
 
             for (int i = 0; i < 4; i++)
             {
-                graph.addEdge(null, graph.addVertex(null), graph.addVertex(null), convertId(graph, "test"));
+                graph.AddEdge(null, graph.AddVertex(null), graph.AddVertex(null), ConvertId(graph, "test"));
             }
-            edgeCount(graph, 4);
-            graph.rollback();
-            edgeCount(graph, 0);
+            EdgeCount(graph, 4);
+            graph.Rollback();
+            EdgeCount(graph, 0);
 
 
             for (int i = 0; i < 3; i++)
             {
-                graph.addEdge(null, graph.addVertex(null), graph.addVertex(null), convertId(graph, "test"));
+                graph.AddEdge(null, graph.AddVertex(null), graph.AddVertex(null), ConvertId(graph, "test"));
             }
-            edgeCount(graph, 3);
-            graph.commit();
-            edgeCount(graph, 3);
+            EdgeCount(graph, 3);
+            graph.Commit();
+            EdgeCount(graph, 3);
 
-            graph.shutdown();
+            graph.Shutdown();
         }
 
         [Test]
-        public void testCompetingThreads()
+        public void TestCompetingThreads()
         {
-            TransactionalGraph graph = (TransactionalGraph)graphTest.generateGraph();
-            int totalThreads = 250;
+            var graph = (ITransactionalGraph)GraphTest.GenerateGraph();
+            const int totalThreads = 250;
             long vertices = 0;
             long edges = 0;
             long completedThreads = 0;
 
             Parallel.For(0, totalThreads, i =>
             {
-                Random random = new Random();
+                var random = new Random();
                 if (random.Next() % 2 == 0)
                 {
-                    Vertex a = graph.addVertex(null);
-                    Vertex b = graph.addVertex(null);
-                    Edge e = graph.addEdge(null, a, b, convertId(graph, "friend"));
+                    IVertex a = graph.AddVertex(null);
+                    IVertex b = graph.AddVertex(null);
+                    IEdge e = graph.AddEdge(null, a, b, ConvertId(graph, "friend"));
 
-                    if (graph.getFeatures().supportsElementProperties())
+                    if (graph.GetFeatures().SupportsElementProperties())
                     {
-                        a.setProperty("test", Task.CurrentId);
-                        b.setProperty("blah", random.NextDouble());
-                        e.setProperty("bloop", random.Next());
+                        a.SetProperty("test", Task.CurrentId);
+                        b.SetProperty("blah", random.NextDouble());
+                        e.SetProperty("bloop", random.Next());
                     }
                     Interlocked.Add(ref vertices, 2);
                     Interlocked.Increment(ref edges);
-                    graph.commit();
+                    graph.Commit();
                 }
                 else
                 {
-                    Vertex a = graph.addVertex(null);
-                    Vertex b = graph.addVertex(null);
-                    Edge e = graph.addEdge(null, a, b, convertId(graph, "friend"));
-                    if (graph.getFeatures().supportsElementProperties())
+                    IVertex a = graph.AddVertex(null);
+                    IVertex b = graph.AddVertex(null);
+                    IEdge e = graph.AddEdge(null, a, b, ConvertId(graph, "friend"));
+                    if (graph.GetFeatures().SupportsElementProperties())
                     {
-                        a.setProperty("test", Task.CurrentId);
-                        b.setProperty("blah", random.NextDouble());
-                        e.setProperty("bloop", random.Next());
+                        a.SetProperty("test", Task.CurrentId);
+                        b.SetProperty("blah", random.NextDouble());
+                        e.SetProperty("bloop", random.Next());
                     }
                     if (random.Next() % 2 == 0)
                     {
-                        graph.commit();
+                        graph.Commit();
                         Interlocked.Add(ref vertices, 2);
                         Interlocked.Increment(ref edges);
                     }
                     else
                     {
-                        graph.rollback();
+                        graph.Rollback();
                     }
                 }
 
@@ -514,45 +521,38 @@ namespace Frontenac.Blueprints
             });
 
             Assert.AreEqual(completedThreads, 250);
-            edgeCount(graph, (int)edges);
-            vertexCount(graph, (int)vertices);
-            graph.shutdown();
+            EdgeCount(graph, (int)edges);
+            VertexCount(graph, (int)vertices);
+            graph.Shutdown();
         }
 
         [Test]
-        public void testCompetingThreadsOnMultipleDbInstances()
+        public void TestCompetingThreadsOnMultipleDbInstances()
         {
             // the idea behind this test is to simulate a rexster environment where two graphs of the same type
             // are being mutated by multiple threads. the test itself surfaced issues with OrientDB in such
             // an environment and remains relevant for any graph that might be exposed through rexster.
 
-            TransactionalGraph graph1 = (TransactionalGraph)graphTest.generateGraph("first");
-            TransactionalGraph graph2 = (TransactionalGraph)graphTest.generateGraph("second");
+            var graph1 = (ITransactionalGraph)GraphTest.GenerateGraph("first");
+            var graph2 = (ITransactionalGraph)GraphTest.GenerateGraph("second");
 
-            if (!graph1.getFeatures().isRDFModel.Value)
+            if (!graph1.GetFeatures().IsRdfModel)
             {
                 Task threadModFirstGraph = Task.Factory.StartNew(() =>
                 {
-                    Vertex v = graph1.addVertex(null);
-                    v.setProperty("name", "stephen");
-                    graph1.commit();
+                    IVertex v = graph1.AddVertex(null);
+                    v.SetProperty("name", "stephen");
+                    graph1.Commit();
                 });
 
+                
                 Task threadReadBothGraphs = Task.Factory.StartNew(() =>
                 {
-                    int counter = 0;
-                    foreach (Vertex v in graph1.getVertices())
-                    {
-                        counter++;
-                    }
+                    int counter = graph1.GetVertices().Count();
 
                     Assert.AreEqual(1, counter);
 
-                    counter = 0;
-                    foreach (Vertex v in graph2.getVertices())
-                    {
-                        counter++;
-                    }
+                    counter = graph2.GetVertices().Count();
 
                     Assert.AreEqual(0, counter);
                 });
@@ -560,35 +560,35 @@ namespace Frontenac.Blueprints
                 Task.WaitAll(threadModFirstGraph, threadReadBothGraphs);
             }
 
-            graph1.shutdown();
-            graph2.shutdown();
+            graph1.Shutdown();
+            graph2.Shutdown();
         }
 
         [Test]
-        public void untestTransactionIsolationWithSeparateThreads()
+        public void UntestTransactionIsolationWithSeparateThreads()
         {
             // the purpose of this test is to simulate rexster access to a graph instance, where one thread modifies
             // the graph and a separate thread reads before the transaction is committed. the expectation is that
             // the changes in the transaction are isolated to the thread that made the change and the second thread
             // should not see the change until commit() in the first thread.
-            TransactionalGraph graph = (TransactionalGraph)graphTest.generateGraph();
+            var graph = (ITransactionalGraph)GraphTest.GenerateGraph();
 
-            if (!graph.getFeatures().isRDFModel.Value)
+            if (!graph.GetFeatures().IsRdfModel)
             {
-                CountdownEvent latchCommit = new CountdownEvent(1);
-                CountdownEvent latchFirstRead = new CountdownEvent(1);
-                CountdownEvent latchSecondRead = new CountdownEvent(1);
+                var latchCommit = new CountdownEvent(1);
+                var latchFirstRead = new CountdownEvent(1);
+                var latchSecondRead = new CountdownEvent(1);
 
                 Task threadMod = Task.Factory.StartNew(() =>
                 {
-                    Vertex v = graph.addVertex(null);
-                    v.setProperty("name", "stephen");
+                    IVertex v = graph.AddVertex(null);
+                    v.SetProperty("name", "stephen");
 
                     Console.WriteLine("added vertex");
 
                     latchFirstRead.AddCount();
                     latchCommit.Wait();
-                    graph.commit();
+                    graph.Commit();
 
                     Console.WriteLine("committed vertex");
 
@@ -601,50 +601,52 @@ namespace Frontenac.Blueprints
                     latchFirstRead.Wait();
 
                     Console.WriteLine("reading vertex before tx");
-                    Assert.False(graph.getVertices().Any());
+                    Assert.False(graph.GetVertices().Any());
                     Console.WriteLine("read vertex before tx");
 
                     latchCommit.AddCount();
                     latchSecondRead.Wait();
 
                     Console.WriteLine("reading vertex after tx");
-                    Assert.True(graph.getVertices().Any());
+                    Assert.True(graph.GetVertices().Any());
                     Console.WriteLine("read vertex after tx");
                 });
 
                 Task.WaitAll(threadMod, threadRead);
             }
 
-            graph.shutdown();
+            graph.Shutdown();
         }
 
         [Test]
-        public void testTransactionIsolationCommitCheck()
+        public void TestTransactionIsolationCommitCheck()
         {
             // the purpose of this test is to simulate rexster access to a graph instance, where one thread modifies
             // the graph and a separate thread cannot affect the transaction of the first
-            TransactionalGraph graph = (TransactionalGraph) graphTest.generateGraph();
+            var graph = (ITransactionalGraph)GraphTest.GenerateGraph();
 
-            if (!graph.getFeatures().isRDFModel.Value) {
-                CountdownEvent latchCommittedInOtherThread = new CountdownEvent(1);
-                CountdownEvent latchCommitInOtherThread = new CountdownEvent(1);
+            if (!graph.GetFeatures().IsRdfModel)
+            {
+                var latchCommittedInOtherThread = new CountdownEvent(1);
+                var latchCommitInOtherThread = new CountdownEvent(1);
 
                 // this thread starts a transaction then waits while the second thread tries to commit it.
-                Task threadTxStarter = Task.Factory.StartNew(() => {
-                        Vertex v = graph.addVertex(null);
-                        v.setProperty("name", "stephen");
+                Task threadTxStarter = Task.Factory.StartNew(() =>
+                {
+                    IVertex v = graph.AddVertex(null);
+                    v.SetProperty("name", "stephen");
 
-                        Console.WriteLine("added vertex");
+                    Console.WriteLine("added vertex");
 
-                        latchCommitInOtherThread.AddCount();
-                        latchCommittedInOtherThread.Wait();
-                        graph.rollback();
+                    latchCommitInOtherThread.AddCount();
+                    latchCommittedInOtherThread.Wait();
+                    graph.Rollback();
 
-                        // there should be no vertices here
-                        Console.WriteLine("reading vertex before tx");
-                        Assert.False(graph.getVertices().Any());
-                        Console.WriteLine("read vertex before tx");
-                    });
+                    // there should be no vertices here
+                    Console.WriteLine("reading vertex before tx");
+                    Assert.False(graph.GetVertices().Any());
+                    Console.WriteLine("read vertex before tx");
+                });
 
                 // this thread tries to commit the transaction started in the first thread above.
                 Task threadTryCommitTx = Task.Factory.StartNew(() =>
@@ -652,7 +654,7 @@ namespace Frontenac.Blueprints
                     latchCommitInOtherThread.Wait();
 
                     // try to commit the other transaction
-                    graph.commit();
+                    graph.Commit();
 
                     latchCommittedInOtherThread.AddCount();
                 });
@@ -660,39 +662,39 @@ namespace Frontenac.Blueprints
                 Task.WaitAll(threadTxStarter, threadTryCommitTx);
             }
 
-            graph.shutdown();
+            graph.Shutdown();
         }
 
         [Test]
-        public void testRemoveInTransaction()
+        public void TestRemoveInTransaction()
         {
-            TransactionalGraph graph = (TransactionalGraph)graphTest.generateGraph();
-            edgeCount(graph, 0);
+            var graph = (ITransactionalGraph)GraphTest.GenerateGraph();
+            EdgeCount(graph, 0);
 
-            Vertex v1 = graph.addVertex(null);
-            Object v1id = v1.getId();
-            Vertex v2 = graph.addVertex(null);
-            Edge e1 = graph.addEdge(null, v1, v2, convertId(graph, "test-edge"));
-            graph.commit();
+            IVertex v1 = graph.AddVertex(null);
+            Object v1Id = v1.GetId();
+            IVertex v2 = graph.AddVertex(null);
+            graph.AddEdge(null, v1, v2, ConvertId(graph, "test-edge"));
+            graph.Commit();
 
-            edgeCount(graph, 1);
-            e1 = getOnlyElement(graph.getVertex(v1id).getEdges(Direction.OUT));
+            EdgeCount(graph, 1);
+            IEdge e1 = GetOnlyElement(graph.GetVertex(v1Id).GetEdges(Direction.Out));
             Assert.NotNull(e1);
-            graph.removeEdge(e1);
-            edgeCount(graph, 0);
-            Assert.Null(getOnlyElement(graph.getVertex(v1id).getEdges(Direction.OUT)));
-            graph.rollback();
+            graph.RemoveEdge(e1);
+            EdgeCount(graph, 0);
+            Assert.Null(GetOnlyElement(graph.GetVertex(v1Id).GetEdges(Direction.Out)));
+            graph.Rollback();
 
-            edgeCount(graph, 1);
-            e1 = getOnlyElement(graph.getVertex(v1id).getEdges(Direction.OUT));
+            EdgeCount(graph, 1);
+            e1 = GetOnlyElement(graph.GetVertex(v1Id).GetEdges(Direction.Out));
             Assert.NotNull(e1);
 
-            graph.removeEdge(e1);
-            graph.commit();
+            graph.RemoveEdge(e1);
+            graph.Commit();
 
-            edgeCount(graph, 0);
-            Assert.Null(getOnlyElement(graph.getVertex(v1id).getEdges(Direction.OUT)));
-            graph.shutdown();
+            EdgeCount(graph, 0);
+            Assert.Null(GetOnlyElement(graph.GetVertex(v1Id).GetEdges(Direction.Out)));
+            graph.Shutdown();
         }
     }
 }

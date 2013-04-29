@@ -1,31 +1,25 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace Frontenac.Blueprints.Util.Wrappers.Wrapped
+﻿namespace Frontenac.Blueprints.Util.Wrappers.Wrapped
 {
-    public class WrappedEdge : WrappedElement, Edge
+    public class WrappedEdge : WrappedElement, IEdge
     {
-        public WrappedEdge(Edge baseEdge)
+        public WrappedEdge(IEdge baseEdge)
             : base(baseEdge)
         {
         }
 
-        public Vertex getVertex(Direction direction)
+        public IVertex GetVertex(Direction direction)
         {
-            return new WrappedVertex(((Edge)baseElement).getVertex(direction));
+            return new WrappedVertex(((IEdge)BaseElement).GetVertex(direction));
         }
 
-        public string getLabel()
+        public string GetLabel()
         {
-            return ((Edge)baseElement).getLabel();
+            return ((IEdge)BaseElement).GetLabel();
         }
 
-        public Edge getBaseEdge()
+        public IEdge GetBaseEdge()
         {
-            return (Edge)baseElement;
+            return (IEdge)BaseElement;
         }
     }
 }

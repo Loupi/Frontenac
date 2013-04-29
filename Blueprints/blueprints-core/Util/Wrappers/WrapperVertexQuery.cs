@@ -1,8 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Frontenac.Blueprints.Util.Wrappers
 {
@@ -10,73 +7,73 @@ namespace Frontenac.Blueprints.Util.Wrappers
     /// A WrapperQuery is useful for wrapping the construction and results of a Vertex.query().
     /// Any necessary Iterable wrapping must occur when Vertex.vertices() or Vertex.edges() is called.
     /// </summary>
-    public class WrapperVertexQuery : VertexQuery
+    public class WrapperVertexQuery : IVertexQuery
     {
-        protected VertexQuery query;
-        protected Func<VertexQuery, IEnumerable<Edge>> edgesSelector;
-        protected Func<VertexQuery, IEnumerable<Vertex>> verticesSelector;
+        protected IVertexQuery Query;
+        protected Func<IVertexQuery, IEnumerable<IEdge>> EdgesSelector;
+        protected Func<IVertexQuery, IEnumerable<IVertex>> VerticesSelector;
 
-        public WrapperVertexQuery(VertexQuery query, Func<VertexQuery, IEnumerable<Edge>> edgesSelector, Func<VertexQuery, IEnumerable<Vertex>> verticesSelector)
+        public WrapperVertexQuery(IVertexQuery query, Func<IVertexQuery, IEnumerable<IEdge>> edgesSelector, Func<IVertexQuery, IEnumerable<IVertex>> verticesSelector)
         {
-            this.query = query;
-            this.edgesSelector = edgesSelector;
-            this.verticesSelector = verticesSelector;
+            Query = query;
+            EdgesSelector = edgesSelector;
+            VerticesSelector = verticesSelector;
         }
 
-        public VertexQuery direction(Direction direction)
+        public IVertexQuery Direction(Direction direction)
         {
-            query = query.direction(direction);
+            Query = Query.Direction(direction);
             return this;
         }
 
-        public VertexQuery labels(params string[] labels)
+        public IVertexQuery Labels(params string[] labels)
         {
-            query = query.labels(labels);
+            Query = Query.Labels(labels);
             return this;
         }
 
-        public long count()
+        public long Count()
         {
-            return query.count();
+            return Query.Count();
         }
 
-        public object vertexIds()
+        public object VertexIds()
         {
-            return query.vertexIds();
+            return Query.VertexIds();
         }
 
-        public Query has(string key, object value)
+        public IQuery Has(string key, object value)
         {
-            query = query.has(key, value) as VertexQuery;
+            Query = Query.Has(key, value) as IVertexQuery;
             return this;
         }
 
-        public Query has<T>(string key, Compare compare, T value) where T : IComparable<T>
+        public IQuery Has<T>(string key, Compare compare, T value) where T : IComparable<T>
         {
-            query = query.has(key, compare, value) as VertexQuery;
+            Query = Query.Has(key, compare, value) as IVertexQuery;
             return this;
         }
 
-        public Query interval<T>(string key, T startValue, T endValue) where T : IComparable<T>
+        public IQuery Interval<T>(string key, T startValue, T endValue) where T : IComparable<T>
         {
-            query = query.interval(key, startValue, endValue) as VertexQuery;
+            Query = Query.Interval(key, startValue, endValue) as IVertexQuery;
             return this;
         }
 
-        public Query limit(long max)
+        public IQuery Limit(long max)
         {
-            query = query.limit(max) as VertexQuery;
+            Query = Query.Limit(max) as IVertexQuery;
             return this;
         }
 
-        public IEnumerable<Edge> edges()
+        public IEnumerable<IEdge> Edges()
         {
-            return edgesSelector(query);
+            return EdgesSelector(Query);
         }
 
-        public IEnumerable<Vertex> vertices()
+        public IEnumerable<IVertex> Vertices()
         {
-            return verticesSelector(query);
+            return VerticesSelector(Query);
         }
     }
 }

@@ -1,17 +1,15 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using Frontenac.Blueprints.Util;
 
 namespace Frontenac.Blueprints.Impls.TG
 {
     [Serializable]
-    class TinkerVertex : TinkerElement, Vertex
+    class TinkerVertex : TinkerElement, IVertex
     {
-        public Dictionary<string, HashSet<Edge>> outEdges = new Dictionary<string, HashSet<Edge>>();
-        public Dictionary<string, HashSet<Edge>> inEdges = new Dictionary<string, HashSet<Edge>>();
+        public Dictionary<string, HashSet<IEdge>> OutEdges = new Dictionary<string, HashSet<IEdge>>();
+        public Dictionary<string, HashSet<IEdge>> InEdges = new Dictionary<string, HashSet<IEdge>>();
 
         public TinkerVertex(string id, TinkerGraph graph)
             : base(id, graph)
@@ -19,117 +17,107 @@ namespace Frontenac.Blueprints.Impls.TG
 
         }
 
-        public IEnumerable<Edge> getEdges(Direction direction, params string[] labels)
+        public IEnumerable<IEdge> GetEdges(Direction direction, params string[] labels)
         {
-            if (direction == Direction.OUT)
-                return getOutEdges(labels);
-            else if (direction == Direction.IN)
-                return getInEdges(labels);
-            else
-                return new MultiIterable<Edge>(new List<IEnumerable<Edge>>() { getInEdges(labels), getOutEdges(labels) });
+            if (direction == Direction.Out)
+                return GetOutEdges(labels);
+            if (direction == Direction.In)
+                return GetInEdges(labels);
+            return new MultiIterable<IEdge>(new List<IEnumerable<IEdge>> { GetInEdges(labels), GetOutEdges(labels) });
         }
 
-        public IEnumerable<Vertex> getVertices(Direction direction, params string[] labels)
+        public IEnumerable<IVertex> GetVertices(Direction direction, params string[] labels)
         {
             return new VerticesFromEdgesIterable(this, direction, labels);
         }
 
-        IEnumerable<Edge> getInEdges(params string[] labels)
+        IEnumerable<IEdge> GetInEdges(params string[] labels)
         {
             if (labels.Length == 0)
             {
-                List<Edge> totalEdges = new List<Edge>();
-                foreach (var edges in inEdges.Values)
-                    totalEdges.AddRange(edges);
+                var totalEdgesList = new List<IEdge>();
+                foreach (var edges in InEdges.Values)
+                    totalEdgesList.AddRange(edges);
 
-                return totalEdges;
+                return totalEdgesList;
             }
-            else if (labels.Length == 1)
+            if (labels.Length == 1)
             {
-                HashSet<Edge> edges = inEdges.get(labels[0]);
+                HashSet<IEdge> edges = InEdges.Get(labels[0]);
                 if (null == edges)
-                    return Enumerable.Empty<Edge>();
-                else
-                    return new List<Edge>(edges);
-
+                    return Enumerable.Empty<IEdge>();
+                return new List<IEdge>(edges);
             }
-            else
+            var totalEdges = new List<IEdge>();
+            foreach (string label in labels)
             {
-                List<Edge> totalEdges = new List<Edge>();
-                foreach (string label in labels)
-                {
-                    HashSet<Edge> edges = inEdges.get(label);
-                    if (null != edges)
-                        totalEdges.AddRange(edges);
-                }
-                return totalEdges;
+                HashSet<IEdge> edges = InEdges.Get(label);
+                if (null != edges)
+                    totalEdges.AddRange(edges);
             }
+            return totalEdges;
         }
 
-        IEnumerable<Edge> getOutEdges(params string[] labels)
+        IEnumerable<IEdge> GetOutEdges(params string[] labels)
         {
             if (labels.Length == 0)
             {
-                List<Edge> totalEdges = new List<Edge>();
-                foreach (var edges in outEdges.Values)
-                    totalEdges.AddRange(edges);
+                var totalEdgesList = new List<IEdge>();
+                foreach (var edges in OutEdges.Values)
+                    totalEdgesList.AddRange(edges);
 
-                return totalEdges;
+                return totalEdgesList;
             }
-            else if (labels.Length == 1)
+            if (labels.Length == 1)
             {
-                HashSet<Edge> edges = outEdges.get(labels[0]);
+                HashSet<IEdge> edges = OutEdges.Get(labels[0]);
                 if (null == edges)
-                    return Enumerable.Empty<Edge>();
-                else
-                    return new List<Edge>(edges);
+                    return Enumerable.Empty<IEdge>();
+                return new List<IEdge>(edges);
             }
-            else
+            var totalEdges = new List<IEdge>();
+            foreach (string label in labels)
             {
-                List<Edge> totalEdges = new List<Edge>();
-                foreach (string label in labels)
-                {
-                    HashSet<Edge> edges = outEdges.get(label);
-                    if (null != edges)
-                        totalEdges.AddRange(edges);
-                }
-                return totalEdges;
+                HashSet<IEdge> edges = OutEdges.Get(label);
+                if (null != edges)
+                    totalEdges.AddRange(edges);
             }
+            return totalEdges;
         }
 
-        public VertexQuery query()
+        public IVertexQuery Query()
         {
             return new DefaultVertexQuery(this);
         }
 
         public override string ToString()
         {
-            return StringFactory.vertexString(this);
+            return StringFactory.VertexString(this);
         }
 
-        public Edge addEdge(string label, Vertex inVertex)
+        public IEdge AddEdge(string label, IVertex inVertex)
         {
-            return graph.addEdge(null, this, inVertex, label);
+            return Graph.AddEdge(null, this, inVertex, label);
         }
 
-        public void addOutEdge(string label, Edge edge)
+        public void AddOutEdge(string label, IEdge edge)
         {
-            HashSet<Edge> edges = outEdges.get(label);
+            HashSet<IEdge> edges = OutEdges.Get(label);
             if (null == edges)
             {
-                edges = new HashSet<Edge>();
-                outEdges.put(label, edges);
+                edges = new HashSet<IEdge>();
+                OutEdges.Put(label, edges);
             }
             edges.Add(edge);
         }
 
-        public void addInEdge(string label, Edge edge)
+        public void AddInEdge(string label, IEdge edge)
         {
-            HashSet<Edge> edges = inEdges.get(label);
+            HashSet<IEdge> edges = InEdges.Get(label);
             if (null == edges)
             {
-                edges = new HashSet<Edge>();
-                inEdges.put(label, edges);
+                edges = new HashSet<IEdge>();
+                InEdges.Put(label, edges);
             }
             edges.Add(edge);
         }

@@ -1,167 +1,164 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.Collections.Generic;
 
 namespace Frontenac.Blueprints.Util.Wrappers.Partition
 {
-    public class PartitionGraph : Graph, WrapperGraph
+    public class PartitionGraph : IGraph, IWrapperGraph
     {
-        protected Graph baseGraph;
+        protected IGraph BaseGraph;
         string _writePartition;
         readonly ISet<string> _readPartitions;
         string _partitionKey;
         readonly Features _features;
 
-        public PartitionGraph(Graph baseGraph, string partitionKey, string writePartition, IEnumerable<string> readPartitions)
+        public PartitionGraph(IGraph baseGraph, string partitionKey, string writePartition, IEnumerable<string> readPartitions)
         {
-            this.baseGraph = baseGraph;
+            BaseGraph = baseGraph;
             _partitionKey = partitionKey;
             _writePartition = writePartition;
             _readPartitions = new HashSet<string>(readPartitions);
-            _features = this.baseGraph.getFeatures().copyFeatures();
-            _features.isWrapper = true;
+            _features = BaseGraph.GetFeatures().CopyFeatures();
+            _features.IsWrapper = true;
         }
 
-        public PartitionGraph(Graph baseGraph, string partitionKey, string readWritePartition) :
-            this(baseGraph, partitionKey, readWritePartition, new string[] { readWritePartition })
+        public PartitionGraph(IGraph baseGraph, string partitionKey, string readWritePartition) :
+            this(baseGraph, partitionKey, readWritePartition, new[] { readWritePartition })
         {
 
         }
 
-        public string getWritePartition()
+        public string GetWritePartition()
         {
             return _writePartition;
         }
 
-        public void setWritePartition(string writePartition)
+        public void SetWritePartition(string writePartition)
         {
             _writePartition = writePartition;
         }
 
-        public ISet<string> getReadPartitions()
+        public ISet<string> GetReadPartitions()
         {
             return new HashSet<string>(_readPartitions);
         }
 
-        public void removeReadPartition(string readPartition)
+        public void RemoveReadPartition(string readPartition)
         {
             _readPartitions.Remove(readPartition);
         }
 
-        public void addReadPartition(string readPartition)
+        public void AddReadPartition(string readPartition)
         {
             _readPartitions.Add(readPartition);
         }
 
-        public void setPartitionKey(string partitionKey)
+        public void SetPartitionKey(string partitionKey)
         {
             _partitionKey = partitionKey;
         }
 
-        public string getPartitionKey()
+        public string GetPartitionKey()
         {
             return _partitionKey;
         }
 
-        public bool isInPartition(Element element)
+        public bool IsInPartition(IElement element)
         {
             string writePartition;
-            if (element is PartitionElement)
-                writePartition = ((PartitionElement)element).getPartition();
+            var partitionElement = element as PartitionElement;
+            if (partitionElement != null)
+                writePartition = partitionElement.GetPartition();
             else
-                writePartition = (string)element.getProperty(_partitionKey);
+                writePartition = (string)element.GetProperty(_partitionKey);
             return (null == writePartition || _readPartitions.Contains(writePartition));
         }
 
-        public void shutdown()
+        public void Shutdown()
         {
-            baseGraph.shutdown();
+            BaseGraph.Shutdown();
         }
 
-        public Vertex addVertex(object id)
+        public IVertex AddVertex(object id)
         {
-            PartitionVertex vertex = new PartitionVertex(baseGraph.addVertex(id), this);
-            vertex.setPartition(_writePartition);
+            var vertex = new PartitionVertex(BaseGraph.AddVertex(id), this);
+            vertex.SetPartition(_writePartition);
             return vertex;
         }
 
-        public Vertex getVertex(object id)
+        public IVertex GetVertex(object id)
         {
-            Vertex vertex = baseGraph.getVertex(id);
-            if (null == vertex || !isInPartition(vertex))
+            IVertex vertex = BaseGraph.GetVertex(id);
+            if (null == vertex || !IsInPartition(vertex))
                 return null;
 
             return new PartitionVertex(vertex, this);
         }
 
-        public IEnumerable<Vertex> getVertices()
+        public IEnumerable<IVertex> GetVertices()
         {
-            return new PartitionVertexIterable(baseGraph.getVertices(), this);
+            return new PartitionVertexIterable(BaseGraph.GetVertices(), this);
         }
 
-        public IEnumerable<Vertex> getVertices(string key, object value)
+        public IEnumerable<IVertex> GetVertices(string key, object value)
         {
-            return new PartitionVertexIterable(baseGraph.getVertices(key, value), this);
+            return new PartitionVertexIterable(BaseGraph.GetVertices(key, value), this);
         }
 
-        public Edge addEdge(object id, Vertex outVertex, Vertex inVertex, string label)
+        public IEdge AddEdge(object id, IVertex outVertex, IVertex inVertex, string label)
         {
-            PartitionEdge edge = new PartitionEdge(baseGraph.addEdge(id, ((PartitionVertex)outVertex).getBaseVertex(), ((PartitionVertex)inVertex).getBaseVertex(), label), this);
-            edge.setPartition(_writePartition);
+            var edge = new PartitionEdge(BaseGraph.AddEdge(id, ((PartitionVertex)outVertex).GetBaseVertex(), ((PartitionVertex)inVertex).GetBaseVertex(), label), this);
+            edge.SetPartition(_writePartition);
             return edge;
         }
 
-        public Edge getEdge(object id)
+        public IEdge GetEdge(object id)
         {
-            Edge edge = baseGraph.getEdge(id);
+            IEdge edge = BaseGraph.GetEdge(id);
             if (null == edge)
                 return null;
 
             return new PartitionEdge(edge, this);
         }
 
-        public IEnumerable<Edge> getEdges()
+        public IEnumerable<IEdge> GetEdges()
         {
-            return new PartitionEdgeIterable(baseGraph.getEdges(), this);
+            return new PartitionEdgeIterable(BaseGraph.GetEdges(), this);
         }
 
-        public IEnumerable<Edge> getEdges(string key, object value)
+        public IEnumerable<IEdge> GetEdges(string key, object value)
         {
-            return new PartitionEdgeIterable(baseGraph.getEdges(key, value), this);
+            return new PartitionEdgeIterable(BaseGraph.GetEdges(key, value), this);
         }
 
-        public void removeEdge(Edge edge)
+        public void RemoveEdge(IEdge edge)
         {
-            baseGraph.removeEdge(((PartitionEdge)edge).getBaseEdge());
+            BaseGraph.RemoveEdge(((PartitionEdge)edge).GetBaseEdge());
         }
 
-        public void removeVertex(Vertex vertex)
+        public void RemoveVertex(IVertex vertex)
         {
-            baseGraph.removeVertex(((PartitionVertex)vertex).getBaseVertex());
+            BaseGraph.RemoveVertex(((PartitionVertex)vertex).GetBaseVertex());
         }
 
-        public Graph getBaseGraph()
+        public IGraph GetBaseGraph()
         {
-            return baseGraph;
+            return BaseGraph;
         }
 
         public override string ToString()
         {
-            return StringFactory.graphString(this, baseGraph.ToString());
+            return StringFactory.GraphString(this, BaseGraph.ToString());
         }
 
-        public Features getFeatures()
+        public Features GetFeatures()
         {
             return _features;
         }
 
-        public GraphQuery query()
+        public IGraphQuery Query()
         {
-            return new WrappedGraphQuery(baseGraph.query(),
-                t => new PartitionEdgeIterable(t.edges(), this),
-                t => new PartitionVertexIterable(t.vertices(), this));
+            return new WrappedGraphQuery(BaseGraph.Query(),
+                t => new PartitionEdgeIterable(t.Edges(), this),
+                t => new PartitionVertexIterable(t.Vertices(), this));
         }
     }
 }
