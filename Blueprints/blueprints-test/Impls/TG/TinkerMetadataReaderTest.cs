@@ -41,7 +41,7 @@ namespace Frontenac.Blueprints.Impls.TG
             vertices.Dispose();
 
             IIndex idxWeight = _graph.GetIndex("weight", typeof(IEdge));
-            ICloseableIterable<IElement> edges = idxWeight.Get("weight", 0.5f);
+            ICloseableIterable<IElement> edges = idxWeight.Get("weight", 0.5);
             Assert.AreEqual(1, edges.Count());
             edges.Dispose();
         }
@@ -67,7 +67,7 @@ namespace Frontenac.Blueprints.Impls.TG
             }
             
             Assert.AreEqual(1, _graph.EdgeKeyIndex.Index.Count());
-            Assert.AreEqual(1, _graph.GetEdges("weight", 0.5f).Count());
+            Assert.AreEqual(1, _graph.GetEdges("weight", 0.5).Count());
         }
     }
 }

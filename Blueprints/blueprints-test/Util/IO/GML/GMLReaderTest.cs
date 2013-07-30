@@ -124,11 +124,11 @@ namespace Frontenac.Blueprints.Util.IO.GML
 
             var map = (Dictionary<string, object>) property;
             Assert.AreEqual(5, map.Count);
-            Assert.AreEqual(0.1f, map.Get("x"));
+            Assert.AreEqual(0.1, map.Get("x"));
             // NB comes back as int
             Assert.AreEqual(0, map.Get("y"));
-            Assert.AreEqual(0.1f, map.Get("w"));
-            Assert.AreEqual(0.1f, map.Get("h"));
+            Assert.AreEqual(0.1, map.Get("w"));
+            Assert.AreEqual(0.1, map.Get("h"));
             Assert.AreEqual("earth.gif", map.Get("bitmap"));
         }
 

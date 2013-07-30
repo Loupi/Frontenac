@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Linq;
 
 namespace Frontenac.Blueprints.Util
 {
@@ -21,7 +22,7 @@ namespace Frontenac.Blueprints.Util
             long counter = 0;
             foreach (T element in elements)
             {
-                foreach (string key in keys)
+                foreach (string key in keys.ToArray())
                 {
                     object value = element.RemoveProperty(key);
                     if (null != value)

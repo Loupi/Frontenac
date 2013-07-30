@@ -22,7 +22,7 @@ namespace Frontenac.Blueprints.Util
                 {
                     counter++;
                     Assert.AreEqual(edge.GetId(), "1234");
-                    Assert.AreEqual(edge.GetProperty("weight"), 0.5f);
+                    Assert.AreEqual(edge.GetProperty("weight"), 0.5);
                     temp = edge;
                 }
 
@@ -39,7 +39,7 @@ namespace Frontenac.Blueprints.Util
                 {
                     counter++;
                     Assert.AreEqual(edge.GetId(), "1234");
-                    Assert.AreEqual(edge.GetProperty("weight"), 0.5f);
+                    Assert.AreEqual(edge.GetProperty("weight"), 0.5);
                     Assert.AreEqual(edge, temp);
                 }
                 counter2++;
@@ -63,7 +63,7 @@ namespace Frontenac.Blueprints.Util
                 if (edge.GetLabel() == "use_to_know")
                 {
                     counter++;
-                    Assert.AreEqual(edge.GetProperty("weight"), 0.5f);
+                    Assert.AreEqual(edge.GetProperty("weight"), 0.5);
                     temp = edge;
                 }
 
@@ -79,7 +79,7 @@ namespace Frontenac.Blueprints.Util
                 if (edge.GetLabel() == "use_to_know")
                 {
                     counter++;
-                    Assert.AreEqual(edge.GetProperty("weight"), 0.5f);
+                    Assert.AreEqual(edge.GetProperty("weight"), 0.5);
                     Assert.AreEqual(edge, temp);
                 }
                 counter2++;

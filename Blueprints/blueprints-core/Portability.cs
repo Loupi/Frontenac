@@ -21,7 +21,7 @@ namespace Frontenac.Blueprints
         public static TValue JavaRemove<TKey, TValue>(this IDictionary<TKey, TValue> dictionary, TKey key)
         {
             TValue ret = default(TValue);
-            if (key != null)
+            if (!Equals(key, default(TKey)))
             {
                 if (dictionary.TryGetValue(key, out ret))
                     dictionary.Remove(key);

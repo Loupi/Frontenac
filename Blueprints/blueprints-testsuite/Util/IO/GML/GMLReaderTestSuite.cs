@@ -74,13 +74,13 @@ namespace Frontenac.Blueprints.Util.IO.GML
                 {
                     if (e.GetVertex(Direction.In).GetId().Equals("3"))
                     {
-                        Assert.AreEqual(0, (float)Math.Round((Convert.ToSingle(e.GetProperty("weight")))));
+                        Assert.AreEqual(0, Math.Round((Convert.ToSingle(e.GetProperty("weight")))));
                         Assert.AreEqual(e.GetLabel(), "created");
                         counter++;
                     }
                     else if (e.GetVertex(Direction.In).GetId().Equals("5"))
                     {
-                        Assert.AreEqual(1, (float)Math.Round((Convert.ToSingle(e.GetProperty("weight")))));
+                        Assert.AreEqual(1, Math.Round((Convert.ToSingle(e.GetProperty("weight")))));
                         Assert.AreEqual(e.GetLabel(), "created");
                         counter++;
                     }
@@ -480,7 +480,7 @@ namespace Frontenac.Blueprints.Util.IO.GML
                 {
                     if (e.GetVertex(Direction.In).GetId().Equals("3"))
                     {
-                        Assert.AreEqual(Math.Round((float)e.GetProperty("weight")), 0);
+                        Assert.AreEqual(Math.Round(Convert.ToDouble(e.GetProperty("weight"))), 0);
                         Assert.AreEqual(e.GetProperty("id2"), null);
                         Assert.AreEqual(e.GetProperty("label2"), null);
                         Assert.AreEqual(e.GetLabel(), "created");
@@ -820,7 +820,7 @@ namespace Frontenac.Blueprints.Util.IO.GML
                     }
                     else if (e.GetVertex(Direction.In).GetId().Equals("3"))
                     {
-                        Assert.AreEqual(Math.Round((float)e.GetProperty("weight")), 0);
+                        Assert.AreEqual(Math.Round(Convert.ToDouble(e.GetProperty("weight"))), 0);
                         Assert.AreEqual(e.GetProperty("id2"), 10);
                         Assert.AreEqual(e.GetProperty("label2"), "has high fived");
                         Assert.AreEqual(e.GetLabel(), "created");
@@ -829,7 +829,7 @@ namespace Frontenac.Blueprints.Util.IO.GML
                     }
                     else if (e.GetVertex(Direction.In).GetId().Equals("4"))
                     {
-                        Assert.AreEqual(Math.Round((float)e.GetProperty("weight")), 1);
+                        Assert.AreEqual(Math.Round(Convert.ToDouble(e.GetProperty("weight"))), 1);
                         Assert.AreEqual(e.GetProperty("id2"), 9);
                         Assert.AreEqual(e.GetProperty("label2"), "has high fived");
                         Assert.AreEqual(e.GetLabel(), "knows");
@@ -861,7 +861,7 @@ namespace Frontenac.Blueprints.Util.IO.GML
                 {
                     if (e.GetVertex(Direction.In).GetId().Equals("3"))
                     {
-                        Assert.AreEqual(Math.Round((float)e.GetProperty("weight")), 0);
+                        Assert.AreEqual(Math.Round(Convert.ToDouble(e.GetProperty("weight"))), 0);
                         Assert.AreEqual(e.GetProperty("id2"), 13);
                         Assert.AreEqual(e.GetProperty("label2"), null);
                         Assert.AreEqual(e.GetLabel(), "created");
@@ -870,7 +870,7 @@ namespace Frontenac.Blueprints.Util.IO.GML
                     }
                     else if (e.GetVertex(Direction.In).GetId().Equals("5"))
                     {
-                        Assert.AreEqual(Math.Round((float)e.GetProperty("weight")), 1);
+                        Assert.AreEqual(Math.Round(Convert.ToDouble(e.GetProperty("weight"))), 1);
                         Assert.AreEqual(e.GetProperty("id2"), 11);
                         Assert.AreEqual(e.GetProperty("label2"), "has high fived");
                         Assert.AreEqual(e.GetLabel(), "created");
@@ -896,7 +896,7 @@ namespace Frontenac.Blueprints.Util.IO.GML
                 {
                     if (e.GetVertex(Direction.In).GetId().Equals("3"))
                     {
-                        Assert.AreEqual(Math.Round((float)e.GetProperty("weight")), 0);
+                        Assert.AreEqual(Math.Round(Convert.ToDouble(e.GetProperty("weight"))), 0);
                         Assert.AreEqual(e.GetProperty("id2"), null);
                         Assert.AreEqual(e.GetProperty("label2"), null);
                         Assert.AreEqual(e.GetLabel(), "created");

@@ -130,8 +130,8 @@ namespace Frontenac.Blueprints.Util
         /// <returns>whether the two elements have equal properties</returns>
         public static bool HaveEqualProperties(IElement a, IElement b)
         {
-            IEnumerable<string> aKeys = a.GetPropertyKeys();
-            IEnumerable<string> bKeys = b.GetPropertyKeys();
+            var aKeys = a.GetPropertyKeys().ToArray();
+            var bKeys = b.GetPropertyKeys().ToArray();
 
 // ReSharper disable PossibleMultipleEnumeration
             if (aKeys.Intersect(bKeys).LongCount() == bKeys.LongCount() && bKeys.Intersect(aKeys).LongCount() == aKeys.LongCount())
@@ -188,13 +188,13 @@ namespace Frontenac.Blueprints.Util
         /// <returns>Whether the two elements are equal</returns>
         public static bool AreEqual(IElement a, object b)
         {
-            if (a == b)
+            if (a != null && ReferenceEquals(a, b))
                 return true;
             if (null == b)
                 return false;
-            if (!(a.GetType() == b.GetType()))
+            if (a != null && !(a.GetType() == b.GetType()))
                 return false;
-            return a.GetId().Equals(((IElement)b).GetId());
+            return a != null && a.GetId().Equals(((IElement)b).GetId());
         }
 
         /// <summary>

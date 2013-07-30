@@ -441,15 +441,15 @@ namespace Frontenac.Blueprints.Impls.TG
             Assert.AreEqual(g2.GetVertex(2), idxAge.Get("age", 27).First());
 
             IIndex idxWeight = g2.GetIndex("weight", typeof(IEdge));
-            Assert.AreEqual(g2.GetEdge(7), idxWeight.Get("weight", 0.5f).First());
-            Assert.AreEqual(g2.GetEdge(12), idxWeight.Get("weight", 0.2f).First());
+            Assert.AreEqual(g2.GetEdge(7), idxWeight.Get("weight", 0.5).First());
+            Assert.AreEqual(g2.GetEdge(12), idxWeight.Get("weight", 0.2).First());
 
             IEnumerator<IVertex> namesItty = g2.GetVertices("name", "marko").GetEnumerator();
             namesItty.MoveNext();
             Assert.AreEqual(g2.GetVertex(1), namesItty.Current);
             Assert.False(namesItty.MoveNext());
 
-            IEnumerator<IEdge> weightItty = g2.GetEdges("weight", 0.5f).GetEnumerator();
+            IEnumerator<IEdge> weightItty = g2.GetEdges("weight", 0.5).GetEnumerator();
             weightItty.MoveNext();
             Assert.AreEqual(g2.GetEdge(7), weightItty.Current);
             Assert.False(weightItty.MoveNext());

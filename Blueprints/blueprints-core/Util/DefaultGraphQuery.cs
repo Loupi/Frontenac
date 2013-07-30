@@ -120,7 +120,7 @@ namespace Frontenac.Blueprints.Util
         {
             if (_graph is IKeyIndexableGraph)
             {
-                IEnumerable<string> keys = (_graph as IKeyIndexableGraph).GetIndexedKeys(elementClass);
+                var keys = (_graph as IKeyIndexableGraph).GetIndexedKeys(elementClass).ToArray();
                 foreach (HasContainer hasContainer in HasContainers)
                 {
                     if (hasContainer.Compare == Compare.Equal && hasContainer.Value != null && keys.Contains(hasContainer.Key))

@@ -178,7 +178,7 @@ namespace Frontenac.Blueprints.Util.IO.GML
                         
                         if (doubleValue == Math.Floor(doubleValue))
                             return (int)doubleValue;
-                        return (float)doubleValue;
+                        return doubleValue;
                     }
                     if (type == '[')
                         return ParseMap(key, st);

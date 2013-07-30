@@ -1,10 +1,12 @@
-﻿namespace Frontenac.Blueprints.Impls.TG
+﻿using VelocityDb.Session;
+using VelocityGraph;
+namespace Frontenac.Blueprints.Impls.VG
 {
-    public static class TinkerGraphFactory
+    public static class VelocityGraphFactory
     {
-        public static TinkerGraph CreateTinkerGraph()
+        public static Graph CreateVelocityGraph(SessionBase session)
         {
-            var graph = new TinkerGraph();
+            var graph = new Graph(session);
 
             IVertex marko = graph.AddVertex("1");
             marko.SetProperty("name", "marko");

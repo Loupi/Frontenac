@@ -34,8 +34,8 @@ namespace Frontenac.Blueprints.Util
         public void TestAddEdge()
         {
             IGraph graph = new TinkerGraph();
-            IEdge edge = GraphHelper.AddEdge(graph, null, graph.AddVertex(null), graph.AddVertex(null), "knows", "weight", 10.0f);
-            Assert.AreEqual(edge.GetProperty("weight"), 10.0f);
+            IEdge edge = GraphHelper.AddEdge(graph, null, graph.AddVertex(null), graph.AddVertex(null), "knows", "weight", 10.0);
+            Assert.AreEqual(edge.GetProperty("weight"), 10.0);
             Assert.AreEqual(edge.GetLabel(), "knows");
             Assert.AreEqual(edge.GetPropertyKeys().Count(), 1);
             Assert.AreEqual(Count(graph.GetVertices()), 2);
@@ -73,21 +73,21 @@ namespace Frontenac.Blueprints.Util
             {
                 if (e.GetVertex(Direction.In).GetId().Equals("2"))
                 {
-                    Assert.AreEqual(e.GetProperty("weight"), 0.5f);
+                    Assert.AreEqual(e.GetProperty("weight"), 0.5);
                     Assert.AreEqual(e.GetLabel(), "knows");
                     Assert.AreEqual(e.GetId(), "7");
                     counter++;
                 }
                 else if (e.GetVertex(Direction.In).GetId().Equals("3"))
                 {
-                    Assert.AreEqual(Math.Round((float) e.GetProperty("weight")), 0);
+                    Assert.AreEqual(Math.Round(Convert.ToDouble(e.GetProperty("weight"))), 0);
                     Assert.AreEqual(e.GetLabel(), "created");
                     Assert.AreEqual(e.GetId(), "9");
                     counter++;
                 }
                 else if (e.GetVertex(Direction.In).GetId().Equals("4"))
                 {
-                    Assert.AreEqual(Math.Round((float) e.GetProperty("weight")), 1);
+                    Assert.AreEqual(Math.Round(Convert.ToDouble(e.GetProperty("weight"))), 1);
                     Assert.AreEqual(e.GetLabel(), "knows");
                     Assert.AreEqual(e.GetId(), "8");
                     counter++;
@@ -103,14 +103,14 @@ namespace Frontenac.Blueprints.Util
             {
                 if (e.GetVertex(Direction.In).GetId().Equals("3"))
                 {
-                    Assert.AreEqual(Math.Round((float) e.GetProperty("weight")), 0);
+                    Assert.AreEqual(Math.Round(Convert.ToDouble(e.GetProperty("weight"))), 0);
                     Assert.AreEqual(e.GetLabel(), "created");
                     Assert.AreEqual(e.GetId(), "11");
                     counter++;
                 }
                 else if (e.GetVertex(Direction.In).GetId().Equals("5"))
                 {
-                    Assert.AreEqual(Math.Round((float) e.GetProperty("weight")), 1);
+                    Assert.AreEqual(Math.Round(Convert.ToDouble(e.GetProperty("weight"))), 1);
                     Assert.AreEqual(e.GetLabel(), "created");
                     Assert.AreEqual(e.GetId(), "10");
                     counter++;

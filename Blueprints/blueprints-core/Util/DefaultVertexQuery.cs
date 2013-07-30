@@ -94,7 +94,7 @@ namespace Frontenac.Blueprints.Util
                 {
                     IEdge temp = _nextEdge;
                     _nextEdge = null;
-                    if (_forVertex)
+                    if (_forVertex && temp != null)
                     {
                         if (((DefaultQuery) _defaultVertexQuery).Direction == Blueprints.Direction.Out)
                             yield return (T)temp.GetVertex(Blueprints.Direction.In);

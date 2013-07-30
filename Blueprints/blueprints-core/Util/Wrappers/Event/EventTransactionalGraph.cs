@@ -4,11 +4,12 @@ namespace Frontenac.Blueprints.Util.Wrappers.Event
 {
     public class EventTransactionalGraph : EventGraph, ITransactionalGraph
     {
-        protected readonly ITransactionalGraph _TransactionalGraph;
+        protected readonly ITransactionalGraph TransactionalGraph;
 
-        public EventTransactionalGraph(ITransactionalGraph baseGraph)
-            : base(baseGraph)
+        public EventTransactionalGraph(ITransactionalGraph transactionalGraph)
+            : base(transactionalGraph)
         {
+            TransactionalGraph = transactionalGraph;
             Trigger = new EventTrigger(this, true);
         }
 
@@ -21,7 +22,7 @@ namespace Frontenac.Blueprints.Util.Wrappers.Event
             bool transactionFailure = false;
             try
             {
-                _TransactionalGraph.Commit();
+                TransactionalGraph.Commit();
             }
             catch (Exception)
             {
@@ -47,7 +48,7 @@ namespace Frontenac.Blueprints.Util.Wrappers.Event
             bool transactionFailure = false;
             try
             {
-                _TransactionalGraph.Rollback();
+                TransactionalGraph.Rollback();
             }
             catch (Exception)
             {

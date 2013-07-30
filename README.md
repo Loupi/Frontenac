@@ -1,7 +1,10 @@
 Frontenac
 =========
 
-A .NET port of the [Tinkerpop Stack](http://www.tinkerpop.com/ "Title").  
+A .NET port of the [Tinkerpop Stack](http://www.tinkerpop.com/ "Title").
+
+## News
+* 2013-07-29 (http://velocitydb.com/ "VelocityDB") now supports Frontenac through it's (https://github.com/VelocityDB/VelocityGraph "VelocityGraph") library. Available on NuGet.
 
 ## Credits
 Special thanks to the authors and contributors of the original library:

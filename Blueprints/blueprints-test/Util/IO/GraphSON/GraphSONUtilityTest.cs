@@ -40,7 +40,7 @@ namespace Frontenac.Blueprints.Util.IO.GraphSON
             IVertex v2 = _graph.AddVertex(2);
 
             IEdge e = _graph.AddEdge(3, v1, v2, "test");
-            e.SetProperty("weight", 0.5f);
+            e.SetProperty("weight", 0.5);
 
             IDictionary<string, JToken> json = GraphSonUtility.JsonFromElement(e, null, GraphSonMode.NORMAL);
 
@@ -66,7 +66,7 @@ namespace Frontenac.Blueprints.Util.IO.GraphSON
             IVertex v2 = _graph.AddVertex(2);
 
             IEdge e = _graph.AddEdge(3, v1, v2, "test");
-            e.SetProperty("weight", 0.5f);
+            e.SetProperty("weight", 0.5);
 
             var propertiesToInclude = new HashSet<String> {GraphSonTokens.Id};
 
@@ -89,7 +89,7 @@ namespace Frontenac.Blueprints.Util.IO.GraphSON
             IVertex v2 = _graph.AddVertex(2);
 
             IEdge e = _graph.AddEdge(3, v1, v2, "test");
-            e.SetProperty("weight", 0.5f);
+            e.SetProperty("weight", 0.5);
             e.SetProperty("x", "y");
 
             var propertiesToExclude = new HashSet<string>
@@ -125,7 +125,7 @@ namespace Frontenac.Blueprints.Util.IO.GraphSON
             IVertex v2 = _graph.AddVertex(2);
 
             IEdge e = _graph.AddEdge(3, v1, v2, "test");
-            e.SetProperty("weight", 0.5f);
+            e.SetProperty("weight", 0.5);
 
             IDictionary<string, JToken> json = GraphSonUtility.JsonFromElement(e, null, GraphSonMode.COMPACT);
 
@@ -371,7 +371,7 @@ namespace Frontenac.Blueprints.Util.IO.GraphSON
         public void JsonFromElementFloatArrayPropertyNoKeysNoTypes()
         {
             IVertex v = _graph.AddVertex(1);
-            var floatArray = new[] { 1.0f, 2.0f, 3.0f };
+            var floatArray = new[] { 1.0, 2.0, 3.0 };
 
             v.SetProperty("keyFloatArray", floatArray);
 
