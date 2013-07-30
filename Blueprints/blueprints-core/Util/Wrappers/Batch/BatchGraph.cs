@@ -44,6 +44,34 @@ namespace Frontenac.Blueprints.Util.Wrappers.Batch
         IEdge _currentEdgeCached;
         object _previousOutVertexId;
 
+        #region IDisposable members
+        bool _disposed;
+
+        ~BatchGraph()
+        {
+            Dispose(false);
+        }
+
+        public void Dispose()
+        {
+            Dispose(true);
+            GC.SuppressFinalize(this);
+        }
+
+        protected virtual void Dispose(bool disposing)
+        {
+            if (_disposed)
+                return;
+
+            if (disposing)
+            {
+                Shutdown();
+            }
+
+            _disposed = true;
+        }
+        #endregion
+
         /// <summary>
         /// Constructs a BatchGraph wrapping the provided baseGraph, using the specified buffer size and expecting vertex ids of
         ///  the specified IdType. Supplying vertex ids which do not match this type will throw exceptions.
@@ -215,10 +243,10 @@ namespace Frontenac.Blueprints.Util.Wrappers.Batch
             throw new InvalidOperationException("Can not rollback during batch loading");
         }
 
-        public void Shutdown()
+        void Shutdown()
         {
             _baseGraph.Commit();
-            _baseGraph.Shutdown();
+            _baseGraph.Dispose();
             _currentEdge = null;
             _currentEdgeCached = null;
         }

@@ -235,62 +235,64 @@ namespace Frontenac.Blueprints.Impls.TG
         public void TestClear()
         {
             DeleteDirectory(TinkerGraphTestImpl.GetThinkerGraphDirectory());
-            var graph = (TinkerGraph)GraphTest.GenerateGraph();
-            StopWatch();
-            for (int i = 0; i < 25; i++)
+            using (var graph = (TinkerGraph) GraphTest.GenerateGraph())
             {
-                IVertex a = graph.AddVertex(null);
-                IVertex b = graph.AddVertex(null);
-                graph.AddEdge(null, a, b, "knows");
+                StopWatch();
+                for (int i = 0; i < 25; i++)
+                {
+                    IVertex a = graph.AddVertex(null);
+                    IVertex b = graph.AddVertex(null);
+                    graph.AddEdge(null, a, b, "knows");
+                }
+                PrintPerformance(graph.ToString(), 75, "elements added", StopWatch());
+
+                Assert.AreEqual(50, Count(graph.GetVertices()));
+                Assert.AreEqual(25, Count(graph.GetEdges()));
+
+                StopWatch();
+                graph.Clear();
+                PrintPerformance(graph.ToString(), 75, "elements deleted", StopWatch());
+
+                Assert.AreEqual(0, Count(graph.GetVertices()));
+                Assert.AreEqual(0, Count(graph.GetEdges()));
             }
-            PrintPerformance(graph.ToString(), 75, "elements added", StopWatch());
-
-            Assert.AreEqual(50, Count(graph.GetVertices()));
-            Assert.AreEqual(25, Count(graph.GetEdges()));
-
-            StopWatch();
-            graph.Clear();
-            PrintPerformance(graph.ToString(), 75, "elements deleted", StopWatch());
-
-            Assert.AreEqual(0, Count(graph.GetVertices()));
-            Assert.AreEqual(0, Count(graph.GetEdges()));
-
-            graph.Shutdown();
         }
 
         [Test]
         public void TestShutdownStartManyTimes()
         {
             DeleteDirectory(TinkerGraphTestImpl.GetThinkerGraphDirectory());
-            var graph = (TinkerGraph)GraphTest.GenerateGraph();
-            for (int i = 0; i < 25; i++)
+            using (var graph = (TinkerGraph) GraphTest.GenerateGraph())
             {
-                IVertex a = graph.AddVertex(null);
-                a.SetProperty("name", string.Concat("a", Guid.NewGuid()));
-                IVertex b = graph.AddVertex(null);
-                b.SetProperty("name", string.Concat("b", Guid.NewGuid()));
-                graph.AddEdge(null, a, b, "knows").SetProperty("weight", 1);
+                for (int i = 0; i < 25; i++)
+                {
+                    IVertex a = graph.AddVertex(null);
+                    a.SetProperty("name", string.Concat("a", Guid.NewGuid()));
+                    IVertex b = graph.AddVertex(null);
+                    b.SetProperty("name", string.Concat("b", Guid.NewGuid()));
+                    graph.AddEdge(null, a, b, "knows").SetProperty("weight", 1);
+                }
             }
-            graph.Shutdown();
             StopWatch();
             const int iterations = 150;
             for (int i = 0; i < iterations; i++)
             {
-                graph = (TinkerGraph)GraphTest.GenerateGraph();
-                Assert.AreEqual(50, Count(graph.GetVertices()));
-                foreach (IVertex v in graph.GetVertices())
+                using (var graph = (TinkerGraph) GraphTest.GenerateGraph())
                 {
-                    Assert.True(v.GetProperty("name").ToString().StartsWith("a") || v.GetProperty("name").ToString().StartsWith("b"));
+                    Assert.AreEqual(50, Count(graph.GetVertices()));
+                    foreach (IVertex v in graph.GetVertices())
+                    {
+                        Assert.True(v.GetProperty("name").ToString().StartsWith("a") ||
+                                    v.GetProperty("name").ToString().StartsWith("b"));
+                    }
+                    Assert.AreEqual(25, Count(graph.GetEdges()));
+                    foreach (IEdge e in graph.GetEdges())
+                    {
+                        Assert.AreEqual(e.GetProperty("weight"), 1);
+                    }
+                    PrintPerformance(graph.ToString(), iterations, "iterations of shutdown and restart", StopWatch());
                 }
-                Assert.AreEqual(25, Count(graph.GetEdges()));
-                foreach (IEdge e in graph.GetEdges())
-                {
-                    Assert.AreEqual(e.GetProperty("weight"), 1);
-                }
-
-                graph.Shutdown();
             }
-            PrintPerformance(graph.ToString(), iterations, "iterations of shutdown and restart", StopWatch());
         }
 
 
@@ -323,23 +325,28 @@ namespace Frontenac.Blueprints.Impls.TG
             string path = TinkerGraphTestImpl.GetThinkerGraphDirectory() + "/" + directory;
             DeleteDirectory(path);
 
-            TinkerGraph sourceGraph = TinkerGraphFactory.CreateTinkerGraph();
-            var targetGraph = new TinkerGraph(path, fileType);
-            CreateKeyIndices(targetGraph);
+            using (var sourceGraph = TinkerGraphFactory.CreateTinkerGraph())
+            {
+                using (var targetGraph = new TinkerGraph(path, fileType))
+                {
+                    CreateKeyIndices(targetGraph);
 
-            CopyGraphs(sourceGraph, targetGraph);
+                    CopyGraphs(sourceGraph, targetGraph);
 
-            CreateManualIndices(targetGraph);
+                    CreateManualIndices(targetGraph);
 
-            StopWatch();
-            targetGraph.Shutdown();
-            PrintTestPerformance("save graph: " + fileType.ToString(), StopWatch());
+                    StopWatch();
+                    PrintTestPerformance("save graph: " + fileType.ToString(), StopWatch());
+                    StopWatch();
+                    targetGraph.Dispose();
+                    using (var compareGraph = new TinkerGraph(path, fileType))
+                    {
+                        PrintTestPerformance("load graph: " + fileType.ToString(), StopWatch());
 
-            StopWatch();
-            var compareGraph = new TinkerGraph(path, fileType);
-            PrintTestPerformance("load graph: " + fileType.ToString(), StopWatch());
-
-            CompareGraphs(targetGraph, compareGraph, fileType);
+                        CompareGraphs(targetGraph, compareGraph, fileType);
+                    }
+                }
+            }
         }
 
         static void CreateKeyIndices(TinkerGraph g)

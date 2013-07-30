@@ -17,6 +17,34 @@ namespace Frontenac.Blueprints.Util.Wrappers.Batch
     {
         readonly IGraph _graph;
 
+        #region IDisposable members
+        bool _disposed;
+
+        ~WritethroughGraph()
+        {
+            Dispose(false);
+        }
+
+        public void Dispose()
+        {
+            Dispose(true);
+            GC.SuppressFinalize(this);
+        }
+
+        protected virtual void Dispose(bool disposing)
+        {
+            if (_disposed)
+                return;
+
+            if (disposing)
+            {
+                _graph.Dispose();
+            }
+
+            _disposed = true;
+        }
+        #endregion
+
         public WritethroughGraph(IGraph graph)
         {
             if (graph == null) throw new ArgumentException("Graph expected");
@@ -102,9 +130,9 @@ namespace Frontenac.Blueprints.Util.Wrappers.Batch
             return _graph.GetEdges(key, value);
         }
 
-        public void Shutdown()
+        protected virtual void Shutdown()
         {
-            _graph.Shutdown();
+            _graph.Dispose();
         }
 
         public IGraph GetBaseGraph()

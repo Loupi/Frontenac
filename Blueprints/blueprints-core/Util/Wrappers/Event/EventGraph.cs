@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using Frontenac.Blueprints.Util.Wrappers.Event.Listener;
 
 namespace Frontenac.Blueprints.Util.Wrappers.Event
@@ -21,6 +22,34 @@ namespace Frontenac.Blueprints.Util.Wrappers.Event
         protected IGraph BaseGraph;
         protected readonly List<IGraphChangedListener> GraphChangedListeners = new List<IGraphChangedListener>();
         readonly Features _features;
+
+        #region IDisposable members
+        bool _disposed;
+
+        ~EventGraph()
+        {
+            Dispose(false);
+        }
+
+        public void Dispose()
+        {
+            Dispose(true);
+            GC.SuppressFinalize(this);
+        }
+
+        protected virtual void Dispose(bool disposing)
+        {
+            if (_disposed)
+                return;
+
+            if (disposing)
+            {
+                Shutdown();
+            }
+
+            _disposed = true;
+        }
+        #endregion
 
         public EventGraph(IGraph baseGraph)
         {
@@ -181,11 +210,11 @@ namespace Frontenac.Blueprints.Util.Wrappers.Event
                 t => new EventVertexIterable(t.Vertices(), this));
         }
 
-        public void Shutdown()
+        void Shutdown()
         {
             try
             {
-                BaseGraph.Shutdown();
+                BaseGraph.Dispose();
 
                 // TODO: hmmmmmm??
                 Trigger.FireEventQueue();

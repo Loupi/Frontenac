@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 
 namespace Frontenac.Blueprints.Impls.TG
 {
@@ -14,6 +15,35 @@ namespace Frontenac.Blueprints.Impls.TG
         int _numTransactionsAborted;
 
         readonly IGraph _graph;
+
+        #region IDisposable members
+        bool _disposed;
+
+        ~MockTransactionalGraph()
+        {
+            Dispose(false);
+        }
+
+        public void Dispose()
+        {
+            Dispose(true);
+            GC.SuppressFinalize(this);
+        }
+
+        protected virtual void Dispose(bool disposing)
+        {
+            if (_disposed)
+                return;
+
+            if (disposing)
+            {
+                if(_graph != null)
+                    _graph.Dispose();
+            }
+
+            _disposed = true;
+        }
+        #endregion
 
         public MockTransactionalGraph(IGraph graph)
         {
@@ -100,11 +130,6 @@ namespace Frontenac.Blueprints.Impls.TG
         public IEnumerable<IEdge> GetEdges(string key, object value)
         {
             return _graph.GetEdges(key, value);
-        }
-
-        public void Shutdown()
-        {
-            _graph.Shutdown();
         }
 
         public IGraphQuery Query()

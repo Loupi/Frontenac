@@ -72,7 +72,7 @@ namespace Frontenac.Blueprints.Util
         {
             IGraph graph = TinkerGraphFactory.CreateTinkerGraph();
             foreach (IEdge e in graph.GetEdges())
-                Assert.True(e.GetProperty("weight") is float);
+                Assert.True(e.GetProperty("weight") is double);
             
             ElementHelper.TypecastProperty("weight", typeof(double), graph.GetEdges());
             foreach (IEdge e in graph.GetEdges())

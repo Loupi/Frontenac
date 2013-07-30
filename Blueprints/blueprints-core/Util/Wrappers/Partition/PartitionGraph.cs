@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 
 namespace Frontenac.Blueprints.Util.Wrappers.Partition
 {
@@ -9,6 +10,34 @@ namespace Frontenac.Blueprints.Util.Wrappers.Partition
         readonly ISet<string> _readPartitions;
         string _partitionKey;
         readonly Features _features;
+
+        #region IDisposable members
+        bool _disposed;
+
+        ~PartitionGraph()
+        {
+            Dispose(false);
+        }
+
+        public void Dispose()
+        {
+            Dispose(true);
+            GC.SuppressFinalize(this);
+        }
+
+        protected virtual void Dispose(bool disposing)
+        {
+            if (_disposed)
+                return;
+
+            if (disposing)
+            {
+                BaseGraph.Dispose();
+            }
+
+            _disposed = true;
+        }
+        #endregion
 
         public PartitionGraph(IGraph baseGraph, string partitionKey, string writePartition, IEnumerable<string> readPartitions)
         {
@@ -70,11 +99,6 @@ namespace Frontenac.Blueprints.Util.Wrappers.Partition
             else
                 writePartition = (string)element.GetProperty(_partitionKey);
             return (null == writePartition || _readPartitions.Contains(writePartition));
-        }
-
-        public void Shutdown()
-        {
-            BaseGraph.Shutdown();
         }
 
         public IVertex AddVertex(object id)

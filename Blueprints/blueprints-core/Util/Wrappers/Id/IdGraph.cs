@@ -26,6 +26,34 @@ namespace Frontenac.Blueprints.Util.Wrappers.Id
         readonly bool _supportVertexIds, _supportEdgeIds;
         bool _uniqueIds = true;
 
+        #region IDisposable members
+        bool _disposed;
+
+        ~IdGraph()
+        {
+            Dispose(false);
+        }
+
+        public void Dispose()
+        {
+            Dispose(true);
+            GC.SuppressFinalize(this);
+        }
+
+        protected virtual void Dispose(bool disposing)
+        {
+            if (_disposed)
+                return;
+
+            if (disposing)
+            {
+                _baseGraph.Dispose();
+            }
+
+            _disposed = true;
+        }
+        #endregion
+
         /// <summary>
         /// Adds custom ID functionality to the given graph,
         /// supporting both custom vertex IDs and custom edge IDs.
@@ -234,11 +262,6 @@ namespace Frontenac.Blueprints.Util.Wrappers.Id
         {
             if (_baseGraph is ITransactionalGraph)
                 (_baseGraph as ITransactionalGraph).Commit();
-        }
-
-        public void Shutdown()
-        {
-            _baseGraph.Shutdown();
         }
 
         public override string ToString()

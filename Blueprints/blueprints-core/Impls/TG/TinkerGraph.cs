@@ -27,6 +27,34 @@ namespace Frontenac.Blueprints.Impls.TG
         static readonly Features Features = new Features();
         static readonly Features PersistentFeatures;
 
+        #region IDisposable members
+        bool _disposed;
+
+        ~TinkerGraph()
+        {
+            Dispose(false);
+        }
+
+        public void Dispose()
+        {
+            Dispose(true);
+            GC.SuppressFinalize(this);
+        }
+
+        protected virtual void Dispose(bool disposing)
+        {
+            if (_disposed)
+                return;
+
+            if (disposing)
+            {
+                Shutdown();
+            }
+
+            _disposed = true;
+        }
+        #endregion
+
         public enum FileType
         {
             Java,
@@ -340,7 +368,7 @@ namespace Frontenac.Blueprints.Impls.TG
             EdgeKeyIndex = new TinkerKeyIndex(typeof(TinkerEdge), this);
         }
 
-        public virtual void Shutdown()
+        void Shutdown()
         {
             if (null != _directory)
             {

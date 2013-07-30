@@ -1,11 +1,12 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 
 namespace Frontenac.Blueprints
 {
     /// <summary>
     /// A Graph is a container object for a collection of vertices and a collection edges.
     /// </summary>
-    public interface IGraph
+    public interface IGraph : IDisposable
     {
         /// <summary>
         /// Get the particular features of the graph implementation.
@@ -103,11 +104,5 @@ namespace Frontenac.Blueprints
         /// </summary>
         /// <returns>a graph query object with methods for constraining which data is pulled from the underlying graph</returns>
         IGraphQuery Query();
-
-        /// <summary>
-        /// A shutdown function is required to properly close the graph.
-        /// This is important for implementations that utilize disk-based serializations.
-        /// </summary>
-        void Shutdown();
     }
 }
