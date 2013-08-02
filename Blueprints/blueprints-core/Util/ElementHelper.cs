@@ -137,7 +137,19 @@ namespace Frontenac.Blueprints.Util
             if (aKeys.Intersect(bKeys).LongCount() == bKeys.LongCount() && bKeys.Intersect(aKeys).LongCount() == aKeys.LongCount())
 // ReSharper restore PossibleMultipleEnumeration
             {
-                return aKeys.All(key => a.GetProperty(key).Equals(b.GetProperty(key)));
+                return aKeys.All(key =>
+                    {
+                        bool result;
+                        var aVal = a.GetProperty(key);
+                        var bVal = b.GetProperty(key);
+                        if (Portability.IsNumber(aVal) && Portability.IsNumber(bVal))
+                            result = Convert.ToDouble(aVal).CompareTo(Convert.ToDouble(bVal)) == 0;
+                        else if (aVal != null)
+                            result = aVal.Equals(bVal);
+                        else
+                            result = bVal == null;
+                        return result;
+                    });
             }
 
             return false;

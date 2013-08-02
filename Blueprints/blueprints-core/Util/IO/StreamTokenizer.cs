@@ -573,6 +573,8 @@ namespace Frontenac.Blueprints.Util.IO
                 }
                 NumberValue = neg ? -v : v;
                 StringValue = NumberValue.ToString(CultureInfo.InvariantCulture);
+                if (seendot == 1 && NumberValue.CompareTo(Math.Abs(NumberValue)) == 0)
+                    StringValue += ".0";
                 return Ttype = TtNumber;
             }
 

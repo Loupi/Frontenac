@@ -174,11 +174,10 @@ namespace Frontenac.Blueprints.Util.IO.GML
                 {
                     if (type == StreamTokenizer.TtNumber)
                     {
-                        double doubleValue = st.NumberValue;
-                        
-                        if (doubleValue == Math.Floor(doubleValue))
-                            return (int)doubleValue;
-                        return doubleValue;
+                        int intVal;
+                        if (int.TryParse(st.StringValue, out intVal))
+                            return intVal;
+                        return st.NumberValue;
                     }
                     if (type == '[')
                         return ParseMap(key, st);
@@ -197,7 +196,7 @@ namespace Frontenac.Blueprints.Util.IO.GML
                 if (NotLineBreak(type))
                 {
                     if (type == StreamTokenizer.TtNumber)
-                        return st.NumberValue == 1.0;
+                        return st.NumberValue.CompareTo(1.0) == 0;
                 }
             }
             throw new IOException("boolean not found");
