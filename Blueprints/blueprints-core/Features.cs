@@ -206,7 +206,7 @@ namespace Frontenac.Blueprints
         {
             var fields = GetType()
                 .GetProperties()
-                .Select(t => string.Format("{0}: {1}", t.Name, t.GetValue(this)));
+                .Select(t => string.Format("{0}: {1}", t.Name, t.GetValue(this, null)));
 
             return string.Join("\n", fields);
         }
@@ -215,7 +215,7 @@ namespace Frontenac.Blueprints
         {
             var fields = GetType()
                .GetProperties()
-               .ToDictionary(t => t.Name, t => t.GetValue(this));
+               .ToDictionary(t => t.Name, t => t.GetValue(this, null));
 
             return fields;
         }
