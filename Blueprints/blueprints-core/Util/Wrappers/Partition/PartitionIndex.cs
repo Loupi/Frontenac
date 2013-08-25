@@ -15,14 +15,14 @@ namespace Frontenac.Blueprints.Util.Wrappers.Partition
             Graph = graph;
         }
 
-        public string GetIndexName()
+        public string Name
         {
-            return RawIndex.GetIndexName();
+            get { return RawIndex.Name; }
         }
 
-        public Type GetIndexClass()
+        public Type Type
         {
-            return RawIndex.GetIndexClass();
+            get { return RawIndex.Type; }
         }
 
         public long Count(string key, object value)
@@ -46,14 +46,14 @@ namespace Frontenac.Blueprints.Util.Wrappers.Partition
 
         public ICloseableIterable<IElement> Get(string key, object value)
         {
-            if (typeof(IVertex).IsAssignableFrom(GetIndexClass()))
+            if (typeof(IVertex).IsAssignableFrom(Type))
                 return new PartitionVertexIterable((IEnumerable<IVertex>)RawIndex.Get(key, value), Graph);
             return new PartitionEdgeIterable((IEnumerable<IEdge>)RawIndex.Get(key, value), Graph);
         }
 
         public ICloseableIterable<IElement> Query(string key, object value)
         {
-            if (typeof(IVertex).IsAssignableFrom(GetIndexClass()))
+            if (typeof(IVertex).IsAssignableFrom(Type))
                 return new PartitionVertexIterable((IEnumerable<IVertex>)RawIndex.Query(key, value), Graph);
             return new PartitionEdgeIterable((IEnumerable<IEdge>)RawIndex.Query(key, value), Graph);
         }

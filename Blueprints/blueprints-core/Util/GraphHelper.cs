@@ -54,17 +54,17 @@ namespace Frontenac.Blueprints.Util
         /// <param name="to">the graph to copy to</param>
         public static void CopyGraph(IGraph from, IGraph to)
         {
-            foreach (IVertex fromVertex in from.GetVertices())
+            foreach (IVertex fromVertex in @from.GetVertices())
             {
-                IVertex toVertex = to.AddVertex(fromVertex.GetId());
+                IVertex toVertex = to.AddVertex(fromVertex.Id);
                 ElementHelper.CopyProperties(fromVertex, toVertex);
             }
 
             foreach (IEdge fromEdge in from.GetEdges())
             {
-                IVertex outVertex = to.GetVertex(fromEdge.GetVertex(Direction.Out).GetId());
-                IVertex inVertex = to.GetVertex(fromEdge.GetVertex(Direction.In).GetId());
-                IEdge toEdge = to.AddEdge(fromEdge.GetId(), outVertex, inVertex, fromEdge.GetLabel());
+                IVertex outVertex = to.GetVertex(fromEdge.GetVertex(Direction.Out).Id);
+                IVertex inVertex = to.GetVertex(fromEdge.GetVertex(Direction.In).Id);
+                IEdge toEdge = to.AddEdge(fromEdge.Id, outVertex, inVertex, fromEdge.Label);
                 ElementHelper.CopyProperties(fromEdge, toEdge);
             }
         }

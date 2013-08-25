@@ -20,6 +20,6 @@
         /// Return the label associated with the edge.
         /// </summary>
         /// <returns>the edge label</returns>
-        string GetLabel();
+        string Label { get; }
     }
 }

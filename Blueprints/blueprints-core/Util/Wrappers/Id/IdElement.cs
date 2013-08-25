@@ -53,11 +53,14 @@ namespace Frontenac.Blueprints.Util.Wrappers.Id
             return BaseElement.RemoveProperty(key);
         }
 
-        public object GetId()
+        public object Id
         {
-            return PropertyBased
-                ? BaseElement.GetProperty(IdGraph.Id)
-                : BaseElement.GetId();
+            get
+            {
+                return PropertyBased
+                           ? BaseElement.GetProperty(IdGraph.Id)
+                           : BaseElement.Id;
+            }
         }
 
         public override int GetHashCode()

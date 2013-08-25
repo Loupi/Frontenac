@@ -9,7 +9,7 @@ namespace Frontenac.Blueprints.Util
     /// Useful for graph implementations that do no support automatic key indices and need to filter on Graph.getVertices/Edges(key,value).
     /// </summary>
     /// <typeparam name="T"></typeparam>
-    public class PropertyFilteredIterable<T> : ICloseableIterable<T> where T : IElement
+    public class PropertyFilteredIterable<T> : ICloseableIterable<T> where T : class, IElement
     {
         readonly string _key;
         readonly object _value;
@@ -58,7 +58,7 @@ namespace Frontenac.Blueprints.Util
             return (this as IEnumerable<T>).GetEnumerator();
         }
 
-        class PropertyFilteredIterableIterable<TU> : IEnumerable<TU> where TU : IElement
+        class PropertyFilteredIterableIterable<TU> : IEnumerable<TU> where TU : class, IElement
         {
             readonly PropertyFilteredIterable<TU> _propertyFilteredIterable;
             readonly IEnumerator<TU> _itty;
@@ -86,7 +86,7 @@ namespace Frontenac.Blueprints.Util
                         {
                             TU element = _itty.Current;
                             if (element.GetPropertyKeys().Contains(_propertyFilteredIterable._key) &&
-                                element.GetProperty(_propertyFilteredIterable._key).Equals(_propertyFilteredIterable._value))
+                                AreEqual(element.GetProperty(_propertyFilteredIterable._key), _propertyFilteredIterable._value))
                                 yield return element;
                         }
                     }
@@ -103,7 +103,7 @@ namespace Frontenac.Blueprints.Util
                     object temp = element.GetProperty(_propertyFilteredIterable._key);
                     if (null != temp)
                     {
-                        if (temp.Equals(_propertyFilteredIterable._value))
+                        if (AreEqual(temp, _propertyFilteredIterable._value))
                         {
                             _nextElement = element;
                             return true;
@@ -126,6 +126,17 @@ namespace Frontenac.Blueprints.Util
             System.Collections.IEnumerator System.Collections.IEnumerable.GetEnumerator()
             {
                 return GetEnumerator();
+            }
+
+            bool AreEqual(object aVal, object bVal)
+            {
+                if (aVal == null && bVal == null)
+                    return true;
+                if ((aVal == null) || (bVal == null))
+                    return false;
+                if (Portability.IsNumber(aVal) && Portability.IsNumber(bVal))
+                    return Convert.ToDouble(aVal).CompareTo(Convert.ToDouble(bVal)) == 0;
+                return aVal.Equals(bVal);
             }
         }
     }

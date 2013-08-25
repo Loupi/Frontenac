@@ -1,5 +1,4 @@
-﻿using System;
-using Frontenac.Blueprints.Util.IO.GraphML;
+﻿using Frontenac.Blueprints.Util.IO.GraphML;
 using NUnit.Framework;
 
 namespace Frontenac.Blueprints.Impls.TG
@@ -18,7 +17,8 @@ namespace Frontenac.Blueprints.Impls.TG
         public void TestTinkerGraph()
         {
             double totalTime = 0.0d;
-            using(var graph = GraphTest.GenerateGraph())
+            var graph = GraphTest.GenerateGraph();
+            try
             {
                 using (var stream = typeof(GraphMlReader).Assembly.GetManifestResourceStream(typeof(GraphMlReader), "graph-example-2.xml"))
                 {
@@ -55,6 +55,10 @@ namespace Frontenac.Blueprints.Impls.TG
                     totalTime = totalTime + currentTime;
                     PrintPerformance(graph.ToString(), counter, "TinkerGraph elements touched", currentTime);
                 }
+            }
+            finally
+            {
+                graph.Shutdown();
             }
             
             PrintPerformance("TinkerGraph", 1, "TinkerGraph experiment average", (long)(totalTime / TotalRuns));

@@ -19,12 +19,12 @@
 
         public static string VertexString(IVertex vertex)
         {
-            return string.Concat(V, LBracket, vertex.GetId(), RBracket);
+            return string.Concat(V, LBracket, vertex.Id, RBracket);
         }
 
         public static string EdgeString(IEdge edge)
         {
-            return string.Concat(E, LBracket, edge.GetId(), RBracket, LBracket, edge.GetVertex(Direction.Out).GetId(), Dash, edge.GetLabel(), Arrow, edge.GetVertex(Direction.In).GetId(), RBracket);
+            return string.Concat(E, LBracket, edge.Id, RBracket, LBracket, edge.GetVertex(Direction.Out).Id, Dash, edge.Label, Arrow, edge.GetVertex(Direction.In).Id, RBracket);
         }
 
         public static string GraphString(IGraph graph, string internalString)
@@ -34,7 +34,7 @@
 
         public static string IndexString(IIndex index)
         {
-            return string.Concat("index", LBracket, index.GetIndexName(), Colon, index.GetIndexClass().Name, RBracket);
+            return string.Concat("index", LBracket, index.Name, Colon, index.Type.Name, RBracket);
         }
     }
 }

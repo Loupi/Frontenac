@@ -59,7 +59,7 @@ namespace Frontenac.Blueprints.Util.IO.GraphSON
 
             IEdge e = graph.GetEdge(100);
             Assert.NotNull(e);
-            Assert.AreEqual("works", e.GetLabel());
+            Assert.AreEqual("works", e.Label);
             Assert.AreEqual(v1, e.GetVertex(Direction.Out));
             Assert.AreEqual(v2, e.GetVertex(Direction.In));
             Assert.AreEqual("please worke", e.GetProperty("teste"));
@@ -113,7 +113,7 @@ namespace Frontenac.Blueprints.Util.IO.GraphSON
 
             IEdge e = graph.GetEdge(100);
             Assert.NotNull(e);
-            Assert.AreEqual("works", e.GetLabel());
+            Assert.AreEqual("works", e.Label);
             Assert.AreEqual(v1, e.GetVertex(Direction.Out));
             Assert.AreEqual(v2, e.GetVertex(Direction.In));
             Assert.AreEqual("please worke", e.GetProperty("teste"));
@@ -167,7 +167,7 @@ namespace Frontenac.Blueprints.Util.IO.GraphSON
 
             IEdge e = graph.GetEdge(100);
             Assert.NotNull(e);
-            Assert.AreEqual("works", e.GetLabel());
+            Assert.AreEqual("works", e.Label);
             Assert.AreEqual(v1, e.GetVertex(Direction.Out));
             Assert.AreEqual(v2, e.GetVertex(Direction.In));
             Assert.AreEqual("please worke", e.GetProperty("teste"));
@@ -196,7 +196,7 @@ namespace Frontenac.Blueprints.Util.IO.GraphSON
 
             foreach (IVertex v in graph.GetVertices())
             {
-                IVertex found = emptyGraph.GetVertex(v.GetId());
+                IVertex found = emptyGraph.GetVertex(v.Id);
 
                 Assert.NotNull(v);
 
@@ -208,7 +208,7 @@ namespace Frontenac.Blueprints.Util.IO.GraphSON
 
             foreach (IEdge e in graph.GetEdges())
             {
-                IEdge found = emptyGraph.GetEdge(e.GetId());
+                IEdge found = emptyGraph.GetEdge(e.Id);
 
                 Assert.NotNull(e);
 
@@ -250,7 +250,7 @@ namespace Frontenac.Blueprints.Util.IO.GraphSON
 
             foreach (IVertex v in graph.GetVertices())
             {
-                IVertex found = emptyGraph.GetVertex(v.GetId());
+                IVertex found = emptyGraph.GetVertex(v.Id);
 
                 Assert.NotNull(v);
 
@@ -265,7 +265,7 @@ namespace Frontenac.Blueprints.Util.IO.GraphSON
 
             foreach (IEdge e in graph.GetEdges())
             {
-                IEdge found = emptyGraph.GetEdge(e.GetId());
+                IEdge found = emptyGraph.GetEdge(e.Id);
 
                 Assert.NotNull(e);
 

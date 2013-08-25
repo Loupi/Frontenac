@@ -942,7 +942,7 @@ namespace Frontenac.Blueprints.Util.IO.GraphSON
             Assert.AreSame(v, g.GetVertex(1));
 
             // tinkergraph converts id to string
-            Assert.AreEqual("1", v.GetId());
+            Assert.AreEqual("1", v.Id);
             Assert.AreEqual("marko", v.GetProperty("name"));
             Assert.AreEqual(29, v.GetProperty("age"));
         }
@@ -958,7 +958,7 @@ namespace Frontenac.Blueprints.Util.IO.GraphSON
             Assert.AreSame(v, g.GetVertex(1));
 
             // tinkergraph converts id to string
-            Assert.AreEqual("1", v.GetId());
+            Assert.AreEqual("1", v.Id);
             Assert.AreEqual("marko", v.GetProperty("name"));
             Assert.AreEqual(29, v.GetProperty("age"));
         }
@@ -974,7 +974,7 @@ namespace Frontenac.Blueprints.Util.IO.GraphSON
             Assert.AreSame(v, g.GetVertex(1));
 
             // tinkergraph converts id to string
-            Assert.AreEqual("1", v.GetId());
+            Assert.AreEqual("1", v.Id);
             Assert.AreEqual("marko", v.GetProperty("name"));
             Assert.AreEqual(29, v.GetProperty("age"));
         }
@@ -993,7 +993,7 @@ namespace Frontenac.Blueprints.Util.IO.GraphSON
             Assert.AreSame(v, g.GetVertex(1));
 
             // tinkergraph converts id to string
-            Assert.AreEqual("1", v.GetId());
+            Assert.AreEqual("1", v.Id);
             Assert.AreEqual("marko", v.GetProperty("name"));
             Assert.Null(v.GetProperty("age"));
         }
@@ -1013,9 +1013,9 @@ namespace Frontenac.Blueprints.Util.IO.GraphSON
             Assert.AreSame(e, g.GetEdge(7));
 
             // tinkergraph converts id to string
-            Assert.AreEqual("7", e.GetId());
+            Assert.AreEqual("7", e.Id);
             Assert.AreEqual(0.5d, e.GetProperty("weight"));
-            Assert.AreEqual("knows", e.GetLabel());
+            Assert.AreEqual("knows", e.Label);
             Assert.AreEqual(v1, e.GetVertex(Direction.Out));
             Assert.AreEqual(v2, e.GetVertex(Direction.In));
         }
@@ -1035,9 +1035,9 @@ namespace Frontenac.Blueprints.Util.IO.GraphSON
             Assert.AreSame(e, g.GetEdge(7));
 
             // tinkergraph converts id to string
-            Assert.AreEqual("7", e.GetId());
+            Assert.AreEqual("7", e.Id);
             Assert.AreEqual(0.5d, e.GetProperty("weight"));
-            Assert.AreEqual("knows", e.GetLabel());
+            Assert.AreEqual("knows", e.Label);
             Assert.AreEqual(v1, e.GetVertex(Direction.Out));
             Assert.AreEqual(v2, e.GetVertex(Direction.In));
         }
@@ -1061,9 +1061,9 @@ namespace Frontenac.Blueprints.Util.IO.GraphSON
             Assert.AreSame(e, g.GetEdge(7));
 
             // tinkergraph converts id to string
-            Assert.AreEqual("7", e.GetId());
+            Assert.AreEqual("7", e.Id);
             Assert.Null(e.GetProperty("weight"));
-            Assert.AreEqual("knows", e.GetLabel());
+            Assert.AreEqual("knows", e.Label);
             Assert.AreEqual(v1, e.GetVertex(Direction.Out));
             Assert.AreEqual(v2, e.GetVertex(Direction.In));
         }

@@ -12,38 +12,10 @@ namespace Frontenac.Blueprints.Util.Wrappers.Wrapped
         protected IGraph BaseGraph;
         readonly Features _features;
 
-        #region IDisposable members
-        bool _disposed;
-
-        ~WrappedGraph()
-        {
-            Dispose(false);
-        }
-
-        public void Dispose()
-        {
-            Dispose(true);
-            GC.SuppressFinalize(this);
-        }
-
-        protected virtual void Dispose(bool disposing)
-        {
-            if (_disposed)
-                return;
-
-            if (disposing)
-            {
-                BaseGraph.Dispose();
-            }
-
-            _disposed = true;
-        }
-        #endregion
-
         public WrappedGraph(IGraph baseGraph)
         {
             BaseGraph = baseGraph;
-            _features = BaseGraph.GetFeatures().CopyFeatures();
+            _features = BaseGraph.Features.CopyFeatures();
             _features.IsWrapper = true;
         }
 
@@ -122,9 +94,14 @@ namespace Frontenac.Blueprints.Util.Wrappers.Wrapped
             return StringFactory.GraphString(this, BaseGraph.ToString());
         }
 
-        public Features GetFeatures()
+        public Features Features
         {
-            return _features;
+            get { return _features; }
+        }
+
+        public void Shutdown()
+        {
+            BaseGraph.Shutdown();
         }
     }
 }

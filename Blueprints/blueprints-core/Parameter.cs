@@ -2,57 +2,42 @@
 {
     public class Parameter
     {
-        readonly object _key;
-        object _value;
-
         public Parameter(object key, object value)
         {
-            _key = key;
-            _value = value;
+            Key = key;
+            Value = value;
         }
 
-        public object GetKey()
-        {
-            return _key;
-        }
+        public object Key { get; protected set; }
 
-        public object GetValue()
-        {
-            return _value;
-        }
-
-        public object SetValue(object value)
-        {
-            _value = value;
-            return value;
-        }
+        public object Value { get; set; }
 
         public override bool Equals(object obj)
         {
             if (obj is Parameter)
             {
                 var param = obj as Parameter;
-                object otherKey = param.GetKey();
-                object otherValue = param.GetValue();
+                var otherKey = param.Key;
+                var otherValue = param.Value;
                 if (otherKey == null)
                 {
-                    if (_key != null)
+                    if (Key != null)
                         return false;
                 }
                 else
                 {
-                    if (!otherKey.Equals(_key))
+                    if (!otherKey.Equals(Key))
                         return false;
                 }
 
                 if (otherValue == null)
                 {
-                    if (_value != null)
+                    if (Value != null)
                         return false;
                 }
                 else
                 {
-                    if (!otherValue.Equals(_value))
+                    if (!otherValue.Equals(Value))
                         return false;
                 }
 
@@ -67,15 +52,15 @@
             const int prime = 31;
             int result = 1;
 // ReSharper disable NonReadonlyFieldInGetHashCode
-            result = prime * result + ((_key == null) ? 0 : _key.GetHashCode());
-            result = prime * result + ((_value == null) ? 0 : _value.GetHashCode());
+            result = prime * result + ((Key == null) ? 0 : Key.GetHashCode());
+            result = prime * result + ((Value == null) ? 0 : Value.GetHashCode());
 // ReSharper restore NonReadonlyFieldInGetHashCode
             return result;
         }
 
         public override string ToString()
         {
-            return string.Format("parameter[{0},{1}]", _key, _value);
+            return string.Format("parameter[{0},{1}]", Key, Value);
         }
     }
 
@@ -87,19 +72,12 @@
 
         }
 
-        public new TK GetKey()
-        {
-            return (TK)base.GetKey();
-        }
+        public new TK Key { get { return (TK) base.Key; } }
 
-        public new TV GetValue()
+        public new TV Value
         {
-            return (TV)base.GetValue();
-        }
-
-        public TV GetValue(TV value)
-        {
-            return (TV)SetValue(value);
+            get { return (TV) base.Value; }
+            set { base.Value = value; }
         }
     }
 }

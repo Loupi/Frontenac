@@ -23,38 +23,10 @@ namespace Frontenac.Blueprints.Util.Wrappers.Event
         protected readonly List<IGraphChangedListener> GraphChangedListeners = new List<IGraphChangedListener>();
         readonly Features _features;
 
-        #region IDisposable members
-        bool _disposed;
-
-        ~EventGraph()
-        {
-            Dispose(false);
-        }
-
-        public void Dispose()
-        {
-            Dispose(true);
-            GC.SuppressFinalize(this);
-        }
-
-        protected virtual void Dispose(bool disposing)
-        {
-            if (_disposed)
-                return;
-
-            if (disposing)
-            {
-                Shutdown();
-            }
-
-            _disposed = true;
-        }
-        #endregion
-
         public EventGraph(IGraph baseGraph)
         {
             BaseGraph = baseGraph;
-            _features = BaseGraph.GetFeatures().CopyFeatures();
+            _features = BaseGraph.Features.CopyFeatures();
             _features.IsWrapper = true;
 
             Trigger = new EventTrigger(this, false);
@@ -210,20 +182,13 @@ namespace Frontenac.Blueprints.Util.Wrappers.Event
                 t => new EventVertexIterable(t.Vertices(), this));
         }
 
-        void Shutdown()
+        public void Shutdown()
         {
-            try
-            {
-                BaseGraph.Dispose();
+            BaseGraph.Shutdown();
 
-                // TODO: hmmmmmm??
-                Trigger.FireEventQueue();
-                Trigger.ResetEventQueue();
-            }
-            catch
-            {
-
-            }
+            // TODO: hmmmmmm??
+            Trigger.FireEventQueue();
+            Trigger.ResetEventQueue();
         }
 
         public override string ToString()
@@ -236,9 +201,9 @@ namespace Frontenac.Blueprints.Util.Wrappers.Event
             return BaseGraph;
         }
 
-        public Features GetFeatures()
+        public Features Features
         {
-            return _features;
+            get { return _features; }
         }
     }
 }

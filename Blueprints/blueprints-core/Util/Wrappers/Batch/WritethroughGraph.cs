@@ -17,34 +17,6 @@ namespace Frontenac.Blueprints.Util.Wrappers.Batch
     {
         readonly IGraph _graph;
 
-        #region IDisposable members
-        bool _disposed;
-
-        ~WritethroughGraph()
-        {
-            Dispose(false);
-        }
-
-        public void Dispose()
-        {
-            Dispose(true);
-            GC.SuppressFinalize(this);
-        }
-
-        protected virtual void Dispose(bool disposing)
-        {
-            if (_disposed)
-                return;
-
-            if (disposing)
-            {
-                _graph.Dispose();
-            }
-
-            _disposed = true;
-        }
-        #endregion
-
         public WritethroughGraph(IGraph graph)
         {
             if (graph == null) throw new ArgumentException("Graph expected");
@@ -66,13 +38,16 @@ namespace Frontenac.Blueprints.Util.Wrappers.Batch
         /// <summary>
         /// Returns the features of the underlying graph but with transactions supported.
         /// </summary>
-        /// <returns>The features of the underlying graph but with transactions supported</returns>
-        public Features GetFeatures()
+        /// <value>The features of the underlying graph but with transactions supported</value>
+        public Features Features
         {
-            Features f = _graph.GetFeatures().CopyFeatures();
-            f.IsWrapper = true;
-            f.SupportsTransactions = true;
-            return f;
+            get
+            {
+                Features f = _graph.Features.CopyFeatures();
+                f.IsWrapper = true;
+                f.SupportsTransactions = true;
+                return f;
+            }
         }
 
         public IVertex AddVertex(object id)
@@ -130,9 +105,9 @@ namespace Frontenac.Blueprints.Util.Wrappers.Batch
             return _graph.GetEdges(key, value);
         }
 
-        protected virtual void Shutdown()
+        public virtual void Shutdown()
         {
-            _graph.Dispose();
+            _graph.Shutdown();
         }
 
         public IGraph GetBaseGraph()

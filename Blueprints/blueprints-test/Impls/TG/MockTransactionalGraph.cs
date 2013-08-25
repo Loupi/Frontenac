@@ -16,38 +16,15 @@ namespace Frontenac.Blueprints.Impls.TG
 
         readonly IGraph _graph;
 
-        #region IDisposable members
-        bool _disposed;
-
-        ~MockTransactionalGraph()
-        {
-            Dispose(false);
-        }
-
-        public void Dispose()
-        {
-            Dispose(true);
-            GC.SuppressFinalize(this);
-        }
-
-        protected virtual void Dispose(bool disposing)
-        {
-            if (_disposed)
-                return;
-
-            if (disposing)
-            {
-                if(_graph != null)
-                    _graph.Dispose();
-            }
-
-            _disposed = true;
-        }
-        #endregion
-
         public MockTransactionalGraph(IGraph graph)
         {
             _graph = graph;
+        }
+
+        public void Shutdown()
+        {
+            if(_graph != null)
+                _graph.Shutdown();
         }
 
         public void Rollback()
@@ -75,11 +52,14 @@ namespace Frontenac.Blueprints.Impls.TG
             return _numTransactionsAborted == 0;
         }
 
-        public Features GetFeatures()
+        public Features Features
         {
-            Features f = _graph.GetFeatures().CopyFeatures();
-            f.SupportsTransactions = true;
-            return f;
+            get
+            {
+                Features f = _graph.Features.CopyFeatures();
+                f.SupportsTransactions = true;
+                return f;
+            }
         }
 
         public IVertex AddVertex(object id)

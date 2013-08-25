@@ -18,29 +18,40 @@ namespace Frontenac.Blueprints
         [Test]
         public void TestFeatureCompliance()
         {
-            using (var graph = GraphTest.GenerateGraph())
+            var graph = GraphTest.GenerateGraph();
+            try
             {
-                graph.GetFeatures().CheckCompliance();
-                Console.WriteLine(graph.GetFeatures());
+                graph.Features.CheckCompliance();
+                Console.WriteLine(graph.Features);
+            }
+            finally
+            {
+                graph.Shutdown();
             }
         }
 
         [Test]
         public void TestEmptyOnConstruction()
         {
-            using (var graph = GraphTest.GenerateGraph())
+            var graph = GraphTest.GenerateGraph();
+            try
             {
-                if (graph.GetFeatures().SupportsVertexIteration)
+                if (graph.Features.SupportsVertexIteration)
                     Assert.AreEqual(0, Count(graph.GetVertices()));
-                if (graph.GetFeatures().SupportsEdgeIteration)
+                if (graph.Features.SupportsEdgeIteration)
                     Assert.AreEqual(0, Count(graph.GetEdges()));
+            }
+            finally
+            {
+                graph.Shutdown();
             }
         }
 
         [Test]
         public void TestStringRepresentation()
         {
-            using (var graph = GraphTest.GenerateGraph())
+            var graph = GraphTest.GenerateGraph();
+            try
             {
                 try
                 {
@@ -54,59 +65,74 @@ namespace Frontenac.Blueprints
                     Assert.False(true);
                 }
             }
+            finally
+            {
+                graph.Shutdown();
+            }
         }
 
         [Test]
         public void TestStringRepresentationOfVertexId()
         {
-            using (var graph = GraphTest.GenerateGraph())
+            var graph = GraphTest.GenerateGraph();
+            try
             {
                 IVertex a = graph.AddVertex(null);
-                object id = a.GetId();
+                object id = a.Id;
                 IVertex b = graph.GetVertex(id);
                 IVertex c = graph.GetVertex(id.ToString());
                 Assert.AreEqual(a, b);
                 Assert.AreEqual(b, c);
                 Assert.AreEqual(c, a);
             }
+            finally
+            {
+                graph.Shutdown();
+            }
         }
 
         [Test]
         public void TestSemanticallyCorrectIterables()
         {
-            using (var graph = GraphTest.GenerateGraph())
+            var graph = GraphTest.GenerateGraph();
+            try
             {
                 for (int i = 0; i < 15; i++)
                 {
                     graph.AddEdge(null, graph.AddVertex(null), graph.AddVertex(null), ConvertId(graph, "knows"));
                 }
 
-                if (graph.GetFeatures().SupportsVertexIteration)
+                if (graph.Features.SupportsVertexIteration)
                 {
-                    IEnumerable<IVertex> vertices = graph.GetVertices();
+                    IEnumerable<IVertex> vertices = graph.GetVertices().ToArray();
                     Assert.AreEqual(Count(vertices), 30);
                     Assert.AreEqual(Count(vertices), 30);
                     int counter = vertices.Count();
                     Assert.AreEqual(counter, 30);
                 }
 
-                if (graph.GetFeatures().SupportsEdgeIteration)
+                if (graph.Features.SupportsEdgeIteration)
                 {
-                    IEnumerable<IEdge> edges = graph.GetEdges();
+                    IEnumerable<IEdge> edges = graph.GetEdges().ToArray();
                     Assert.AreEqual(Count(edges), 15);
                     Assert.AreEqual(Count(edges), 15);
                     int counter = edges.Count();
                     Assert.AreEqual(counter, 15);
                 }
             }
+            finally
+            {
+                graph.Shutdown();
+            }
         }
 
         [Test]
         public void TestGettingVerticesAndEdgesWithKeyValue()
         {
-            using (var graph = GraphTest.GenerateGraph())
+            var graph = GraphTest.GenerateGraph();
+            try
             {
-                if (graph.GetFeatures().SupportsVertexProperties)
+                if (graph.Features.SupportsVertexProperties)
                 {
                     IVertex v1 = graph.AddVertex(null);
                     v1.SetProperty("name", "marko");
@@ -115,7 +141,7 @@ namespace Frontenac.Blueprints
                     v2.SetProperty("name", "stephen");
                     v2.SetProperty("location", "everywhere");
 
-                    if (graph.GetFeatures().SupportsVertexIteration)
+                    if (graph.Features.SupportsVertexIteration)
                     {
                         Assert.AreEqual(Count(graph.GetVertices("location", "everywhere")), 2);
                         Assert.AreEqual(Count(graph.GetVertices("name", "marko")), 1);
@@ -125,7 +151,7 @@ namespace Frontenac.Blueprints
                     }
                 }
 
-                if (graph.GetFeatures().SupportsEdgeProperties)
+                if (graph.Features.SupportsEdgeProperties)
                 {
                     IEdge e1 = graph.AddEdge(null, graph.AddVertex(null), graph.AddVertex(null),
                                              ConvertId(graph, "knows"));
@@ -136,7 +162,7 @@ namespace Frontenac.Blueprints
                     e2.SetProperty("name", "stephen");
                     e2.SetProperty("location", "everywhere");
 
-                    if (graph.GetFeatures().SupportsEdgeIteration)
+                    if (graph.Features.SupportsEdgeIteration)
                     {
                         Assert.AreEqual(Count(graph.GetEdges("location", "everywhere")), 2);
                         Assert.AreEqual(Count(graph.GetEdges("name", "marko")), 1);
@@ -146,28 +172,33 @@ namespace Frontenac.Blueprints
                     }
                 }
             }
+            finally
+            {
+                graph.Shutdown();
+            }
         }
 
         [Test]
         public void TestAddingVerticesAndEdges()
         {
-            using (var graph = GraphTest.GenerateGraph())
+            var graph = GraphTest.GenerateGraph();
+            try
             {
                 var a = graph.AddVertex(null);
                 var b = graph.AddVertex(null);
                 var edge = graph.AddEdge(null, a, b, ConvertId(graph, "knows"));
 
-                if (graph.GetFeatures().SupportsEdgeIteration)
+                if (graph.Features.SupportsEdgeIteration)
                     Assert.AreEqual(1, Count(graph.GetEdges()));
 
-                if (graph.GetFeatures().SupportsVertexIteration)
+                if (graph.Features.SupportsVertexIteration)
                     Assert.AreEqual(2, Count(graph.GetVertices()));
 
                 graph.RemoveVertex(a);
-                if (graph.GetFeatures().SupportsEdgeIteration)
+                if (graph.Features.SupportsEdgeIteration)
                     Assert.AreEqual(0, Count(graph.GetEdges()));
 
-                if (graph.GetFeatures().SupportsVertexIteration)
+                if (graph.Features.SupportsVertexIteration)
                     Assert.AreEqual(1, Count(graph.GetVertices()));
 
                 try
@@ -180,20 +211,25 @@ namespace Frontenac.Blueprints
                     Assert.True(true);
                 }
 
-                if (graph.GetFeatures().SupportsEdgeIteration)
+                if (graph.Features.SupportsEdgeIteration)
                     Assert.AreEqual(0, Count(graph.GetEdges()));
 
-                if (graph.GetFeatures().SupportsVertexIteration)
+                if (graph.Features.SupportsVertexIteration)
                     Assert.AreEqual(1, Count(graph.GetVertices()));
+            }
+            finally
+            {
+                graph.Shutdown();
             }
         }
 
         [Test]
         public void TestSettingProperties()
         {
-            using (var graph = GraphTest.GenerateGraph())
+            var graph = GraphTest.GenerateGraph();
+            try
             {
-                if (graph.GetFeatures().SupportsEdgeProperties)
+                if (graph.Features.SupportsEdgeProperties)
                 {
                     IVertex a = graph.AddVertex(null);
                     IVertex b = graph.AddVertex(null);
@@ -203,107 +239,116 @@ namespace Frontenac.Blueprints
                         edge.SetProperty("key", "value");
                 }
             }
+            finally
+            {
+                graph.Shutdown();
+            }
         }
 
         [Test]
         public void TestDataTypeValidationOnProperties()
         {
-            using (var graph = GraphTest.GenerateGraph())
+            var graph = GraphTest.GenerateGraph();
+            try
             {
-                if (graph.GetFeatures().SupportsElementProperties() && !graph.GetFeatures().IsWrapper)
+                if (graph.Features.SupportsElementProperties() && !graph.Features.IsWrapper)
                 {
                     IVertex vertexA = graph.AddVertex(null);
                     IVertex vertexB = graph.AddVertex(null);
                     IEdge edge = graph.AddEdge(null, vertexA, vertexB, ConvertId(graph, "knows"));
 
-                    TrySetProperty(vertexA, "keyString", "value", graph.GetFeatures().SupportsStringProperty);
-                    TrySetProperty(edge, "keyString", "value", graph.GetFeatures().SupportsStringProperty);
+                    TrySetProperty(vertexA, "keyString", "value", graph.Features.SupportsStringProperty);
+                    TrySetProperty(edge, "keyString", "value", graph.Features.SupportsStringProperty);
 
-                    TrySetProperty(vertexA, "keyInteger", 100, graph.GetFeatures().SupportsIntegerProperty);
-                    TrySetProperty(edge, "keyInteger", 100, graph.GetFeatures().SupportsIntegerProperty);
+                    TrySetProperty(vertexA, "keyInteger", 100, graph.Features.SupportsIntegerProperty);
+                    TrySetProperty(edge, "keyInteger", 100, graph.Features.SupportsIntegerProperty);
 
-                    TrySetProperty(vertexA, "keyLong", 10000L, graph.GetFeatures().SupportsLongProperty);
-                    TrySetProperty(edge, "keyLong", 10000L, graph.GetFeatures().SupportsLongProperty);
+                    TrySetProperty(vertexA, "keyLong", 10000L, graph.Features.SupportsLongProperty);
+                    TrySetProperty(edge, "keyLong", 10000L, graph.Features.SupportsLongProperty);
 
-                    TrySetProperty(vertexA, "keyDouble", 100.321d, graph.GetFeatures().SupportsDoubleProperty);
-                    TrySetProperty(edge, "keyDouble", 100.321d, graph.GetFeatures().SupportsDoubleProperty);
+                    TrySetProperty(vertexA, "keyDouble", 100.321d, graph.Features.SupportsDoubleProperty);
+                    TrySetProperty(edge, "keyDouble", 100.321d, graph.Features.SupportsDoubleProperty);
 
-                    TrySetProperty(vertexA, "keyFloat", 100.321f, graph.GetFeatures().SupportsFloatProperty);
-                    TrySetProperty(edge, "keyFloat", 100.321f, graph.GetFeatures().SupportsFloatProperty);
+                    TrySetProperty(vertexA, "keyFloat", 100.321f, graph.Features.SupportsFloatProperty);
+                    TrySetProperty(edge, "keyFloat", 100.321f, graph.Features.SupportsFloatProperty);
 
-                    TrySetProperty(vertexA, "keyBoolean", true, graph.GetFeatures().SupportsBooleanProperty);
-                    TrySetProperty(edge, "keyBoolean", true, graph.GetFeatures().SupportsBooleanProperty);
+                    TrySetProperty(vertexA, "keyBoolean", true, graph.Features.SupportsBooleanProperty);
+                    TrySetProperty(edge, "keyBoolean", true, graph.Features.SupportsBooleanProperty);
 
                     TrySetProperty(vertexA, "keyDate", new DateTime(),
-                                   graph.GetFeatures().SupportsSerializableObjectProperty);
+                                   graph.Features.SupportsSerializableObjectProperty);
                     TrySetProperty(edge, "keyDate", new DateTime(),
-                                   graph.GetFeatures().SupportsSerializableObjectProperty);
+                                   graph.Features.SupportsSerializableObjectProperty);
 
                     var listA = new List<string> {"try1", "try2"};
 
-                    TrySetProperty(vertexA, "keyListString", listA, graph.GetFeatures().SupportsUniformListProperty);
-                    TrySetProperty(edge, "keyListString", listA, graph.GetFeatures().SupportsUniformListProperty);
+                    TrySetProperty(vertexA, "keyListString", listA, graph.Features.SupportsUniformListProperty);
+                    TrySetProperty(edge, "keyListString", listA, graph.Features.SupportsUniformListProperty);
 
                     var listB = new List<object> {"try1", 2};
 
-                    TrySetProperty(vertexA, "keyListMixed", listB, graph.GetFeatures().SupportsMixedListProperty);
-                    TrySetProperty(edge, "keyListMixed", listB, graph.GetFeatures().SupportsMixedListProperty);
+                    TrySetProperty(vertexA, "keyListMixed", listB, graph.Features.SupportsMixedListProperty);
+                    TrySetProperty(edge, "keyListMixed", listB, graph.Features.SupportsMixedListProperty);
 
                     TrySetProperty(vertexA, "keyArrayString", new[] {"try1", "try2"},
-                                   graph.GetFeatures().SupportsPrimitiveArrayProperty);
+                                   graph.Features.SupportsPrimitiveArrayProperty);
                     TrySetProperty(edge, "keyArrayString", new[] {"try1", "try2"},
-                                   graph.GetFeatures().SupportsPrimitiveArrayProperty);
+                                   graph.Features.SupportsPrimitiveArrayProperty);
 
                     TrySetProperty(vertexA, "keyArrayInteger", new[] {1, 2},
-                                   graph.GetFeatures().SupportsPrimitiveArrayProperty);
+                                   graph.Features.SupportsPrimitiveArrayProperty);
                     TrySetProperty(edge, "keyArrayInteger", new[] {1, 2},
-                                   graph.GetFeatures().SupportsPrimitiveArrayProperty);
+                                   graph.Features.SupportsPrimitiveArrayProperty);
 
                     TrySetProperty(vertexA, "keyArrayLong", new long[] {1000, 2000},
-                                   graph.GetFeatures().SupportsPrimitiveArrayProperty);
+                                   graph.Features.SupportsPrimitiveArrayProperty);
                     TrySetProperty(edge, "keyArrayLong", new long[] {1000, 2000},
-                                   graph.GetFeatures().SupportsPrimitiveArrayProperty);
+                                   graph.Features.SupportsPrimitiveArrayProperty);
 
                     TrySetProperty(vertexA, "keyArrayFloat", new[] {1000.321f, 2000.321f},
-                                   graph.GetFeatures().SupportsPrimitiveArrayProperty);
+                                   graph.Features.SupportsPrimitiveArrayProperty);
                     TrySetProperty(edge, "keyArrayFloat", new[] {1000.321f, 2000.321f},
-                                   graph.GetFeatures().SupportsPrimitiveArrayProperty);
+                                   graph.Features.SupportsPrimitiveArrayProperty);
 
                     TrySetProperty(vertexA, "keyArrayDouble", new[] {1000.321d, 2000.321d},
-                                   graph.GetFeatures().SupportsPrimitiveArrayProperty);
+                                   graph.Features.SupportsPrimitiveArrayProperty);
                     TrySetProperty(edge, "keyArrayDouble", new[] {1000.321d, 2000.321d},
-                                   graph.GetFeatures().SupportsPrimitiveArrayProperty);
+                                   graph.Features.SupportsPrimitiveArrayProperty);
 
                     TrySetProperty(vertexA, "keyArrayBoolean", new[] {false, true},
-                                   graph.GetFeatures().SupportsPrimitiveArrayProperty);
+                                   graph.Features.SupportsPrimitiveArrayProperty);
                     TrySetProperty(edge, "keyArrayBoolean", new[] {false, true},
-                                   graph.GetFeatures().SupportsPrimitiveArrayProperty);
+                                   graph.Features.SupportsPrimitiveArrayProperty);
 
                     TrySetProperty(vertexA, "keyArrayEmpty", new int[0],
-                                   graph.GetFeatures().SupportsPrimitiveArrayProperty);
-                    TrySetProperty(edge, "keyArrayEmpty", new int[0], graph.GetFeatures().SupportsPrimitiveArrayProperty);
+                                   graph.Features.SupportsPrimitiveArrayProperty);
+                    TrySetProperty(edge, "keyArrayEmpty", new int[0], graph.Features.SupportsPrimitiveArrayProperty);
 
                     var map = new Dictionary<string, string>();
                     map.Put("testString", "try");
                     map.Put("testInteger", "string");
 
-                    TrySetProperty(vertexA, "keyMap", map, graph.GetFeatures().SupportsMapProperty);
-                    TrySetProperty(edge, "keyMap", map, graph.GetFeatures().SupportsMapProperty);
+                    TrySetProperty(vertexA, "keyMap", map, graph.Features.SupportsMapProperty);
+                    TrySetProperty(edge, "keyMap", map, graph.Features.SupportsMapProperty);
 
                     var mockSerializable = new MockSerializable();
                     mockSerializable.SetTestField("test");
                     TrySetProperty(vertexA, "keySerializable", mockSerializable,
-                                   graph.GetFeatures().SupportsSerializableObjectProperty);
+                                   graph.Features.SupportsSerializableObjectProperty);
                     TrySetProperty(edge, "keySerializable", mockSerializable,
-                                   graph.GetFeatures().SupportsSerializableObjectProperty);
+                                   graph.Features.SupportsSerializableObjectProperty);
 
                 }
+            }
+            finally
+            {
+                graph.Shutdown();
             }
         }
 
         static void TrySetProperty(IElement element, string key, object value, bool allowDataType)
         {
-            bool exceptionTossed = false;
+            var exceptionTossed = false;
             try
             {
                 element.SetProperty(key, value);
@@ -324,16 +369,17 @@ namespace Frontenac.Blueprints
         [Test]
         public void TestSimpleRemovingVerticesEdges()
         {
-            using (var graph = GraphTest.GenerateGraph())
+            var graph = GraphTest.GenerateGraph();
+            try
             {
                 IVertex v = graph.AddVertex(null);
                 IVertex u = graph.AddVertex(null);
                 IEdge e = graph.AddEdge(null, v, u, ConvertId(graph, "knows"));
 
-                if (graph.GetFeatures().SupportsVertexIteration)
+                if (graph.Features.SupportsVertexIteration)
                     Assert.AreEqual(Count(graph.GetVertices()), 2);
 
-                if (graph.GetFeatures().SupportsEdgeIteration)
+                if (graph.Features.SupportsEdgeIteration)
                     Assert.AreEqual(Count(graph.GetEdges()), 1);
 
                 Assert.AreEqual(v.GetEdges(Direction.Out).First().GetVertex(Direction.In), u);
@@ -344,18 +390,23 @@ namespace Frontenac.Blueprints
                 //TODO: DEX
                 //assertFalse(v.getEdges(direction.OUT).iterator().hasNext());
 
-                if (graph.GetFeatures().SupportsVertexIteration)
+                if (graph.Features.SupportsVertexIteration)
                     Assert.AreEqual(Count(graph.GetVertices()), 1);
 
-                if (graph.GetFeatures().SupportsEdgeIteration)
+                if (graph.Features.SupportsEdgeIteration)
                     Assert.AreEqual(Count(graph.GetEdges()), 0);
+            }
+            finally
+            {
+                graph.Shutdown();
             }
         }
 
         [Test]
         public void TestRemovingEdges()
         {
-            using (var graph = GraphTest.GenerateGraph())
+            var graph = GraphTest.GenerateGraph();
+            try
             {
                 const int vertexCount = 100;
                 const int edgeCount = 200;
@@ -383,20 +434,25 @@ namespace Frontenac.Blueprints
                     counter = counter + 1;
                     graph.RemoveEdge(e);
 
-                    if (graph.GetFeatures().SupportsEdgeIteration)
+                    if (graph.Features.SupportsEdgeIteration)
                         Assert.AreEqual(edges.Count() - counter, Count(graph.GetEdges()));
 
-                    if (graph.GetFeatures().SupportsVertexIteration)
+                    if (graph.Features.SupportsVertexIteration)
                         Assert.AreEqual(vertices.Count(), Count(graph.GetVertices()));
                 }
                 PrintPerformance(graph.ToString(), edgeCount, "edges deleted (with Count check on each delete)", StopWatch());
+            }
+            finally
+            {
+                graph.Shutdown();
             }
         }
 
         [Test]
         public void TestRemovingVertices()
         {
-            using (var graph = GraphTest.GenerateGraph())
+            var graph = GraphTest.GenerateGraph();
+            try
             {
                 const int vertexCount = 500;
                 var vertices = new List<IVertex>();
@@ -426,29 +482,34 @@ namespace Frontenac.Blueprints
                     graph.RemoveVertex(v);
                     if ((counter + 1)%2 == 0)
                     {
-                        if (graph.GetFeatures().SupportsEdgeIteration)
+                        if (graph.Features.SupportsEdgeIteration)
                             Assert.AreEqual(edges.Count() - ((counter + 1)/2), Count(graph.GetEdges()));
                     }
 
-                    if (graph.GetFeatures().SupportsVertexIteration)
+                    if (graph.Features.SupportsVertexIteration)
                         Assert.AreEqual(vertices.Count() - counter, Count(graph.GetVertices()));
                 }
                 PrintPerformance(graph.ToString(), vertexCount, "vertices deleted (with Count check on each delete)",
                                  StopWatch());
+            }
+            finally
+            {
+                graph.Shutdown();
             }
         }
 
         [Test]
         public void TestConnectivityPatterns()
         {
-            using (var graph = GraphTest.GenerateGraph())
+            var graph = GraphTest.GenerateGraph();
+            try
             {
                 IVertex a = graph.AddVertex(ConvertId(graph, "1"));
                 IVertex b = graph.AddVertex(ConvertId(graph, "2"));
                 IVertex c = graph.AddVertex(ConvertId(graph, "3"));
                 IVertex d = graph.AddVertex(ConvertId(graph, "4"));
 
-                if (graph.GetFeatures().SupportsVertexIteration)
+                if (graph.Features.SupportsVertexIteration)
                     Assert.AreEqual(4, Count(graph.GetVertices()));
 
                 graph.AddEdge(null, a, b, ConvertId(graph, "knows"));
@@ -456,10 +517,10 @@ namespace Frontenac.Blueprints
                 graph.AddEdge(null, c, d, ConvertId(graph, "knows"));
                 graph.AddEdge(null, d, a, ConvertId(graph, "knows"));
 
-                if (graph.GetFeatures().SupportsEdgeIteration)
+                if (graph.Features.SupportsEdgeIteration)
                     Assert.AreEqual(4, Count(graph.GetEdges()));
 
-                if (graph.GetFeatures().SupportsVertexIteration)
+                if (graph.Features.SupportsVertexIteration)
                 {
                     foreach (IVertex v in graph.GetVertices())
                     {
@@ -468,13 +529,13 @@ namespace Frontenac.Blueprints
                     }
                 }
 
-                if (graph.GetFeatures().SupportsEdgeIteration)
+                if (graph.Features.SupportsEdgeIteration)
                 {
                     foreach (IEdge x in graph.GetEdges())
-                        Assert.AreEqual(ConvertId(graph, "knows"), x.GetLabel());
+                        Assert.AreEqual(ConvertId(graph, "knows"), x.Label);
                 }
 
-                if (!graph.GetFeatures().IgnoresSuppliedIds)
+                if (!graph.Features.IgnoresSuppliedIds)
                 {
                     a = graph.GetVertex(ConvertId(graph, "1"));
                     b = graph.GetVertex(ConvertId(graph, "2"));
@@ -504,33 +565,38 @@ namespace Frontenac.Blueprints
                     Assert.AreEqual(1, Count(a.GetEdges(Direction.In)));
                     Assert.AreEqual(2, Count(a.GetEdges(Direction.Out)));
                     foreach (IEdge x in a.GetEdges(Direction.Out))
-                        Assert.True(x.GetLabel() == ConvertId(graph, "knows") ||
-                                    x.GetLabel() == ConvertId(graph, "hates"));
+                        Assert.True(x.Label == ConvertId(graph, "knows") ||
+                                    x.Label == ConvertId(graph, "hates"));
 
-                    Assert.AreEqual(ConvertId(graph, "hates"), i.GetLabel());
-                    Assert.AreEqual(i.GetVertex(Direction.In).GetId().ToString(), ConvertId(graph, "2"));
-                    Assert.AreEqual(i.GetVertex(Direction.Out).GetId().ToString(), ConvertId(graph, "1"));
+                    Assert.AreEqual(ConvertId(graph, "hates"), i.Label);
+                    Assert.AreEqual(i.GetVertex(Direction.In).Id.ToString(), ConvertId(graph, "2"));
+                    Assert.AreEqual(i.GetVertex(Direction.Out).Id.ToString(), ConvertId(graph, "1"));
                 }
 
                 var vertexIds = new HashSet<object>
                     {
-                        a.GetId(),
-                        a.GetId(),
-                        b.GetId(),
-                        b.GetId(),
-                        c.GetId(),
-                        d.GetId(),
-                        d.GetId(),
-                        d.GetId()
+                        a.Id,
+                        a.Id,
+                        b.Id,
+                        b.Id,
+                        c.Id,
+                        d.Id,
+                        d.Id,
+                        d.Id
                     };
                 Assert.AreEqual(4, vertexIds.Count());
+            }
+            finally
+            {
+                graph.Shutdown();
             }
         }
 
         [Test]
         public void TestVertexEdgeLabels()
         {
-            using (var graph = GraphTest.GenerateGraph())
+            var graph = GraphTest.GenerateGraph();
+            try
             {
                 IVertex a = graph.AddVertex(null);
                 IVertex b = graph.AddVertex(null);
@@ -541,79 +607,88 @@ namespace Frontenac.Blueprints
                 IEdge cHateA = graph.AddEdge(null, c, a, ConvertId(graph, "hate"));
                 IEdge cHateB = graph.AddEdge(null, c, b, ConvertId(graph, "hate"));
 
-                IEnumerable<IEdge> results = a.GetEdges(Direction.Out);
+                IEnumerable<IEdge> results = a.GetEdges(Direction.Out).ToArray();
                 Assert.AreEqual(results.Count(), 3);
                 Assert.True(results.Contains(aFriendB));
                 Assert.True(results.Contains(aFriendC));
                 Assert.True(results.Contains(aHateC));
 
-                results = a.GetEdges(Direction.Out, ConvertId(graph, "friend"));
+                results = a.GetEdges(Direction.Out, ConvertId(graph, "friend")).ToArray();
                 Assert.AreEqual(results.Count(), 2);
                 Assert.True(results.Contains(aFriendB));
                 Assert.True(results.Contains(aFriendC));
 
-                results = a.GetEdges(Direction.Out, ConvertId(graph, "hate"));
+                results = a.GetEdges(Direction.Out, ConvertId(graph, "hate")).ToArray();
                 Assert.AreEqual(results.Count(), 1);
                 Assert.True(results.Contains(aHateC));
 
-                results = a.GetEdges(Direction.In, ConvertId(graph, "hate"));
+                results = a.GetEdges(Direction.In, ConvertId(graph, "hate")).ToArray();
                 Assert.AreEqual(results.Count(), 1);
                 Assert.True(results.Contains(cHateA));
 
-                results = a.GetEdges(Direction.In, ConvertId(graph, "friend"));
+                results = a.GetEdges(Direction.In, ConvertId(graph, "friend")).ToArray();
                 Assert.AreEqual(results.Count(), 0);
 
-                results = b.GetEdges(Direction.In, ConvertId(graph, "hate"));
+                results = b.GetEdges(Direction.In, ConvertId(graph, "hate")).ToArray();
                 Assert.AreEqual(results.Count(), 1);
                 Assert.True(results.Contains(cHateB));
 
-                results = b.GetEdges(Direction.In, ConvertId(graph, "friend"));
+                results = b.GetEdges(Direction.In, ConvertId(graph, "friend")).ToArray();
                 Assert.AreEqual(results.Count(), 1);
                 Assert.True(results.Contains(aFriendB));
+            }
+            finally
+            {
+                graph.Shutdown();
             }
         }
 
         [Test]
         public void TestVertexEdgeLabels2()
         {
-            using (var graph = GraphTest.GenerateGraph())
+            var graph = GraphTest.GenerateGraph();
+            try
             {
-                IVertex a = graph.AddVertex(null);
-                IVertex b = graph.AddVertex(null);
-                IVertex c = graph.AddVertex(null);
-                IEdge aFriendB = graph.AddEdge(null, a, b, ConvertId(graph, "friend"));
-                IEdge aFriendC = graph.AddEdge(null, a, c, ConvertId(graph, "friend"));
-                IEdge aHateC = graph.AddEdge(null, a, c, ConvertId(graph, "hate"));
-                IEdge cHateA = graph.AddEdge(null, c, a, ConvertId(graph, "hate"));
-                IEdge cHateB = graph.AddEdge(null, c, b, ConvertId(graph, "hate"));
+                var a = graph.AddVertex(null);
+                var b = graph.AddVertex(null);
+                var c = graph.AddVertex(null);
+                var aFriendB = graph.AddEdge(null, a, b, ConvertId(graph, "friend"));
+                var aFriendC = graph.AddEdge(null, a, c, ConvertId(graph, "friend"));
+                var aHateC = graph.AddEdge(null, a, c, ConvertId(graph, "hate"));
+                var cHateA = graph.AddEdge(null, c, a, ConvertId(graph, "hate"));
+                var cHateB = graph.AddEdge(null, c, b, ConvertId(graph, "hate"));
 
-
-                IEnumerable<IEdge> results = a.GetEdges(Direction.Out, ConvertId(graph, "friend"),
-                                                        ConvertId(graph, "hate"));
+                var results = a.GetEdges(Direction.Out, ConvertId(graph, "friend"),
+                                                        ConvertId(graph, "hate")).ToArray();
                 Assert.AreEqual(results.Count(), 3);
                 Assert.True(results.Contains(aFriendB));
                 Assert.True(results.Contains(aFriendC));
                 Assert.True(results.Contains(aHateC));
 
-                results = a.GetEdges(Direction.In, ConvertId(graph, "friend"), ConvertId(graph, "hate"));
+                results = a.GetEdges(Direction.In, ConvertId(graph, "friend"), ConvertId(graph, "hate")).ToArray();
                 Assert.AreEqual(results.Count(), 1);
                 Assert.True(results.Contains(cHateA));
 
-                results = b.GetEdges(Direction.In, ConvertId(graph, "friend"), ConvertId(graph, "hate"));
+                results = b.GetEdges(Direction.In, ConvertId(graph, "friend"), ConvertId(graph, "hate")).ToArray();
                 Assert.AreEqual(results.Count(), 2);
                 Assert.True(results.Contains(aFriendB));
                 Assert.True(results.Contains(cHateB));
 
                 results = b.GetEdges(Direction.In, ConvertId(graph, "blah"), ConvertId(graph, "blah2"),
-                                     ConvertId(graph, "blah3"));
+                                     ConvertId(graph, "blah3")).ToArray();
                 Assert.AreEqual(results.Count(), 0);
+            }
+            finally
+            {
+                graph.Shutdown();
             }
         }
 
         [Test]
         public void TestTreeConnectivity()
         {
-            using (var graph = GraphTest.GenerateGraph())
+            var graph = GraphTest.GenerateGraph();
+            try
             {
                 StopWatch();
                 const int branchSize = 11;
@@ -638,17 +713,17 @@ namespace Frontenac.Blueprints
                 Assert.AreEqual(branchSize, Count(start.GetEdges(Direction.Out)));
                 foreach (IEdge e in start.GetEdges(Direction.Out))
                 {
-                    Assert.AreEqual(ConvertId(graph, "test1"), e.GetLabel());
+                    Assert.AreEqual(ConvertId(graph, "test1"), e.Label);
                     Assert.AreEqual(branchSize, Count(e.GetVertex(Direction.In).GetEdges(Direction.Out)));
                     Assert.AreEqual(1, Count(e.GetVertex(Direction.In).GetEdges(Direction.In)));
                     foreach (IEdge f in e.GetVertex(Direction.In).GetEdges(Direction.Out))
                     {
-                        Assert.AreEqual(ConvertId(graph, "test2"), f.GetLabel());
+                        Assert.AreEqual(ConvertId(graph, "test2"), f.Label);
                         Assert.AreEqual(branchSize, Count(f.GetVertex(Direction.In).GetEdges(Direction.Out)));
                         Assert.AreEqual(1, Count(f.GetVertex(Direction.In).GetEdges(Direction.In)));
                         foreach (IEdge g in f.GetVertex(Direction.In).GetEdges(Direction.Out))
                         {
-                            Assert.AreEqual(ConvertId(graph, "test3"), g.GetLabel());
+                            Assert.AreEqual(ConvertId(graph, "test3"), g.Label);
                             Assert.AreEqual(0, Count(g.GetVertex(Direction.In).GetEdges(Direction.Out)));
                             Assert.AreEqual(1, Count(g.GetVertex(Direction.In).GetEdges(Direction.In)));
                         }
@@ -661,7 +736,7 @@ namespace Frontenac.Blueprints
 
                 PrintPerformance(graph.ToString(), totalVertices, "vertices added in a tree structure", StopWatch());
 
-                if (graph.GetFeatures().SupportsVertexIteration)
+                if (graph.Features.SupportsVertexIteration)
                 {
                     StopWatch();
                     var vertices = new HashSet<IVertex>();
@@ -672,7 +747,7 @@ namespace Frontenac.Blueprints
                     PrintPerformance(graph.ToString(), totalVertices, "vertices iterated", StopWatch());
                 }
 
-                if (graph.GetFeatures().SupportsEdgeIteration)
+                if (graph.Features.SupportsEdgeIteration)
                 {
                     StopWatch();
                     var edges = new HashSet<IEdge>();
@@ -683,18 +758,23 @@ namespace Frontenac.Blueprints
                     PrintPerformance(graph.ToString(), totalVertices - 1, "edges iterated", StopWatch());
                 }
             }
+            finally
+            {
+                graph.Shutdown();
+            }
         }
 
         [Test]
         public void TestConcurrentModification()
         {
-            using (var graph = GraphTest.GenerateGraph())
+            var graph = GraphTest.GenerateGraph();
+            try
             {
                 IVertex a = graph.AddVertex(null);
                 graph.AddVertex(null);
                 graph.AddVertex(null);
 
-                if (graph.GetFeatures().SupportsVertexIteration)
+                if (graph.Features.SupportsVertexIteration)
                 {
                     foreach (IVertex vertex in graph.GetVertices())
                     {
@@ -712,7 +792,7 @@ namespace Frontenac.Blueprints
                 }
                 else
                 {
-                    if (graph.GetFeatures().SupportsEdgeIteration)
+                    if (graph.Features.SupportsEdgeIteration)
                     {
                         for (int i = 0; i < 10; i++)
                             graph.AddEdge(null, graph.AddVertex(null), graph.AddVertex(null), ConvertId(graph, "test"));
@@ -722,48 +802,58 @@ namespace Frontenac.Blueprints
                     }
                 }
             }
+            finally
+            {
+                graph.Shutdown();
+            }
         }
 
         [Test]
         public void TestGraphDataPersists()
         {
-            using (var graph = GraphTest.GenerateGraph())
+            var graph = GraphTest.GenerateGraph();
+            try
             {
-                if (graph.GetFeatures().IsPersistent)
+                if (graph.Features.IsPersistent)
                 {
                     IVertex v = graph.AddVertex(null);
                     IVertex u = graph.AddVertex(null);
 
-                    if (graph.GetFeatures().SupportsVertexProperties)
+                    if (graph.Features.SupportsVertexProperties)
                     {
                         v.SetProperty("name", "marko");
                         u.SetProperty("name", "pavel");
                     }
                     IEdge e = graph.AddEdge(null, v, u, ConvertId(graph, "collaborator"));
 
-                    if (graph.GetFeatures().SupportsEdgeProperties)
+                    if (graph.Features.SupportsEdgeProperties)
                         e.SetProperty("location", "internet");
 
-                    if (graph.GetFeatures().SupportsVertexIteration)
+                    if (graph.Features.SupportsVertexIteration)
                         Assert.AreEqual(Count(graph.GetVertices()), 2);
 
-                    if (graph.GetFeatures().SupportsEdgeIteration)
+                    if (graph.Features.SupportsEdgeIteration)
                         Assert.AreEqual(Count(graph.GetEdges()), 1);
                 }
+            }
+            finally
+            {
+                graph.Shutdown();
             }
 
             StopWatch();
 
-            using (var graph = GraphTest.GenerateGraph())
+            graph = GraphTest.GenerateGraph();
+            try
             {
-                if (graph.GetFeatures().IsPersistent)
+                if (graph.Features.IsPersistent)
                 {
                     PrintPerformance(graph.ToString(), 1, "graph loaded", StopWatch());
 
-                    if (graph.GetFeatures().SupportsVertexIteration)
+                    if (graph.Features.SupportsVertexIteration)
                     {
                         Assert.AreEqual(Count(graph.GetVertices()), 2);
-                        if (graph.GetFeatures().SupportsVertexProperties)
+                        if (graph.Features.SupportsVertexProperties)
                         {
                             foreach (IVertex vertex in graph.GetVertices())
                                 Assert.True(((string) vertex.GetProperty("name")) == "marko" ||
@@ -771,48 +861,53 @@ namespace Frontenac.Blueprints
                         }
                     }
 
-                    if (graph.GetFeatures().SupportsEdgeIteration)
+                    if (graph.Features.SupportsEdgeIteration)
                     {
                         Assert.AreEqual(Count(graph.GetEdges()), 1);
                         foreach (IEdge edge in graph.GetEdges())
                         {
-                            Assert.AreEqual(edge.GetLabel(), ConvertId(graph, "collaborator"));
-                            if (graph.GetFeatures().SupportsEdgeProperties)
+                            Assert.AreEqual(edge.Label, ConvertId(graph, "collaborator"));
+                            if (graph.Features.SupportsEdgeProperties)
                                 Assert.AreEqual(edge.GetProperty("location"), "internet");
                         }
                     }
                 }
+            }
+            finally
+            {
+                graph.Shutdown();
             }
         }
 
         [Test]
         public void TestAutotypingOfProperties()
         {
-            using (var graph = GraphTest.GenerateGraph())
+            var graph = GraphTest.GenerateGraph();
+            try
             {
-                if (graph.GetFeatures().SupportsVertexProperties)
+                if (graph.Features.SupportsVertexProperties)
                 {
                     IVertex v = graph.AddVertex(null);
                     v.SetProperty(ConvertId(graph, "string"), "marko");
                     v.SetProperty(ConvertId(graph, "integer"), 33);
                     v.SetProperty(ConvertId(graph, "boolean"), true);
 
-                    var name = (string) v.GetProperty(ConvertId(graph, "string"));
+                    var name = v.GetProperty(ConvertId(graph, "string"));
                     Assert.AreEqual(name, "marko");
-                    var age = (int) v.GetProperty(ConvertId(graph, "integer"));
+                    var age = v.GetProperty(ConvertId(graph, "integer"));
                     Assert.AreEqual(age, 33);
                     var best = (bool) v.GetProperty(ConvertId(graph, "boolean"));
                     Assert.True(best);
 
-                    name = (string) v.RemoveProperty(ConvertId(graph, "string"));
+                    name = v.RemoveProperty(ConvertId(graph, "string"));
                     Assert.AreEqual(name, "marko");
-                    age = (int) v.RemoveProperty(ConvertId(graph, "integer"));
+                    age = v.RemoveProperty(ConvertId(graph, "integer"));
                     Assert.AreEqual(age, 33);
                     best = (bool) v.RemoveProperty(ConvertId(graph, "boolean"));
                     Assert.True(best);
                 }
 
-                if (graph.GetFeatures().SupportsEdgeProperties)
+                if (graph.Features.SupportsEdgeProperties)
                 {
                     IEdge e = graph.AddEdge(null, graph.AddVertex(null), graph.AddVertex(null), "knows");
                     e.SetProperty(ConvertId(graph, "string"), "friend");
@@ -828,6 +923,10 @@ namespace Frontenac.Blueprints
                     weight = (double) e.RemoveProperty(ConvertId(graph, "double"));
                     Assert.AreEqual(weight, 1.0d);
                 }
+            }
+            finally
+            {
+                graph.Shutdown();
             }
         }
     }

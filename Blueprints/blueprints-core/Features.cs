@@ -194,6 +194,18 @@ namespace Frontenac.Blueprints
         public bool SupportsThreadedTransactions { get { return _supportsThreadedTransactions != null && _supportsThreadedTransactions.Value; } set { _supportsThreadedTransactions = value; } }
 
         /// <summary>
+        /// Does the graph allow the use of the 'id' property name?
+        /// </summary>
+        private bool? _supportsIdProperty;
+        public bool SupportsIdProperty { get { return _supportsIdProperty != null && _supportsIdProperty.Value; } set { _supportsIdProperty = value; } }
+
+        /// <summary>
+        /// Does the graph allow the use of the 'label' property name?
+        /// </summary>
+        private bool? _supportsLabelProperty;
+        public bool SupportsLabelProperty { get { return _supportsLabelProperty != null && _supportsLabelProperty.Value; } set { _supportsLabelProperty = value; } }
+
+        /// <summary>
         /// Checks whether the graph supports both vertex and edge properties
         /// </summary>
         /// <returns>whether the graph supports both vertex and edge properties</returns>

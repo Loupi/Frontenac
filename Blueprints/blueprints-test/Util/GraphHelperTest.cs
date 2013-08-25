@@ -36,7 +36,7 @@ namespace Frontenac.Blueprints.Util
             IGraph graph = new TinkerGraph();
             IEdge edge = GraphHelper.AddEdge(graph, null, graph.AddVertex(null), graph.AddVertex(null), "knows", "weight", 10.0);
             Assert.AreEqual(edge.GetProperty("weight"), 10.0);
-            Assert.AreEqual(edge.GetLabel(), "knows");
+            Assert.AreEqual(edge.Label, "knows");
             Assert.AreEqual(edge.GetPropertyKeys().Count(), 1);
             Assert.AreEqual(Count(graph.GetVertices()), 2);
             Assert.AreEqual(Count(graph.GetEdges()), 1);
@@ -71,25 +71,25 @@ namespace Frontenac.Blueprints.Util
             int counter = 0;
             foreach (IEdge e in h.GetVertex("1").GetEdges(Direction.Out))
             {
-                if (e.GetVertex(Direction.In).GetId().Equals("2"))
+                if (e.GetVertex(Direction.In).Id.Equals("2"))
                 {
                     Assert.AreEqual(e.GetProperty("weight"), 0.5);
-                    Assert.AreEqual(e.GetLabel(), "knows");
-                    Assert.AreEqual(e.GetId(), "7");
+                    Assert.AreEqual(e.Label, "knows");
+                    Assert.AreEqual(e.Id, "7");
                     counter++;
                 }
-                else if (e.GetVertex(Direction.In).GetId().Equals("3"))
+                else if (e.GetVertex(Direction.In).Id.Equals("3"))
                 {
                     Assert.AreEqual(Math.Round(Convert.ToDouble(e.GetProperty("weight"))), 0);
-                    Assert.AreEqual(e.GetLabel(), "created");
-                    Assert.AreEqual(e.GetId(), "9");
+                    Assert.AreEqual(e.Label, "created");
+                    Assert.AreEqual(e.Id, "9");
                     counter++;
                 }
-                else if (e.GetVertex(Direction.In).GetId().Equals("4"))
+                else if (e.GetVertex(Direction.In).Id.Equals("4"))
                 {
                     Assert.AreEqual(Math.Round(Convert.ToDouble(e.GetProperty("weight"))), 1);
-                    Assert.AreEqual(e.GetLabel(), "knows");
-                    Assert.AreEqual(e.GetId(), "8");
+                    Assert.AreEqual(e.Label, "knows");
+                    Assert.AreEqual(e.Id, "8");
                     counter++;
                 }
             }
@@ -101,18 +101,18 @@ namespace Frontenac.Blueprints.Util
             Assert.AreEqual(josh.GetProperty("age"), 32);
             foreach (IEdge e in h.GetVertex("4").GetEdges(Direction.Out))
             {
-                if (e.GetVertex(Direction.In).GetId().Equals("3"))
+                if (e.GetVertex(Direction.In).Id.Equals("3"))
                 {
                     Assert.AreEqual(Math.Round(Convert.ToDouble(e.GetProperty("weight"))), 0);
-                    Assert.AreEqual(e.GetLabel(), "created");
-                    Assert.AreEqual(e.GetId(), "11");
+                    Assert.AreEqual(e.Label, "created");
+                    Assert.AreEqual(e.Id, "11");
                     counter++;
                 }
-                else if (e.GetVertex(Direction.In).GetId().Equals("5"))
+                else if (e.GetVertex(Direction.In).Id.Equals("5"))
                 {
                     Assert.AreEqual(Math.Round(Convert.ToDouble(e.GetProperty("weight"))), 1);
-                    Assert.AreEqual(e.GetLabel(), "created");
-                    Assert.AreEqual(e.GetId(), "10");
+                    Assert.AreEqual(e.Label, "created");
+                    Assert.AreEqual(e.Id, "10");
                     counter++;
                 }
             }

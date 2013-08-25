@@ -6,23 +6,19 @@ namespace Frontenac.Blueprints.Impls.TG
     [Serializable]
     class TinkerEdge : TinkerElement, IEdge
     {
-        readonly string _label;
         readonly IVertex _inVertex;
         readonly IVertex _outVertex;
 
         public TinkerEdge(string id, IVertex outVertex, IVertex inVertex, string label, TinkerGraph graph)
             : base(id, graph)
         {
-            _label = label;
+            Label = label;
             _outVertex = outVertex;
             _inVertex = inVertex;
-            Graph.EdgeKeyIndex.AutoUpdate(StringFactory.Label, _label, null, this);
+            Graph.EdgeKeyIndex.AutoUpdate(StringFactory.Label, Label, null, this);
         }
 
-        public string GetLabel()
-        {
-            return _label;
-        }
+        public string Label { get; protected set; }
 
         public IVertex GetVertex(Direction direction)
         {

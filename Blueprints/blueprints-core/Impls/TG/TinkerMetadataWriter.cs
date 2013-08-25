@@ -79,7 +79,7 @@ namespace Frontenac.Blueprints.Impls.TG
                 writer.Write(index.Key);
 
                 TinkerIndex tinkerIndex = index.Value;
-                Type indexClass = tinkerIndex.GetIndexClass();
+                Type indexClass = tinkerIndex.Type;
 
                 // Write the index type
                 writer.Write((byte)(indexClass == typeof(IVertex) ? 1 : 2));
@@ -106,7 +106,7 @@ namespace Frontenac.Blueprints.Impls.TG
                             foreach (IVertex v in vertices)
                             {
                                 // Write the vertex identifier
-                                WriteTypedData(writer, v.GetId());
+                                WriteTypedData(writer, v.Id);
                             }
                         }
                         else if (indexClass == typeof(IEdge))
@@ -118,7 +118,7 @@ namespace Frontenac.Blueprints.Impls.TG
                             foreach (IEdge e in edges)
                             {
                                 // Write the edge identifier
-                                WriteTypedData(writer, e.GetId());
+                                WriteTypedData(writer, e.Id);
                             }
                         }
                     }
@@ -148,7 +148,7 @@ namespace Frontenac.Blueprints.Impls.TG
                     foreach (IVertex v in item.Value)
                     {
                         // Write the vertex identifier
-                        WriteTypedData(writer, v.GetId());
+                        WriteTypedData(writer, v.Id);
                     }
                 }
             }
@@ -176,7 +176,7 @@ namespace Frontenac.Blueprints.Impls.TG
                     foreach (IEdge e in item.Value)
                     {
                         // Write the edge identifier
-                        WriteTypedData(writer, e.GetId());
+                        WriteTypedData(writer, e.Id);
                     }
                 }
             }

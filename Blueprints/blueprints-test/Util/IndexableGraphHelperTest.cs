@@ -23,7 +23,7 @@ namespace Frontenac.Blueprints.Util
             vertex = IndexableGraphHelper.AddUniqueVertex(graph, null, index, "name", "darrick");
             Assert.AreEqual(vertex.GetProperty("name"), "darrick");
             Assert.AreEqual(Count(graph.GetVertices()), 2);
-            Assert.AreEqual(vertex.GetId(), "1");
+            Assert.AreEqual(vertex.Id, "1");
         }
     }
 }

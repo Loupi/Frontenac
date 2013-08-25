@@ -16,9 +16,10 @@ namespace Frontenac.Blueprints.Util.IO.GraphSON
         [Test]
         public void TestReadingTinkerGraph()
         {
-            using (var graph = GraphTest.GenerateGraph())
+            var graph = GraphTest.GenerateGraph();
+            try
             {
-                if (!graph.GetFeatures().IgnoresSuppliedIds)
+                if (!graph.Features.IgnoresSuppliedIds)
                 {
                     StopWatch();
                     using (
@@ -43,25 +44,25 @@ namespace Frontenac.Blueprints.Util.IO.GraphSON
                     int counter = 0;
                     foreach (IEdge e in graph.GetVertex(1).GetEdges(Direction.Out))
                     {
-                        if (e.GetVertex(Direction.In).GetId().ToString().Equals("2"))
+                        if (e.GetVertex(Direction.In).Id.ToString().Equals("2"))
                         {
                             Assert.AreEqual(e.GetProperty("weight"), 0.5);
-                            Assert.AreEqual(e.GetLabel(), "knows");
-                            Assert.AreEqual(e.GetId().ToString(), "7");
+                            Assert.AreEqual(e.Label, "knows");
+                            Assert.AreEqual(e.Id.ToString(), "7");
                             counter++;
                         }
-                        else if (e.GetVertex(Direction.In).GetId().ToString().Equals("3"))
+                        else if (e.GetVertex(Direction.In).Id.ToString().Equals("3"))
                         {
                             Assert.AreEqual(Math.Round(Convert.ToDouble(e.GetProperty("weight"))), 0);
-                            Assert.AreEqual(e.GetLabel(), "created");
-                            Assert.AreEqual(e.GetId().ToString(), "9");
+                            Assert.AreEqual(e.Label, "created");
+                            Assert.AreEqual(e.Id.ToString(), "9");
                             counter++;
                         }
-                        else if (e.GetVertex(Direction.In).GetId().ToString().Equals("4"))
+                        else if (e.GetVertex(Direction.In).Id.ToString().Equals("4"))
                         {
                             Assert.AreEqual(Math.Round(Convert.ToDouble(e.GetProperty("weight"))), 1);
-                            Assert.AreEqual(e.GetLabel(), "knows");
-                            Assert.AreEqual(e.GetId().ToString(), "8");
+                            Assert.AreEqual(e.Label, "knows");
+                            Assert.AreEqual(e.Id.ToString(), "8");
                             counter++;
                         }
                     }
@@ -73,18 +74,18 @@ namespace Frontenac.Blueprints.Util.IO.GraphSON
                     Assert.AreEqual(josh.GetProperty("age"), 32);
                     foreach (IEdge e in graph.GetVertex(4).GetEdges(Direction.Out))
                     {
-                        if (e.GetVertex(Direction.In).GetId().ToString().Equals("3"))
+                        if (e.GetVertex(Direction.In).Id.ToString().Equals("3"))
                         {
                             Assert.AreEqual(Math.Round(Convert.ToDouble(e.GetProperty("weight"))), 0);
-                            Assert.AreEqual(e.GetLabel(), "created");
-                            Assert.AreEqual(e.GetId().ToString(), "11");
+                            Assert.AreEqual(e.Label, "created");
+                            Assert.AreEqual(e.Id.ToString(), "11");
                             counter++;
                         }
-                        else if (e.GetVertex(Direction.In).GetId().ToString().Equals("5"))
+                        else if (e.GetVertex(Direction.In).Id.ToString().Equals("5"))
                         {
                             Assert.AreEqual(Math.Round(Convert.ToDouble(e.GetProperty("weight"))), 1);
-                            Assert.AreEqual(e.GetLabel(), "created");
-                            Assert.AreEqual(e.GetId().ToString(), "10");
+                            Assert.AreEqual(e.Label, "created");
+                            Assert.AreEqual(e.Id.ToString(), "10");
                             counter++;
                         }
                     }
@@ -92,14 +93,19 @@ namespace Frontenac.Blueprints.Util.IO.GraphSON
                     Assert.AreEqual(counter, 5);
                 }
             }
+            finally
+            {
+                graph.Shutdown();
+            }
         }
 
         [Test]
         public void TestTinkerGraphEdges()
         {
-            using (var graph = GraphTest.GenerateGraph())
+            var graph = GraphTest.GenerateGraph();
+            try
             {
-                if (graph.GetFeatures().SupportsEdgeIteration)
+                if (graph.Features.SupportsEdgeIteration)
                 {
                     StopWatch();
                     using (
@@ -117,7 +123,7 @@ namespace Frontenac.Blueprints.Util.IO.GraphSON
                     foreach (IEdge e in graph.GetEdges())
                     {
                         count++;
-                        edgeIds.Add(e.GetId().ToString());
+                        edgeIds.Add(e.Id.ToString());
                         foreach (string key in e.GetPropertyKeys())
                         {
                             edgeKeys.Add(key);
@@ -130,14 +136,19 @@ namespace Frontenac.Blueprints.Util.IO.GraphSON
                     Assert.AreEqual(edgeValues.Count(), 4);
                 }
             }
+            finally
+            {
+                graph.Shutdown();
+            }
         }
 
         [Test]
         public void TestTinkerGraphVertices()
         {
-            using (var graph = GraphTest.GenerateGraph())
+            var graph = GraphTest.GenerateGraph();
+            try
             {
-                if (graph.GetFeatures().SupportsVertexIteration)
+                if (graph.Features.SupportsVertexIteration)
                 {
                     StopWatch();
                     using (
@@ -166,14 +177,19 @@ namespace Frontenac.Blueprints.Util.IO.GraphSON
                     Assert.True(vertexNames.Contains("lop"));
                 }
             }
+            finally
+            {
+                graph.Shutdown();
+            }
         }
 
         [Test]
         public void TestTinkerGraphSoftwareVertices()
         {
-            using (var graph = GraphTest.GenerateGraph())
+            var graph = GraphTest.GenerateGraph();
+            try
             {
-                if (graph.GetFeatures().SupportsVertexIteration)
+                if (graph.Features.SupportsVertexIteration)
                 {
                     StopWatch();
                     using (
@@ -203,14 +219,19 @@ namespace Frontenac.Blueprints.Util.IO.GraphSON
                     }
                 }
             }
+            finally
+            {
+                graph.Shutdown();
+            }
         }
 
         [Test]
         public void TestTinkerGraphVertexAndEdges()
         {
-            using (var graph = GraphTest.GenerateGraph())
+            var graph = GraphTest.GenerateGraph();
+            try
             {
-                if (graph.GetFeatures().SupportsVertexIteration)
+                if (graph.Features.SupportsVertexIteration)
                 {
                     StopWatch();
                     using (
@@ -269,7 +290,7 @@ namespace Frontenac.Blueprints.Util.IO.GraphSON
                     Assert.True(null != lop);
                     Assert.True(null != ripple);
 
-                    if (graph.GetFeatures().SupportsEdgeIteration)
+                    if (graph.Features.SupportsEdgeIteration)
                     {
                         Assert.AreEqual(Count(graph.GetEdges()), 6);
                     }
@@ -377,6 +398,10 @@ namespace Frontenac.Blueprints.Util.IO.GraphSON
                     Assert.AreEqual(vertices.Count(), 1);
                     Assert.True(vertices.Contains(josh));
                 }
+            }
+            finally
+            {
+                graph.Shutdown();
             }
         }
     }

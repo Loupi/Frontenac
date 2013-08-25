@@ -17,39 +17,45 @@ namespace Frontenac.Blueprints
         [Test]
         public void TestNoIndicesOnStartup()
         {
-            using (var graph = (IIndexableGraph) GraphTest.GenerateGraph())
+            var graph = (IIndexableGraph) GraphTest.GenerateGraph();
+            try
             {
-                if (graph.GetFeatures().SupportsVertexIndex)
+                if (graph.Features.SupportsVertexIndex)
                 {
                     Assert.AreEqual(Count(graph.GetIndices()), 0);
                     graph.CreateIndex("myIdx", typeof (IVertex));
                     Assert.AreEqual(Count(graph.GetIndices()), 1);
 
                     // test to make sure its a semantically correct iterable
-                    IEnumerable<IIndex> idx = graph.GetIndices();
+                    IEnumerable<IIndex> idx = graph.GetIndices().ToArray();
                     Assert.AreEqual(Count(idx), 1);
                     Assert.AreEqual(Count(idx), 1);
                     Assert.AreEqual(Count(idx), 1);
                 }
+            }
+            finally
+            {
+                graph.Shutdown();
             }
         }
 
         [Test]
         public void TestKeyIndicesAreNotIndices()
         {
-            using (var graph = (IIndexableGraph) GraphTest.GenerateGraph())
+            var graph = (IIndexableGraph) GraphTest.GenerateGraph();
+            try
             {
                 Assert.AreEqual(Count(graph.GetIndices()), 0);
-                if (!graph.GetFeatures().IsWrapper && graph.GetFeatures().SupportsKeyIndices &&
-                    graph.GetFeatures().SupportsVertexKeyIndex)
+                if (!graph.Features.IsWrapper && graph.Features.SupportsKeyIndices &&
+                    graph.Features.SupportsVertexKeyIndex)
                 {
                     ((IKeyIndexableGraph) graph).CreateKeyIndex("name", typeof (IVertex));
                     ((IKeyIndexableGraph) graph).CreateKeyIndex("age", typeof (IVertex));
                     Assert.AreEqual(((IKeyIndexableGraph) graph).GetIndexedKeys(typeof (IVertex)).Count(), 2);
                 }
 
-                if (graph.GetFeatures().SupportsEdgeKeyIndex && !graph.GetFeatures().IsWrapper &&
-                    graph.GetFeatures().SupportsEdgeKeyIndex)
+                if (graph.Features.SupportsEdgeKeyIndex && !graph.Features.IsWrapper &&
+                    graph.Features.SupportsEdgeKeyIndex)
                 {
                     ((IKeyIndexableGraph) graph).CreateKeyIndex("weight", typeof (IEdge));
                     ((IKeyIndexableGraph) graph).CreateKeyIndex("since", typeof (IEdge));
@@ -57,70 +63,79 @@ namespace Frontenac.Blueprints
                 }
                 Assert.AreEqual(Count(graph.GetIndices()), 0);
             }
+            finally
+            {
+                graph.Shutdown();
+            }
         }
 
         [Test]
         public void TestCreateDropIndices()
         {
-            using (var graph = (IIndexableGraph) GraphTest.GenerateGraph())
+            var graph = (IIndexableGraph) GraphTest.GenerateGraph();
+            try
             {
-                if (graph.GetFeatures().SupportsVertexIndex && graph.GetFeatures().SupportsIndices)
+                if (!graph.Features.SupportsVertexIndex || !graph.Features.SupportsIndices) return;
+
+                StopWatch();
+                for (int i = 0; i < 10; i++)
+                    graph.CreateIndex(i + "blah", typeof (IVertex));
+
+                Assert.AreEqual(Count(graph.GetIndices()), 10);
+                for (int i = 0; i < 10; i++)
+                    graph.DropIndex(i + "blah");
+
+                Assert.AreEqual(Count(graph.GetIndices()), 0);
+                PrintPerformance(graph.ToString(), 10, "indices created and then dropped", StopWatch());
+
+                StopWatch();
+                var index1 = graph.CreateIndex("index1", typeof (IVertex));
+                var index2 = graph.CreateIndex("index2", typeof (IVertex));
+                PrintPerformance(graph.ToString(), 2, "indices created", StopWatch());
+                Assert.AreEqual(Count(graph.GetIndices()), 2);
+                Assert.AreEqual(graph.GetIndex("index1", typeof (IVertex)).Name, "index1");
+                Assert.AreEqual(graph.GetIndex("index2", typeof (IVertex)).Name, "index2");
+                Assert.AreEqual(graph.GetIndex("index1", typeof (IVertex)).Type, typeof (IVertex));
+                Assert.AreEqual(graph.GetIndex("index2", typeof (IVertex)).Type, typeof (IVertex));
+                try
                 {
-                    StopWatch();
-                    for (int i = 0; i < 10; i++)
-                        graph.CreateIndex(i + "blah", typeof (IVertex));
-
-                    Assert.AreEqual(Count(graph.GetIndices()), 10);
-                    for (int i = 0; i < 10; i++)
-                        graph.DropIndex(i + "blah");
-
-                    Assert.AreEqual(Count(graph.GetIndices()), 0);
-                    PrintPerformance(graph.ToString(), 10, "indices created and then dropped", StopWatch());
-
-                    StopWatch();
-                    var index1 = graph.CreateIndex("index1", typeof (IVertex));
-                    var index2 = graph.CreateIndex("index2", typeof (IVertex));
-                    PrintPerformance(graph.ToString(), 2, "indices created", StopWatch());
-                    Assert.AreEqual(Count(graph.GetIndices()), 2);
-                    Assert.AreEqual(graph.GetIndex("index1", typeof (IVertex)).GetIndexName(), "index1");
-                    Assert.AreEqual(graph.GetIndex("index2", typeof (IVertex)).GetIndexName(), "index2");
-                    Assert.AreEqual(graph.GetIndex("index1", typeof (IVertex)).GetIndexClass(), typeof (IVertex));
-                    Assert.AreEqual(graph.GetIndex("index2", typeof (IVertex)).GetIndexClass(), typeof (IVertex));
-                    try
-                    {
-                        Assert.AreEqual(graph.GetIndex("index1", typeof (IEdge)).GetIndexClass(), typeof (IEdge));
-                        Assert.False(true);
-                    }
-                    catch (Exception)
-                    {
-                        Assert.True(true);
-                    }
-
-                    StopWatch();
-                    graph.DropIndex(index1.GetIndexName());
-                    Assert.Null(graph.GetIndex("index1", typeof (IVertex)));
-                    Assert.AreEqual(Count(graph.GetIndices()), 1);
-                    foreach (IIndex index in graph.GetIndices())
-                        Assert.AreEqual(index.GetIndexName(), index2.GetIndexName());
-
-                    graph.DropIndex(index2.GetIndexName());
-                    Assert.Null(graph.GetIndex("index1", typeof (IVertex)));
-                    Assert.Null(graph.GetIndex("index2", typeof (IVertex)));
-                    Assert.AreEqual(Count(graph.GetIndices()), 0);
-
-                    PrintPerformance(graph.ToString(), 2, "indices dropped and index iterable checked for consistency",
-                                     StopWatch());
+                    Assert.AreEqual(graph.GetIndex("index1", typeof (IEdge)).Type, typeof (IEdge));
+                    Assert.False(true);
                 }
+                catch (Exception)
+                {
+                    Assert.True(true);
+                }
+
+                StopWatch();
+                graph.DropIndex(index1.Name);
+                Assert.Null(graph.GetIndex("index1", typeof (IVertex)));
+                Assert.AreEqual(Count(graph.GetIndices()), 1);
+                foreach (IIndex index in graph.GetIndices())
+                    Assert.AreEqual(index.Name, index2.Name);
+
+                graph.DropIndex(index2.Name);
+                Assert.Null(graph.GetIndex("index1", typeof (IVertex)));
+                Assert.Null(graph.GetIndex("index2", typeof (IVertex)));
+                Assert.AreEqual(Count(graph.GetIndices()), 0);
+
+                PrintPerformance(graph.ToString(), 2, "indices dropped and index iterable checked for consistency",
+                                 StopWatch());
+            }
+            finally
+            {
+                graph.Shutdown();
             }
         }
 
         [Test]
         public void TestNonExistentIndices()
         {
-            using (var graph = (IIndexableGraph) GraphTest.GenerateGraph())
+            var graph = (IIndexableGraph) GraphTest.GenerateGraph();
+            try
             {
-                if (graph.GetFeatures().SupportsVertexIndex && graph.GetFeatures().SupportsEdgeIndex &&
-                    graph.GetFeatures().SupportsIndices)
+                if (graph.Features.SupportsVertexIndex && graph.Features.SupportsEdgeIndex &&
+                    graph.Features.SupportsIndices)
                 {
                     StopWatch();
                     Assert.Null(graph.GetIndex("bloop", typeof (IVertex)));
@@ -128,6 +143,10 @@ namespace Frontenac.Blueprints
                     Assert.Null(graph.GetIndex("blah blah", typeof (IEdge)));
                     PrintPerformance(graph.ToString(), 3, "non-existent indices retrieved", StopWatch());
                 }
+            }
+            finally
+            {
+                graph.Shutdown();
             }
         }
 
@@ -138,57 +157,76 @@ namespace Frontenac.Blueprints
             IIndex manualIndex;
             IVertex vertex;
             object id = null;
-            using (var graph = (IIndexableGraph) GraphTest.GenerateGraph())
+            var graph = (IIndexableGraph) GraphTest.GenerateGraph();
+            try
             {
-                hasFeatures = (graph.GetFeatures().IsPersistent && graph.GetFeatures().SupportsVertexIndex &&
-                               graph.GetFeatures().SupportsElementProperties() && graph.GetFeatures().SupportsIndices);
+                hasFeatures = (graph.Features.IsPersistent && graph.Features.SupportsVertexIndex &&
+                               graph.Features.SupportsElementProperties() && graph.Features.SupportsIndices);
 
                 if (hasFeatures)
                 {
                     StopWatch();
                     graph.CreateIndex("testIndex", typeof (IVertex));
                     manualIndex = graph.GetIndex("testIndex", typeof (IVertex));
-                    Assert.AreEqual(manualIndex.GetIndexName(), "testIndex");
+                    Assert.AreEqual(manualIndex.Name, "testIndex");
                     vertex = graph.AddVertex(null);
                     vertex.SetProperty("name", "marko");
-                    id = vertex.GetId();
+                    id = vertex.Id;
                     manualIndex.Put("key", "value", vertex);
                     Assert.AreEqual(Count(manualIndex.Get("key", "value")), 1);
-                    Assert.AreEqual(manualIndex.Get("key", "value").First().GetId(), id);
+                    Assert.AreEqual(manualIndex.Get("key", "value").First().Id, id);
                     PrintPerformance(graph.ToString(), 1, "index created and 1 vertex added and checked", StopWatch());
                 }
+            }
+            finally
+            {
+                graph.Shutdown();
             }
 
             if (hasFeatures)
             {
-                using (var graph = (IIndexableGraph) GraphTest.GenerateGraph())
+                graph = (IIndexableGraph) GraphTest.GenerateGraph();
+                try
                 {
                     StopWatch();
                     manualIndex = graph.GetIndex("testIndex", typeof (IVertex));
                     Assert.AreEqual(Count(manualIndex.Get("key", "value")), 1);
-                    Assert.AreEqual(manualIndex.Get("key", "value").First().GetId(), id);
+                    Assert.AreEqual(manualIndex.Get("key", "value").First().Id, id);
                     PrintPerformance(graph.ToString(), 1, "index reloaded and 1 vertex checked", StopWatch());
                 }
+                finally
+                {
+                    graph.Shutdown();
+                }
 
-                using (var graph = (IIndexableGraph) GraphTest.GenerateGraph())
+                graph = (IIndexableGraph) GraphTest.GenerateGraph();
+                try
                 {
                     StopWatch();
                     manualIndex = graph.GetIndex("testIndex", typeof (IVertex));
                     vertex = (IVertex) manualIndex.Get("key", "value").First();
-                    Assert.AreEqual(vertex.GetId(), id);
+                    Assert.AreEqual(vertex.Id, id);
                     graph.RemoveVertex(vertex);
                     Assert.AreEqual(0, Count(manualIndex.Get("key", "value")));
                     PrintPerformance(graph.ToString(), 1, "index reloaded and 1 vertex checked and then removed",
                                      StopWatch());
                 }
+                finally
+                {
+                    graph.Shutdown();
+                }
 
-                using (var graph = (IIndexableGraph) GraphTest.GenerateGraph())
+                graph = (IIndexableGraph) GraphTest.GenerateGraph();
+                try
                 {
                     StopWatch();
                     manualIndex = graph.GetIndex("testIndex", typeof (IVertex));
                     Assert.AreEqual(Count(manualIndex.Get("key", "value")), 0);
                     PrintPerformance(graph.ToString(), 1, "index reloaded and checked to ensure empty", StopWatch());
-
+                }
+                finally
+                {
+                    graph.Shutdown();
                 }
             }
         }
@@ -197,14 +235,19 @@ namespace Frontenac.Blueprints
         public void TestExceptionOnIndexOverwrite()
         {
             int loop = 0;
-            using (var graph = (IIndexableGraph) GraphTest.GenerateGraph())
+            var graph = (IIndexableGraph) GraphTest.GenerateGraph();
+            try
             {
-                if(graph.GetFeatures().SupportsIndices && graph.GetFeatures().SupportsVertexIndex)
+                if(graph.Features.SupportsIndices && graph.Features.SupportsVertexIndex)
                 {
                     loop = 1;
-                    if (graph.GetFeatures().IsPersistent)
+                    if (graph.Features.IsPersistent)
                         loop = 5;
                 }
+            }
+            finally
+            {
+                graph.Shutdown();
             }
 
             if(loop > 0)
@@ -213,7 +256,8 @@ namespace Frontenac.Blueprints
                 string graphName = "";
                 for (int i = 0; i < loop; i++)
                 {
-                    using (var graph = (IIndexableGraph) GraphTest.GenerateGraph())
+                    graph = (IIndexableGraph) GraphTest.GenerateGraph();
+                    try
                     {
                         graph.CreateIndex(i + "atest", typeof (IVertex));
                         graphName = graph.ToString();
@@ -224,7 +268,7 @@ namespace Frontenac.Blueprints
                             try
                             {
                                 counter++;
-                                graph.CreateIndex(index.GetIndexName(), index.GetIndexClass());
+                                graph.CreateIndex(index.Name, index.Type);
                             }
                             catch (Exception)
                             {
@@ -233,6 +277,10 @@ namespace Frontenac.Blueprints
                         }
                         Assert.AreEqual(counter, exceptionCounter);
                         Assert.True(counter > 0);
+                    }
+                    finally
+                    {
+                        graph.Shutdown();
                     }
                 }
                 PrintPerformance(graphName, loop, "attempt(s) to overwrite existing indices", StopWatch());
@@ -244,10 +292,11 @@ namespace Frontenac.Blueprints
         {
             bool hasFeatures;
             int count = 0;
-            using (var graph = (IIndexableGraph)GraphTest.GenerateGraph())
+            var graph = (IIndexableGraph) GraphTest.GenerateGraph();
+            try
             {
-                hasFeatures = (graph.GetFeatures().IsPersistent && graph.GetFeatures().SupportsIndices &&
-                                    graph.GetFeatures().SupportsVertexIndex);
+                hasFeatures = (graph.Features.IsPersistent && graph.Features.SupportsIndices &&
+                                    graph.Features.SupportsVertexIndex);
                 if (hasFeatures)
                 {
                     graph.CreateIndex("blah", typeof (IVertex));
@@ -255,7 +304,7 @@ namespace Frontenac.Blueprints
                     var indexNames = new HashSet<string>();
                     foreach (IIndex index in graph.GetIndices())
                     {
-                        indexNames.Add(index.GetIndexName());
+                        indexNames.Add(index.Name);
                     }
                     Assert.AreEqual(Count(graph.GetIndices()), 2);
                     Assert.AreEqual(Count(graph.GetIndices()), indexNames.Count());
@@ -268,14 +317,12 @@ namespace Frontenac.Blueprints
                     Assert.AreEqual(Count(graph.GetIndices()), 0);
 
                     count = Count(graph.GetIndices());
-                }
-            }
-            if (hasFeatures)
-            {
-                using (var graph2 = (IIndexableGraph) GraphTest.GenerateGraph())
-                {
                     Assert.AreEqual(count, 0);
                 }
+            }
+            finally
+            {
+                graph.Shutdown();
             }
         }
     }

@@ -14,7 +14,7 @@ namespace Frontenac.Blueprints
         public static T GetOnlyElement<T>(IEnumerator<T> iterator)
         {
             if (!iterator.MoveNext()) return default(T);
-            T element = iterator.Current;
+            var element = iterator.Current;
             if (iterator.MoveNext()) throw new ArgumentException("Iterator has multiple elmenets");
             return element;
         }
@@ -61,8 +61,7 @@ namespace Frontenac.Blueprints
         public static void PrintPerformance(string name, object events, string eventName, long timeInMilliseconds)
         {
             Console.WriteLine(null != events
-                                  ? string.Concat("\t", name, ": ", (int) events, " ", eventName, " in ",
-                                                  timeInMilliseconds, "ms")
+                                  ? string.Concat("\t", name, ": ", (int) events, " ", eventName, " in ", timeInMilliseconds, "ms")
                                   : string.Concat("\t", name, ": ", eventName, " in ", timeInMilliseconds, "ms"));
         }
 
@@ -75,19 +74,12 @@ namespace Frontenac.Blueprints
         {
             if (Directory.Exists(directory))
                 Directory.Delete(directory, true);
-
-            // overkill code, simply allowing us to detect when data dir is in use. useful though because without it
-            // tests may fail if a database is re-used in between tests somehow. this directory really needs to be
-            // cleared between tests runs and this exception will make it clear if it is not.
-            if (Directory.Exists(directory))
-                throw new Exception(string.Concat("unable to delete directory ", Path.GetFullPath(directory)));
         }
 
         public string ComputeTestDataRoot()
         {
             var ns = GetType().Namespace;
-            if (ns != null) return ns.Replace('.', '\\');
-            return null;
+            return ns != null ? ns.Replace('.', '\\') : null;
         }
     }
 }

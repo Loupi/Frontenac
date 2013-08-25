@@ -10,7 +10,7 @@
         /// <summary>
         /// Get the raw underlying graph engine that exposes the Blueprints API.
         /// </summary>
-        /// <returns>the raw underlying graph engine</returns>
-        T GetRawGraph();
+        /// <value>the raw underlying graph engine</value>
+        T RawGraph { get; }
     }
 }

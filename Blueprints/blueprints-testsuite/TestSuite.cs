@@ -29,14 +29,14 @@ namespace Frontenac.Blueprints
 
         protected string ConvertId(IGraph graph, string id)
         {
-            if (graph.GetFeatures().IsRdfModel)
+            if (graph.Features.IsRdfModel)
                 return string.Concat("blueprints:", id);
             return id;
         }
 
         protected void VertexCount(IGraph graph, int expectedCount)
         {
-            if (graph.GetFeatures().SupportsVertexIteration)
+            if (graph.Features.SupportsVertexIteration)
                 Assert.AreEqual(Count(graph.GetVertices()), expectedCount);
         }
 
@@ -44,14 +44,14 @@ namespace Frontenac.Blueprints
         {
             foreach (IVertex v in vertices)
             {
-                IVertex vp = graph.GetVertex(v.GetId());
-                if (vp == null || !vp.GetId().Equals(v.GetId())) Assert.Fail();
+                IVertex vp = graph.GetVertex(v.Id);
+                if (vp == null || !vp.Id.Equals(v.Id)) Assert.Fail();
             }
         }
 
         protected void EdgeCount(IGraph graph, int expectedCount)
         {
-            if (graph.GetFeatures().SupportsEdgeIteration)
+            if (graph.Features.SupportsEdgeIteration)
                 Assert.AreEqual(Count(graph.GetEdges()), expectedCount);
         }
     }

@@ -17,9 +17,9 @@
             return new IdVertex(((IEdge)BaseElement).GetVertex(direction), IdGraph);
         }
 
-        public string GetLabel()
+        public string Label
         {
-            return ((IEdge)BaseElement).GetLabel();
+            get { return ((IEdge)BaseElement).Label; }
         }
 
         public override string ToString()

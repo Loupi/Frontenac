@@ -15,9 +15,10 @@ namespace Frontenac.Blueprints
         public void TestAutoIndexKeyManagementWithPersistence()
         {
             bool isPersistent;
-            using (var graph = (IKeyIndexableGraph)GraphTest.GenerateGraph())
+            var graph = (IKeyIndexableGraph) GraphTest.GenerateGraph();
+            try
             {
-                if (graph.GetFeatures().SupportsVertexKeyIndex)
+                if (graph.Features.SupportsVertexKeyIndex)
                 {
                     Assert.AreEqual(graph.GetIndexedKeys(typeof(IVertex)).Count(), 0);
                     StopWatch();
@@ -28,7 +29,7 @@ namespace Frontenac.Blueprints
                     Assert.True(graph.GetIndexedKeys(typeof(IVertex)).Contains("name"));
                     Assert.True(graph.GetIndexedKeys(typeof(IVertex)).Contains("location"));
                 }
-                if (graph.GetFeatures().SupportsEdgeKeyIndex)
+                if (graph.Features.SupportsEdgeKeyIndex)
                 {
                     Assert.AreEqual(graph.GetIndexedKeys(typeof(IEdge)).Count(), 0);
                     StopWatch();
@@ -40,26 +41,35 @@ namespace Frontenac.Blueprints
                     Assert.True(graph.GetIndexedKeys(typeof(IEdge)).Contains("since"));
                 }
 
-                isPersistent = graph.GetFeatures().IsPersistent;
+                isPersistent = graph.Features.IsPersistent;
+            }
+            finally
+            {
+                graph.Shutdown();
             }
 
             if (isPersistent)
             {
-                using (var graph = (IKeyIndexableGraph) GraphTest.GenerateGraph())
+                graph = (IKeyIndexableGraph) GraphTest.GenerateGraph();
+                try
                 {
-                    if (graph.GetFeatures().SupportsVertexKeyIndex)
+                    if (graph.Features.SupportsVertexKeyIndex)
                     {
                         Assert.AreEqual(graph.GetIndexedKeys(typeof (IVertex)).Count(), 2);
                         Assert.True(graph.GetIndexedKeys(typeof (IVertex)).Contains("name"));
                         Assert.True(graph.GetIndexedKeys(typeof (IVertex)).Contains("location"));
                     }
 
-                    if (graph.GetFeatures().SupportsEdgeKeyIndex)
+                    if (graph.Features.SupportsEdgeKeyIndex)
                     {
                         Assert.AreEqual(graph.GetIndexedKeys(typeof (IEdge)).Count(), 2);
                         Assert.True(graph.GetIndexedKeys(typeof (IEdge)).Contains("weight"));
                         Assert.True(graph.GetIndexedKeys(typeof (IEdge)).Contains("since"));
                     }
+                }
+                finally
+                {
+                    graph.Shutdown();
                 }
             }
         }
@@ -69,51 +79,68 @@ namespace Frontenac.Blueprints
         {
             bool isPersistent;
             TestAutoIndexKeyManagementWithPersistence();
-            using (var graph = (IKeyIndexableGraph) GraphTest.GenerateGraph())
+            var graph = (IKeyIndexableGraph) GraphTest.GenerateGraph();
+            try
             {
-                isPersistent = graph.GetFeatures().IsPersistent;
+                isPersistent = graph.Features.IsPersistent;
                 if (isPersistent)
                 {
-                    if (graph.GetFeatures().SupportsVertexKeyIndex)
+                    if (graph.Features.SupportsVertexKeyIndex)
                     {
                         graph.DropKeyIndex("name", typeof (IVertex));
                     }
 
-                    if (graph.GetFeatures().SupportsEdgeKeyIndex)
+                    if (graph.Features.SupportsEdgeKeyIndex)
                     {
                         graph.DropKeyIndex("weight", typeof (IEdge));
                     }
                 }
             }
+            finally
+            {
+                graph.Shutdown();
+            }
+
             if (isPersistent)
             {
-                using (var graph = (IKeyIndexableGraph) GraphTest.GenerateGraph())
+                graph = (IKeyIndexableGraph) GraphTest.GenerateGraph();
+                try
                 {
-                    if (graph.GetFeatures().SupportsVertexKeyIndex)
+                    if (graph.Features.SupportsVertexKeyIndex)
                     {
                         Assert.AreEqual(graph.GetIndexedKeys(typeof (IVertex)).Count(), 1);
                         Assert.True(graph.GetIndexedKeys(typeof (IVertex)).Contains("location"));
                         graph.DropKeyIndex("location", typeof (IVertex));
                     }
 
-                    if (graph.GetFeatures().SupportsEdgeKeyIndex)
+                    if (graph.Features.SupportsEdgeKeyIndex)
                     {
                         Assert.AreEqual(graph.GetIndexedKeys(typeof (IEdge)).Count(), 1);
                         Assert.True(graph.GetIndexedKeys(typeof (IEdge)).Contains("since"));
                         graph.DropKeyIndex("since", typeof (IEdge));
                     }
                 }
-                using (var graph = (IKeyIndexableGraph) GraphTest.GenerateGraph())
+                finally
                 {
-                    if (graph.GetFeatures().SupportsVertexKeyIndex)
+                    graph.Shutdown();
+                }
+
+                graph = (IKeyIndexableGraph) GraphTest.GenerateGraph();
+                try
+                {
+                    if (graph.Features.SupportsVertexKeyIndex)
                     {
                         Assert.AreEqual(graph.GetIndexedKeys(typeof (IVertex)).Count(), 0);
                     }
 
-                    if (graph.GetFeatures().SupportsEdgeKeyIndex)
+                    if (graph.Features.SupportsEdgeKeyIndex)
                     {
                         Assert.AreEqual(graph.GetIndexedKeys(typeof (IEdge)).Count(), 0);
                     }
+                }
+                finally
+                {
+                    graph.Shutdown();
                 }
             }
         }
@@ -121,9 +148,10 @@ namespace Frontenac.Blueprints
         [Test]
         public void TestGettingVerticesAndEdgesWithKeyValue()
         {
-            using (var graph = (IKeyIndexableGraph) GraphTest.GenerateGraph())
+            var graph = (IKeyIndexableGraph) GraphTest.GenerateGraph();
+            try
             {
-                if (graph.GetFeatures().SupportsVertexIteration && graph.GetFeatures().SupportsVertexKeyIndex)
+                if (graph.Features.SupportsVertexIteration && graph.Features.SupportsVertexKeyIndex)
                 {
                     graph.CreateKeyIndex("name", typeof (IVertex));
                     Assert.AreEqual(graph.GetIndexedKeys(typeof (IVertex)).Count(), 1);
@@ -142,7 +170,7 @@ namespace Frontenac.Blueprints
                     Assert.AreEqual(graph.GetVertices("name", "stephen").First(), v2);
                 }
 
-                if (graph.GetFeatures().SupportsEdgeIteration && graph.GetFeatures().SupportsEdgeKeyIndex)
+                if (graph.Features.SupportsEdgeIteration && graph.Features.SupportsEdgeKeyIndex)
                 {
                     graph.CreateKeyIndex("place", typeof (IEdge));
                     Assert.AreEqual(graph.GetIndexedKeys(typeof (IEdge)).Count(), 1);
@@ -162,14 +190,19 @@ namespace Frontenac.Blueprints
                     Assert.AreEqual(graph.GetEdges("name", "stephen").First(), e2);
                 }
             }
+            finally
+            {
+                graph.Shutdown();
+            }
         }
 
         [Test]
         public void TestReIndexingOfElements()
         {
-            using (var graph = (IKeyIndexableGraph) GraphTest.GenerateGraph())
+            var graph = (IKeyIndexableGraph) GraphTest.GenerateGraph();
+            try
             {
-                if (graph.GetFeatures().SupportsVertexKeyIndex)
+                if (graph.Features.SupportsVertexKeyIndex)
                 {
                     IVertex vertex = graph.AddVertex(null);
                     vertex.SetProperty("name", "marko");
@@ -180,7 +213,7 @@ namespace Frontenac.Blueprints
                     Assert.AreEqual(graph.GetVertices("name", "marko").First(), vertex);
                 }
 
-                if (graph.GetFeatures().SupportsEdgeKeyIndex)
+                if (graph.Features.SupportsEdgeKeyIndex)
                 {
                     IEdge edge = graph.AddEdge(null, graph.AddVertex(null), graph.AddVertex(null), "knows");
                     edge.SetProperty("date", 2012);
@@ -191,14 +224,19 @@ namespace Frontenac.Blueprints
                     Assert.AreEqual(graph.GetEdges("date", 2012).First(), edge);
                 }
             }
+            finally
+            {
+                graph.Shutdown();
+            }
         }
 
         [Test]
         public void TestNoConcurrentModificationException()
         {
-            using (var graph = (IKeyIndexableGraph) GraphTest.GenerateGraph())
+            var graph = (IKeyIndexableGraph) GraphTest.GenerateGraph();
+            try
             {
-                if (graph.GetFeatures().SupportsEdgeKeyIndex)
+                if (graph.Features.SupportsEdgeKeyIndex)
                 {
                     graph.CreateKeyIndex("key", typeof (IEdge));
                     for (int i = 0; i < 25; i++)
@@ -207,8 +245,8 @@ namespace Frontenac.Blueprints
                              .SetProperty("key", "value");
                     }
 
-                    if (graph.GetFeatures().SupportsVertexIteration) Assert.AreEqual(Count(graph.GetVertices()), 50);
-                    if (graph.GetFeatures().SupportsEdgeIteration) Assert.AreEqual(Count(graph.GetEdges()), 25);
+                    if (graph.Features.SupportsVertexIteration) Assert.AreEqual(Count(graph.GetVertices()), 50);
+                    if (graph.Features.SupportsEdgeIteration) Assert.AreEqual(Count(graph.GetEdges()), 25);
                     int counter = 0;
                     foreach (var edge in graph.GetEdges("key", "value"))
                     {
@@ -216,17 +254,22 @@ namespace Frontenac.Blueprints
                         counter++;
                     }
                     Assert.AreEqual(counter, 25);
-                    if (graph.GetFeatures().SupportsVertexIteration) Assert.AreEqual(Count(graph.GetVertices()), 50);
-                    if (graph.GetFeatures().SupportsEdgeIteration) Assert.AreEqual(Count(graph.GetEdges()), 0);
+                    if (graph.Features.SupportsVertexIteration) Assert.AreEqual(Count(graph.GetVertices()), 50);
+                    if (graph.Features.SupportsEdgeIteration) Assert.AreEqual(Count(graph.GetEdges()), 0);
 
                 }
+            }
+            finally
+            {
+                graph.Shutdown();
             }
         }
 
         [Test]
         public void TestKeyIndicesConsistentWithElementRemoval()
         {
-            using (var graph = (IKeyIndexableGraph) GraphTest.GenerateGraph())
+            var graph = (IKeyIndexableGraph) GraphTest.GenerateGraph();
+            try
             {
                 graph.CreateKeyIndex("foo", typeof (IVertex));
 
@@ -237,6 +280,10 @@ namespace Frontenac.Blueprints
                 graph.RemoveVertex(v1);
                 VertexCount(graph, 0);
                 Assert.AreEqual(0, Count(graph.GetVertices("foo", 42)));
+            }
+            finally
+            {
+                graph.Shutdown();
             }
         }
     }

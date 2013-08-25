@@ -146,7 +146,7 @@ namespace Frontenac.Blueprints.Util.IO.GML
             {
                 if (_useId)
                 {
-                    int id = int.Parse(v.GetId().ToString());
+                    int id = int.Parse(v.Id.ToString());
                     WriteVertex(writer, v, id);
                     ids[v] = id;
                 }
@@ -186,7 +186,7 @@ namespace Frontenac.Blueprints.Util.IO.GML
             WriteKey(writer, GmlTokens.Target);
             WriteNumberProperty(writer, target);
             WriteKey(writer, GmlTokens.Label);
-            WriteStringProperty(writer, e.GetLabel());
+            WriteStringProperty(writer, e.Label);
             WriteEdgeProperties(writer, e);
             writer.Write(Tab);
             writer.Write(CloseList);
@@ -194,7 +194,7 @@ namespace Frontenac.Blueprints.Util.IO.GML
 
         void WriteVertexProperties(StreamWriter writer, IVertex e)
         {
-            object blueprintsId = e.GetId();
+            object blueprintsId = e.Id;
             if (!_useId)
             {
                 WriteKey(writer, _vertexIdKey);
@@ -208,7 +208,7 @@ namespace Frontenac.Blueprints.Util.IO.GML
 
         void WriteEdgeProperties(StreamWriter writer, IEdge e)
         {
-            object blueprintsId = e.GetId();
+            object blueprintsId = e.Id;
             if (!_useId)
             {
                 WriteKey(writer, _edgeIdKey);

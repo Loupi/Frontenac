@@ -16,9 +16,10 @@ namespace Frontenac.Blueprints
         [Test]
         public void TestVertexQuery()
         {
-            using (var graph = GraphTest.GenerateGraph())
+            var graph = GraphTest.GenerateGraph();
+            try
             {
-                if (graph.GetFeatures().SupportsEdgeProperties)
+                if (graph.Features.SupportsEdgeProperties)
                 {
 
                     IVertex a = graph.AddVertex(null);
@@ -42,43 +43,43 @@ namespace Frontenac.Blueprints
 
                     // out Edges
 
-                    IEnumerable<object> results = a.Query().Direction(Direction.Out).Edges();
+                    IEnumerable<object> results = a.Query().Direction(Direction.Out).Edges().ToArray();
                     Assert.AreEqual(results.Count(), 3);
                     Assert.True(results.Contains(aFriendB));
                     Assert.True(results.Contains(aFriendC));
                     Assert.True(results.Contains(aHateC));
-                    results = a.Query().Direction(Direction.Out).Vertices();
+                    results = a.Query().Direction(Direction.Out).Vertices().ToArray();
                     Assert.AreEqual(results.Count(), 3);
                     Assert.True(results.Contains(b));
                     Assert.True(results.Contains(c));
                     Assert.AreEqual(a.Query().Direction(Direction.Out).Count(), 3);
 
 
-                    results = a.Query().Direction(Direction.Out).Labels("hate", "friend").Edges();
+                    results = a.Query().Direction(Direction.Out).Labels("hate", "friend").Edges().ToArray();
                     Assert.AreEqual(results.Count(), 3);
                     Assert.True(results.Contains(aFriendB));
                     Assert.True(results.Contains(aFriendC));
                     Assert.True(results.Contains(aHateC));
-                    results = a.Query().Direction(Direction.Out).Labels("hate", "friend").Vertices();
+                    results = a.Query().Direction(Direction.Out).Labels("hate", "friend").Vertices().ToArray();
                     Assert.AreEqual(results.Count(), 3);
                     Assert.True(results.Contains(b));
                     Assert.True(results.Contains(c));
                     Assert.AreEqual(a.Query().Direction(Direction.Out).Labels("hate", "friend").Count(), 3);
 
-                    results = a.Query().Direction(Direction.Out).Labels("friend").Edges();
+                    results = a.Query().Direction(Direction.Out).Labels("friend").Edges().ToArray();
                     Assert.AreEqual(results.Count(), 2);
                     Assert.True(results.Contains(aFriendB));
                     Assert.True(results.Contains(aFriendC));
-                    results = a.Query().Direction(Direction.Out).Labels("friend").Vertices();
+                    results = a.Query().Direction(Direction.Out).Labels("friend").Vertices().ToArray();
                     Assert.AreEqual(results.Count(), 2);
                     Assert.True(results.Contains(b));
                     Assert.True(results.Contains(c));
                     Assert.AreEqual(a.Query().Direction(Direction.Out).Labels("friend").Count(), 2);
 
-                    results = a.Query().Direction(Direction.Out).Labels("friend").Has("amount", 1.0).Edges();
+                    results = a.Query().Direction(Direction.Out).Labels("friend").Has("amount", 1.0).Edges().ToArray();
                     Assert.AreEqual(results.Count(), 1);
                     Assert.True(results.Contains(aFriendB));
-                    results = a.Query().Direction(Direction.Out).Labels("friend").Has("amount", 1.0).Vertices();
+                    results = a.Query().Direction(Direction.Out).Labels("friend").Has("amount", 1.0).Vertices().ToArray();
                     Assert.AreEqual(results.Count(), 1);
                     Assert.True(results.Contains(b));
                     Assert.AreEqual(
@@ -86,7 +87,7 @@ namespace Frontenac.Blueprints
                         1);
 
                     results =
-                        a.Query().Direction(Direction.Out).Labels("friend").Has("amount", Compare.NotEqual, 1.0).Edges();
+                        a.Query().Direction(Direction.Out).Labels("friend").Has("amount", Compare.NotEqual, 1.0).Edges().ToArray();
                     Assert.AreEqual(results.Count(), 1);
                     Assert.True(results.Contains(aFriendC));
                     results =
@@ -94,7 +95,7 @@ namespace Frontenac.Blueprints
                          .Direction(Direction.Out)
                          .Labels("friend")
                          .Has("amount", Compare.NotEqual, 1.0)
-                         .Vertices();
+                         .Vertices().ToArray();
                     Assert.AreEqual(results.Count(), 1);
                     Assert.True(results.Contains(c));
                     Assert.AreEqual(
@@ -107,7 +108,7 @@ namespace Frontenac.Blueprints
                          .Direction(Direction.Out)
                          .Labels("friend")
                          .Has("amount", Compare.LessThanEqual, 1.0)
-                         .Edges();
+                         .Edges().ToArray();
                     Assert.AreEqual(results.Count(), 2);
                     Assert.True(results.Contains(aFriendB));
                     Assert.True(results.Contains(aFriendC));
@@ -116,7 +117,7 @@ namespace Frontenac.Blueprints
                          .Direction(Direction.Out)
                          .Labels("friend")
                          .Has("amount", Compare.LessThanEqual, 1.0)
-                         .Vertices();
+                         .Vertices().ToArray();
                     Assert.AreEqual(results.Count(), 2);
                     Assert.True(results.Contains(b));
                     Assert.True(results.Contains(c));
@@ -125,20 +126,20 @@ namespace Frontenac.Blueprints
                          a.Query().Direction(Direction.Out).Labels("friend").Has("amount", Compare.LessThanEqual, 1.0))
                             .Count(), 2);
 
-                    results = a.Query().Direction(Direction.Out).Has("amount", Compare.LessThan, 1.0).Edges();
+                    results = a.Query().Direction(Direction.Out).Has("amount", Compare.LessThan, 1.0).Edges().ToArray();
                     Assert.AreEqual(results.Count(), 1);
                     Assert.True(results.Contains(aFriendC));
-                    results = a.Query().Direction(Direction.Out).Has("amount", Compare.LessThan, 1.0).Vertices();
+                    results = a.Query().Direction(Direction.Out).Has("amount", Compare.LessThan, 1.0).Vertices().ToArray();
                     Assert.AreEqual(results.Count(), 1);
                     Assert.True(results.Contains(c));
                     Assert.AreEqual(
                         ((IVertexQuery) a.Query().Direction(Direction.Out).Has("amount", Compare.LessThan, 1.0)).Count(),
                         1);
 
-                    results = a.Query().Direction(Direction.Out).Labels("friend").Has("amount", 0.5).Edges();
+                    results = a.Query().Direction(Direction.Out).Labels("friend").Has("amount", 0.5).Edges().ToArray();
                     Assert.AreEqual(results.Count(), 1);
                     Assert.True(results.Contains(aFriendC));
-                    results = a.Query().Direction(Direction.Out).Labels("friend").Has("amount", 0.5).Vertices();
+                    results = a.Query().Direction(Direction.Out).Labels("friend").Has("amount", 0.5).Vertices().ToArray();
                     Assert.AreEqual(results.Count(), 1);
                     Assert.True(results.Contains(c));
 
@@ -147,7 +148,7 @@ namespace Frontenac.Blueprints
                          .Direction(Direction.In)
                          .Labels("hate", "friend")
                          .Has("amount", Compare.GreaterThan, 0.5)
-                         .Edges();
+                         .Edges().ToArray();
                     Assert.AreEqual(results.Count(), 1);
                     Assert.True(results.Contains(cHateA));
                     results =
@@ -173,7 +174,7 @@ namespace Frontenac.Blueprints
                          .Direction(Direction.In)
                          .Labels("hate")
                          .Has("amount", Compare.GreaterThan, 1.0)
-                         .Vertices();
+                         .Vertices().ToArray();
                     Assert.AreEqual(results.Count(), 0);
                     Assert.AreEqual(
                         ((IVertexQuery)
@@ -185,7 +186,7 @@ namespace Frontenac.Blueprints
                          .Direction(Direction.In)
                          .Labels("hate")
                          .Has("amount", Compare.GreaterThanEqual, 1.0)
-                         .Edges();
+                         .Edges().ToArray();
                     Assert.AreEqual(results.Count(), 1);
                     Assert.True(results.Contains(cHateA));
                     results =
@@ -203,44 +204,44 @@ namespace Frontenac.Blueprints
 
                     results = a.Query().Direction(Direction.Out).Interval("date", 5, 10).Edges();
                     Assert.AreEqual(results.Count(), 0);
-                    results = a.Query().Direction(Direction.Out).Interval("date", 5, 10).Vertices();
+                    results = a.Query().Direction(Direction.Out).Interval("date", 5, 10).Vertices().ToArray();
                     Assert.AreEqual(results.Count(), 0);
                     Assert.AreEqual(
                         ((IVertexQuery) a.Query().Direction(Direction.Out).Interval("date", 5, 10)).Count(), 0);
 
-                    results = a.Query().Direction(Direction.Out).Interval("date", 5, 11).Edges();
+                    results = a.Query().Direction(Direction.Out).Interval("date", 5, 11).Edges().ToArray();
                     Assert.AreEqual(results.Count(), 1);
                     Assert.True(results.Contains(aFriendB));
-                    results = a.Query().Direction(Direction.Out).Interval("date", 5, 11).Vertices();
+                    results = a.Query().Direction(Direction.Out).Interval("date", 5, 11).Vertices().ToArray();
                     Assert.AreEqual(results.Count(), 1);
                     Assert.True(results.Contains(b));
                     Assert.AreEqual(
                         ((IVertexQuery) a.Query().Direction(Direction.Out).Interval("date", 5, 11)).Count(), 1);
 
-                    results = a.Query().Direction(Direction.Out).Labels("friend").Interval("date", 5, 11).Edges();
+                    results = a.Query().Direction(Direction.Out).Labels("friend").Interval("date", 5, 11).Edges().ToArray();
                     Assert.AreEqual(results.Count(), 1);
                     Assert.True(results.Contains(aFriendB));
-                    results = a.Query().Direction(Direction.Out).Labels("friend").Interval("date", 5, 11).Vertices();
+                    results = a.Query().Direction(Direction.Out).Labels("friend").Interval("date", 5, 11).Vertices().ToArray();
                     Assert.AreEqual(results.Count(), 1);
                     Assert.True(results.Contains(b));
                     Assert.AreEqual(
                         ((IVertexQuery) a.Query().Direction(Direction.Out).Labels("friend").Interval("date", 5, 11))
                             .Count(), 1);
 
-                    results = a.Query().Direction(Direction.Both).Labels("friend", "hate").Edges();
+                    results = a.Query().Direction(Direction.Both).Labels("friend", "hate").Edges().ToArray();
                     Assert.AreEqual(results.Count(), 4);
                     Assert.True(results.Contains(aFriendB));
                     Assert.True(results.Contains(aFriendC));
                     Assert.True(results.Contains(aHateC));
                     Assert.True(results.Contains(cHateA));
-                    results = a.Query().Direction(Direction.Both).Labels("friend", "hate").Vertices();
+                    results = a.Query().Direction(Direction.Both).Labels("friend", "hate").Vertices().ToArray();
                     Assert.AreEqual(results.Count(), 4);
                     Assert.True(results.Contains(b));
                     Assert.True(results.Contains(c));
                     Assert.False(results.Contains(a));
                     Assert.AreEqual(a.Query().Direction(Direction.Both).Labels("friend", "hate").Count(), 4);
 
-                    results = a.Query().Direction(Direction.Out).Labels("friend", "hate").Limit(2).Edges();
+                    results = a.Query().Direction(Direction.Out).Labels("friend", "hate").Limit(2).Edges().ToArray();
                     Assert.AreEqual(results.Count(), 2);
                     Assert.True(results.Contains(aFriendB) || results.Contains(aHateC) || results.Contains(aFriendC));
                     results = a.Query().Direction(Direction.Out).Labels("friend", "hate").Limit(2).Vertices();
@@ -257,19 +258,24 @@ namespace Frontenac.Blueprints
                         ((IVertexQuery) a.Query().Direction(Direction.Out).Labels("friend").Limit(0)).Count(), 0);
                 }
             }
+            finally
+            {
+                graph.Shutdown();
+            }
         }
 
         [Test]
         public void TestGraphQueryForVertices()
         {
-            using (var graph = GraphTest.GenerateGraph())
+            var graph = GraphTest.GenerateGraph();
+            try
             {
-                if (graph.GetFeatures().SupportsVertexIndex && graph is IKeyIndexableGraph)
+                if (graph.Features.SupportsVertexIndex && graph is IKeyIndexableGraph)
                 {
                     ((IKeyIndexableGraph) graph).CreateKeyIndex("name", typeof (IVertex));
                 }
 
-                if (graph.GetFeatures().SupportsVertexProperties)
+                if (graph.Features.SupportsVertexProperties)
                 {
                     IVertex vertex = graph.AddVertex(null);
                     vertex.SetProperty(ConvertId(graph, "name"), "marko");
@@ -279,7 +285,7 @@ namespace Frontenac.Blueprints
                     vertex.SetProperty(ConvertId(graph, "age"), 28);
                     graph.AddVertex(null);
 
-                    IEnumerable<IVertex> vertices = graph.Query().Vertices();
+                    IEnumerable<IVertex> vertices = graph.Query().Vertices().ToArray();
                     Assert.AreEqual(Count(vertices), 3);
                     Assert.AreEqual(Count(vertices), 3);
                     var names = new HashSet<string>();
@@ -299,16 +305,16 @@ namespace Frontenac.Blueprints
                     Assert.AreEqual(Count(graph.Query().Limit(3).Vertices()), 3);
                     Assert.AreEqual(Count(graph.Query().Limit(4).Vertices()), 3);
 
-                    vertices = graph.Query().Has("name", "marko").Vertices();
+                    vertices = graph.Query().Has("name", "marko").Vertices().ToArray();
                     Assert.AreEqual(Count(vertices), 1);
                     // Assert.AreEqual(vertices.First().GetProperty("name"), "marko");
 
-                    vertices = graph.Query().Has("age", Compare.GreaterThanEqual, 29).Vertices();
+                    vertices = graph.Query().Has("age", Compare.GreaterThanEqual, 29).Vertices().ToArray();
                     Assert.AreEqual(Count(vertices), 1);
                     Assert.AreEqual(vertices.First().GetProperty("name"), "marko");
                     Assert.AreEqual(vertices.First().GetProperty("age"), 33);
 
-                    vertices = graph.Query().Has("age", Compare.GreaterThanEqual, 28).Vertices();
+                    vertices = graph.Query().Has("age", Compare.GreaterThanEqual, 28).Vertices().ToArray();
                     Assert.AreEqual(Count(vertices), 2);
                     names = new HashSet<string>();
                     foreach (IVertex v in vertices)
@@ -318,7 +324,7 @@ namespace Frontenac.Blueprints
                     Assert.True(names.Contains("marko"));
                     Assert.True(names.Contains("matthias"));
 
-                    vertices = graph.Query().Interval("age", 28, 33).Vertices();
+                    vertices = graph.Query().Interval("age", 28, 33).Vertices().ToArray();
                     Assert.AreEqual(Count(vertices), 1);
                     Assert.AreEqual(vertices.First().GetProperty("name"), "matthias");
 
@@ -330,17 +336,22 @@ namespace Frontenac.Blueprints
                     Assert.AreEqual(Count(graph.Query().Interval("age", 28, 32).Has("name", "marko").Vertices()), 0);
                 }
             }
+            finally
+            {
+                graph.Shutdown();
+            }
         }
 
         [Test]
         public void TestGraphQueryForEdges()
         {
-            using (var graph = GraphTest.GenerateGraph())
+            var graph = GraphTest.GenerateGraph();
+            try
             {
-                if (graph.GetFeatures().SupportsEdgeIndex && graph is IKeyIndexableGraph)
+                if (graph.Features.SupportsEdgeIndex && graph is IKeyIndexableGraph)
                     ((IKeyIndexableGraph) graph).CreateKeyIndex("type", typeof (IEdge));
 
-                if (graph.GetFeatures().SupportsEdgeProperties && graph.GetFeatures().SupportsVertexProperties)
+                if (graph.Features.SupportsEdgeProperties && graph.Features.SupportsVertexProperties)
                 {
                     IVertex marko = graph.AddVertex(null);
                     marko.SetProperty("name", "marko");
@@ -381,6 +392,10 @@ namespace Frontenac.Blueprints
                                     "tinkerpop");
                     Assert.AreEqual(Count(graph.Query().Interval("weight", 0.0, 1.0).Edges()), 0);
                 }
+            }
+            finally
+            {
+                graph.Shutdown();
             }
         }
     }

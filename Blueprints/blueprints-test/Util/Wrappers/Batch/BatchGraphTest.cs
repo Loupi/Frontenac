@@ -59,7 +59,8 @@ namespace Frontenac.Blueprints.Util.Wrappers.Batch
         {
             const int numEdges = 10000;
             string[][] quads = GenerateQuads(100, numEdges, new[]{"knows", "friend"});
-            using (var graph = new TinkerGraph())
+            var graph = new TinkerGraph();
+            try
             {
                 var bgraph = new BatchGraph(new WritethroughGraph(graph), VertexIdType.String, 1000);
                 foreach (string[] quad in quads)
@@ -75,6 +76,10 @@ namespace Frontenac.Blueprints.Util.Wrappers.Batch
                 }
                 Assert.AreEqual(numEdges, BaseTest.Count(graph.GetEdges()));
             }
+            finally
+            {
+                graph.Shutdown();
+            }
         }
 
         [Test]
@@ -82,30 +87,34 @@ namespace Frontenac.Blueprints.Util.Wrappers.Batch
         {
             const int numEdges = 1000;
             string[][] quads = GenerateQuads(100, numEdges, new[]{"knows", "friend"});
-            using (var tg = new TinkerGraph())
+            var tg = new TinkerGraph();
+            try
             {
-                using (var bg = new BatchGraph(new WritethroughGraph(tg), VertexIdType.String, 100))
+                var bg = new BatchGraph(new WritethroughGraph(tg), VertexIdType.String, 100);
+                
+                bg.SetLoadingFromScratch(false);
+                int counter = 0;
+                foreach (string[] quad in quads)
                 {
-                    bg.SetLoadingFromScratch(false);
-                    int counter = 0;
-                    foreach (string[] quad in quads)
-                    {
-                        IGraph graph;
-                        if (counter < numEdges/2) graph = tg;
-                        else graph = bg;
+                    IGraph graph;
+                    if (counter < numEdges/2) graph = tg;
+                    else graph = bg;
 
-                        var vertices = new IVertex[2];
-                        for (int i = 0; i < 2; i++)
-                        {
-                            vertices[i] = graph.GetVertex(quad[i]);
-                            if (vertices[i] == null) vertices[i] = graph.AddVertex(quad[i]);
-                        }
-                        IEdge edge = graph.AddEdge(null, vertices[0], vertices[1], quad[2]);
-                        edge.SetProperty("annotation", quad[3]);
-                        counter++;
+                    var vertices = new IVertex[2];
+                    for (int i = 0; i < 2; i++)
+                    {
+                        vertices[i] = graph.GetVertex(quad[i]);
+                        if (vertices[i] == null) vertices[i] = graph.AddVertex(quad[i]);
                     }
-                    Assert.AreEqual(numEdges, BaseTest.Count(tg.GetEdges()));
+                    IEdge edge = graph.AddEdge(null, vertices[0], vertices[1], quad[2]);
+                    edge.SetProperty("annotation", quad[3]);
+                    counter++;
                 }
+                Assert.AreEqual(numEdges, BaseTest.Count(tg.GetEdges()));
+            }
+            finally
+            {
+                tg.Shutdown();
             }
         }
 
@@ -114,48 +123,53 @@ namespace Frontenac.Blueprints.Util.Wrappers.Batch
         {
             const int numEdges = 1000;
             string[][] quads = GenerateQuads(100, numEdges, new[]{"knows", "friend"});
-            using (var tg = new IgnoreIdTinkerGraph())
+            var tg = new IgnoreIdTinkerGraph();
+            try
             {
-                using (var bg = new BatchGraph(new WritethroughGraph(tg), VertexIdType.String, 100))
+                var bg = new BatchGraph(new WritethroughGraph(tg), VertexIdType.String, 100);
+                
+                try
                 {
-                    try
-                    {
-                        bg.SetLoadingFromScratch(false);
-                        Assert.Fail();
-                    }
-                    catch (InvalidOperationException)
-                    {
-                    }
-                    bg.SetVertexIdKey("uid");
                     bg.SetLoadingFromScratch(false);
-                    try
-                    {
-                        bg.SetVertexIdKey(null);
-                        Assert.Fail();
-                    }
-                    catch (InvalidOperationException)
-                    {
-                    }
-
-                    int counter = 0;
-                    foreach (string[] quad in quads)
-                    {
-                        IGraph graph;
-                        if (counter < numEdges/2) graph = tg;
-                        else graph = bg;
-
-                        var vertices = new IVertex[2];
-                        for (int i = 0; i < 2; i++)
-                        {
-                            vertices[i] = graph.GetVertex(quad[i]);
-                            if (vertices[i] == null) vertices[i] = graph.AddVertex(quad[i]);
-                        }
-                        IEdge edge = graph.AddEdge(null, vertices[0], vertices[1], quad[2]);
-                        edge.SetProperty("annotation", quad[3]);
-                        counter++;
-                    }
-                    Assert.AreEqual(numEdges, BaseTest.Count(tg.GetEdges()));
+                    Assert.Fail();
                 }
+                catch (InvalidOperationException)
+                {
+                }
+                bg.SetVertexIdKey("uid");
+                bg.SetLoadingFromScratch(false);
+                try
+                {
+                    bg.SetVertexIdKey(null);
+                    Assert.Fail();
+                }
+                catch (InvalidOperationException)
+                {
+                }
+
+                int counter = 0;
+                foreach (string[] quad in quads)
+                {
+                    IGraph graph;
+                    if (counter < numEdges/2) graph = tg;
+                    else graph = bg;
+
+                    var vertices = new IVertex[2];
+                    for (int i = 0; i < 2; i++)
+                    {
+                        vertices[i] = graph.GetVertex(quad[i]);
+                        if (vertices[i] == null) vertices[i] = graph.AddVertex(quad[i]);
+                    }
+                    IEdge edge = graph.AddEdge(null, vertices[0], vertices[1], quad[2]);
+                    edge.SetProperty("annotation", quad[3]);
+                    counter++;
+                }
+                Assert.AreEqual(numEdges, BaseTest.Count(tg.GetEdges()));
+                
+            }
+            finally
+            {
+                tg.Shutdown();
             }
         }
 
@@ -178,42 +192,44 @@ namespace Frontenac.Blueprints.Util.Wrappers.Batch
         {
             var counter = new VertexEdgeCounter();
 
-            using (
-                var tgraph = _ignoreIDs
-                                 ? new MockTransactionalGraph(new IgnoreIdTinkerGraph())
-                                 : new MockTransactionalGraph(new TinkerGraph()))
+            var tgraph = _ignoreIDs
+                             ? new MockTransactionalGraph(new IgnoreIdTinkerGraph())
+                             : new MockTransactionalGraph(new TinkerGraph());
+            try
             {
-                using (var graph = new BlGraph(this, tgraph, counter, ids))
+                var graph = new BlGraph(this, tgraph, counter, ids);
+                var loader = new BatchGraph(graph, type, bufferSize);
+
+                if (_assignKeys)
+                    loader.SetVertexIdKey(VertexIdKey);
+                loader.SetEdgeIdKey(EdgeIdKey);
+
+                //Create a chain
+                int chainLength = total;
+                IVertex previous = null;
+                for (int i = 0; i <= chainLength; i++)
                 {
-                    using (var loader = new BatchGraph(graph, type, bufferSize))
+                    IVertex next = loader.AddVertex(ids.GetVertexId(i));
+                    next.SetProperty(Uid, i);
+                    counter.NumVertices++;
+                    counter.TotalVertices++;
+                    if (previous != null)
                     {
-                        if (_assignKeys)
-                            loader.SetVertexIdKey(VertexIdKey);
-                        loader.SetEdgeIdKey(EdgeIdKey);
-
-                        //Create a chain
-                        int chainLength = total;
-                        IVertex previous = null;
-                        for (int i = 0; i <= chainLength; i++)
-                        {
-                            IVertex next = loader.AddVertex(ids.GetVertexId(i));
-                            next.SetProperty(Uid, i);
-                            counter.NumVertices++;
-                            counter.TotalVertices++;
-                            if (previous != null)
-                            {
-                                IEdge e = loader.AddEdge(ids.GetEdgeId(i), loader.GetVertex(previous.GetId()),
-                                                         loader.GetVertex(next.GetId()), "next");
-                                e.SetProperty(Uid, i);
-                                counter.NumEdges++;
-                            }
-                            previous = next;
-                        }
-
-                        loader.Commit();
-                        Assert.True(tgraph.AllSuccessful());
+                        IEdge e = loader.AddEdge(ids.GetEdgeId(i), loader.GetVertex(previous.Id),
+                                                 loader.GetVertex(next.Id), "next");
+                        e.SetProperty(Uid, i);
+                        counter.NumEdges++;
                     }
+                    previous = next;
                 }
+
+                loader.Commit();
+                Assert.True(tgraph.AllSuccessful());
+
+            }
+            finally
+            {
+                tgraph.Shutdown();
             }
         }
 
@@ -235,41 +251,18 @@ namespace Frontenac.Blueprints.Util.Wrappers.Batch
             readonly ITransactionalGraph _graph;
             readonly BatchGraphTest _batchGraphTest;
 
-            #region IDisposable members
-        bool _disposed;
-
-        ~BlGraph()
-        {
-            Dispose(false);
-        }
-
-        public void Dispose()
-        {
-            Dispose(true);
-            GC.SuppressFinalize(this);
-        }
-
-        protected virtual void Dispose(bool disposing)
-        {
-            if (_disposed)
-                return;
-
-            if (disposing)
-            {
-                if (_graph != null)
-                    _graph.Dispose();
-            }
-
-            _disposed = true;
-        }
-        #endregion
-
             public BlGraph(BatchGraphTest batchGraphTest, ITransactionalGraph graph, VertexEdgeCounter counter, ILoadingFactory ids)
             {
                 _batchGraphTest = batchGraphTest;
                 _graph = graph;
                 _counter = counter;
                 _ids = ids;
+            }
+
+            public void Shutdown()
+            {
+                if(_graph != null)
+                    _graph.Shutdown();
             }
 
             static object ParseId(object id)
@@ -311,7 +304,7 @@ namespace Frontenac.Blueprints.Util.Wrappers.Batch
                 {
                     var id = (int)e.GetProperty(Uid);
                     if (!_batchGraphTest._ignoreIDs)
-                        Assert.AreEqual(_ids.GetEdgeId(id), ParseId(e.GetId()));
+                        Assert.AreEqual(_ids.GetEdgeId(id), ParseId(e.Id));
                     
                     Assert.AreEqual(1, (int)e.GetVertex(Direction.In).GetProperty(Uid) - (int)e.GetVertex(Direction.Out).GetProperty(Uid));
                     if (_batchGraphTest._assignKeys)
@@ -321,7 +314,7 @@ namespace Frontenac.Blueprints.Util.Wrappers.Batch
                 {
                     var id = (int)v.GetProperty(Uid);
                     if (!_batchGraphTest._ignoreIDs)
-                        Assert.AreEqual(_ids.GetVertexId(id), ParseId(v.GetId()));
+                        Assert.AreEqual(_ids.GetVertexId(id), ParseId(v.Id));
                     
                     Assert.True(2 >= BaseTest.Count(v.GetEdges(Direction.Both)));
                     Assert.True(1 >= BaseTest.Count(v.GetEdges(Direction.In)));
@@ -344,9 +337,9 @@ namespace Frontenac.Blueprints.Util.Wrappers.Batch
                 //System.out.println("------");
             }
 
-            public Features GetFeatures()
+            public Features Features
             {
-                return _graph.GetFeatures();
+                get { return _graph.Features; }
             }
 
             public IVertex AddVertex(object id)

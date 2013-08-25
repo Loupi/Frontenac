@@ -43,49 +43,49 @@ namespace Frontenac.Blueprints.Util.Wrappers.Event.Listener
         public void VertexAdded(IVertex vertex)
         {
             Interlocked.Increment(ref _addVertexEvent);
-            _order.Enqueue(string.Concat("v-added-", vertex.GetId()));
+            _order.Enqueue(string.Concat("v-added-", vertex.Id));
         }
 
         public void VertexPropertyChanged(IVertex vertex, string s, object o, object n)
         {
             Interlocked.Increment(ref _vertexPropertyChangedEvent);
-            _order.Enqueue(string.Concat("v-property-changed-", vertex.GetId(), "-", s, ":", o, "->", n));
+            _order.Enqueue(string.Concat("v-property-changed-", vertex.Id, "-", s, ":", o, "->", n));
         }
 
         public void VertexPropertyRemoved(IVertex vertex, string s, object o)
         {
             Interlocked.Increment(ref _vertexPropertyRemovedEvent);
-            _order.Enqueue(string.Concat("v-property-removed-", vertex.GetId(), "-", s, ":", o));
+            _order.Enqueue(string.Concat("v-property-removed-", vertex.Id, "-", s, ":", o));
         }
 
         public void VertexRemoved(IVertex vertex, IDictionary<string, object> props)
         {
             Interlocked.Increment(ref _vertexRemovedEvent);
-            _order.Enqueue(string.Concat("v-removed-", vertex.GetId()));
+            _order.Enqueue(string.Concat("v-removed-", vertex.Id));
         }
 
         public void EdgeAdded(IEdge edge)
         {
             Interlocked.Increment(ref _addEdgeEvent);
-            _order.Enqueue(string.Concat("e-added-", edge.GetId()));
+            _order.Enqueue(string.Concat("e-added-", edge.Id));
         }
 
         public void EdgePropertyChanged(IEdge edge, string s, object o, object n)
         {
             Interlocked.Increment(ref _edgePropertyChangedEvent);
-            _order.Enqueue(string.Concat("e-property-changed-", edge.GetId(), "-", s, ":", o, "->", n));
+            _order.Enqueue(string.Concat("e-property-changed-", edge.Id, "-", s, ":", o, "->", n));
         }
 
         public void EdgePropertyRemoved(IEdge edge, string s, object o)
         {
             Interlocked.Increment(ref _edgePropertyRemovedEvent);
-            _order.Enqueue(string.Concat("e-property-removed-", edge.GetId(), "-", s, ":", o));
+            _order.Enqueue(string.Concat("e-property-removed-", edge.Id, "-", s, ":", o));
         }
 
         public void EdgeRemoved(IEdge edge, IDictionary<string, object> props)
         {
             Interlocked.Increment(ref _edgeRemovedEvent);
-            _order.Enqueue(string.Concat("e-removed-", edge.GetId()));
+            _order.Enqueue(string.Concat("e-removed-", edge.Id));
         }
 
         public long AddEdgeEventRecorded()

@@ -12,9 +12,9 @@
             return new ReadOnlyVertex(((IEdge)BaseElement).GetVertex(direction));
         }
 
-        public string GetLabel()
+        public string Label
         {
-            return ((IEdge)BaseElement).GetLabel();
+            get { return ((IEdge)BaseElement).Label; }
         }
 
         public IEdge GetBaseEdge()

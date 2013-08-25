@@ -19,13 +19,14 @@ namespace Frontenac.Blueprints.Util.IO.GML
         [Test]
         public void TestReadingTinkerGraph()
         {
-            using (var graph = GraphTest.GenerateGraph())
+            var graph = GraphTest.GenerateGraph();
+            try
             {
                 // note that GML does not have the notion of Edge Identifiers built into the specification
                 // so that values are not tested here even for graphs that allow edge identifier assignment
                 // like tinkergraph.
 
-                if (!graph.GetFeatures().IgnoresSuppliedIds)
+                if (!graph.Features.IgnoresSuppliedIds)
                 {
                     StopWatch();
 
@@ -48,22 +49,22 @@ namespace Frontenac.Blueprints.Util.IO.GML
                     int counter = 0;
                     foreach (IEdge e in graph.GetVertex("1").GetEdges(Direction.Out))
                     {
-                        if (e.GetVertex(Direction.In).GetId().Equals("2"))
+                        if (e.GetVertex(Direction.In).Id.Equals("2"))
                         {
                             // Assert.AreEqual(e.getProperty("weight"), 0.5);
-                            Assert.AreEqual(e.GetLabel(), "knows");
+                            Assert.AreEqual(e.Label, "knows");
                             counter++;
                         }
-                        else if (e.GetVertex(Direction.In).GetId().Equals("3"))
+                        else if (e.GetVertex(Direction.In).Id.Equals("3"))
                         {
                             Assert.AreEqual(0, Math.Round((Convert.ToSingle(e.GetProperty("weight")))));
-                            Assert.AreEqual(e.GetLabel(), "created");
+                            Assert.AreEqual(e.Label, "created");
                             counter++;
                         }
-                        else if (e.GetVertex(Direction.In).GetId().Equals("4"))
+                        else if (e.GetVertex(Direction.In).Id.Equals("4"))
                         {
                             Assert.AreEqual(1, Math.Round((Convert.ToSingle(e.GetProperty("weight")))));
-                            Assert.AreEqual(e.GetLabel(), "knows");
+                            Assert.AreEqual(e.Label, "knows");
                             counter++;
                         }
                     }
@@ -75,16 +76,16 @@ namespace Frontenac.Blueprints.Util.IO.GML
                     Assert.AreEqual(josh.GetProperty("age"), 32);
                     foreach (IEdge e in graph.GetVertex("4").GetEdges(Direction.Out))
                     {
-                        if (e.GetVertex(Direction.In).GetId().Equals("3"))
+                        if (e.GetVertex(Direction.In).Id.Equals("3"))
                         {
                             Assert.AreEqual(0, Math.Round((Convert.ToSingle(e.GetProperty("weight")))));
-                            Assert.AreEqual(e.GetLabel(), "created");
+                            Assert.AreEqual(e.Label, "created");
                             counter++;
                         }
-                        else if (e.GetVertex(Direction.In).GetId().Equals("5"))
+                        else if (e.GetVertex(Direction.In).Id.Equals("5"))
                         {
                             Assert.AreEqual(1, Math.Round((Convert.ToSingle(e.GetProperty("weight")))));
-                            Assert.AreEqual(e.GetLabel(), "created");
+                            Assert.AreEqual(e.Label, "created");
                             counter++;
                         }
                     }
@@ -92,14 +93,19 @@ namespace Frontenac.Blueprints.Util.IO.GML
                     Assert.AreEqual(counter, 5);
                 }
             }
+            finally
+            {
+                graph.Shutdown();
+            }
         }
 
         [Test]
         public void TestTinkerGraphEdges()
         {
-            using (var graph = GraphTest.GenerateGraph())
+            var graph = GraphTest.GenerateGraph();
+            try
             {
-                if (graph.GetFeatures().SupportsEdgeIteration)
+                if (graph.Features.SupportsEdgeIteration)
                 {
                     StopWatch();
 
@@ -122,7 +128,7 @@ namespace Frontenac.Blueprints.Util.IO.GML
                     foreach (IEdge e in graph.GetEdges())
                     {
                         count++;
-                        edgeIds.Add(e.GetId().ToString());
+                        edgeIds.Add(e.Id.ToString());
                         foreach (string key in e.GetPropertyKeys())
                         {
                             edgeKeys.Add(key);
@@ -136,14 +142,19 @@ namespace Frontenac.Blueprints.Util.IO.GML
                     Assert.AreEqual(edgeValues.Count(), 4);
                 }
             }
+            finally
+            {
+                graph.Shutdown();
+            }
         }
 
         [Test]
         public void TestTinkerGraphVertices()
         {
-            using (var graph = GraphTest.GenerateGraph())
+            var graph = GraphTest.GenerateGraph();
+            try
             {
-                if (graph.GetFeatures().SupportsVertexIteration)
+                if (graph.Features.SupportsVertexIteration)
                 {
                     StopWatch();
 
@@ -175,14 +186,19 @@ namespace Frontenac.Blueprints.Util.IO.GML
                     Assert.True(vertexNames.Contains("lop"));
                 }
             }
+            finally
+            {
+                graph.Shutdown();
+            }
         }
 
         [Test]
         public void TestTinkerGraphSoftwareVertices()
         {
-            using (var graph = GraphTest.GenerateGraph())
+            var graph = GraphTest.GenerateGraph();
+            try
             {
-                if (graph.GetFeatures().SupportsVertexIteration)
+                if (graph.Features.SupportsVertexIteration)
                 {
                     StopWatch();
                     using (
@@ -213,14 +229,19 @@ namespace Frontenac.Blueprints.Util.IO.GML
                     }
                 }
             }
+            finally
+            {
+                graph.Shutdown();
+            }
         }
 
         [Test]
         public void TestTinkerGraphVertexAndEdges()
         {
-            using (var graph = GraphTest.GenerateGraph())
+            var graph = GraphTest.GenerateGraph();
+            try
             {
-                if (graph.GetFeatures().SupportsVertexIteration)
+                if (graph.Features.SupportsVertexIteration)
                 {
                     StopWatch();
                     using (
@@ -280,7 +301,7 @@ namespace Frontenac.Blueprints.Util.IO.GML
                     Assert.True(null != lop);
                     Assert.True(null != ripple);
 
-                    if (graph.GetFeatures().SupportsEdgeIteration)
+                    if (graph.Features.SupportsEdgeIteration)
                     {
                         Assert.AreEqual(Count(graph.GetEdges()), 6);
                     }
@@ -377,15 +398,20 @@ namespace Frontenac.Blueprints.Util.IO.GML
                     Assert.True(vertices.Contains(josh));
                 }
             }
+            finally
+            {
+                graph.Shutdown();
+            }
         }
 
         [Test]
         public void TestReadingTinkerGraphExample3()
         {
-            using (var graph = GraphTest.GenerateGraph())
+            var graph = GraphTest.GenerateGraph();
+            try
             {
-                if (!graph.GetFeatures().IgnoresSuppliedIds && graph.GetFeatures().SupportsEdgeIteration &&
-                    graph.GetFeatures().SupportsVertexIteration)
+                if (!graph.Features.IgnoresSuppliedIds && graph.Features.SupportsEdgeIteration &&
+                    graph.Features.SupportsVertexIteration)
                 {
                     StopWatch();
 
@@ -412,31 +438,31 @@ namespace Frontenac.Blueprints.Util.IO.GML
                     int counter = 0;
                     foreach (IEdge e in graph.GetVertex(1).GetEdges(Direction.Out))
                     {
-                        if (e.GetVertex(Direction.In).GetId().Equals("2"))
+                        if (e.GetVertex(Direction.In).Id.Equals("2"))
                         {
                             // Assert.AreEqual(e.getProperty("weight"), 0.5);
                             Assert.AreEqual(e.GetProperty("id2"), 8);
                             Assert.AreEqual(e.GetProperty("label2"), "has high fived");
-                            Assert.AreEqual(e.GetLabel(), "knows");
-                            Assert.AreEqual(e.GetId(), "7");
+                            Assert.AreEqual(e.Label, "knows");
+                            Assert.AreEqual(e.Id, "7");
                             counter++;
                         }
-                        else if (e.GetVertex(Direction.In).GetId().Equals("3"))
+                        else if (e.GetVertex(Direction.In).Id.Equals("3"))
                         {
                             Assert.AreEqual(0, Math.Round((Convert.ToSingle(e.GetProperty("weight")))));
                             Assert.AreEqual(e.GetProperty("id2"), 10);
                             Assert.AreEqual(e.GetProperty("label2"), "has high fived");
-                            Assert.AreEqual(e.GetLabel(), "created");
-                            Assert.AreEqual(e.GetId(), "9");
+                            Assert.AreEqual(e.Label, "created");
+                            Assert.AreEqual(e.Id, "9");
                             counter++;
                         }
-                        else if (e.GetVertex(Direction.In).GetId().Equals("4"))
+                        else if (e.GetVertex(Direction.In).Id.Equals("4"))
                         {
                             Assert.AreEqual(1, Math.Round((Convert.ToSingle(e.GetProperty("weight")))));
                             Assert.AreEqual(e.GetProperty("id2"), 9);
                             Assert.AreEqual(e.GetProperty("label2"), "has high fived");
-                            Assert.AreEqual(e.GetLabel(), "knows");
-                            Assert.AreEqual(e.GetId(), "8");
+                            Assert.AreEqual(e.Label, "knows");
+                            Assert.AreEqual(e.Id, "8");
                             counter++;
                         }
                     }
@@ -462,22 +488,22 @@ namespace Frontenac.Blueprints.Util.IO.GML
                     Assert.AreEqual(josh.GetProperty("age"), 32);
                     foreach (IEdge e in graph.GetVertex(4).GetEdges(Direction.Out))
                     {
-                        if (e.GetVertex(Direction.In).GetId().Equals("3"))
+                        if (e.GetVertex(Direction.In).Id.Equals("3"))
                         {
                             Assert.AreEqual(Math.Round((Convert.ToSingle(e.GetProperty("weight")))), 0);
                             Assert.AreEqual(e.GetProperty("id2"), 13);
                             Assert.AreEqual(e.GetProperty("label2"), null);
-                            Assert.AreEqual(e.GetLabel(), "created");
-                            Assert.AreEqual(e.GetId(), "11");
+                            Assert.AreEqual(e.Label, "created");
+                            Assert.AreEqual(e.Id, "11");
                             counter++;
                         }
-                        else if (e.GetVertex(Direction.In).GetId().Equals("5"))
+                        else if (e.GetVertex(Direction.In).Id.Equals("5"))
                         {
                             Assert.AreEqual(Math.Round((Convert.ToSingle(e.GetProperty("weight")))), 1);
                             Assert.AreEqual(e.GetProperty("id2"), 11);
                             Assert.AreEqual(e.GetProperty("label2"), "has high fived");
-                            Assert.AreEqual(e.GetLabel(), "created");
-                            Assert.AreEqual(e.GetId(), "10");
+                            Assert.AreEqual(e.Label, "created");
+                            Assert.AreEqual(e.Id, "10");
                             counter++;
                         }
                     }
@@ -497,13 +523,13 @@ namespace Frontenac.Blueprints.Util.IO.GML
 
                     foreach (IEdge e in graph.GetVertex(6).GetEdges(Direction.Out))
                     {
-                        if (e.GetVertex(Direction.In).GetId().Equals("3"))
+                        if (e.GetVertex(Direction.In).Id.Equals("3"))
                         {
                             Assert.AreEqual(Math.Round(Convert.ToDouble(e.GetProperty("weight"))), 0);
                             Assert.AreEqual(e.GetProperty("id2"), null);
                             Assert.AreEqual(e.GetProperty("label2"), null);
-                            Assert.AreEqual(e.GetLabel(), "created");
-                            Assert.AreEqual(e.GetId(), "12");
+                            Assert.AreEqual(e.Label, "created");
+                            Assert.AreEqual(e.Id, "12");
                             counter++;
                         }
                     }
@@ -519,7 +545,7 @@ namespace Frontenac.Blueprints.Util.IO.GML
                     foreach (IVertex v in graph.GetVertices())
                     {
                         vertexCount++;
-                        vertexIds.Add(v.GetId().ToString());
+                        vertexIds.Add(v.Id.ToString());
                         vertexNames.Add(v.GetProperty("name").ToString());
                         foreach (string key in v.GetPropertyKeys())
                         {
@@ -533,7 +559,7 @@ namespace Frontenac.Blueprints.Util.IO.GML
                     foreach (IEdge e in graph.GetEdges())
                     {
                         edgeCount++;
-                        edgeIds.Add(e.GetId().ToString());
+                        edgeIds.Add(e.Id.ToString());
                         foreach (string key in e.GetPropertyKeys())
                         {
                             edgeKeys.Add(key);
@@ -556,14 +582,19 @@ namespace Frontenac.Blueprints.Util.IO.GML
                     Assert.AreEqual(edgeKeys.Count(), 3);
                 }
             }
+            finally
+            {
+                graph.Shutdown();
+            }
         }
 
         [Test]
         public void TestReadingTinkerGraphExample3MappingLabels()
         {
-            using (var graph = GraphTest.GenerateGraph())
+            var graph = GraphTest.GenerateGraph();
+            try
             {
-                if (graph.GetFeatures().SupportsVertexIteration)
+                if (graph.Features.SupportsVertexIteration)
                 {
                     StopWatch();
                     var r = new GmlReader(graph);
@@ -590,7 +621,7 @@ namespace Frontenac.Blueprints.Util.IO.GML
                     foreach (IVertex v in graph.GetVertices())
                     {
                         vertexCount++;
-                        vertexIds.Add(v.GetId().ToString());
+                        vertexIds.Add(v.Id.ToString());
                         vertexNames.Add(v.GetProperty("name").ToString());
                         foreach (string key in v.GetPropertyKeys())
                         {
@@ -605,8 +636,8 @@ namespace Frontenac.Blueprints.Util.IO.GML
                     foreach (IEdge e in graph.GetEdges())
                     {
                         edgeCount++;
-                        edgeIds.Add(e.GetId().ToString());
-                        edgeLabels.Add(e.GetLabel());
+                        edgeIds.Add(e.Id.ToString());
+                        edgeLabels.Add(e.Label);
                         foreach (string key in e.GetPropertyKeys())
                         {
                             edgeKeys.Add(key);
@@ -639,14 +670,19 @@ namespace Frontenac.Blueprints.Util.IO.GML
                     Assert.AreEqual(edgeLabels.Contains("created"), true);
                 }
             }
+            finally
+            {
+                graph.Shutdown();
+            }
         }
 
         [Test]
         public void TestReadingTinkerGraphExample3MappingIDs()
         {
-            using (var graph = GraphTest.GenerateGraph())
+            var graph = GraphTest.GenerateGraph();
+            try
             {
-                if (graph.GetFeatures().SupportsVertexIteration)
+                if (graph.Features.SupportsVertexIteration)
                 {
                     StopWatch();
 
@@ -670,7 +706,7 @@ namespace Frontenac.Blueprints.Util.IO.GML
                     foreach (IVertex v in graph.GetVertices())
                     {
                         vertexCount++;
-                        vertexIds.Add(v.GetId().ToString());
+                        vertexIds.Add(v.Id.ToString());
                         vertexNames.Add(v.GetProperty("name").ToString());
                         foreach (string key in v.GetPropertyKeys())
                         {
@@ -685,8 +721,8 @@ namespace Frontenac.Blueprints.Util.IO.GML
                     foreach (IEdge e in graph.GetEdges())
                     {
                         edgeCount++;
-                        edgeIds.Add(e.GetId().ToString());
-                        edgeLabels.Add(e.GetLabel());
+                        edgeIds.Add(e.Id.ToString());
+                        edgeLabels.Add(e.Label);
                         foreach (string key in e.GetPropertyKeys())
                         {
                             edgeKeys.Add(key);
@@ -719,14 +755,19 @@ namespace Frontenac.Blueprints.Util.IO.GML
                     Assert.AreEqual(edgeLabels.Contains("created"), true);
                 }
             }
+            finally
+            {
+                graph.Shutdown();
+            }
         }
 
         [Test]
         public void TestReadingTinkerGraphExample3MappingAll()
         {
-            using (var graph = GraphTest.GenerateGraph())
+            var graph = GraphTest.GenerateGraph();
+            try
             {
-                if (graph.GetFeatures().SupportsEdgeIteration && graph.GetFeatures().SupportsVertexIteration)
+                if (graph.Features.SupportsEdgeIteration && graph.Features.SupportsVertexIteration)
                 {
                     StopWatch();
                     using (var stream = typeof(GmlReaderTestSuite).Assembly.GetManifestResourceStream(typeof(GmlReaderTestSuite), "graph-example-3.gml"))
@@ -747,7 +788,7 @@ namespace Frontenac.Blueprints.Util.IO.GML
                     foreach (IVertex v in graph.GetVertices())
                     {
                         vertexCount++;
-                        vertexIds.Add(v.GetId().ToString());
+                        vertexIds.Add(v.Id.ToString());
                         vertexNames.Add(v.GetProperty("name").ToString());
                         foreach (string key in v.GetPropertyKeys())
                         {
@@ -762,8 +803,8 @@ namespace Frontenac.Blueprints.Util.IO.GML
                     foreach (IEdge e in graph.GetEdges())
                     {
                         edgeCount++;
-                        edgeIds.Add(e.GetId().ToString());
-                        edgeLabels.Add(e.GetLabel());
+                        edgeIds.Add(e.Id.ToString());
+                        edgeLabels.Add(e.Label);
                         foreach (string key in e.GetPropertyKeys())
                         {
                             edgeKeys.Add(key);
@@ -795,16 +836,21 @@ namespace Frontenac.Blueprints.Util.IO.GML
                     Assert.AreEqual(edgeLabels.Contains("knows"), false);
                     Assert.AreEqual(edgeLabels.Contains("created"), true);
                 }
-            }            
+            }
+            finally
+            {
+                graph.Shutdown();
+            }
         }
 
         [Test]
         public void TestMigratingTinkerGraphExample3()
         {
-            using (var graph = GraphTest.GenerateGraph())
+            var graph = GraphTest.GenerateGraph();
+            try
             {
-                if (!graph.GetFeatures().IgnoresSuppliedIds && graph.GetFeatures().SupportsEdgeIteration &&
-                    graph.GetFeatures().SupportsVertexIteration)
+                if (!graph.Features.IgnoresSuppliedIds && graph.Features.SupportsEdgeIteration &&
+                    graph.Features.SupportsVertexIteration)
                 {
 
                     StopWatch();
@@ -838,31 +884,31 @@ namespace Frontenac.Blueprints.Util.IO.GML
                     int counter = 0;
                     foreach (IEdge e in toGraph.GetVertex(1).GetEdges(Direction.Out))
                     {
-                        if (e.GetVertex(Direction.In).GetId().Equals("2"))
+                        if (e.GetVertex(Direction.In).Id.Equals("2"))
                         {
                             // Assert.AreEqual(e.getProperty("weight"), 0.5);
                             Assert.AreEqual(e.GetProperty("id2"), 8);
                             Assert.AreEqual(e.GetProperty("label2"), "has high fived");
-                            Assert.AreEqual(e.GetLabel(), "knows");
-                            Assert.AreEqual(e.GetId(), "7");
+                            Assert.AreEqual(e.Label, "knows");
+                            Assert.AreEqual(e.Id, "7");
                             counter++;
                         }
-                        else if (e.GetVertex(Direction.In).GetId().Equals("3"))
+                        else if (e.GetVertex(Direction.In).Id.Equals("3"))
                         {
                             Assert.AreEqual(Math.Round(Convert.ToDouble(e.GetProperty("weight"))), 0);
                             Assert.AreEqual(e.GetProperty("id2"), 10);
                             Assert.AreEqual(e.GetProperty("label2"), "has high fived");
-                            Assert.AreEqual(e.GetLabel(), "created");
-                            Assert.AreEqual(e.GetId(), "9");
+                            Assert.AreEqual(e.Label, "created");
+                            Assert.AreEqual(e.Id, "9");
                             counter++;
                         }
-                        else if (e.GetVertex(Direction.In).GetId().Equals("4"))
+                        else if (e.GetVertex(Direction.In).Id.Equals("4"))
                         {
                             Assert.AreEqual(Math.Round(Convert.ToDouble(e.GetProperty("weight"))), 1);
                             Assert.AreEqual(e.GetProperty("id2"), 9);
                             Assert.AreEqual(e.GetProperty("label2"), "has high fived");
-                            Assert.AreEqual(e.GetLabel(), "knows");
-                            Assert.AreEqual(e.GetId(), "8");
+                            Assert.AreEqual(e.Label, "knows");
+                            Assert.AreEqual(e.Id, "8");
                             counter++;
                         }
                     }
@@ -888,22 +934,22 @@ namespace Frontenac.Blueprints.Util.IO.GML
                     Assert.AreEqual(josh.GetProperty("age"), 32);
                     foreach (IEdge e in toGraph.GetVertex(4).GetEdges(Direction.Out))
                     {
-                        if (e.GetVertex(Direction.In).GetId().Equals("3"))
+                        if (e.GetVertex(Direction.In).Id.Equals("3"))
                         {
                             Assert.AreEqual(Math.Round(Convert.ToDouble(e.GetProperty("weight"))), 0);
                             Assert.AreEqual(e.GetProperty("id2"), 13);
                             Assert.AreEqual(e.GetProperty("label2"), null);
-                            Assert.AreEqual(e.GetLabel(), "created");
-                            Assert.AreEqual(e.GetId(), "11");
+                            Assert.AreEqual(e.Label, "created");
+                            Assert.AreEqual(e.Id, "11");
                             counter++;
                         }
-                        else if (e.GetVertex(Direction.In).GetId().Equals("5"))
+                        else if (e.GetVertex(Direction.In).Id.Equals("5"))
                         {
                             Assert.AreEqual(Math.Round(Convert.ToDouble(e.GetProperty("weight"))), 1);
                             Assert.AreEqual(e.GetProperty("id2"), 11);
                             Assert.AreEqual(e.GetProperty("label2"), "has high fived");
-                            Assert.AreEqual(e.GetLabel(), "created");
-                            Assert.AreEqual(e.GetId(), "10");
+                            Assert.AreEqual(e.Label, "created");
+                            Assert.AreEqual(e.Id, "10");
                             counter++;
                         }
                     }
@@ -923,13 +969,13 @@ namespace Frontenac.Blueprints.Util.IO.GML
 
                     foreach (IEdge e in toGraph.GetVertex(6).GetEdges(Direction.Out))
                     {
-                        if (e.GetVertex(Direction.In).GetId().Equals("3"))
+                        if (e.GetVertex(Direction.In).Id.Equals("3"))
                         {
                             Assert.AreEqual(Math.Round(Convert.ToDouble(e.GetProperty("weight"))), 0);
                             Assert.AreEqual(e.GetProperty("id2"), null);
                             Assert.AreEqual(e.GetProperty("label2"), null);
-                            Assert.AreEqual(e.GetLabel(), "created");
-                            Assert.AreEqual(e.GetId(), "12");
+                            Assert.AreEqual(e.Label, "created");
+                            Assert.AreEqual(e.Id, "12");
                             counter++;
                         }
                     }
@@ -944,7 +990,7 @@ namespace Frontenac.Blueprints.Util.IO.GML
                     foreach (IVertex v in toGraph.GetVertices())
                     {
                         vertexCount++;
-                        vertexIds.Add(v.GetId().ToString());
+                        vertexIds.Add(v.Id.ToString());
                         foreach (string key in v.GetPropertyKeys())
                         {
                             vertexKeys.Add(key);
@@ -957,7 +1003,7 @@ namespace Frontenac.Blueprints.Util.IO.GML
                     foreach (IEdge e in toGraph.GetEdges())
                     {
                         edgeCount++;
-                        edgeIds.Add(e.GetId().ToString());
+                        edgeIds.Add(e.Id.ToString());
                         foreach (string key in e.GetPropertyKeys())
                         {
                             edgeKeys.Add(key);
@@ -979,6 +1025,10 @@ namespace Frontenac.Blueprints.Util.IO.GML
                     Assert.AreEqual(edgeKeys.Contains("label2"), true);
                     Assert.AreEqual(edgeKeys.Count(), 3);
                 }
+            }
+            finally
+            {
+                graph.Shutdown();
             }
         }
     }

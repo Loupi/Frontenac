@@ -167,7 +167,7 @@ namespace Frontenac.Blueprints.Util.IO.GraphSON
 // ReSharper restore PossibleMultipleEnumeration
 
             if ((isEdge && _includeReservedEdgeId) || (!isEdge && _includeReservedVertexId))
-                PutObject(jsonElement, GraphSonTokens.Id, element.GetId());
+                PutObject(jsonElement, GraphSonTokens.Id, element.Id);
 
             // it's important to keep the order of these straight. check Edge first and then Vertex because there
             // are graph implementations that have Edge extend from Vertex
@@ -176,24 +176,24 @@ namespace Frontenac.Blueprints.Util.IO.GraphSON
                 var edge = element as IEdge;
 
                 if (_includeReservedEdgeId)
-                    PutObject(jsonElement, GraphSonTokens.Id, element.GetId());
+                    PutObject(jsonElement, GraphSonTokens.Id, element.Id);
 
                 if (_includeReservedEdgeType)
                     jsonElement.Add(GraphSonTokens.UnderscoreType, GraphSonTokens.Edge);
 
                 if (_includeReservedEdgeOutV)
-                    PutObject(jsonElement, GraphSonTokens.OutV, edge.GetVertex(Direction.Out).GetId());
+                    PutObject(jsonElement, GraphSonTokens.OutV, edge.GetVertex(Direction.Out).Id);
 
                 if (_includeReservedEdgeInV)
-                    PutObject(jsonElement, GraphSonTokens.InV, edge.GetVertex(Direction.In).GetId());
+                    PutObject(jsonElement, GraphSonTokens.InV, edge.GetVertex(Direction.In).Id);
 
                 if (_includeReservedEdgeLabel)
-                    jsonElement.Add(GraphSonTokens.Label, edge.GetLabel());
+                    jsonElement.Add(GraphSonTokens.Label, edge.Label);
             }
             else if (element is IVertex)
             {
                 if (_includeReservedVertexId)
-                    PutObject(jsonElement, GraphSonTokens.Id, element.GetId());
+                    PutObject(jsonElement, GraphSonTokens.Id, element.Id);
 
                 if (_includeReservedVertexType)
                     jsonElement.Add(GraphSonTokens.UnderscoreType, GraphSonTokens.Vertex);

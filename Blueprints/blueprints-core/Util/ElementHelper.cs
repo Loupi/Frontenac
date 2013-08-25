@@ -206,7 +206,7 @@ namespace Frontenac.Blueprints.Util
                 return false;
             if (a != null && !(a.GetType() == b.GetType()))
                 return false;
-            return a != null && a.GetId().Equals(((IElement)b).GetId());
+            return a != null && a.Id.Equals(((IElement)b).Id);
         }
 
         /// <summary>
@@ -217,7 +217,7 @@ namespace Frontenac.Blueprints.Util
         /// <returns>Whether the two elements have equal ids</returns>
         public static bool HaveEqualIds(IElement a, IElement b)
         {
-            return a.GetId().Equals(b.GetId());
+            return a.Id.Equals(b.Id);
         }
     }
 }

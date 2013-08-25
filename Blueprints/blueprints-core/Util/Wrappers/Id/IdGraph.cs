@@ -26,34 +26,6 @@ namespace Frontenac.Blueprints.Util.Wrappers.Id
         readonly bool _supportVertexIds, _supportEdgeIds;
         bool _uniqueIds = true;
 
-        #region IDisposable members
-        bool _disposed;
-
-        ~IdGraph()
-        {
-            Dispose(false);
-        }
-
-        public void Dispose()
-        {
-            Dispose(true);
-            GC.SuppressFinalize(this);
-        }
-
-        protected virtual void Dispose(bool disposing)
-        {
-            if (_disposed)
-                return;
-
-            if (disposing)
-            {
-                _baseGraph.Dispose();
-            }
-
-            _disposed = true;
-        }
-        #endregion
-
         /// <summary>
         /// Adds custom ID functionality to the given graph,
         /// supporting both custom vertex IDs and custom edge IDs.
@@ -75,7 +47,7 @@ namespace Frontenac.Blueprints.Util.Wrappers.Id
         public IdGraph(IKeyIndexableGraph baseGraph, bool supportVertexIds, bool supportEdgeIds)
         {
             _baseGraph = baseGraph;
-            _features = _baseGraph.GetFeatures().CopyFeatures();
+            _features = _baseGraph.Features.CopyFeatures();
             _features.IsWrapper = true;
             _features.IgnoresSuppliedIds = false;
 
@@ -128,9 +100,9 @@ namespace Frontenac.Blueprints.Util.Wrappers.Id
             return _edgeIdFactory;
         }
 
-        public Features GetFeatures()
+        public Features Features
         {
-            return _features;
+            get { return _features; }
         }
 
         public IVertex AddVertex(object id)
@@ -400,6 +372,11 @@ namespace Frontenac.Blueprints.Util.Wrappers.Id
             if (e == null) throw new ArgumentNullException("e");
             if (!(e is IdElement))
                 throw new ArgumentException("given element was not created in this graph");
+        }
+
+        public virtual void Shutdown()
+        {
+            _baseGraph.Shutdown();
         }
     }
 }

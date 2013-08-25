@@ -15,9 +15,10 @@ namespace Frontenac.Blueprints
         [Test]
         public void TestPutGetRemoveVertex()
         {
-            using (var graph = (IIndexableGraph) GraphTest.GenerateGraph())
+            var graph = (IIndexableGraph) GraphTest.GenerateGraph();
+            try
             {
-                if (graph.GetFeatures().SupportsVertexIndex)
+                if (graph.Features.SupportsVertexIndex)
                 {
                     StopWatch();
                     var index = graph.CreateIndex("basic", typeof (IVertex));
@@ -25,7 +26,7 @@ namespace Frontenac.Blueprints
                     var v1 = graph.AddVertex(null);
                     var v2 = graph.AddVertex(null);
 
-                    if (graph.GetFeatures().SupportsVertexIteration)
+                    if (graph.Features.SupportsVertexIteration)
                         Assert.AreEqual(Count(graph.GetVertices()), 2);
 
                     StopWatch();
@@ -47,7 +48,7 @@ namespace Frontenac.Blueprints
                     Assert.AreEqual(Count(index.Get("dog", "puppy")), 0);
                     Assert.AreEqual(v2, index.Get("dog", "mama").First());
 
-                    if (graph.GetFeatures().SupportsVertexIteration)
+                    if (graph.Features.SupportsVertexIteration)
                         Assert.AreEqual(Count(graph.GetVertices()), 1);
 
                     v2.SetProperty("dog", "mama2");
@@ -59,18 +60,23 @@ namespace Frontenac.Blueprints
                     Assert.AreEqual(Count(index.Get("dog", "puppy")), 0);
                     Assert.AreEqual(Count(index.Get("dog", "mama")), 0);
 
-                    if (graph.GetFeatures().SupportsVertexIteration)
+                    if (graph.Features.SupportsVertexIteration)
                         Assert.AreEqual(Count(graph.GetVertices()), 0);
                 }
+            }
+            finally
+            {
+                graph.Shutdown();
             }
         }
 
         [Test]
         public void TestIndexCount()
         {
-            using (var graph = (IIndexableGraph) GraphTest.GenerateGraph())
+            var graph = (IIndexableGraph) GraphTest.GenerateGraph();
+            try
             {
-                if (graph.GetFeatures().SupportsVertexIndex)
+                if (graph.Features.SupportsVertexIndex)
                 {
                     IIndex index = graph.CreateIndex("basic", typeof (IVertex));
                     for (int i = 0; i < 10; i++)
@@ -86,14 +92,19 @@ namespace Frontenac.Blueprints
 
                 }
             }
+            finally
+            {
+                graph.Shutdown();
+            }
         }
 
         [Test]
         public void TestPutGetRemoveEdge()
         {
-            using (var graph = (IIndexableGraph) GraphTest.GenerateGraph())
+            var graph = (IIndexableGraph) GraphTest.GenerateGraph();
+            try
             {
-                if (graph.GetFeatures().SupportsEdgeIndex)
+                if (graph.Features.SupportsEdgeIndex)
                 {
                     StopWatch();
                     IIndex index = graph.CreateIndex("basic", typeof (IEdge));
@@ -103,7 +114,7 @@ namespace Frontenac.Blueprints
                     IEdge e1 = graph.AddEdge(null, v1, v2, "test1");
                     IEdge e2 = graph.AddEdge(null, v1, v2, "test2");
 
-                    if (graph.GetFeatures().SupportsEdgeIteration)
+                    if (graph.Features.SupportsEdgeIteration)
                         Assert.AreEqual(Count(graph.GetEdges()), 2);
 
                     StopWatch();
@@ -124,7 +135,7 @@ namespace Frontenac.Blueprints
                     Assert.AreEqual(Count(index.Get("dog", "puppy")), 0);
                     Assert.AreEqual(e2, index.Get("dog", "mama").First());
 
-                    if (graph.GetFeatures().SupportsEdgeIteration)
+                    if (graph.Features.SupportsEdgeIteration)
                         Assert.AreEqual(Count(graph.GetEdges()), 1);
 
                     v2.SetProperty("dog", "mama2");
@@ -136,18 +147,23 @@ namespace Frontenac.Blueprints
                     Assert.AreEqual(Count(index.Get("dog", "puppy")), 0);
                     Assert.AreEqual(Count(index.Get("dog", "mama")), 0);
 
-                    if (graph.GetFeatures().SupportsEdgeIteration)
+                    if (graph.Features.SupportsEdgeIteration)
                         Assert.AreEqual(Count(graph.GetEdges()), 0);
                 }
+            }
+            finally
+            {
+                graph.Shutdown();
             }
         }
 
         [Test]
         public void TestCloseableSequence()
         {
-            using (var graph = (IIndexableGraph) GraphTest.GenerateGraph())
+            var graph = (IIndexableGraph) GraphTest.GenerateGraph();
+            try
             {
-                if (graph.GetFeatures().SupportsVertexIndex)
+                if (graph.Features.SupportsVertexIndex)
                 {
                     IIndex index = graph.CreateIndex("basic", typeof (IVertex));
                     for (int i = 0; i < 10; i++)
@@ -160,6 +176,10 @@ namespace Frontenac.Blueprints
                     Assert.AreEqual(counter, 10);
                     hits.Dispose(); // no exception should be thrown
                 }
+            }
+            finally
+            {
+                graph.Shutdown();
             }
         }
     }

@@ -18,14 +18,14 @@ namespace Frontenac.Blueprints.Impls.TG
             IndexClass = indexClass;
         }
 
-        public string GetIndexName()
+        public string Name
         {
-            return IndexName;
+            get { return IndexName; }
         }
 
-        public Type GetIndexClass()
+        public Type Type
         {
-            return IndexClass;
+            get { return IndexClass; }
         }
 
         public void Put(string key, object value, IElement element)

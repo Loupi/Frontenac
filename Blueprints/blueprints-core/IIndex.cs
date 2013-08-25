@@ -7,14 +7,14 @@ namespace Frontenac.Blueprints
         /// <summary>
         /// Get the name of the index.
         /// </summary>
-        /// <returns>the name of the index</returns>
-        string GetIndexName();
+        /// <value>the name of the index</value>
+        string Name { get; }
 
         /// <summary>
         /// Get the class that this index is indexing.
         /// </summary>
-        /// <returns>the class this index is indexing</returns>
-        Type GetIndexClass();
+        /// <value>the class this index is indexing</value>
+        Type Type { get; }
 
         /// <summary>
         /// Index an element by a key and a value.

@@ -74,15 +74,15 @@ namespace Frontenac.Blueprints.Util.IO.GML
 
             IEnumerable<IEdge> out1 = v1.GetEdges(Direction.Out);
             IEdge e1 = out1.First();
-            Assert.AreEqual("Edge from node 1 to node 2", e1.GetLabel());
+            Assert.AreEqual("Edge from node 1 to node 2", e1.Label);
 
             IEnumerable<IEdge> out2 = v2.GetEdges(Direction.Out);
             IEdge e2 = out2.First();
-            Assert.AreEqual("Edge from node 2 to node 3", e2.GetLabel());
+            Assert.AreEqual("Edge from node 2 to node 3", e2.Label);
 
             IEnumerable<IEdge> out3 = v3.GetEdges(Direction.Out);
             IEdge e3 = out3.First();
-            Assert.AreEqual("Edge from node 3 to node 1", e3.GetLabel());
+            Assert.AreEqual("Edge from node 3 to node 1", e3.Label);
         }
 
         [Test]

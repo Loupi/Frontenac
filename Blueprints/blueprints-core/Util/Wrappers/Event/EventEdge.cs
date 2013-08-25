@@ -16,9 +16,9 @@
             return new EventVertex(GetBaseEdge().GetVertex(direction), EventGraph);
         }
 
-        public string GetLabel()
+        public string Label
         {
-            return ((IEdge)BaseElement).GetLabel();
+            get { return ((IEdge)BaseElement).Label; }
         }
 
         public IEdge GetBaseEdge()

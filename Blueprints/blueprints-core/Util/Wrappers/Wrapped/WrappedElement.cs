@@ -31,9 +31,9 @@ namespace Frontenac.Blueprints.Util.Wrappers.Wrapped
             return BaseElement.GetPropertyKeys();
         }
 
-        public object GetId()
+        public object Id
         {
-            return BaseElement.GetId();
+            get { return BaseElement.Id; }
         }
 
         public override bool Equals(object obj)

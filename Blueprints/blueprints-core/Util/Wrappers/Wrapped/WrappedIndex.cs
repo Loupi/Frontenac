@@ -12,14 +12,14 @@ namespace Frontenac.Blueprints.Util.Wrappers.Wrapped
             RawIndex = rawIndex;
         }
 
-        public string GetIndexName()
+        public string Name
         {
-            return RawIndex.GetIndexName();
+            get { return RawIndex.Name; }
         }
 
-        public Type GetIndexClass()
+        public Type Type
         {
-            return RawIndex.GetIndexClass();
+            get { return RawIndex.Type; }
         }
 
         public long Count(string key, object value)
@@ -43,14 +43,14 @@ namespace Frontenac.Blueprints.Util.Wrappers.Wrapped
 
         public ICloseableIterable<IElement> Get(string key, object value)
         {
-            if (typeof(IVertex).IsAssignableFrom(GetIndexClass()))
+            if (typeof(IVertex).IsAssignableFrom(Type))
                 return new WrappedVertexIterable((IEnumerable<IVertex>)RawIndex.Get(key, value));
             return new WrappedEdgeIterable((IEnumerable<IEdge>)RawIndex.Get(key, value));
         }
 
         public ICloseableIterable<IElement> Query(string key, object value)
         {
-            if (typeof(IVertex).IsAssignableFrom(GetIndexClass()))
+            if (typeof(IVertex).IsAssignableFrom(Type))
                 return new WrappedVertexIterable((IEnumerable<IVertex>)RawIndex.Query(key, value));
             return new WrappedEdgeIterable((IEnumerable<IEdge>)RawIndex.Query(key, value));
         }

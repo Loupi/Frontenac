@@ -11,41 +11,13 @@ namespace Frontenac.Blueprints.Util.Wrappers.Partition
         string _partitionKey;
         readonly Features _features;
 
-        #region IDisposable members
-        bool _disposed;
-
-        ~PartitionGraph()
-        {
-            Dispose(false);
-        }
-
-        public void Dispose()
-        {
-            Dispose(true);
-            GC.SuppressFinalize(this);
-        }
-
-        protected virtual void Dispose(bool disposing)
-        {
-            if (_disposed)
-                return;
-
-            if (disposing)
-            {
-                BaseGraph.Dispose();
-            }
-
-            _disposed = true;
-        }
-        #endregion
-
         public PartitionGraph(IGraph baseGraph, string partitionKey, string writePartition, IEnumerable<string> readPartitions)
         {
             BaseGraph = baseGraph;
             _partitionKey = partitionKey;
             _writePartition = writePartition;
             _readPartitions = new HashSet<string>(readPartitions);
-            _features = BaseGraph.GetFeatures().CopyFeatures();
+            _features = BaseGraph.Features.CopyFeatures();
             _features.IsWrapper = true;
         }
 
@@ -173,9 +145,9 @@ namespace Frontenac.Blueprints.Util.Wrappers.Partition
             return StringFactory.GraphString(this, BaseGraph.ToString());
         }
 
-        public Features GetFeatures()
+        public Features Features
         {
-            return _features;
+            get { return _features; }
         }
 
         public IGraphQuery Query()
@@ -183,6 +155,11 @@ namespace Frontenac.Blueprints.Util.Wrappers.Partition
             return new WrappedGraphQuery(BaseGraph.Query(),
                 t => new PartitionEdgeIterable(t.Edges(), this),
                 t => new PartitionVertexIterable(t.Vertices(), this));
+        }
+
+        public void Shutdown()
+        {
+            BaseGraph.Shutdown();
         }
     }
 }

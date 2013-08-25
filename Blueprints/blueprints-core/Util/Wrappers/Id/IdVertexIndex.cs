@@ -16,14 +16,14 @@ namespace Frontenac.Blueprints.Util.Wrappers.Id
             _baseIndex = baseIndex;
         }
 
-        public string GetIndexName()
+        public string Name
         {
-            return _baseIndex.GetIndexName();
+            get { return _baseIndex.Name; }
         }
 
-        public Type GetIndexClass()
+        public Type Type
         {
-            return _baseIndex.GetIndexClass();
+            get { return _baseIndex.Type; }
         }
 
         public void Put(string key, object value, IElement element)

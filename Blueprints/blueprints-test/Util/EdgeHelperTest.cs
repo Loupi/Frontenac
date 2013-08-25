@@ -11,41 +11,43 @@ namespace Frontenac.Blueprints.Util
         {
             IGraph graph = TinkerGraphFactory.CreateTinkerGraph();
             EdgeHelper.RelabelEdge(graph, graph.GetEdge(7), "1234", "use_to_know");
-            Assert.AreEqual(Count(graph.GetVertices()), 7);
-            Assert.AreEqual(Count(graph.GetEdges()), 6);
+            Assert.AreEqual(7, Count(graph.GetVertices()));
+            Assert.AreEqual(6, Count(graph.GetEdges()));
             int counter = 0;
             int counter2 = 0;
             IEdge temp = null;
             foreach (IEdge edge in graph.GetVertex(1).GetEdges(Direction.Out))
             {
-                if (edge.GetLabel() == "use_to_know")
+                if (edge.Label == "use_to_know")
                 {
                     counter++;
-                    Assert.AreEqual(edge.GetId(), "1234");
-                    Assert.AreEqual(edge.GetProperty("weight"), 0.5);
+                    if(!graph.Features.IgnoresSuppliedIds)
+                        Assert.AreEqual("1234", edge.Id);
+                    Assert.AreEqual(0.5, edge.GetProperty("weight"));
                     temp = edge;
                 }
 
                 counter2++;
             }
-            Assert.AreEqual(counter, 1);
-            Assert.AreEqual(counter2, 3);
+            Assert.AreEqual(1, counter);
+            Assert.AreEqual(3, counter2);
 
             counter = 0;
             counter2 = 0;
             foreach (IEdge edge in graph.GetVertex(2).GetEdges(Direction.In))
             {
-                if (edge.GetLabel() == "use_to_know")
+                if (edge.Label == "use_to_know")
                 {
                     counter++;
-                    Assert.AreEqual(edge.GetId(), "1234");
-                    Assert.AreEqual(edge.GetProperty("weight"), 0.5);
+                    if (!graph.Features.IgnoresSuppliedIds)
+                        Assert.AreEqual("1234", edge.Id);
+                    Assert.AreEqual(0.5, edge.GetProperty("weight"));
                     Assert.AreEqual(edge, temp);
                 }
                 counter2++;
             }
-            Assert.AreEqual(counter, 1);
-            Assert.AreEqual(counter2, 1);
+            Assert.AreEqual(1, counter);
+            Assert.AreEqual(1, counter2);
         }
 
         [Test]
@@ -60,7 +62,7 @@ namespace Frontenac.Blueprints.Util
             IEdge temp = null;
             foreach (IEdge edge in graph.GetVertex(1).GetEdges(Direction.Out))
             {
-                if (edge.GetLabel() == "use_to_know")
+                if (edge.Label == "use_to_know")
                 {
                     counter++;
                     Assert.AreEqual(edge.GetProperty("weight"), 0.5);
@@ -76,7 +78,7 @@ namespace Frontenac.Blueprints.Util
             counter2 = 0;
             foreach (IEdge edge in graph.GetVertex(2).GetEdges(Direction.In))
             {
-                if (edge.GetLabel() == "use_to_know")
+                if (edge.Label == "use_to_know")
                 {
                     counter++;
                     Assert.AreEqual(edge.GetProperty("weight"), 0.5);

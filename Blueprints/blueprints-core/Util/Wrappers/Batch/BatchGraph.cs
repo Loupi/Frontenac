@@ -44,34 +44,6 @@ namespace Frontenac.Blueprints.Util.Wrappers.Batch
         IEdge _currentEdgeCached;
         object _previousOutVertexId;
 
-        #region IDisposable members
-        bool _disposed;
-
-        ~BatchGraph()
-        {
-            Dispose(false);
-        }
-
-        public void Dispose()
-        {
-            Dispose(true);
-            GC.SuppressFinalize(this);
-        }
-
-        protected virtual void Dispose(bool disposing)
-        {
-            if (_disposed)
-                return;
-
-            if (disposing)
-            {
-                Shutdown();
-            }
-
-            _disposed = true;
-        }
-        #endregion
-
         /// <summary>
         /// Constructs a BatchGraph wrapping the provided baseGraph, using the specified buffer size and expecting vertex ids of
         ///  the specified IdType. Supplying vertex ids which do not match this type will throw exceptions.
@@ -140,7 +112,7 @@ namespace Frontenac.Blueprints.Util.Wrappers.Batch
         /// <param name="key">key Key to be used.</param>
         public void SetVertexIdKey(string key)
         {
-            bool? ignoresSuppliedIds = _baseGraph.GetFeatures().IgnoresSuppliedIds;
+            bool? ignoresSuppliedIds = _baseGraph.Features.IgnoresSuppliedIds;
             if (ignoresSuppliedIds != null && (!_loadingFromScratch && key == null && ignoresSuppliedIds.Value))
                 throw new InvalidOperationException("Cannot set vertex id key to null when not loading from scratch while ids are ignored.");
             _vertexIdKey = key;
@@ -195,7 +167,7 @@ namespace Frontenac.Blueprints.Util.Wrappers.Batch
         /// <param name="fromScratch">Sets whether the graph loaded through this instance of BatchGraph is loaded from scratch</param>
         public void SetLoadingFromScratch(bool fromScratch)
         {
-            if (_baseGraph.GetFeatures().IgnoresSuppliedIds && (fromScratch == false && _vertexIdKey == null))
+            if (_baseGraph.Features.IgnoresSuppliedIds && (fromScratch == false && _vertexIdKey == null))
                 throw new InvalidOperationException("Vertex id key is required to query existing vertices in wrapped graph.");
             _loadingFromScratch = fromScratch;
         }
@@ -243,10 +215,10 @@ namespace Frontenac.Blueprints.Util.Wrappers.Batch
             throw new InvalidOperationException("Can not rollback during batch loading");
         }
 
-        void Shutdown()
+        public void Shutdown()
         {
             _baseGraph.Commit();
-            _baseGraph.Dispose();
+            _baseGraph.Shutdown();
             _currentEdge = null;
             _currentEdgeCached = null;
         }
@@ -256,15 +228,18 @@ namespace Frontenac.Blueprints.Util.Wrappers.Batch
             return _baseGraph;
         }
 
-        public Features GetFeatures()
+        public Features Features
         {
-            Features features = _baseGraph.GetFeatures().CopyFeatures();
-            features.IgnoresSuppliedIds = false;
-            features.IsWrapper = true;
-            features.SupportsEdgeIteration = false;
-            features.SupportsThreadedTransactions = false;
-            features.SupportsVertexIteration = false;
-            return features;
+            get
+            {
+                Features features = _baseGraph.Features.CopyFeatures();
+                features.IgnoresSuppliedIds = false;
+                features.IsWrapper = true;
+                features.SupportsEdgeIteration = false;
+                features.SupportsThreadedTransactions = false;
+                features.SupportsVertexIteration = false;
+                return features;
+            }
         }
 
         IVertex RetrieveFromCache(object externalId)
@@ -304,7 +279,7 @@ namespace Frontenac.Blueprints.Util.Wrappers.Batch
             if (v == null)
             {
                 if (_loadingFromScratch) return null;
-                if (_baseGraph.GetFeatures().IgnoresSuppliedIds)
+                if (_baseGraph.Features.IgnoresSuppliedIds)
                 {
                     System.Diagnostics.Debug.Assert(_vertexIdKey != null);
                     IEnumerator<IVertex> iter = _baseGraph.GetVertices(_vertexIdKey, id).GetEnumerator();
@@ -342,10 +317,10 @@ namespace Frontenac.Blueprints.Util.Wrappers.Batch
                 throw new ArgumentException("Given element was not created in this baseGraph");
             NextElement();
 
-            IVertex ov = GetCachedVertex(outVertex.GetId());
-            IVertex iv = GetCachedVertex(inVertex.GetId());
+            IVertex ov = GetCachedVertex(outVertex.Id);
+            IVertex iv = GetCachedVertex(inVertex.Id);
 
-            _previousOutVertexId = outVertex.GetId(); //keep track of the previous out vertex id
+            _previousOutVertexId = outVertex.Id; //keep track of the previous out vertex id
 
             _currentEdgeCached = _baseGraph.AddEdge(id, ov, iv, label);
             if (_edgeIdKey != null && id != null)
@@ -444,9 +419,9 @@ namespace Frontenac.Blueprints.Util.Wrappers.Batch
                 _batchGraph.GetCachedVertex(_externalId).SetProperty(key, value);
             }
 
-            public object GetId()
+            public object Id
             {
-                return _externalId;
+                get { return _externalId; }
             }
 
             public object GetProperty(string key)
@@ -489,20 +464,14 @@ namespace Frontenac.Blueprints.Util.Wrappers.Batch
                 return GetWrappedEdge().GetVertex(direction);
             }
 
-            public string GetLabel()
-            {
-                return GetWrappedEdge().GetLabel();
-            }
+            public string Label { get { return GetWrappedEdge().Label; } }
 
             public void SetProperty(string key, object value)
             {
                 GetWrappedEdge().SetProperty(key, value);
             }
 
-            public object GetId()
-            {
-                return GetWrappedEdge().GetId();
-            }
+            public object Id { get { return GetWrappedEdge().Id; } }
 
             public object GetProperty(string key)
             {

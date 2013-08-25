@@ -16,6 +16,12 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = ".nuget", ".nuget", "{2BC1E8
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "velocitygraph-test", "velocitygraph-test\velocitygraph-test.csproj", "{B9AD95B8-0094-4E9E-A515-EC018584F25C}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "grave", "Grave\grave.csproj", "{15DB2CDC-CAFD-49E4-B71E-8D5843084065}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Lucene.Net.Contrib.Management", "Lucene.Net.Contrib.Management\Lucene.Net.Contrib.Management.csproj", "{FB47E2AE-DC85-4A77-9FFB-2843B984C87B}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "grave-test", "Grave-test\grave-test.csproj", "{067ABBDC-F36E-4EF7-B068-654F5D281A46}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug (.NET 4.0)|Any CPU = Debug (.NET 4.0)|Any CPU
@@ -56,6 +62,30 @@ Global
 		{B9AD95B8-0094-4E9E-A515-EC018584F25C}.Release (.NET 4.0)|Any CPU.Build.0 = Release (.NET 4.0)|Any CPU
 		{B9AD95B8-0094-4E9E-A515-EC018584F25C}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{B9AD95B8-0094-4E9E-A515-EC018584F25C}.Release|Any CPU.Build.0 = Release|Any CPU
+		{15DB2CDC-CAFD-49E4-B71E-8D5843084065}.Debug (.NET 4.0)|Any CPU.ActiveCfg = Debug|Any CPU
+		{15DB2CDC-CAFD-49E4-B71E-8D5843084065}.Debug (.NET 4.0)|Any CPU.Build.0 = Debug|Any CPU
+		{15DB2CDC-CAFD-49E4-B71E-8D5843084065}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{15DB2CDC-CAFD-49E4-B71E-8D5843084065}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{15DB2CDC-CAFD-49E4-B71E-8D5843084065}.Release (.NET 4.0)|Any CPU.ActiveCfg = Release|Any CPU
+		{15DB2CDC-CAFD-49E4-B71E-8D5843084065}.Release (.NET 4.0)|Any CPU.Build.0 = Release|Any CPU
+		{15DB2CDC-CAFD-49E4-B71E-8D5843084065}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{15DB2CDC-CAFD-49E4-B71E-8D5843084065}.Release|Any CPU.Build.0 = Release|Any CPU
+		{FB47E2AE-DC85-4A77-9FFB-2843B984C87B}.Debug (.NET 4.0)|Any CPU.ActiveCfg = Debug|Any CPU
+		{FB47E2AE-DC85-4A77-9FFB-2843B984C87B}.Debug (.NET 4.0)|Any CPU.Build.0 = Debug|Any CPU
+		{FB47E2AE-DC85-4A77-9FFB-2843B984C87B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{FB47E2AE-DC85-4A77-9FFB-2843B984C87B}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{FB47E2AE-DC85-4A77-9FFB-2843B984C87B}.Release (.NET 4.0)|Any CPU.ActiveCfg = Release|Any CPU
+		{FB47E2AE-DC85-4A77-9FFB-2843B984C87B}.Release (.NET 4.0)|Any CPU.Build.0 = Release|Any CPU
+		{FB47E2AE-DC85-4A77-9FFB-2843B984C87B}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{FB47E2AE-DC85-4A77-9FFB-2843B984C87B}.Release|Any CPU.Build.0 = Release|Any CPU
+		{067ABBDC-F36E-4EF7-B068-654F5D281A46}.Debug (.NET 4.0)|Any CPU.ActiveCfg = Debug|Any CPU
+		{067ABBDC-F36E-4EF7-B068-654F5D281A46}.Debug (.NET 4.0)|Any CPU.Build.0 = Debug|Any CPU
+		{067ABBDC-F36E-4EF7-B068-654F5D281A46}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{067ABBDC-F36E-4EF7-B068-654F5D281A46}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{067ABBDC-F36E-4EF7-B068-654F5D281A46}.Release (.NET 4.0)|Any CPU.ActiveCfg = Release|Any CPU
+		{067ABBDC-F36E-4EF7-B068-654F5D281A46}.Release (.NET 4.0)|Any CPU.Build.0 = Release|Any CPU
+		{067ABBDC-F36E-4EF7-B068-654F5D281A46}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{067ABBDC-F36E-4EF7-B068-654F5D281A46}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

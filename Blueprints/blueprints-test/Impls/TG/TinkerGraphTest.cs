@@ -235,7 +235,8 @@ namespace Frontenac.Blueprints.Impls.TG
         public void TestClear()
         {
             DeleteDirectory(TinkerGraphTestImpl.GetThinkerGraphDirectory());
-            using (var graph = (TinkerGraph) GraphTest.GenerateGraph())
+            var graph = (TinkerGraph) GraphTest.GenerateGraph();
+            try
             {
                 StopWatch();
                 for (int i = 0; i < 25; i++)
@@ -246,15 +247,19 @@ namespace Frontenac.Blueprints.Impls.TG
                 }
                 PrintPerformance(graph.ToString(), 75, "elements added", StopWatch());
 
-                Assert.AreEqual(50, Count(graph.GetVertices()));
-                Assert.AreEqual(25, Count(graph.GetEdges()));
+                Assert.AreEqual(Count(graph.GetVertices()), 50);
+                Assert.AreEqual(Count(graph.GetEdges()), 25);
 
                 StopWatch();
                 graph.Clear();
                 PrintPerformance(graph.ToString(), 75, "elements deleted", StopWatch());
 
-                Assert.AreEqual(0, Count(graph.GetVertices()));
-                Assert.AreEqual(0, Count(graph.GetEdges()));
+                Assert.AreEqual(Count(graph.GetVertices()), 0);
+                Assert.AreEqual(Count(graph.GetEdges()), 0);
+            }
+            finally
+            {
+                graph.Shutdown();
             }
         }
 
@@ -262,7 +267,8 @@ namespace Frontenac.Blueprints.Impls.TG
         public void TestShutdownStartManyTimes()
         {
             DeleteDirectory(TinkerGraphTestImpl.GetThinkerGraphDirectory());
-            using (var graph = (TinkerGraph) GraphTest.GenerateGraph())
+            var graph = (TinkerGraph) GraphTest.GenerateGraph();
+            try
             {
                 for (int i = 0; i < 25; i++)
                 {
@@ -273,11 +279,16 @@ namespace Frontenac.Blueprints.Impls.TG
                     graph.AddEdge(null, a, b, "knows").SetProperty("weight", 1);
                 }
             }
+            finally
+            {
+                graph.Shutdown();
+            }
             StopWatch();
             const int iterations = 150;
             for (int i = 0; i < iterations; i++)
             {
-                using (var graph = (TinkerGraph) GraphTest.GenerateGraph())
+                graph = (TinkerGraph) GraphTest.GenerateGraph();
+                try
                 {
                     Assert.AreEqual(50, Count(graph.GetVertices()));
                     foreach (IVertex v in graph.GetVertices())
@@ -285,12 +296,16 @@ namespace Frontenac.Blueprints.Impls.TG
                         Assert.True(v.GetProperty("name").ToString().StartsWith("a") ||
                                     v.GetProperty("name").ToString().StartsWith("b"));
                     }
-                    Assert.AreEqual(25, Count(graph.GetEdges()));
+                    Assert.AreEqual(Count(graph.GetEdges()), 25);
                     foreach (IEdge e in graph.GetEdges())
                     {
-                        Assert.AreEqual(e.GetProperty("weight"), 1);
+                        Assert.AreEqual(1, e.GetProperty("weight"));
                     }
                     PrintPerformance(graph.ToString(), iterations, "iterations of shutdown and restart", StopWatch());
+                }
+                finally
+                {
+                    graph.Shutdown();
                 }
             }
         }
@@ -325,9 +340,11 @@ namespace Frontenac.Blueprints.Impls.TG
             string path = TinkerGraphTestImpl.GetThinkerGraphDirectory() + "/" + directory;
             DeleteDirectory(path);
 
-            using (var sourceGraph = TinkerGraphFactory.CreateTinkerGraph())
+            var sourceGraph = TinkerGraphFactory.CreateTinkerGraph();
+            try
             {
-                using (var targetGraph = new TinkerGraph(path, fileType))
+                var targetGraph = new TinkerGraph(path, fileType);
+                try
                 {
                     CreateKeyIndices(targetGraph);
 
@@ -338,14 +355,27 @@ namespace Frontenac.Blueprints.Impls.TG
                     StopWatch();
                     PrintTestPerformance("save graph: " + fileType.ToString(), StopWatch());
                     StopWatch();
-                    targetGraph.Dispose();
-                    using (var compareGraph = new TinkerGraph(path, fileType))
-                    {
-                        PrintTestPerformance("load graph: " + fileType.ToString(), StopWatch());
-
-                        CompareGraphs(targetGraph, compareGraph, fileType);
-                    }
                 }
+                finally
+                {
+                    targetGraph.Shutdown();
+                }
+
+                var compareGraph = new TinkerGraph(path, fileType);
+                try
+                {
+                    PrintTestPerformance("load graph: " + fileType.ToString(), StopWatch());
+
+                    CompareGraphs(targetGraph, compareGraph, fileType);
+                }
+                finally
+                {
+                    compareGraph.Shutdown();
+                }
+            }
+            finally
+            {
+                sourceGraph.Shutdown();
             }
         }
 
@@ -374,16 +404,16 @@ namespace Frontenac.Blueprints.Impls.TG
         {
             foreach (IVertex v in src.GetVertices())
             {
-                ElementHelper.CopyProperties(v, dst.AddVertex(v.GetId()));
+                ElementHelper.CopyProperties(v, dst.AddVertex(v.Id));
             }
 
             foreach (IEdge e in src.GetEdges())
             {
                 ElementHelper.CopyProperties(e,
-                        dst.AddEdge(e.GetId(),
-                                    dst.GetVertex(e.GetVertex(Direction.Out).GetId()),
-                                    dst.GetVertex(e.GetVertex(Direction.In).GetId()),
-                                    e.GetLabel()));
+                        dst.AddEdge(e.Id,
+                                    dst.GetVertex(e.GetVertex(Direction.Out).Id),
+                                    dst.GetVertex(e.GetVertex(Direction.In).Id),
+                                    e.Label));
             }
         }
 
@@ -391,7 +421,7 @@ namespace Frontenac.Blueprints.Impls.TG
         {
             foreach (IVertex v1 in g1.GetVertices())
             {
-                IVertex v2 = g2.GetVertex(v1.GetId());
+                IVertex v2 = g2.GetVertex(v1.Id);
 
                 CompareEdgeCounts(v1, v2, Direction.In);
                 CompareEdgeCounts(v1, v2, Direction.Out);
@@ -403,7 +433,7 @@ namespace Frontenac.Blueprints.Impls.TG
 
             foreach (IEdge e1 in g1.GetEdges())
             {
-                IEdge e2 = g2.GetEdge(e1.GetId());
+                IEdge e2 = g2.GetEdge(e1.Id);
 
                 CompareVertices(e1, e2, Direction.In);
                 CompareVertices(e2, e2, Direction.Out);
@@ -475,7 +505,7 @@ namespace Frontenac.Blueprints.Impls.TG
             IVertex v1 = e1.GetVertex(direction);
             IVertex v2 = e2.GetVertex(direction);
 
-            Assert.AreEqual(v1.GetId(), v2.GetId());
+            Assert.AreEqual(v1.Id, v2.Id);
         }
     }
 }

@@ -6,15 +6,15 @@ namespace Frontenac.Blueprints
     /// <summary>
     /// A Graph is a container object for a collection of vertices and a collection edges.
     /// </summary>
-    public interface IGraph : IDisposable
+    public interface IGraph
     {
         /// <summary>
         /// Get the particular features of the graph implementation.
         /// Not all graph implementations are identical nor perfectly implement the Blueprints API.
         /// The Features object returned contains meta-data about numerous potential divergences between implementations.
         /// </summary>
-        /// <returns>the features of this particular Graph implementation</returns>
-        Features GetFeatures();
+        /// <value>the features of this particular Graph implementation</value>
+        Features Features { get; }
 
         /// <summary>
         /// Create a new vertex, add it to the graph, and return the newly created vertex.
@@ -104,5 +104,8 @@ namespace Frontenac.Blueprints
         /// </summary>
         /// <returns>a graph query object with methods for constraining which data is pulled from the underlying graph</returns>
         IGraphQuery Query();
+
+
+        void Shutdown();
     }
 }

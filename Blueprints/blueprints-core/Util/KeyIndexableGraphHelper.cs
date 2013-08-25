@@ -18,13 +18,14 @@ namespace Frontenac.Blueprints.Util
         /// <returns>the number of element properties that were indexed</returns>
         public static long ReIndexElements<T>(IGraph graph, IEnumerable<T> elements, IEnumerable<string> keys) where T : IElement
         {
-            bool isTransactional = graph is ITransactionalGraph;
-            long counter = 0;
-            foreach (T element in elements)
+            var isTransactional = graph is ITransactionalGraph;
+            var counter = 0;
+            var k = keys.ToArray();
+            foreach (var element in elements)
             {
-                foreach (string key in keys.ToArray())
+                foreach (string key in k)
                 {
-                    object value = element.RemoveProperty(key);
+                    var value = element.RemoveProperty(key);
                     if (null != value)
                     {
                         counter++;

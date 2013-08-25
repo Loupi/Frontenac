@@ -34,14 +34,14 @@ namespace Frontenac.Blueprints.Util.Wrappers.Event
 
         public ICloseableIterable<IElement> Get(string key, object value)
         {
-            if (typeof(IVertex).IsAssignableFrom(GetIndexClass()))
+            if (typeof(IVertex).IsAssignableFrom(Type))
                 return new EventVertexIterable((IEnumerable<IVertex>)RawIndex.Get(key, value), _eventGraph);
             return new EventEdgeIterable((IEnumerable<IEdge>)RawIndex.Get(key, value), _eventGraph);
         }
 
         public ICloseableIterable<IElement> Query(string key, object value)
         {
-            if (typeof(IVertex).IsAssignableFrom(GetIndexClass()))
+            if (typeof(IVertex).IsAssignableFrom(Type))
                 return new EventVertexIterable((IEnumerable<IVertex>)RawIndex.Query(key, value), _eventGraph);
             return new EventEdgeIterable((IEnumerable<IEdge>)RawIndex.Query(key, value), _eventGraph);
         }
@@ -51,14 +51,14 @@ namespace Frontenac.Blueprints.Util.Wrappers.Event
             return RawIndex.Count(key, value);
         }
 
-        public string GetIndexName()
+        public string Name
         {
-            return RawIndex.GetIndexName();
+            get { return RawIndex.Name; }
         }
 
-        public Type GetIndexClass()
+        public Type Type
         {
-            return RawIndex.GetIndexClass();
+            get { return RawIndex.Type; }
         }
 
         public override string ToString()

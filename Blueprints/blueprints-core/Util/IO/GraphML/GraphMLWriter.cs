@@ -218,7 +218,7 @@ namespace Frontenac.Blueprints.Util.IO.GraphML
             foreach (IVertex vertex in vertices)
             {
                 writer.WriteStartElement(GraphMlTokens.Node);
-                writer.WriteAttributeString(GraphMlTokens.Id, vertex.GetId().ToString());
+                writer.WriteAttributeString(GraphMlTokens.Id, vertex.Id.ToString());
                 IEnumerable<string> keys;
                 if (_normalize)
                 {
@@ -252,21 +252,21 @@ namespace Frontenac.Blueprints.Util.IO.GraphML
                 foreach (IEdge edge in edges)
                 {
                     writer.WriteStartElement(GraphMlTokens.Edge);
-                    writer.WriteAttributeString(GraphMlTokens.Id, edge.GetId().ToString());
-                    writer.WriteAttributeString(GraphMlTokens.Source, edge.GetVertex(Direction.Out).GetId().ToString());
-                    writer.WriteAttributeString(GraphMlTokens.Target, edge.GetVertex(Direction.In).GetId().ToString());
+                    writer.WriteAttributeString(GraphMlTokens.Id, edge.Id.ToString());
+                    writer.WriteAttributeString(GraphMlTokens.Source, edge.GetVertex(Direction.Out).Id.ToString());
+                    writer.WriteAttributeString(GraphMlTokens.Target, edge.GetVertex(Direction.In).Id.ToString());
 
                     if (_edgeLabelKey == null)
                     {
                         // this will not comply with the graphml schema but is here so that the label is not
                         // mixed up with properties.
-                        writer.WriteAttributeString(GraphMlTokens.Label, edge.GetLabel());
+                        writer.WriteAttributeString(GraphMlTokens.Label, edge.Label);
                     }
                     else
                     {
                         writer.WriteStartElement(GraphMlTokens.Data);
                         writer.WriteAttributeString(GraphMlTokens.Key, _edgeLabelKey);
-                        writer.WriteString(edge.GetLabel());
+                        writer.WriteString(edge.Label);
                         writer.WriteEndElement();
                     }
 
@@ -293,10 +293,10 @@ namespace Frontenac.Blueprints.Util.IO.GraphML
                     foreach (IEdge edge in vertex.GetEdges(Direction.Out))
                     {
                         writer.WriteStartElement(GraphMlTokens.Edge);
-                        writer.WriteAttributeString(GraphMlTokens.Id, edge.GetId().ToString());
-                        writer.WriteAttributeString(GraphMlTokens.Source, edge.GetVertex(Direction.Out).GetId().ToString());
-                        writer.WriteAttributeString(GraphMlTokens.Target, edge.GetVertex(Direction.In).GetId().ToString());
-                        writer.WriteAttributeString(GraphMlTokens.Label, edge.GetLabel());
+                        writer.WriteAttributeString(GraphMlTokens.Id, edge.Id.ToString());
+                        writer.WriteAttributeString(GraphMlTokens.Source, edge.GetVertex(Direction.Out).Id.ToString());
+                        writer.WriteAttributeString(GraphMlTokens.Target, edge.GetVertex(Direction.In).Id.ToString());
+                        writer.WriteAttributeString(GraphMlTokens.Label, edge.Label);
 
                         foreach (string key in edge.GetPropertyKeys())
                         {

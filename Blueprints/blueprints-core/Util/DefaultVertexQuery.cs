@@ -70,7 +70,7 @@ namespace Frontenac.Blueprints.Util
 
         public object VertexIds()
         {
-            return Vertices().Select(vertex => vertex.GetId()).ToList();
+            return Vertices().Select(vertex => vertex.Id).ToList();
         }
 
         class DefaultVertexQueryIterable<T> : IEnumerable<T> where T : IElement

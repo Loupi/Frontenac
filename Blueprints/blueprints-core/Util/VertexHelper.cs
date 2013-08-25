@@ -56,7 +56,7 @@ namespace Frontenac.Blueprints.Util
                 IEdge tempEdge = null;
                 foreach (IEdge bEdge in bEdgeSet)
                 {
-                    if (bEdge.GetLabel() == aEdge.GetLabel())
+                    if (bEdge.Label == aEdge.Label)
                     {
                         if (checkIdEquality)
                         {

@@ -8,13 +8,13 @@ namespace Frontenac.Blueprints.Impls.TG
     abstract class TinkerElement : IElement
     {
         protected Dictionary<string, object> Properties = new Dictionary<string, object>();
-        protected readonly string Id;
+        protected readonly string RawId;
         protected readonly TinkerGraph Graph;
 
         protected TinkerElement(string id, TinkerGraph graph)
         {
             Graph = graph;
-            Id = id;
+            RawId = id;
         }
 
         public IEnumerable<string> GetPropertyKeys()
@@ -53,10 +53,7 @@ namespace Frontenac.Blueprints.Impls.TG
             return Id.GetHashCode();
         }
 
-        public object GetId()
-        {
-            return Id;
-        }
+        public object Id { get { return RawId; } }
 
         public override bool Equals(object obj)
         {

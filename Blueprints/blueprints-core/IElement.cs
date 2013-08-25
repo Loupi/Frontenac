@@ -52,7 +52,7 @@ namespace Frontenac.Blueprints
         /// All vertices of a graph must have unique identifiers.
         /// All edges of a graph must have unique identifiers.
         /// </summary>
-        /// <returns>the identifier of the element</returns>
-        object GetId();
+        /// <value>the identifier of the element</value>
+        object Id { get; }
     }
 }

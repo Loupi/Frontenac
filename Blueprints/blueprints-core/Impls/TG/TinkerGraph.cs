@@ -14,7 +14,7 @@ namespace Frontenac.Blueprints.Impls.TG
     public class TinkerGraph : IIndexableGraph, IKeyIndexableGraph
     {
         internal long CurrentId = 0;
-        protected Dictionary<string, IVertex> Vertices = new Dictionary<string, IVertex>();
+        protected Dictionary<string, IVertex> InnerVertices = new Dictionary<string, IVertex>();
         protected Dictionary<string, IEdge> Edges = new Dictionary<string, IEdge>();
         internal Dictionary<string, TinkerIndex> Indices = new Dictionary<string, TinkerIndex>();
 
@@ -24,36 +24,8 @@ namespace Frontenac.Blueprints.Impls.TG
         readonly string _directory;
         readonly FileType _fileType;
 
-        static readonly Features Features = new Features();
+        static readonly Features TinkerGraphFeatures = new Features();
         static readonly Features PersistentFeatures;
-
-        #region IDisposable members
-        bool _disposed;
-
-        ~TinkerGraph()
-        {
-            Dispose(false);
-        }
-
-        public void Dispose()
-        {
-            Dispose(true);
-            GC.SuppressFinalize(this);
-        }
-
-        protected virtual void Dispose(bool disposing)
-        {
-            if (_disposed)
-                return;
-
-            if (disposing)
-            {
-                Shutdown();
-            }
-
-            _disposed = true;
-        }
-        #endregion
 
         public enum FileType
         {
@@ -65,40 +37,42 @@ namespace Frontenac.Blueprints.Impls.TG
 
         static TinkerGraph()
         {
-            Features.SupportsDuplicateEdges = true;
-            Features.SupportsSelfLoops = true;
-            Features.SupportsSerializableObjectProperty = true;
-            Features.SupportsBooleanProperty = true;
-            Features.SupportsDoubleProperty = true;
-            Features.SupportsFloatProperty = true;
-            Features.SupportsIntegerProperty = true;
-            Features.SupportsPrimitiveArrayProperty = true;
-            Features.SupportsUniformListProperty = true;
-            Features.SupportsMixedListProperty = true;
-            Features.SupportsLongProperty = true;
-            Features.SupportsMapProperty = true;
-            Features.SupportsStringProperty = true;
+            TinkerGraphFeatures.SupportsDuplicateEdges = true;
+            TinkerGraphFeatures.SupportsSelfLoops = true;
+            TinkerGraphFeatures.SupportsSerializableObjectProperty = true;
+            TinkerGraphFeatures.SupportsBooleanProperty = true;
+            TinkerGraphFeatures.SupportsDoubleProperty = true;
+            TinkerGraphFeatures.SupportsFloatProperty = true;
+            TinkerGraphFeatures.SupportsIntegerProperty = true;
+            TinkerGraphFeatures.SupportsPrimitiveArrayProperty = true;
+            TinkerGraphFeatures.SupportsUniformListProperty = true;
+            TinkerGraphFeatures.SupportsMixedListProperty = true;
+            TinkerGraphFeatures.SupportsLongProperty = true;
+            TinkerGraphFeatures.SupportsMapProperty = true;
+            TinkerGraphFeatures.SupportsStringProperty = true;
 
-            Features.IgnoresSuppliedIds = false;
-            Features.IsPersistent = false;
-            Features.IsRdfModel = false;
-            Features.IsWrapper = false;
+            TinkerGraphFeatures.IgnoresSuppliedIds = false;
+            TinkerGraphFeatures.IsPersistent = false;
+            TinkerGraphFeatures.IsRdfModel = false;
+            TinkerGraphFeatures.IsWrapper = false;
 
-            Features.SupportsIndices = true;
-            Features.SupportsKeyIndices = true;
-            Features.SupportsVertexKeyIndex = true;
-            Features.SupportsEdgeKeyIndex = true;
-            Features.SupportsVertexIndex = true;
-            Features.SupportsEdgeIndex = true;
-            Features.SupportsTransactions = false;
-            Features.SupportsVertexIteration = true;
-            Features.SupportsEdgeIteration = true;
-            Features.SupportsEdgeRetrieval = true;
-            Features.SupportsVertexProperties = true;
-            Features.SupportsEdgeProperties = true;
-            Features.SupportsThreadedTransactions = false;
+            TinkerGraphFeatures.SupportsIndices = true;
+            TinkerGraphFeatures.SupportsKeyIndices = true;
+            TinkerGraphFeatures.SupportsVertexKeyIndex = true;
+            TinkerGraphFeatures.SupportsEdgeKeyIndex = true;
+            TinkerGraphFeatures.SupportsVertexIndex = true;
+            TinkerGraphFeatures.SupportsEdgeIndex = true;
+            TinkerGraphFeatures.SupportsTransactions = false;
+            TinkerGraphFeatures.SupportsVertexIteration = true;
+            TinkerGraphFeatures.SupportsEdgeIteration = true;
+            TinkerGraphFeatures.SupportsEdgeRetrieval = true;
+            TinkerGraphFeatures.SupportsVertexProperties = true;
+            TinkerGraphFeatures.SupportsEdgeProperties = true;
+            TinkerGraphFeatures.SupportsThreadedTransactions = false;
+            TinkerGraphFeatures.SupportsIdProperty = false;
+            TinkerGraphFeatures.SupportsLabelProperty = false;
 
-            PersistentFeatures = Features.CopyFeatures();
+            PersistentFeatures = TinkerGraphFeatures.CopyFeatures();
             PersistentFeatures.IsPersistent = true;
         }
 
@@ -117,7 +91,7 @@ namespace Frontenac.Blueprints.Impls.TG
                 ITinkerStorage tinkerStorage = TinkerStorageFactory.GetInstance().GetTinkerStorage(fileType);
                 TinkerGraph graph = tinkerStorage.Load(directory);
 
-                Vertices = graph.Vertices;
+                InnerVertices = graph.InnerVertices;
                 Edges = graph.Edges;
                 CurrentId = graph.CurrentId;
                 Indices = graph.Indices;
@@ -189,7 +163,7 @@ namespace Frontenac.Blueprints.Impls.TG
                 throw ExceptionFactory.IndexAlreadyExists(indexName);
 
             var index = new TinkerIndex(indexName, indexClass);
-            Indices.Put(index.GetIndexName(), index);
+            Indices.Put(index.Name, index);
             return index;
         }
 
@@ -198,7 +172,7 @@ namespace Frontenac.Blueprints.Impls.TG
             IIndex index = Indices.Get(indexName);
             if (null == index)
                 return null;
-            if (!indexClass.IsAssignableFrom(index.GetIndexClass()))
+            if (!indexClass.IsAssignableFrom(index.Type))
                 throw ExceptionFactory.IndexDoesNotSupportClass(indexName, indexClass);
             return index;
         }
@@ -220,7 +194,7 @@ namespace Frontenac.Blueprints.Impls.TG
             if (null != id)
             {
                 idString = id.ToString();
-                vertex = Vertices.Get(idString);
+                vertex = InnerVertices.Get(idString);
                 if (null != vertex)
                     throw ExceptionFactory.VertexWithIdAlreadyExists(id);
             }
@@ -230,14 +204,14 @@ namespace Frontenac.Blueprints.Impls.TG
                 while (!done)
                 {
                     idString = GetNextId();
-                    vertex = Vertices.Get(idString);
+                    vertex = InnerVertices.Get(idString);
                     if (null == vertex)
                         done = true;
                 }
             }
 
             vertex = new TinkerVertex(idString, this);
-            Vertices.Put(vertex.GetId().ToString(), vertex);
+            InnerVertices.Put(vertex.Id.ToString(), vertex);
             return vertex;
         }
 
@@ -247,7 +221,7 @@ namespace Frontenac.Blueprints.Impls.TG
                 throw ExceptionFactory.VertexIdCanNotBeNull();
 
             string idString = id.ToString();
-            return Vertices.Get(idString);
+            return InnerVertices.Get(idString);
         }
 
         public virtual IEdge GetEdge(object id)
@@ -261,7 +235,7 @@ namespace Frontenac.Blueprints.Impls.TG
 
         public virtual IEnumerable<IVertex> GetVertices()
         {
-            return new List<IVertex>(Vertices.Values);
+            return new List<IVertex>(InnerVertices.Values);
         }
 
         public virtual IEnumerable<IEdge> GetEdges()
@@ -275,13 +249,13 @@ namespace Frontenac.Blueprints.Impls.TG
                 RemoveEdge(edge);
 
             VertexKeyIndex.RemoveElement(vertex);
-            foreach (var index in GetIndices().Where(t => t.GetIndexClass() == typeof(IVertex)))
+            foreach (var index in GetIndices().Where(t => t.Type == typeof(IVertex)))
             {
                 var idx = (TinkerIndex)index;
                 idx.RemoveElement(vertex);
             }
 
-            Vertices.Remove(vertex.GetId().ToString());
+            InnerVertices.Remove(vertex.Id.ToString());
         }
 
         public virtual IEdge AddEdge(object id, IVertex outVertex, IVertex inVertex, string label)
@@ -310,7 +284,7 @@ namespace Frontenac.Blueprints.Impls.TG
             }
 
             edge = new TinkerEdge(idString, outVertex, inVertex, label, this);
-            Edges.Put(edge.GetId().ToString(), edge);
+            Edges.Put(edge.Id.ToString(), edge);
             var out_ = (TinkerVertex)outVertex;
             var in_ = (TinkerVertex)inVertex;
             out_.AddOutEdge(label, edge);
@@ -324,26 +298,26 @@ namespace Frontenac.Blueprints.Impls.TG
             var inVertex = (TinkerVertex)edge.GetVertex(Direction.In);
             if (null != outVertex && null != outVertex.OutEdges)
             {
-                HashSet<IEdge> e = outVertex.OutEdges.Get(edge.GetLabel());
+                HashSet<IEdge> e = outVertex.OutEdges.Get(edge.Label);
                 if (null != e)
                     e.Remove(edge);
             }
             if (null != inVertex && null != inVertex.InEdges)
             {
-                HashSet<IEdge> e = inVertex.InEdges.Get(edge.GetLabel());
+                HashSet<IEdge> e = inVertex.InEdges.Get(edge.Label);
                 if (null != e)
                     e.Remove(edge);
             }
 
 
             EdgeKeyIndex.RemoveElement(edge);
-            foreach (var index in GetIndices().Where(t => t.GetIndexClass() == typeof(IEdge)))
+            foreach (var index in GetIndices().Where(t => t.Type == typeof(IEdge)))
             {
                 var idx = (TinkerIndex)index;
                 idx.RemoveElement(edge);
             }
 
-            Edges.Remove(edge.GetId().ToString());
+            Edges.Remove(edge.Id.ToString());
         }
 
         public virtual IGraphQuery Query()
@@ -354,13 +328,13 @@ namespace Frontenac.Blueprints.Impls.TG
         public override string ToString()
         {
             if (null == _directory)
-                return StringFactory.GraphString(this, string.Concat("vertices:", Vertices.LongCount().ToString(CultureInfo.InvariantCulture), " edges:", Edges.LongCount().ToString(CultureInfo.InvariantCulture)));
-            return StringFactory.GraphString(this, string.Concat("vertices:", Vertices.LongCount().ToString(CultureInfo.InvariantCulture), " edges:", Edges.LongCount().ToString(CultureInfo.InvariantCulture), " directory:", _directory));
+                return StringFactory.GraphString(this, string.Concat("vertices:", InnerVertices.LongCount().ToString(CultureInfo.InvariantCulture), " edges:", Edges.LongCount().ToString(CultureInfo.InvariantCulture)));
+            return StringFactory.GraphString(this, string.Concat("vertices:", InnerVertices.LongCount().ToString(CultureInfo.InvariantCulture), " edges:", Edges.LongCount().ToString(CultureInfo.InvariantCulture), " directory:", _directory));
         }
 
         public void Clear()
         {
-            Vertices.Clear();
+            InnerVertices.Clear();
             Edges.Clear();
             Indices.Clear();
             CurrentId = 0;
@@ -368,7 +342,7 @@ namespace Frontenac.Blueprints.Impls.TG
             EdgeKeyIndex = new TinkerKeyIndex(typeof(TinkerEdge), this);
         }
 
-        void Shutdown()
+        public void Shutdown()
         {
             if (null != _directory)
             {
@@ -384,17 +358,18 @@ namespace Frontenac.Blueprints.Impls.TG
             {
                 idString = CurrentId.ToString(CultureInfo.InvariantCulture);
                 CurrentId++;
-                if (null == Vertices.Get(idString) || null == Edges.Get(idString) || CurrentId == long.MaxValue)
+                if (null == InnerVertices.Get(idString) || null == Edges.Get(idString) || CurrentId == long.MaxValue)
                     break;
             }
             return idString;
         }
 
-        public virtual Features GetFeatures()
+        public virtual Features Features
         {
-            if (null == _directory)
-                return Features;
-            return PersistentFeatures;
+            get
+            {
+                return null == _directory ? TinkerGraphFeatures : PersistentFeatures;
+            }
         }
 
         [Serializable]

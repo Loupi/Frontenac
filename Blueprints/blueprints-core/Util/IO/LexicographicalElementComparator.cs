@@ -9,7 +9,7 @@ namespace Frontenac.Blueprints.Util.IO
     {
         public int Compare(IElement a, IElement b)
         {
-            return System.String.Compare(a.GetId().ToString(), b.GetId().ToString(), System.StringComparison.Ordinal);
+            return System.String.Compare(a.Id.ToString(), b.Id.ToString(), System.StringComparison.Ordinal);
         }
     }
 }
