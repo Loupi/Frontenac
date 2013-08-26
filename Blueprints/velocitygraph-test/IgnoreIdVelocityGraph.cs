@@ -17,11 +17,14 @@ namespace Frontenac.Blueprints.Impls.VG
 
         }
 
-        public override Features GetFeatures()
+        public override Features Features
         {
-            Features f = base.GetFeatures().CopyFeatures();
+          get
+          {
+            Features f = base.Features.CopyFeatures();
             f.IgnoresSuppliedIds = true;
             return f;
+          }
         }
 
         public override IVertex AddVertex(object id)

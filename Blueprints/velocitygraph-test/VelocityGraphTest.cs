@@ -301,16 +301,16 @@ namespace Frontenac.Blueprints.Impls.VG
     {
       foreach (IVertex v in src.GetVertices())
       {
-        ElementHelper.CopyProperties(v, dst.AddVertex(v.GetId()));
+        ElementHelper.CopyProperties(v, dst.AddVertex(v.Id));
       }
 
       foreach (IEdge e in src.GetEdges())
       {
         ElementHelper.CopyProperties(e,
-                dst.AddEdge(e.GetId(),
-                            dst.GetVertex(e.GetVertex(Direction.Out).GetId()),
-                            dst.GetVertex(e.GetVertex(Direction.In).GetId()),
-                            e.GetLabel()));
+                dst.AddEdge(e.Id,
+                            dst.GetVertex(e.GetVertex(Direction.Out).Id),
+                            dst.GetVertex(e.GetVertex(Direction.In).Id),
+                            e.Label));
       }
     }
 
@@ -318,7 +318,7 @@ namespace Frontenac.Blueprints.Impls.VG
     {
       foreach (IVertex v1 in g1.GetVertices())
       {
-        IVertex v2 = g2.GetVertex(v1.GetId());
+        IVertex v2 = g2.GetVertex(v1.Id);
 
         CompareEdgeCounts(v1, v2, Direction.In);
         CompareEdgeCounts(v1, v2, Direction.Out);
@@ -330,7 +330,7 @@ namespace Frontenac.Blueprints.Impls.VG
 
       foreach (IEdge e1 in g1.GetEdges())
       {
-        IEdge e2 = g2.GetEdge(e1.GetId());
+        IEdge e2 = g2.GetEdge(e1.Id);
 
         CompareVertices(e1, e2, Direction.In);
         CompareVertices(e2, e2, Direction.Out);
@@ -372,7 +372,7 @@ namespace Frontenac.Blueprints.Impls.VG
 
       IEnumerator<IEdge> weightItty = g2.GetEdges("weight", 0.5).GetEnumerator();
       weightItty.MoveNext();
-      Assert.AreEqual(g2.GetEdge(weightItty.Current.GetId()), weightItty.Current);
+      Assert.AreEqual(g2.GetEdge(weightItty.Current.Id), weightItty.Current);
       Assert.False(weightItty.MoveNext());
     }
 
@@ -389,7 +389,7 @@ namespace Frontenac.Blueprints.Impls.VG
       IVertex v1 = e1.GetVertex(direction);
       IVertex v2 = e2.GetVertex(direction);
 
-      Assert.AreEqual(v1.GetId(), v2.GetId());
+      Assert.AreEqual(v1.Id, v2.Id);
     }
   }
 }
