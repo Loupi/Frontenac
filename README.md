@@ -5,7 +5,7 @@ A .NET port of the [Tinkerpop Stack](http://www.tinkerpop.com/).
 
 ## News
 * 2013-08-25 
- * Frontenac.Blueprints released
+ * Frontenac.Blueprints 2.3.3 released
  * Initial commit for Grave, a graph database backed by Microsoft ESENT and Lucent.NET.
 
 * 2013-07-29 
