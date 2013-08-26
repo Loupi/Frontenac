@@ -4,7 +4,12 @@ Frontenac
 A .NET port of the [Tinkerpop Stack](http://www.tinkerpop.com/).
 
 ## News
-* 2013-07-29 [VelocityDB](http://velocitydb.com/) now supports Frontenac through it's [VelocityGraph](https://github.com/VelocityDB/VelocityGraph) library. Available on NuGet.
+* 2013-08-25 
+ * Frontenac.Blueprints released
+ * Initial commit for Grave, a graph database backed by Microsoft ESENT and Lucent.NET.
+
+* 2013-07-29 
+ * [VelocityDB](http://velocitydb.com/) now supports Frontenac through it's [VelocityGraph](https://github.com/VelocityDB/VelocityGraph) library. Available on NuGet.
 
 ## Credits
 Special thanks to the authors and contributors of the original library:
