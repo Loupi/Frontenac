@@ -28,29 +28,42 @@ namespace Grave
 
         public IEnumerable<IEdge> GetEdges(Direction direction, params string[] labels)
         {
-            using (var cursor = Graph.Context.GetCursor())
+            var cursor = Graph.Context.GetVerticesCursor();
+            try
             {
-                var columns = cursor.VertexTable.GetColumns().ToArray();
-                var edgeColumns = new List<string>();
-                edgeColumns.AddRange(FilterLabels(direction, labels, Direction.In, columns, "$e_i_"));
-                edgeColumns.AddRange(FilterLabels(direction, labels, Direction.Out, columns, "$e_o_"));
-
-                foreach (var label in edgeColumns)
+                var edgesCursor = Graph.Context.GetEdgesCursor();
+                try
                 {
-                    foreach (var edgeId in cursor.VertexTable.GetEdges(RawId, label))
+                    var columns = cursor.GetColumns().ToArray();
+                    var edgeColumns = new List<string>();
+                    edgeColumns.AddRange(FilterLabels(direction, labels, Direction.In, columns, "$e_i_"));
+                    edgeColumns.AddRange(FilterLabels(direction, labels, Direction.Out, columns, "$e_o_"));
+
+                    foreach (var label in edgeColumns)
                     {
-                        if (cursor.EdgesTable.SetCursor(edgeId))
+                        foreach (var edgeId in cursor.GetEdges(RawId, label))
                         {
-                            var data = cursor.EdgesTable.GetEdgeData();
-                            if (data != null)
+                            if (edgesCursor.SetCursor(edgeId))
                             {
-                                var vertexOut = new GraveVertex(Graph, Graph.Context.VertexTable, data.Item3);
-                                var vertexIn = new GraveVertex(Graph, Graph.Context.VertexTable, data.Item2);
-                                yield return new GraveEdge(edgeId, vertexOut, vertexIn, data.Item1, Graph, Graph.Context.EdgesTable);
+                                var data = edgesCursor.GetEdgeData();
+                                if (data != null)
+                                {
+                                    var vertexOut = new GraveVertex(Graph, Graph.Context.VertexTable, data.Item3);
+                                    var vertexIn = new GraveVertex(Graph, Graph.Context.VertexTable, data.Item2);
+                                    yield return new GraveEdge(edgeId, vertexOut, vertexIn, data.Item1, Graph, Graph.Context.EdgesTable);
+                                }
                             }
                         }
                     }
                 }
+                finally
+                {
+                    edgesCursor.Close();
+                }
+            }
+            finally
+            {
+                cursor.Close();
             }
         }
 

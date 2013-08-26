@@ -8,17 +8,17 @@ namespace Grave.Esent
     {
         public EsentConfigTable ConfigTable { get; private set; }
 
-        public EsentConfigContext(Instance instance, Session session, string databaseName, IContentSerializer contentSerializer) : 
-            base(instance, session, databaseName, contentSerializer)
+        public EsentConfigContext(Session session, string databaseName, IContentSerializer contentSerializer) : 
+            base(session, databaseName, contentSerializer)
         {
 
         }
 
-        protected override void OpenDatabase()
+        protected override JET_DBID OpenDatabase()
         {
             ConfigTable = new EsentConfigTable(Session, ContentSerializer);
             CreateDatabase();
-            base.OpenDatabase();
+            return base.OpenDatabase();
         }
 
         protected override void CloseDatabase()

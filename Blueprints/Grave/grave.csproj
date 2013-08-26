@@ -159,7 +159,6 @@
     <Compile Include="Indexing\IndexingService.cs" />
     <Compile Include="Installers\GraveInstaller.cs" />
     <Compile Include="Esent\EsentContext.cs" />
-    <Compile Include="Esent\EsentCursor.cs" />
     <Compile Include="GraveIndex.cs" />
     <Compile Include="Esent\EsentTable.cs" />
     <Compile Include="Esent\EsentEdgesTable.cs" />

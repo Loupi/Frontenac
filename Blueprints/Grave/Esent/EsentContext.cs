@@ -5,26 +5,65 @@ using Microsoft.Isam.Esent.Interop;
 
 namespace Grave.Esent
 {
-    public class EsentContext : EsentCursor
+    public class EsentContext
     {
-        readonly Instance _instance;
+        JET_DBID _dbid;
         protected readonly IContentSerializer ContentSerializer;
 
-        public EsentContext(Instance instance, Session session, string databaseName, IContentSerializer contentSerializer)
-            : base(session, databaseName, contentSerializer, false)
+        public string DatabaseName { get; protected set; }
+        public EsentVertexTable VertexTable { get; private set; }
+        public EsentEdgesTable EdgesTable { get; private set; }
+        public Session Session { get; private set; }
+
+        public EsentContext(Session session, string databaseName, IContentSerializer contentSerializer)
         {
-            if(instance == null)
-                throw new ArgumentNullException("instance");
+            if (session == null)
+                throw new ArgumentNullException("session");
 
             if(contentSerializer == null)
                 throw new ArgumentNullException("contentSerializer");
 
-            _instance = instance;
+            if (string.IsNullOrWhiteSpace(databaseName))
+                throw new ArgumentException("databaseName");
+
+            Session = session;
+            DatabaseName = CleanDatabaseName(databaseName);
             ContentSerializer = contentSerializer;
 
-            DatabaseName = CleanDatabaseName(DatabaseName);
+            VertexTable = new EsentVertexTable(session, contentSerializer);
+            EdgesTable = new EsentEdgesTable(session, contentSerializer);
+
             Init();
         }
+
+        #region IDisposable
+        bool _disposed;
+
+        ~EsentContext()
+        {
+            Dispose(false);
+        }
+
+        public void Dispose()
+        {
+            Dispose(true);
+            GC.SuppressFinalize(this);
+        }
+
+        protected virtual void Dispose(bool disposing)
+        {
+            if (_disposed)
+                return;
+
+            if (disposing)
+            {
+                CloseDatabase();
+            }
+
+            _disposed = true;
+        }
+
+        #endregion
 
         static string CleanDatabaseName(string databaseName)
         {
@@ -64,16 +103,44 @@ namespace Grave.Esent
             return instance;
         }
 
-        protected override void OpenDatabase()
+        public EsentVertexTable GetVerticesCursor()
         {
-            OpenDatabase(OpenDatabaseGrbit.None);
+            var cursor = new EsentVertexTable(Session, ContentSerializer);
+            cursor.Open(_dbid);
+            return cursor;
         }
 
-        public EsentCursor GetCursor()
+        public EsentEdgesTable GetEdgesCursor()
         {
-            var cursor = new EsentCursor(new Session(_instance), DatabaseName, ContentSerializer, true);
-            cursor.Init();
+            var cursor = new EsentEdgesTable(Session, ContentSerializer);
+            cursor.Open(_dbid);
             return cursor;
+        }
+
+        protected virtual JET_DBID OpenDatabase(OpenDatabaseGrbit openFlags)
+        {
+            JET_DBID dbid;
+            Api.JetAttachDatabase(Session, DatabaseName, AttachDatabaseGrbit.DeleteCorruptIndexes);
+            Api.JetOpenDatabase(Session, DatabaseName, null, out dbid, OpenDatabaseGrbit.None);
+            VertexTable.Open(dbid);
+            EdgesTable.Open(dbid);
+            return dbid;
+        }
+
+        internal protected void Init()
+        {
+            _dbid = OpenDatabase();
+        }
+
+        protected virtual JET_DBID OpenDatabase()
+        {
+            return OpenDatabase(OpenDatabaseGrbit.None);
+        }
+        
+        protected virtual void CloseDatabase()
+        {
+            VertexTable.Close();
+            EdgesTable.Close();
         }
     }
 }

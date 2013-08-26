@@ -126,14 +126,19 @@ namespace Grave
 
         public virtual IEnumerable<IVertex> GetVertices()
         {
-            using (var cursor = Context.GetCursor())
+            var cursor = Context.GetVerticesCursor();
+            try
             {
-                var id = cursor.VertexTable.MoveFirst();
+                var id = cursor.MoveFirst();
                 while (id != 0)
                 {
                     yield return new GraveVertex(this, Context.VertexTable, id);
-                    id = cursor.VertexTable.MoveNext();
+                    id = cursor.MoveNext();
                 }
+            }
+            finally
+            {
+                cursor.Close();
             }
         }
 
@@ -229,20 +234,25 @@ namespace Grave
 
         public virtual IEnumerable<IEdge> GetEdges()
         {
-            using (var cursor = Context.GetCursor())
+            var cursor = Context.GetEdgesCursor();
+            try
             {
-                var id = cursor.EdgesTable.MoveFirst();
+                var id = cursor.MoveFirst();
                 while (id != 0)
                 {
-                    var data = cursor.EdgesTable.GetEdgeData();
+                    var data = cursor.GetEdgeData();
                     if (data != null)
                     {
                         var vertexOut = new GraveVertex(this, Context.VertexTable, data.Item3);
                         var vertexIn = new GraveVertex(this, Context.VertexTable, data.Item2);
                         yield return new GraveEdge(id, vertexOut, vertexIn, data.Item1, this, Context.EdgesTable);
                     }
-                    id = cursor.EdgesTable.MoveNext();
+                    id = cursor.MoveNext();
                 }
+            }
+            finally
+            {
+                cursor.Close();
             }
         }
 
@@ -263,12 +273,13 @@ namespace Grave
             if (string.IsNullOrWhiteSpace(key))
                 throw new ArgumentException("key");
 
-            using (var cursor = Context.GetCursor())
+            var cursor = Context.GetEdgesCursor();
+            try
             {
                 var edgeIds = IndexingService.EdgeIndices.Get(key, key, value);
                 foreach (var edgeId in edgeIds)
                 {
-                    var data = cursor.EdgesTable.TryGetEdge(edgeId);
+                    var data = cursor.TryGetEdge(edgeId);
                     if (data != null)
                     {
                         var vertexOut = new GraveVertex(this, Context.VertexTable, data.Item3);
@@ -276,6 +287,10 @@ namespace Grave
                         yield return new GraveEdge(edgeId, vertexOut, vertexIn, data.Item1, this, Context.EdgesTable);
                     }
                 }
+            }
+            finally
+            {
+                cursor.Close();
             }
         }
 
