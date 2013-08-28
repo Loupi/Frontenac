@@ -55,6 +55,9 @@
     <Prefer32Bit>false</Prefer32Bit>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="Frontenac.Blueprints">
+      <HintPath>..\packages\Frontenac.Blueprints.2.3.3.0\lib\net45\Frontenac.Blueprints.dll</HintPath>
+    </Reference>
     <Reference Include="Newtonsoft.Json, Version=4.5.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\packages\Newtonsoft.Json.5.0.6\lib\net45\Newtonsoft.Json.dll</HintPath>
@@ -70,10 +73,10 @@
     <Reference Include="System.Data" />
     <Reference Include="System.Xml" />
     <Reference Include="VelocityDb">
-      <HintPath>..\packages\VelocityDB.2.8.2\lib\net45\VelocityDb.dll</HintPath>
+      <HintPath>..\packages\VelocityDB.2.9.6\lib\net40\VelocityDb.dll</HintPath>
     </Reference>
     <Reference Include="VelocityGraph">
-      <HintPath>..\packages\VelocityGraph.0.9.5\lib\net45\VelocityGraph.dll</HintPath>
+      <HintPath>..\packages\VelocityGraph.0.9.6.1\lib\Net40\VelocityGraph.dll</HintPath>
     </Reference>
   </ItemGroup>
   <ItemGroup>
@@ -90,10 +93,6 @@
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\blueprints-core\blueprints-core.csproj">
-      <Project>{42ed5d37-0e20-4fc3-b6b1-f38a08283c30}</Project>
-      <Name>blueprints-core</Name>
-    </ProjectReference>
     <ProjectReference Include="..\blueprints-testsuite\blueprints-testsuite.csproj">
       <Project>{2f1387c2-845b-4d3d-9851-1b67ffd741ac}</Project>
       <Name>blueprints-testsuite</Name>
