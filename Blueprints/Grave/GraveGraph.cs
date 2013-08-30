@@ -166,10 +166,12 @@ namespace Grave
             if (string.IsNullOrWhiteSpace(label))
                 throw new ArgumentException("label");
 
-            var id = Context.EdgesTable.AddEdge(label, (int)inVertex.Id, (int)outVertex.Id);
-            Context.VertexTable.AddEdge((int)inVertex.Id, Direction.In, label, id);
-            Context.VertexTable.AddEdge((int)outVertex.Id, Direction.Out, label, id);
-            return new GraveEdge(id, outVertex, inVertex, label, this, Context.EdgesTable);
+            var inVertexId = (int)inVertex.Id;
+            var outVertexId = (int)outVertex.Id;
+            var edgeId = Context.EdgesTable.AddEdge(label, inVertexId, outVertexId);
+            Context.VertexTable.AddEdge(inVertexId, Direction.In, label, edgeId, outVertexId);
+            Context.VertexTable.AddEdge(outVertexId, Direction.Out, label, edgeId, inVertexId);
+            return new GraveEdge(edgeId, outVertex, inVertex, label, this, Context.EdgesTable);
         }
 
         public virtual IEdge GetEdge(object id)
@@ -226,8 +228,10 @@ namespace Grave
 
             var edgeId = (int)edge.Id;
             Context.EdgesTable.DeleteRow(edgeId);
-            Context.VertexTable.DeleteEdge((int)edge.GetVertex(Direction.In).Id, Direction.In, edge.Label, edgeId);
-            Context.VertexTable.DeleteEdge((int)edge.GetVertex(Direction.Out).Id, Direction.Out, edge.Label, edgeId);
+            var inVertexId = (int) edge.GetVertex(Direction.In).Id;
+            var outVertexId = (int) edge.GetVertex(Direction.Out).Id;
+            Context.VertexTable.DeleteEdge(inVertexId, Direction.In, edge.Label, edgeId, outVertexId);
+            Context.VertexTable.DeleteEdge(outVertexId, Direction.Out, edge.Label, edgeId, inVertexId);
             var generation = IndexingService.EdgeIndices.DeleteDocuments(edgeId);
             UpdateGeneration(generation);
         }

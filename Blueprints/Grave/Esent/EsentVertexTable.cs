@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using Frontenac.Blueprints;
 using Grave.Esent.Serializers;
 using Microsoft.Isam.Esent.Interop;
+using Microsoft.Isam.Esent.Interop.Vista;
 
 namespace Grave.Esent
 {
@@ -13,7 +14,7 @@ namespace Grave.Esent
 
         }
 
-        public void AddEdge(int vertexId, Direction direction, string label, int edgeId)
+        public void AddEdge(int vertexId, Direction direction, string label, int edgeId, int targetId)
         {
             if(direction == Direction.Both)
                 throw new ArgumentException("direction");
@@ -25,19 +26,23 @@ namespace Grave.Esent
 
             var labelColumn = GetEdgeColumnName(direction, label);
             CreateEdgeColumn(labelColumn);
-            WriteEdgeContent(labelColumn, edgeId, 0);
+            WriteEdgeContent(labelColumn, edgeId, targetId, 0);
         }
 
-        void WriteEdgeContent(string labelColumn, int? edgeId, int iTag)
+        void WriteEdgeContent(string labelColumn, int? edgeId, int? targetId, int iTag)
         {
             using (var transaction = new Transaction(Session))
             {
                 using (var update = new Update(Session, TableId, JET_prep.Replace))
                 {
                     var setInfo = new JET_SETINFO {itagSequence = iTag};
+                    
                     byte[] data = null;
-                    if(edgeId.HasValue)
-                        data = BitConverter.GetBytes(edgeId.Value);
+                    if (edgeId.HasValue && targetId.HasValue)
+                    {
+                        var key = ((((ulong)edgeId.Value) << 32)) | (ulong)(long)targetId.Value;
+                        data = BitConverter.GetBytes(key);
+                    }
                     Api.JetSetColumn(Session, TableId, Columns[labelColumn], 
                                      data, data == null ? 0 : data.Length, 0, SetColumnGrbit.UniqueMultiValues, setInfo);
                     update.Save();
@@ -46,7 +51,7 @@ namespace Grave.Esent
             }
         }
 
-        public void DeleteEdge(int vertexId, Direction direction, string label, int edgeId)
+        public void DeleteEdge(int vertexId, Direction direction, string label, int edgeId, int targetId)
         {
             if (direction == Direction.Both)
                 throw new ArgumentException("direction");
@@ -58,15 +63,15 @@ namespace Grave.Esent
 
             var labelColumn = GetEdgeColumnName(direction, label);
 
-            if (!SetEdgeCursor(labelColumn, edgeId)) return;
+            if (!SetEdgeCursor(labelColumn, edgeId, targetId)) return;
 
             var retrievecolumn = new JET_RETRIEVECOLUMN { columnid = Columns[labelColumn], grbit = RetrieveColumnGrbit.RetrieveTag };
             Api.JetRetrieveColumns(Session, TableId, new[] { retrievecolumn }, 1);
 
-            WriteEdgeContent(labelColumn, null, retrievecolumn.itagSequence);
+            WriteEdgeContent(labelColumn, null, null, retrievecolumn.itagSequence);
         }
 
-        public bool SetEdgeCursor(int vertexId, string label, Direction direction, int edgeId)
+        public bool SetEdgeCursor(int vertexId, string label, Direction direction, int edgeId, int targetId)
         {
             if (direction == Direction.Both)
                 throw new ArgumentException("direction");
@@ -78,13 +83,14 @@ namespace Grave.Esent
 
             var labelColumn = GetEdgeColumnName(direction, label);
 
-            return SetEdgeCursor(labelColumn, edgeId);
+            return SetEdgeCursor(labelColumn, edgeId, targetId);
         }
 
-        bool SetEdgeCursor(string edgeLabel, int edgeId)
+        bool SetEdgeCursor(string edgeLabel, int edgeId, int targetId)
         {
+            var key = ((((ulong)edgeId) << 32)) | (ulong)(long)targetId;
             Api.JetSetCurrentIndex(Session, TableId, string.Concat(edgeLabel, "Index"));
-            Api.MakeKey(Session, TableId, edgeId, MakeKeyGrbit.NewKey);
+            Api.MakeKey(Session, TableId, key, MakeKeyGrbit.NewKey);
             return Api.TrySeek(Session, TableId, SeekGrbit.SeekEQ);
         }
 
@@ -104,9 +110,10 @@ namespace Grave.Esent
             int sz;
             Api.JetGetBookmark(Session, TableId, bookmark, bookmark.Length, out sz);
 
+            
             Api.JetAddColumn(Session, TableId, columnName, new JET_COLUMNDEF
             {
-                coltyp = JET_coltyp.Long,
+                coltyp = VistaColtyp.LongLong,
                 grbit = ColumndefGrbit.ColumnMultiValued | ColumndefGrbit.ColumnTagged
             }, null, 0, out columnId);
             Columns.Add(columnName, columnId);
@@ -125,7 +132,7 @@ namespace Grave.Esent
             return retrievecolumn.itagSequence;
         }
 
-        public IEnumerable<int> GetEdges(int vertexId, string labelName)
+        public IEnumerable<Tuple<int,int>> GetEdges(int vertexId, string labelName)
         {
             var nbEdges = CountEdges(vertexId, labelName);
             var columnId = Columns[labelName];
@@ -133,8 +140,10 @@ namespace Grave.Esent
             {
                 var retinfo = new JET_RETINFO { itagSequence = itag };
                 var data = Api.RetrieveColumn(Session, TableId, columnId, RetrieveColumnGrbit.None, retinfo);
-                var edgeId = BitConverter.ToInt32(data, 0);
-                yield return edgeId;
+                var key = BitConverter.ToInt64(data, 0);
+                var edgeId = (int)(key >> 32);
+                var targetId = (int)(key & 0xFFFF);
+                yield return new Tuple<int, int>(edgeId, targetId);
             }
         }
     }

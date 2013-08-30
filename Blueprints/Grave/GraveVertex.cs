@@ -9,6 +9,9 @@ namespace Grave
 {
     public class GraveVertex : GraveElement, IVertex
     {
+        private const string EdgeInPrefix = "$e_i_";
+        private const string EdgeOutPrefix = "$e_o_";
+    
         public GraveVertex(GraveGraph graph, EsentTable vertexTable, int id)
             : base(graph, vertexTable, id)
         {
@@ -31,34 +34,22 @@ namespace Grave
             var cursor = Graph.Context.GetVerticesCursor();
             try
             {
-                var edgesCursor = Graph.Context.GetEdgesCursor();
-                try
-                {
-                    var columns = cursor.GetColumns().ToArray();
-                    var edgeColumns = new List<string>();
-                    edgeColumns.AddRange(FilterLabels(direction, labels, Direction.In, columns, "$e_i_"));
-                    edgeColumns.AddRange(FilterLabels(direction, labels, Direction.Out, columns, "$e_o_"));
+                var columns = cursor.GetColumns().ToArray();
+                var edgeColumns = new List<string>();
+                edgeColumns.AddRange(FilterLabels(direction, labels, Direction.In, columns, EdgeInPrefix));
+                edgeColumns.AddRange(FilterLabels(direction, labels, Direction.Out, columns, EdgeOutPrefix));
 
-                    foreach (var label in edgeColumns)
-                    {
-                        foreach (var edgeId in cursor.GetEdges(RawId, label))
-                        {
-                            if (edgesCursor.SetCursor(edgeId))
-                            {
-                                var data = edgesCursor.GetEdgeData();
-                                if (data != null)
-                                {
-                                    var vertexOut = new GraveVertex(Graph, Graph.Context.VertexTable, data.Item3);
-                                    var vertexIn = new GraveVertex(Graph, Graph.Context.VertexTable, data.Item2);
-                                    yield return new GraveEdge(edgeId, vertexOut, vertexIn, data.Item1, Graph, Graph.Context.EdgesTable);
-                                }
-                            }
-                        }
-                    }
-                }
-                finally
+                foreach (var label in edgeColumns)
                 {
-                    edgesCursor.Close();
+                    var isVertexIn = label.StartsWith(EdgeInPrefix);
+                    var labelName = label.Substring(EdgeInPrefix.Length);
+                    foreach (var edgeData in cursor.GetEdges(RawId, label))
+                    {
+                        var vertex = new GraveVertex(Graph, Graph.Context.VertexTable, edgeData.Item2);
+                        var outVertex = isVertexIn ? vertex : this;
+                        var inVertex = isVertexIn ? this : vertex;
+                        yield return new GraveEdge(edgeData.Item1, outVertex,  inVertex, labelName, Graph, Graph.Context.EdgesTable);
+                    }
                 }
             }
             finally

@@ -14,6 +14,13 @@ namespace Grave
         {
             get
             {
+                lock (typeof(GraveFactory))
+                {
+                    if (_context == null)
+                    {
+                        _context = new FactoryContext();
+                    }
+                }
                 return _context;
             }
         }
