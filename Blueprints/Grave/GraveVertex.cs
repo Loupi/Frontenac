@@ -45,10 +45,12 @@ namespace Grave
                     var labelName = label.Substring(EdgeInPrefix.Length);
                     foreach (var edgeData in cursor.GetEdges(RawId, label))
                     {
-                        var vertex = new GraveVertex(Graph, Graph.Context.VertexTable, edgeData.Item2);
+                        var edgeId = (int)(edgeData >> 32);
+                        var targetId = (int)(edgeData & 0xFFFF);
+                        var vertex = new GraveVertex(Graph, Graph.Context.VertexTable, targetId);
                         var outVertex = isVertexIn ? vertex : this;
                         var inVertex = isVertexIn ? this : vertex;
-                        yield return new GraveEdge(edgeData.Item1, outVertex,  inVertex, labelName, Graph, Graph.Context.EdgesTable);
+                        yield return new GraveEdge(edgeId, outVertex, inVertex, labelName, Graph, Graph.Context.EdgesTable);
                     }
                 }
             }

@@ -110,7 +110,6 @@ namespace Grave.Esent
             int sz;
             Api.JetGetBookmark(Session, TableId, bookmark, bookmark.Length, out sz);
 
-            
             Api.JetAddColumn(Session, TableId, columnName, new JET_COLUMNDEF
             {
                 coltyp = VistaColtyp.LongLong,
@@ -132,7 +131,7 @@ namespace Grave.Esent
             return retrievecolumn.itagSequence;
         }
 
-        public IEnumerable<Tuple<int,int>> GetEdges(int vertexId, string labelName)
+        public IEnumerable<long> GetEdges(int vertexId, string labelName)
         {
             var nbEdges = CountEdges(vertexId, labelName);
             var columnId = Columns[labelName];
@@ -141,9 +140,7 @@ namespace Grave.Esent
                 var retinfo = new JET_RETINFO { itagSequence = itag };
                 var data = Api.RetrieveColumn(Session, TableId, columnId, RetrieveColumnGrbit.None, retinfo);
                 var key = BitConverter.ToInt64(data, 0);
-                var edgeId = (int)(key >> 32);
-                var targetId = (int)(key & 0xFFFF);
-                yield return new Tuple<int, int>(edgeId, targetId);
+                yield return key;
             }
         }
     }
