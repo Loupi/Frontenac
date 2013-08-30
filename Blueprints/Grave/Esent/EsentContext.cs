@@ -1,5 +1,4 @@
 ﻿using System;
-using System.IO;
 using Grave.Esent.Serializers;
 using Microsoft.Isam.Esent.Interop;
 
