@@ -331,8 +331,7 @@ namespace Frontenac.Blueprints
                     TrySetProperty(vertexA, "keyMap", map, graph.Features.SupportsMapProperty);
                     TrySetProperty(edge, "keyMap", map, graph.Features.SupportsMapProperty);
 
-                    var mockSerializable = new MockSerializable();
-                    mockSerializable.SetTestField("test");
+                    var mockSerializable = new MockSerializable("test");
                     TrySetProperty(vertexA, "keySerializable", mockSerializable,
                                    graph.Features.SupportsSerializableObjectProperty);
                     TrySetProperty(edge, "keySerializable", mockSerializable,

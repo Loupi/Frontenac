@@ -5,16 +5,16 @@ namespace Frontenac.Blueprints.Util.IO
     [Serializable]
     public class MockSerializable
     {
-        string _testField;
+        readonly string _testField;
 
-        public string GetTestField() 
-        {
-            return _testField;
-        }
-
-        public void SetTestField(string testField)
+        public MockSerializable(string testField)
         {
             _testField = testField;
+        }
+
+        public string TestField
+        {
+            get { return _testField; }
         }
 
         public override bool Equals(object obj)
@@ -30,7 +30,7 @@ namespace Frontenac.Blueprints.Util.IO
 
         public override int GetHashCode()
         {
-            return base.GetHashCode();
+            return _testField.GetHashCode();
         }
     }
 }

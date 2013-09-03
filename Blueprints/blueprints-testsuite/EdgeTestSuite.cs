@@ -687,7 +687,7 @@ namespace Frontenac.Blueprints
                             edge.SetProperty("id", "123");
                             Assert.Fail();
                         }
-                        catch
+                        catch (Exception)
                         {
                         }
                     }
@@ -699,7 +699,7 @@ namespace Frontenac.Blueprints
                             edge.SetProperty("label", "hates");
                             Assert.Fail();
                         }
-                        catch
+                        catch (Exception)
                         {
                         }
                     }

@@ -34,7 +34,7 @@ namespace Frontenac.Blueprints
 
                 StopWatch();
                 v = graph.AddVertex(null);
-                Assert.False(v == null);
+                Assert.NotNull(v);
                 u = graph.GetVertex(v.Id);
                 Assert.AreEqual(v, u);
                 PrintPerformance(graph.ToString(), 1, "vertex added and retrieved", StopWatch());
@@ -300,11 +300,11 @@ namespace Frontenac.Blueprints
             var graph = GraphTest.GenerateGraph();
             try
             {
-                IVertex v1 = graph.AddVertex(null);
+                var v1 = graph.AddVertex(null);
                 for (int i = 0; i < 10; i++)
                     graph.AddEdge(null, v1, graph.AddVertex(null), ConvertId(graph, "knows"));
 
-                IEnumerable<IEdge> edges = v1.GetEdges(Direction.Out, ConvertId(graph, "knows"));
+                var edges = v1.GetEdges(Direction.Out, ConvertId(graph, "knows")).ToArray();
                 Assert.AreEqual(Count(edges), 10);
                 Assert.AreEqual(Count(edges), 10);
                 Assert.AreEqual(Count(edges), 10);

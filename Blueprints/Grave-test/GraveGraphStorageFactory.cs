@@ -1,7 +1,6 @@
 ﻿using System;
 using System.IO;
 using System.Runtime.Serialization.Formatters.Binary;
-using Frontenac.Blueprints.Impls.TG;
 using Frontenac.Blueprints.Util.IO.GML;
 using Frontenac.Blueprints.Util.IO.GraphML;
 using Frontenac.Blueprints.Util.IO.GraphSON;
@@ -67,8 +66,6 @@ namespace Grave_test
         /// </summary>
         abstract class AbstractSeparateGraveStorage : AbstractGraveStorage
         {
-            private const string GraphFileMetadata = "/Gravegraph-metadata.dat";
-
             /// <summary>
             /// Save the data of the graph with the specific file format of the implementation.
             /// </summary>

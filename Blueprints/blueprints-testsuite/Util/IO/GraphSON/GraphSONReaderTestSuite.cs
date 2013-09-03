@@ -283,12 +283,12 @@ namespace Frontenac.Blueprints.Util.IO.GraphSON
                         }
                     }
                     Assert.AreEqual(c, 6);
-                    Assert.True(null != marko);
-                    Assert.True(null != peter);
-                    Assert.True(null != josh);
-                    Assert.True(null != vadas);
-                    Assert.True(null != lop);
-                    Assert.True(null != ripple);
+                    Assert.NotNull(marko);
+                    Assert.NotNull(peter);
+                    Assert.NotNull(josh);
+                    Assert.NotNull(vadas);
+                    Assert.NotNull(lop);
+                    Assert.NotNull(ripple);
 
                     if (graph.Features.SupportsEdgeIteration)
                     {

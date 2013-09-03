@@ -1,7 +1,4 @@
 ﻿using NUnit.Framework;
-using System.IO;
-using VelocityDb.Session;
-using VelocityGraph;
 
 namespace Frontenac.Blueprints.Impls.VG
 {

@@ -294,12 +294,12 @@ namespace Frontenac.Blueprints.Util.IO.GML
                         }
                     }
                     Assert.AreEqual(c, 6);
-                    Assert.True(null != marko);
-                    Assert.True(null != peter);
-                    Assert.True(null != josh);
-                    Assert.True(null != vadas);
-                    Assert.True(null != lop);
-                    Assert.True(null != ripple);
+                    Assert.NotNull(marko);
+                    Assert.NotNull(peter);
+                    Assert.NotNull(josh);
+                    Assert.NotNull(vadas);
+                    Assert.NotNull(lop);
+                    Assert.NotNull(ripple);
 
                     if (graph.Features.SupportsEdgeIteration)
                     {
@@ -318,9 +318,9 @@ namespace Frontenac.Blueprints.Util.IO.GML
                         vertices.Add(e.GetVertex(Direction.In));
                     }
                     Assert.AreEqual(vertices.Count(), 3);
-                    Assert.True(lop != null && vertices.Contains(lop));
-                    Assert.True(josh != null && vertices.Contains(josh));
-                    Assert.True(vadas != null && vertices.Contains(vadas));
+                    Assert.True(vertices.Contains(lop));
+                    Assert.True(vertices.Contains(josh));
+                    Assert.True(vertices.Contains(vadas));
                     // test peter
                     vertices = new HashSet<IVertex>();
                     Assert.AreEqual(peter.GetProperty("name"), "peter");
@@ -333,7 +333,7 @@ namespace Frontenac.Blueprints.Util.IO.GML
                         vertices.Add(e.GetVertex(Direction.In));
                     }
                     Assert.AreEqual(vertices.Count(), 1);
-                    Assert.True(lop != null && vertices.Contains(lop));
+                    Assert.True(vertices.Contains(lop));
                     // test josh
                     vertices = new HashSet<IVertex>();
                     Assert.AreEqual(josh.GetProperty("name"), "josh");
@@ -346,8 +346,8 @@ namespace Frontenac.Blueprints.Util.IO.GML
                         vertices.Add(e.GetVertex(Direction.In));
                     }
                     Assert.AreEqual(vertices.Count(), 2);
-                    Assert.True(lop != null && vertices.Contains(lop));
-                    Assert.True(ripple != null && vertices.Contains(ripple));
+                    Assert.True(vertices.Contains(lop));
+                    Assert.True(vertices.Contains(ripple));
                     vertices = new HashSet<IVertex>();
                     foreach (IEdge e in josh.GetEdges(Direction.In))
                     {

@@ -290,12 +290,10 @@ namespace Frontenac.Blueprints
         [Test]
         public void TestIndexDropPersistence()
         {
-            bool hasFeatures;
-            int count = 0;
             var graph = (IIndexableGraph) GraphTest.GenerateGraph();
             try
             {
-                hasFeatures = (graph.Features.IsPersistent && graph.Features.SupportsIndices &&
+                bool hasFeatures = (graph.Features.IsPersistent && graph.Features.SupportsIndices &&
                                     graph.Features.SupportsVertexIndex);
                 if (hasFeatures)
                 {
@@ -316,7 +314,7 @@ namespace Frontenac.Blueprints
                     PrintPerformance(graph.ToString(), indexNames.Count(), "indices dropped", StopWatch());
                     Assert.AreEqual(Count(graph.GetIndices()), 0);
 
-                    count = Count(graph.GetIndices());
+                    int count = Count(graph.GetIndices());
                     Assert.AreEqual(count, 0);
                 }
             }
