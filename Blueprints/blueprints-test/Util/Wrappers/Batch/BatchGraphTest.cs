@@ -58,7 +58,7 @@ namespace Frontenac.Blueprints.Util.Wrappers.Batch
         public void TestQuadLoading()
         {
             const int numEdges = 10000;
-            string[][] quads = GenerateQuads(100, numEdges, new[]{"knows", "friend"});
+            var quads = GenerateQuads(100, numEdges, new[]{"knows", "friend"});
             var graph = new TinkerGraph();
             try
             {
@@ -66,12 +66,12 @@ namespace Frontenac.Blueprints.Util.Wrappers.Batch
                 foreach (string[] quad in quads)
                 {
                     var vertices = new IVertex[2];
-                    for (int i = 0; i < 2; i++)
+                    for (var i = 0; i < 2; i++)
                     {
                         vertices[i] = bgraph.GetVertex(quad[i]);
                         if (vertices[i] == null) vertices[i] = bgraph.AddVertex(quad[i]);
                     }
-                    IEdge edge = bgraph.AddEdge(null, vertices[0], vertices[1], quad[2]);
+                    var edge = bgraph.AddEdge(null, vertices[0], vertices[1], quad[2]);
                     edge.SetProperty("annotation", quad[3]);
                 }
                 Assert.AreEqual(numEdges, BaseTest.Count(graph.GetEdges()));
@@ -86,27 +86,27 @@ namespace Frontenac.Blueprints.Util.Wrappers.Batch
         public void TestLoadingWithExisting1()
         {
             const int numEdges = 1000;
-            string[][] quads = GenerateQuads(100, numEdges, new[]{"knows", "friend"});
+            var quads = GenerateQuads(100, numEdges, new[]{"knows", "friend"});
             var tg = new TinkerGraph();
             try
             {
                 var bg = new BatchGraph(new WritethroughGraph(tg), VertexIdType.String, 100);
                 
                 bg.SetLoadingFromScratch(false);
-                int counter = 0;
-                foreach (string[] quad in quads)
+                var counter = 0;
+                foreach (var quad in quads)
                 {
                     IGraph graph;
                     if (counter < numEdges/2) graph = tg;
                     else graph = bg;
 
                     var vertices = new IVertex[2];
-                    for (int i = 0; i < 2; i++)
+                    for (var i = 0; i < 2; i++)
                     {
                         vertices[i] = graph.GetVertex(quad[i]);
                         if (vertices[i] == null) vertices[i] = graph.AddVertex(quad[i]);
                     }
-                    IEdge edge = graph.AddEdge(null, vertices[0], vertices[1], quad[2]);
+                    var edge = graph.AddEdge(null, vertices[0], vertices[1], quad[2]);
                     edge.SetProperty("annotation", quad[3]);
                     counter++;
                 }
@@ -122,7 +122,7 @@ namespace Frontenac.Blueprints.Util.Wrappers.Batch
         public void TestLoadingWithExisting2()
         {
             const int numEdges = 1000;
-            string[][] quads = GenerateQuads(100, numEdges, new[]{"knows", "friend"});
+            var quads = GenerateQuads(100, numEdges, new[]{"knows", "friend"});
             var tg = new IgnoreIdTinkerGraph();
             try
             {
@@ -135,6 +135,7 @@ namespace Frontenac.Blueprints.Util.Wrappers.Batch
                 }
                 catch (InvalidOperationException)
                 {
+                    
                 }
                 bg.SetVertexIdKey("uid");
                 bg.SetLoadingFromScratch(false);
@@ -143,24 +144,25 @@ namespace Frontenac.Blueprints.Util.Wrappers.Batch
                     bg.SetVertexIdKey(null);
                     Assert.Fail();
                 }
-                catch (InvalidOperationException)
+                catch (InvalidOperationException x)
                 {
+
                 }
 
-                int counter = 0;
-                foreach (string[] quad in quads)
+                var counter = 0;
+                foreach (var quad in quads)
                 {
                     IGraph graph;
                     if (counter < numEdges/2) graph = tg;
                     else graph = bg;
 
                     var vertices = new IVertex[2];
-                    for (int i = 0; i < 2; i++)
+                    for (var i = 0; i < 2; i++)
                     {
                         vertices[i] = graph.GetVertex(quad[i]);
                         if (vertices[i] == null) vertices[i] = graph.AddVertex(quad[i]);
                     }
-                    IEdge edge = graph.AddEdge(null, vertices[0], vertices[1], quad[2]);
+                    var edge = graph.AddEdge(null, vertices[0], vertices[1], quad[2]);
                     edge.SetProperty("annotation", quad[3]);
                     counter++;
                 }
@@ -177,7 +179,7 @@ namespace Frontenac.Blueprints.Util.Wrappers.Batch
         {
             var random = new Random();
             var edges = new string[numEdges][];
-            for (int i = 0; i < numEdges; i++)
+            for (var i = 0; i < numEdges; i++)
             {
                 edges[i] = new string[4];
                 edges[i][0] = string.Concat("v", random.Next(numVertices), 1);
@@ -205,17 +207,17 @@ namespace Frontenac.Blueprints.Util.Wrappers.Batch
                 loader.SetEdgeIdKey(EdgeIdKey);
 
                 //Create a chain
-                int chainLength = total;
+                var chainLength = total;
                 IVertex previous = null;
-                for (int i = 0; i <= chainLength; i++)
+                for (var i = 0; i <= chainLength; i++)
                 {
-                    IVertex next = loader.AddVertex(ids.GetVertexId(i));
+                    var next = loader.AddVertex(ids.GetVertexId(i));
                     next.SetProperty(Uid, i);
                     counter.NumVertices++;
                     counter.TotalVertices++;
                     if (previous != null)
                     {
-                        IEdge e = loader.AddEdge(ids.GetEdgeId(i), loader.GetVertex(previous.Id),
+                        var e = loader.AddEdge(ids.GetEdgeId(i), loader.GetVertex(previous.Id),
                                                  loader.GetVertex(next.Id), "next");
                         e.SetProperty(Uid, i);
                         counter.NumEdges++;
@@ -300,7 +302,7 @@ namespace Frontenac.Blueprints.Util.Wrappers.Batch
                 //System.out.println("Committed (vertices/edges): " + counter.numVertices + " / " + counter.numEdges);
                 Assert.AreEqual(_counter.NumVertices, BaseTest.Count(_graph.GetVertices()) - (_first ? 0 : KeepLast));
                 Assert.AreEqual(_counter.NumEdges, BaseTest.Count(_graph.GetEdges()));
-                foreach (IEdge e in GetEdges())
+                foreach (var e in GetEdges())
                 {
                     var id = (int)e.GetProperty(Uid);
                     if (!_batchGraphTest._ignoreIDs)
@@ -310,7 +312,7 @@ namespace Frontenac.Blueprints.Util.Wrappers.Batch
                     if (_batchGraphTest._assignKeys)
                         Assert.AreEqual(_ids.GetEdgeId(id), e.GetProperty(EdgeIdKey));
                 }
-                foreach (IVertex v in GetVertices())
+                foreach (var v in GetVertices())
                 {
                     var id = (int)v.GetProperty(Uid);
                     if (!_batchGraphTest._ignoreIDs)
@@ -323,13 +325,13 @@ namespace Frontenac.Blueprints.Util.Wrappers.Batch
                     if (_batchGraphTest._assignKeys)
                         Assert.AreEqual(_ids.GetVertexId(id), v.GetProperty(VertexIdKey));
                 }
-                foreach (IVertex v in GetVertices())
+                foreach (var v in GetVertices())
                 {
                     var id = (int)v.GetProperty(Uid);
                     if (id < _counter.TotalVertices - KeepLast)
                         RemoveVertex(v);
                 }
-                foreach (IEdge e in GetEdges()) RemoveEdge(e);
+                foreach (var e in GetEdges()) RemoveEdge(e);
                 Assert.AreEqual(KeepLast, BaseTest.Count(_graph.GetVertices()));
                 _counter.NumVertices = 0;
                 _counter.NumEdges = 0;

@@ -33,8 +33,8 @@ namespace Frontenac.Blueprints.Util
         [Test]
         public void TestAddEdge()
         {
-            IGraph graph = new TinkerGraph();
-            IEdge edge = GraphHelper.AddEdge(graph, null, graph.AddVertex(null), graph.AddVertex(null), "knows", "weight", 10.0);
+            var graph = new TinkerGraph();
+            var edge = GraphHelper.AddEdge(graph, null, graph.AddVertex(null), graph.AddVertex(null), "knows", "weight", 10.0);
             Assert.AreEqual(edge.GetProperty("weight"), 10.0);
             Assert.AreEqual(edge.Label, "knows");
             Assert.AreEqual(edge.GetPropertyKeys().Count(), 1);
