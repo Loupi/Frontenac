@@ -1,23 +1,45 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics.Contracts;
 
 namespace Frontenac.Blueprints.Util
 {
     public abstract class DefaultQuery : IQuery
     {
-        public abstract IQuery Has(string key, object value);
-        public abstract IQuery Has<T>(string key, Compare compare, T value) where T : IComparable<T>;
-        public abstract IQuery Interval<T>(string key, T startValue, T endValue) where T : IComparable<T>;
-        public abstract IEnumerable<IEdge> Edges();
-        public abstract IEnumerable<IVertex> Vertices();
-        public abstract IQuery Limit(long max);
-
         static readonly string[] EmptyLabels = new string[] { };
 
         public Direction Direction = Direction.Both;
         public string[] Labels = EmptyLabels;
         internal long Innerlimit = long.MaxValue;
-        public List<HasContainer> HasContainers = new List<HasContainer>();
+        protected readonly List<HasContainer> HasContainers = new List<HasContainer>();
+
+        public virtual IQuery Has(string key, object value)
+        {
+            HasContainers.Add(new HasContainer(key, value, Compare.Equal));
+            return this;
+        }
+
+        public virtual IQuery Has<T>(string key, Compare compare, T value) where T : IComparable<T>
+        {
+            HasContainers.Add(new HasContainer(key, value, compare));
+            return this;
+        }
+
+        public virtual IQuery Interval<T>(string key, T startValue, T endValue) where T : IComparable<T>
+        {
+            HasContainers.Add(new HasContainer(key, startValue, Compare.GreaterThanEqual));
+            HasContainers.Add(new HasContainer(key, endValue, Compare.LessThan));
+            return this;
+        }
+
+        public abstract IEnumerable<IEdge> Edges();
+        public abstract IEnumerable<IVertex> Vertices();
+        
+        public virtual IQuery Limit(long max)
+        {
+            Innerlimit = max;
+            return this;
+        }
 
         public class HasContainer
         {
@@ -27,6 +49,8 @@ namespace Frontenac.Blueprints.Util
 
             public HasContainer(string key, object value, Compare compare)
             {
+                Contract.Requires(!string.IsNullOrWhiteSpace(key));
+
                 Key = key;
                 Value = value;
                 Compare = compare;
@@ -34,7 +58,9 @@ namespace Frontenac.Blueprints.Util
 
             public bool IsLegal(IElement element)
             {
-                object elementValue = element.GetProperty(Key);
+                Contract.Requires(element != null);
+
+                var elementValue = element.GetProperty(Key);
                 switch (Compare)
                 {
                     case Compare.Equal:

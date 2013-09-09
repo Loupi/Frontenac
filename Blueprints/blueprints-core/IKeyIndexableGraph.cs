@@ -1,5 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics.Contracts;
+using Frontenac.Blueprints.Contracts;
 
 namespace Frontenac.Blueprints
 {
@@ -8,6 +10,7 @@ namespace Frontenac.Blueprints
     /// By creating key indices for a particular property key, that key is indexed on all the elements of the graph.
     /// This has ramifications for quick lookups on methods like getVertices(string, object) and getEdges(string, object).
     /// </summary>
+    [ContractClass(typeof(KeyIndexableGraphContract))]
     public interface IKeyIndexableGraph : IGraph
     {
         /// <summary>

@@ -21,7 +21,7 @@ namespace Frontenac.Blueprints.Util.IO.GraphSON
             using (var stream = new MemoryStream())
             {
                 var writer = new GraphSonWriter(g);
-                writer.OutputGraph(stream, null, null, GraphSonMode.NORMAL);
+                writer.OutputGraph(stream, null, null, GraphSONMode.NORMAL);
                 stream.Position = 0;
                 string jsonString = Encoding.Default.GetString(stream.ToArray());
                 rootNode = (JObject)JsonConvert.DeserializeObject(jsonString);
@@ -54,7 +54,7 @@ namespace Frontenac.Blueprints.Util.IO.GraphSON
             using (var stream = new MemoryStream())
             {
                 var writer = new GraphSonWriter(g);
-                writer.OutputGraph(stream, null, null, GraphSonMode.EXTENDED);
+                writer.OutputGraph(stream, null, null, GraphSONMode.EXTENDED);
                 stream.Position = 0;
                 string jsonString = Encoding.Default.GetString(stream.ToArray());
                 rootNode = (JObject)JsonConvert.DeserializeObject(jsonString);
@@ -86,7 +86,7 @@ namespace Frontenac.Blueprints.Util.IO.GraphSON
             using (var stream = new MemoryStream())
             {
                 var writer = new GraphSonWriter(g);
-                writer.OutputGraph(stream, null, null, GraphSonMode.COMPACT);
+                writer.OutputGraph(stream, null, null, GraphSONMode.COMPACT);
                 stream.Position = 0;
                 string jsonString = Encoding.Default.GetString(stream.ToArray());
                 rootNode = (JObject)JsonConvert.DeserializeObject(jsonString);

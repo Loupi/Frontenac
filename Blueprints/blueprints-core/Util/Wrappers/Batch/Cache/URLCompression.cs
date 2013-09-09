@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics.Contracts;
 using System.Linq;
 
 namespace Frontenac.Blueprints.Util.Wrappers.Batch.Cache
@@ -15,7 +16,7 @@ namespace Frontenac.Blueprints.Util.Wrappers.Batch.Cache
 
         public override string Compress(string input)
         {
-            string[] url = SplitUrl(input);
+            var url = SplitUrl(input);
             string prefix;
             _urlPrefix.TryGetValue(url[0], out prefix);
             if (prefix == null)
@@ -25,13 +26,17 @@ namespace Frontenac.Blueprints.Util.Wrappers.Batch.Cache
                 _prefixCounter++;
                 _urlPrefix[url[0]] = prefix;
             }
+
             return prefix + url[1];
         }
 
         static string[] SplitUrl(string url)
         {
+            Contract.Requires(url != null);
+            Contract.Ensures(Contract.Result<string[]>() != null);
+
             var res = new string[2];
-            int pos = UrlDelimiters.Select(delimiter => url.LastIndexOf(delimiter)).Concat(new[] {-1}).Max();
+            var pos = UrlDelimiters.Select(delimiter => url.LastIndexOf(delimiter)).Concat(new[] {-1}).Max();
             if (pos < 0)
             {
                 res[0] = "";
@@ -42,6 +47,7 @@ namespace Frontenac.Blueprints.Util.Wrappers.Batch.Cache
                 res[0] = url.Substring(0, pos + 1);
                 res[1] = url.Substring(pos + 1);
             }
+
             return res;
         }
 
@@ -54,18 +60,23 @@ namespace Frontenac.Blueprints.Util.Wrappers.Batch.Cache
 
         static string IntToBase36String(int value)
         {
+            Contract.Ensures(Contract.Result<string>() != null);
+
             return IntToStringFast(value, Base36Chars);
         }
 
         /// <summary>
         /// http://stackoverflow.com/questions/923771/quickest-way-to-convert-a-base-10-number-to-any-base-in-net
         /// </summary>
-        static string IntToStringFast(int value, char[] baseChars)
+        static string IntToStringFast(int value, IList<char> baseChars)
         {
+            Contract.Requires(baseChars != null);
+            Contract.Ensures(Contract.Result<string>() != null);
+
             // 32 is the worst cast buffer size for base 2 and int.MaxValue
-            int i = 32;
+            var i = 32;
             var buffer = new char[i];
-            int targetBase = baseChars.Length;
+            var targetBase = baseChars.Count;
 
             do
             {

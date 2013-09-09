@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Diagnostics.Contracts;
 
 namespace Frontenac.Blueprints.Util.Wrappers.Event
 {
@@ -13,10 +14,9 @@ namespace Frontenac.Blueprints.Util.Wrappers.Event
         public EventTransactionalIndexableGraph(IIndexableGraph baseIndexableGraph)
             : base(baseIndexableGraph)
         {
-            TransactionalGraph = baseIndexableGraph as ITransactionalGraph;
-            if (TransactionalGraph == null)
-                throw new ArgumentException("baseIndexableGraph must also implement TransactionalGraph");
+            Contract.Requires(baseIndexableGraph is ITransactionalGraph);
 
+            TransactionalGraph = baseIndexableGraph as ITransactionalGraph;
             Trigger = new EventTrigger(this, true);
         }
 
@@ -26,7 +26,7 @@ namespace Frontenac.Blueprints.Util.Wrappers.Event
         /// </summary>
         public void Commit()
         {
-            bool transactionFailure = false;
+            var transactionFailure = false;
             try
             {
                 TransactionalGraph.Commit();
@@ -52,7 +52,7 @@ namespace Frontenac.Blueprints.Util.Wrappers.Event
         /// </summary>
         public void Rollback()
         {
-            bool transactionFailure = false;
+            var transactionFailure = false;
             try
             {
                 TransactionalGraph.Rollback();

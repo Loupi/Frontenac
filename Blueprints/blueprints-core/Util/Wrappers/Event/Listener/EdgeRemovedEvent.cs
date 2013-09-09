@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Diagnostics.Contracts;
 
 namespace Frontenac.Blueprints.Util.Wrappers.Event.Listener
 {
@@ -12,6 +13,9 @@ namespace Frontenac.Blueprints.Util.Wrappers.Event.Listener
 
         public EdgeRemovedEvent(IEdge edge, IDictionary<string, object> props)
         {
+            Contract.Requires(edge != null);
+            Contract.Requires(props != null);
+
             _edge = edge;
             _props = props;
         }

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics.Contracts;
 
 namespace Frontenac.Blueprints.Util.Wrappers.Event.Listener
 {
@@ -12,6 +13,8 @@ namespace Frontenac.Blueprints.Util.Wrappers.Event.Listener
 
         public ConsoleGraphChangedListener(IGraph graph)
         {
+            Contract.Requires(graph != null);
+
             _graph = graph;
         }
 

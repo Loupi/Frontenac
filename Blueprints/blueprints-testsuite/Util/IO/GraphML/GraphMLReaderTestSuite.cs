@@ -586,7 +586,7 @@ namespace Frontenac.Blueprints.Util.IO.GraphML
                                 typeof (GraphMlReaderTestSuite), "graph-example-3.xml"))
                     {
                         var r = new GraphMlReader(graph);
-                        r.SetEdgeLabelKey("_label");
+                        r.EdgeLabelKey = "_label";
                         r.InputGraph(stream, 1000);
                     }
                     PrintPerformance(graph.ToString(), null, "graph-example-3 loaded", StopWatch());
@@ -664,8 +664,8 @@ namespace Frontenac.Blueprints.Util.IO.GraphML
                                 typeof (GraphMlReaderTestSuite), "graph-example-3.xml"))
                     {
                         var r = new GraphMlReader(graph);
-                        r.SetVertexIdKey("_id");
-                        r.SetEdgeIdKey("_id");
+                        r.VertexIdKey = "_id";
+                        r.EdgeIdKey = "_id";
                         r.InputGraph(stream, 1000);
                     }
                     PrintPerformance(graph.ToString(), null, "graph-example-3 loaded", StopWatch());
@@ -743,9 +743,9 @@ namespace Frontenac.Blueprints.Util.IO.GraphML
                                 typeof (GraphMlReaderTestSuite), "graph-example-3.xml"))
                     {
                         var r = new GraphMlReader(graph);
-                        r.SetVertexIdKey("_id");
-                        r.SetEdgeIdKey("_id");
-                        r.SetEdgeLabelKey("_label");
+                        r.VertexIdKey = "_id";
+                        r.EdgeIdKey = "_id";
+                        r.EdgeLabelKey = "_label";
                         r.InputGraph(stream, 1000);
                     }
                     PrintPerformance(graph.ToString(), null, "graph-example-3 loaded", StopWatch());

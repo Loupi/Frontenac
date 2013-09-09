@@ -1,10 +1,13 @@
 ﻿using System.Collections.Generic;
+using System.Diagnostics.Contracts;
+using Frontenac.Blueprints.Contracts;
 
 namespace Frontenac.Blueprints
 {
     /// <summary>
     /// A Graph is a container object for a collection of vertices and a collection edges.
     /// </summary>
+    [ContractClass(typeof(GraphContract))]
     public interface IGraph
     {
         /// <summary>
@@ -102,7 +105,7 @@ namespace Frontenac.Blueprints
         /// Generate a query object that can be used to fine tune which edges/vertices are retrieved from the graph.
         /// </summary>
         /// <returns>a graph query object with methods for constraining which data is pulled from the underlying graph</returns>
-        IGraphQuery Query();
+        IQuery Query();
 
 
         void Shutdown();

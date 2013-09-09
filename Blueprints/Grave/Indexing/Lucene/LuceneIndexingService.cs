@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Threading.Tasks;
 using Frontenac.Blueprints;
 using Grave.Esent;
@@ -62,7 +63,6 @@ namespace Grave.Indexing.Lucene
             _nrtManager.Dispose();
             _writer.Dispose();
             _analyzer.Dispose();
-            //_directory.Dispose();
         }
 
         #endregion
@@ -128,6 +128,129 @@ namespace Grave.Indexing.Lucene
             return _nrtManager.DeleteDocuments(new TermQuery(new Term(isUserIndex ? GetIndexColumn(indexType) : GetKeyColumn(indexType), indexName)));
         }
 
+        static object GetMinValue(object value)
+        {
+            if (value is double || value is float)
+                return double.MinValue;
+
+            return long.MinValue;
+        }
+
+        static object GetMaxValue(object value)
+        {
+            if (value is double || value is float)
+                return double.MaxValue;
+
+            return long.MaxValue;
+        }
+
+        public override IEnumerable<int> Query(Type indexType, IEnumerable<GraveQueryElement> query, int hitsLimit = 1000)
+        {
+            if(query == null)
+                throw new ArgumentNullException("query");
+
+            var graveQueryElements = query as GraveQueryElement[] ?? query.ToArray();
+            if (!graveQueryElements.Any())
+                return Enumerable.Empty<int>();
+
+            var luceneQueries = new List<Query>();
+            foreach (var graveQueryElement in graveQueryElements)
+            {
+                if (graveQueryElement is GraveIntervalQueryElement)
+                {
+                    var interval = graveQueryElement as GraveIntervalQueryElement;
+                    luceneQueries.Add(CreateQuery(indexType, interval.Key, interval.StartValue, interval.StartValue, interval.EndValue, true, true, interval.Key, false));
+                }
+                else if (graveQueryElement is GraveComparableQueryElement)
+                {
+                    var comparable = graveQueryElement as GraveComparableQueryElement;
+                    object min;
+                    object max;
+                    bool minInclusive;
+                    bool maxInclusive;
+
+                    if (comparable.Value == null || !Portability.IsNumber(comparable.Value))
+                    {
+                        min = comparable.Value;
+                        max = comparable.Value;
+                        minInclusive = true;
+                        maxInclusive = true;
+                    }
+                    else
+                    {
+                        switch (comparable.Comparison)
+                        {
+                            case Compare.Equal:
+                            case Compare.NotEqual:
+                                min = comparable.Value;
+                                max = comparable.Value;
+                                minInclusive = true;
+                                maxInclusive = true;
+                                break;
+
+                            case Compare.GreaterThan:
+                                min = comparable.Value;
+                                max = GetMaxValue(comparable.Value);
+                                minInclusive = false;
+                                maxInclusive = true;
+                                break;
+
+                            case Compare.GreaterThanEqual:
+                                min = comparable.Value;
+                                max = GetMaxValue(comparable.Value);
+                                minInclusive = true;
+                                maxInclusive = true;
+                                break;
+
+                            case Compare.LessThan:
+                                min = GetMinValue(comparable.Value);
+                                max = comparable.Value;
+                                minInclusive = true;
+                                maxInclusive = false;
+                                break;
+
+                            case Compare.LessThanEqual:
+                                min = GetMinValue(comparable.Value);
+                                max = comparable.Value;
+                                minInclusive = true;
+                                maxInclusive = true;
+                                break;
+
+                            default:
+                                throw new NotSupportedException();
+                        }
+                    }
+
+                    var luceneQuery = CreateQuery(indexType, comparable.Key, comparable.Value, min, max, minInclusive, maxInclusive, comparable.Key, false);
+                    if (comparable.Comparison == Compare.NotEqual)
+                    {
+                        var booleanQuery = new BooleanQuery
+                            {
+                                new BooleanClause(luceneQuery, Occur.MUST_NOT)
+                            };
+                        luceneQuery = booleanQuery;
+                    }
+
+                    luceneQueries.Add(luceneQuery);
+                }
+            }
+
+            Query queryToRun;
+            if (luceneQueries.Count == 1)
+                queryToRun = luceneQueries[0];
+            else
+            {
+                var booleanQuery = new BooleanQuery();
+                foreach (var q in luceneQueries)
+                {
+                    booleanQuery.Add(q, Occur.MUST);
+                }
+                queryToRun = booleanQuery;
+            }
+
+            return Fetch(indexType, queryToRun, hitsLimit);
+        }
+
         public override long DeleteDocuments(Type indexType, int id)
         {
             return _nrtManager.DeleteDocuments(NumericRangeQuery.NewIntRange(GetIdColumn(indexType), id, id, true, true));
@@ -138,7 +261,7 @@ namespace Grave.Indexing.Lucene
             var query = new BooleanQuery
                 {
                     new BooleanClause(NumericRangeQuery.NewIntRange(GetIdColumn(indexType), id, id, true, true), Occur.MUST),
-                    new BooleanClause(CreateQuery(indexType, key, value, GetIndexColumn(indexType), true), Occur.MUST)
+                    new BooleanClause(CreateQuery(indexType, key, value, value, value, true, true, GetIndexColumn(indexType), true), Occur.MUST)
                 };
             return _nrtManager.DeleteDocuments(query);
         }
@@ -164,12 +287,12 @@ namespace Grave.Indexing.Lucene
             _nrtManager.WaitForGeneration(generation);
         }
 
-        Query CreateQuery(Type indexType, string key, object value, string indexName, bool isUserIndex)
+        Query CreateQuery(Type indexType, string key, object value, object minValue, object maxValue, bool minInclusive, bool maxInclusive, string indexName, bool isUserIndex)
         {
             Query query;
 
             if (Portability.IsNumber(value))
-                query = CreateRangeQuery(key, value, value, value, true, true);
+                query = CreateRangeQuery(key, value, minValue, maxValue, minInclusive, maxInclusive);
             else
                 query = new TermQuery(new Term(key, value as string));
                 //query = ParseQuery(value as string, new QueryParser(Version.LUCENE_30, key, _analyzer));
@@ -188,14 +311,19 @@ namespace Grave.Indexing.Lucene
 
         public override IEnumerable<int> Get(Type indexType, string indexName, string key, object value, bool isUserIndex, int hitsLimit = 1000)
         {
-            var query = CreateQuery(indexType, key, value, indexName, isUserIndex);
+            var query = CreateQuery(indexType, key, value, value, value, true, true, indexName, isUserIndex);
+            return Fetch(indexType, query, hitsLimit);
+        }
 
+        IEnumerable<int> Fetch(Type indexType, Query query, int hitsLimit)
+        {
             using (var searcherToken = _searcherManager.Acquire())
             {
                 var hits = searcherToken.Searcher.Search(query, hitsLimit).ScoreDocs;
+                var idColumn = GetIdColumn(indexType);
                 foreach (var hit in hits)
                 {
-                    yield return int.Parse(searcherToken.Searcher.Doc(hit.Doc).Get(GetIdColumn(indexType)));
+                    yield return int.Parse(searcherToken.Searcher.Doc(hit.Doc).Get(idColumn));
                 }
             }
         }

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics.Contracts;
 using System.Linq;
 
 namespace Frontenac.Blueprints.Util.Wrappers.Event
@@ -15,6 +16,9 @@ namespace Frontenac.Blueprints.Util.Wrappers.Event
 
         public EventEdgeIterable(IEnumerable<IEdge> iterable, EventGraph eventGraph)
         {
+            Contract.Requires(iterable != null);
+            Contract.Requires(eventGraph != null);
+
             _iterable = iterable;
             _eventGraph = eventGraph;
         }
@@ -46,7 +50,7 @@ namespace Frontenac.Blueprints.Util.Wrappers.Event
 
         public IEnumerator<IEdge> GetEnumerator()
         {
-            return _iterable.Select(edge => new EventEdge(edge, _eventGraph)).Cast<IEdge>().GetEnumerator();
+            return _iterable.Select(edge => new EventEdge(edge, _eventGraph)).GetEnumerator();
         }
 
         System.Collections.IEnumerator System.Collections.IEnumerable.GetEnumerator()

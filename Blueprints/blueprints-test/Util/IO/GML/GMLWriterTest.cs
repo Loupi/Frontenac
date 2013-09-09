@@ -21,7 +21,7 @@ namespace Frontenac.Blueprints.Util.IO.GML
             using(var bos = new MemoryStream())
             {
                 var w = new GmlWriter(g);
-                w.SetNormalize(true);
+                w.Normalize = true;
                 w.OutputGraph(bos);
 
                 string actual = Encoding.GetEncoding("ISO-8859-1").GetString(bos.ToArray());
@@ -48,8 +48,8 @@ namespace Frontenac.Blueprints.Util.IO.GML
                 using (var bos = new MemoryStream())
                 {
                     var w = new GmlWriter(g);
-                    w.SetNormalize(true);
-                    w.SetUseId(true);
+                    w.Normalize = true;
+                    w.UseId = true;
                     w.OutputGraph(bos);
 
                     bos.Position = 0;
@@ -70,7 +70,7 @@ namespace Frontenac.Blueprints.Util.IO.GML
             using (var bos = new MemoryStream())
             {
                 var w = new GmlWriter(g1);
-                w.SetUseId(true);
+                w.UseId = true;
                 w.OutputGraph(bos);
                 bos.Position = 0;
                 GmlReader.InputGraph(g2, bos);
@@ -103,8 +103,8 @@ namespace Frontenac.Blueprints.Util.IO.GML
             using (var bos = new MemoryStream())
             {
                 var w = new GmlWriter(g1);
-                w.SetStrict(true);
-                w.SetUseId(true);
+                w.Strict = true;
+                w.UseId = true;
                 w.OutputGraph(bos);
                 bos.Position = 0;
                 GmlReader.InputGraph(g2, bos);
@@ -143,8 +143,8 @@ namespace Frontenac.Blueprints.Util.IO.GML
             using (var bos = new MemoryStream())
             {
                 var w = new GmlWriter(g);
-                w.SetStrict(true);
-                w.SetUseId(true);
+                w.Strict = true;
+                w.UseId = true;
                 w.OutputGraph(bos);
                 bos.Position = 0;
                 var r = new GmlReader(g2);

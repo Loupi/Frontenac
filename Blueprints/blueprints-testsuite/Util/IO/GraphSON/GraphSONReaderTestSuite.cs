@@ -27,7 +27,7 @@ namespace Frontenac.Blueprints.Util.IO.GraphSON
                             typeof (GraphSonReaderTestSuite).Assembly.GetManifestResourceStream(
                                 typeof (GraphSonReaderTestSuite), "graph-example-1.json"))
                     {
-                        new GraphSonReader(graph).InputGraph(stream);
+                        new GraphSONReader(graph).InputGraph(stream);
                     }
                     PrintPerformance(graph.ToString(), null, "graph-example-1 loaded", StopWatch());
 
@@ -113,7 +113,7 @@ namespace Frontenac.Blueprints.Util.IO.GraphSON
                             typeof (GraphSonReaderTestSuite).Assembly.GetManifestResourceStream(
                                 typeof (GraphSonReaderTestSuite), "graph-example-1.json"))
                     {
-                        new GraphSonReader(graph).InputGraph(stream);
+                        new GraphSONReader(graph).InputGraph(stream);
                     }
                     PrintPerformance(graph.ToString(), null, "graph-example-1 loaded", StopWatch());
                     var edgeIds = new HashSet<string>();
@@ -156,7 +156,7 @@ namespace Frontenac.Blueprints.Util.IO.GraphSON
                             typeof (GraphSonReaderTestSuite).Assembly.GetManifestResourceStream(
                                 typeof (GraphSonReaderTestSuite), "graph-example-1.json"))
                     {
-                        new GraphSonReader(graph).InputGraph(stream);
+                        new GraphSONReader(graph).InputGraph(stream);
                     }
                     PrintPerformance(graph.ToString(), null, "graph-example-1 loaded", StopWatch());
                     var vertexNames = new HashSet<string>();
@@ -197,7 +197,7 @@ namespace Frontenac.Blueprints.Util.IO.GraphSON
                             typeof (GraphSonReaderTestSuite).Assembly.GetManifestResourceStream(
                                 typeof (GraphSonReaderTestSuite), "graph-example-1.json"))
                     {
-                        new GraphSonReader(graph).InputGraph(stream);
+                        new GraphSONReader(graph).InputGraph(stream);
                     }
                     PrintPerformance(graph.ToString(), null, "graph-example-1 loaded", StopWatch());
                     var softwareVertices = new HashSet<IVertex>();
@@ -239,7 +239,7 @@ namespace Frontenac.Blueprints.Util.IO.GraphSON
                             typeof (GraphSonReaderTestSuite).Assembly.GetManifestResourceStream(
                                 typeof (GraphSonReaderTestSuite), "graph-example-1.json"))
                     {
-                        new GraphSonReader(graph).InputGraph(stream);
+                        new GraphSONReader(graph).InputGraph(stream);
                     }
                     PrintPerformance(graph.ToString(), null, "graph-example-1 loaded", StopWatch());
                     IVertex marko = null;

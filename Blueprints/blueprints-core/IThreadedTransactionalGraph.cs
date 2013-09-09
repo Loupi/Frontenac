@@ -1,4 +1,7 @@
-﻿namespace Frontenac.Blueprints
+﻿using System.Diagnostics.Contracts;
+using Frontenac.Blueprints.Contracts;
+
+namespace Frontenac.Blueprints
 {
     /// <summary>
     /// ThreadedTransactionalGraph provides more fine grained control over the transactional context.
@@ -9,6 +12,7 @@
     /// 
     /// Note, that one needs to call TransactionalGraph.Commit() or TransactionalGraph.Rollback() to close the transactions returned
     /// </summary>
+    [ContractClass(typeof(ThreadedTransactionalGraphContract))]
     public interface IThreadedTransactionalGraph : ITransactionalGraph
     {
         /// <summary>

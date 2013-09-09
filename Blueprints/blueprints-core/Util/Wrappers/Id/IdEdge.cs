@@ -1,15 +1,22 @@
-﻿namespace Frontenac.Blueprints.Util.Wrappers.Id
+﻿using System.Diagnostics.Contracts;
+
+namespace Frontenac.Blueprints.Util.Wrappers.Id
 {
     public class IdEdge : IdElement, IEdge
     {
+        readonly IEdge _baseEdge;
+
         public IdEdge(IEdge baseEdge, IdGraph idGraph)
             : base(baseEdge, idGraph, idGraph.GetSupportEdgeIds())
         {
+            _baseEdge = baseEdge;
         }
 
         public IEdge GetBaseEdge()
         {
-            return (IEdge)BaseElement;
+            Contract.Ensures(Contract.Result<IEdge>() != null);
+
+            return _baseEdge;
         }
 
         public IVertex GetVertex(Direction direction)

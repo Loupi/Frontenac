@@ -120,14 +120,14 @@ namespace Frontenac.Blueprints
             var graph = GraphTest.GenerateGraph();
             try
             {
-                try
+                graph.GetVertex(null);
+                Assert.Fail();
+            }
+            catch (Exception x)
+            {
+                if (x.GetType().FullName != Portability.ContractExceptionName)
                 {
-                    graph.GetVertex(null);
-                    Assert.False(true);
-                }
-                catch (ArgumentException)
-                {
-                    Assert.True(true);
+                    throw;
                 }
             }
             finally
@@ -158,7 +158,7 @@ namespace Frontenac.Blueprints
                     Assert.AreEqual(0, Count(graph.GetEdges()));
 
                 var vertices = new HashSet<IVertex>();
-                for (int i = 0; i < 100; i++)
+                for (var i = 0; i < 100; i++)
                     vertices.Add(graph.AddVertex(null));
 
                 Assert.AreEqual(vertices.Count(), 100);
@@ -167,7 +167,7 @@ namespace Frontenac.Blueprints
                 if (graph.Features.SupportsEdgeIteration)
                     Assert.AreEqual(0, Count(graph.GetEdges()));
 
-                foreach (IVertex v in vertices)
+                foreach (var v in vertices)
                     graph.RemoveVertex(v);
 
                 if (graph.Features.SupportsVertexIteration)
@@ -187,8 +187,8 @@ namespace Frontenac.Blueprints
             var graph = GraphTest.GenerateGraph();
             try
             {
-                IVertex v1 = graph.AddVertex(ConvertId(graph, "1"));
-                IVertex v2 = graph.AddVertex(ConvertId(graph, "2"));
+                var v1 = graph.AddVertex(ConvertId(graph, "1"));
+                var v2 = graph.AddVertex(ConvertId(graph, "2"));
                 graph.AddEdge(null, v1, v2, ConvertId(graph, "knows"));
                 if (graph.Features.SupportsVertexIteration)
                     Assert.AreEqual(2, Count(graph.GetVertices()));
@@ -234,7 +234,7 @@ namespace Frontenac.Blueprints
             var graph = GraphTest.GenerateGraph();
             try
             {
-                IVertex v1 = graph.AddVertex(null);
+                var v1 = graph.AddVertex(null);
                 if (graph.Features.SupportsVertexIteration)
                     Assert.AreEqual(1, Count(graph.GetVertices()));
                 graph.RemoveVertex(v1);
@@ -245,7 +245,7 @@ namespace Frontenac.Blueprints
 
                 StopWatch();
                 const int vertexCount = 100;
-                for (int i = 0; i < vertexCount; i++)
+                for (var i = 0; i < vertexCount; i++)
                     vertices.Add(graph.AddVertex(null));
 
                 PrintPerformance(graph.ToString(), vertexCount, "vertices added", StopWatch());
@@ -253,7 +253,7 @@ namespace Frontenac.Blueprints
                     Assert.AreEqual(vertexCount, Count(graph.GetVertices()));
 
                 StopWatch();
-                foreach (IVertex v in vertices)
+                foreach (var v in vertices)
                     graph.RemoveVertex(v);
 
                 PrintPerformance(graph.ToString(), vertexCount, "vertices removed", StopWatch());
@@ -277,7 +277,7 @@ namespace Frontenac.Blueprints
                     StopWatch();
                     const int vertexCount = 1000;
                     var ids = new HashSet<object>();
-                    for (int i = 0; i < vertexCount; i++)
+                    for (var i = 0; i < vertexCount; i++)
                         ids.Add(graph.AddVertex(null).Id);
 
                     PrintPerformance(graph.ToString(), vertexCount, "vertices added", StopWatch());
@@ -301,7 +301,7 @@ namespace Frontenac.Blueprints
             try
             {
                 var v1 = graph.AddVertex(null);
-                for (int i = 0; i < 10; i++)
+                for (var i = 0; i < 10; i++)
                     graph.AddEdge(null, v1, graph.AddVertex(null), ConvertId(graph, "knows"));
 
                 var edges = v1.GetEdges(Direction.Out, ConvertId(graph, "knows")).ToArray();
@@ -340,7 +340,6 @@ namespace Frontenac.Blueprints
                         Assert.AreEqual(10, v1.GetProperty("key2"));
                         Assert.AreEqual(20, v2.GetProperty("key2"));
                     }
-
                 }
                 else if (graph.Features.IsRdfModel)
                 {
@@ -373,10 +372,10 @@ namespace Frontenac.Blueprints
                 {
                     var vertices = new HashSet<IVertex>();
                     StopWatch();
-                    for (int i = 0; i < 50; i++)
+                    for (var i = 0; i < 50; i++)
                     {
-                        IVertex vertex = graph.AddVertex(null);
-                        for (int j = 0; j < 15; j++)
+                        var vertex = graph.AddVertex(null);
+                        for (var j = 0; j < 15; j++)
                             vertex.SetProperty(Guid.NewGuid().ToString(), Guid.NewGuid().ToString());
 
                         vertices.Add(vertex);
@@ -387,17 +386,16 @@ namespace Frontenac.Blueprints
                     if (graph.Features.SupportsVertexIteration)
                         Assert.AreEqual(50, Count(graph.GetVertices()));
                     Assert.AreEqual(50, vertices.Count());
-                    foreach (IVertex vertex in vertices)
+                    foreach (var vertex in vertices)
                         Assert.AreEqual(15, vertex.GetPropertyKeys().Count());
-
                 }
                 else if (graph.Features.IsRdfModel)
                 {
                     var vertices = new HashSet<IVertex>();
                     StopWatch();
-                    for (int i = 0; i < 50; i++)
+                    for (var i = 0; i < 50; i++)
                     {
-                        IVertex vertex = graph.AddVertex(string.Concat("\"", Guid.NewGuid().ToString(), "\""));
+                        var vertex = graph.AddVertex(string.Concat("\"", Guid.NewGuid().ToString(), "\""));
                         for (int j = 0; j < 15; j++)
                             vertex.SetProperty(SailTokens.Datatype, "http://www.w3.org/2001/XMLSchema#anyURI");
 
@@ -412,8 +410,7 @@ namespace Frontenac.Blueprints
                     {
                         Assert.AreEqual(3, vertex.GetPropertyKeys().Count());
                         Assert.True(vertex.GetPropertyKeys().Contains(SailTokens.Datatype));
-                        Assert.AreEqual("http://www.w3.org/2001/XMLSchema#anyURI",
-                                        vertex.GetProperty(SailTokens.Datatype));
+                        Assert.AreEqual("http://www.w3.org/2001/XMLSchema#anyURI", vertex.GetProperty(SailTokens.Datatype));
                         Assert.True(vertex.GetPropertyKeys().Contains(SailTokens.Value));
                         Assert.AreEqual("literal", vertex.GetProperty(SailTokens.Kind));
 
@@ -434,9 +431,8 @@ namespace Frontenac.Blueprints
             {
                 if (graph.Features.SupportsVertexProperties)
                 {
-
-                    IVertex v1 = graph.AddVertex("1");
-                    IVertex v2 = graph.AddVertex("2");
+                    var v1 = graph.AddVertex("1");
+                    var v2 = graph.AddVertex("2");
 
                     Assert.Null(v1.RemoveProperty("key1"));
                     Assert.Null(v1.RemoveProperty("key2"));
@@ -513,13 +509,13 @@ namespace Frontenac.Blueprints
                 }
                 else if (graph.Features.IsRdfModel)
                 {
-                    IVertex v1 = graph.AddVertex("\"1\"^^<http://www.w3.org/2001/XMLSchema#int>");
+                    var v1 = graph.AddVertex("\"1\"^^<http://www.w3.org/2001/XMLSchema#int>");
                     Assert.AreEqual("http://www.w3.org/2001/XMLSchema#int", v1.RemoveProperty("type"));
                     Assert.AreEqual("1", v1.GetProperty("value"));
                     Assert.Null(v1.GetProperty("lang"));
                     Assert.Null(v1.GetProperty("random something"));
 
-                    IVertex v2 = graph.AddVertex("\"hello\"@en");
+                    var v2 = graph.AddVertex("\"hello\"@en");
                     Assert.AreEqual("en", v2.RemoveProperty("lang"));
                     Assert.AreEqual("hello", v2.GetProperty("value"));
                     Assert.Null(v2.GetProperty("type"));
@@ -540,7 +536,7 @@ namespace Frontenac.Blueprints
             {
                 if (graph.Features.SupportsVertexProperties && !graph.Features.SupportsIdProperty)
                 {
-                    IVertex vertex = graph.AddVertex(null);
+                    var vertex = graph.AddVertex(null);
                     try
                     {
                         vertex.SetProperty("id", "123");
@@ -566,11 +562,11 @@ namespace Frontenac.Blueprints
             {
                 if (graph.Features.SupportsVertexIteration)
                 {
-                    for (int i = 0; i < 25; i++)
+                    for (var i = 0; i < 25; i++)
                         graph.AddVertex(null);
 
                     Assert.AreEqual(Count(graph.GetVertices()), 25);
-                    foreach (IVertex vertex in graph.GetVertices())
+                    foreach (var vertex in graph.GetVertices())
                         graph.RemoveVertex(vertex);
 
                     Assert.AreEqual(Count(graph.GetVertices()), 0);
@@ -588,14 +584,14 @@ namespace Frontenac.Blueprints
             var graph = GraphTest.GenerateGraph();
             try
             {
-                IVertex a = graph.AddVertex(null);
-                IVertex b = graph.AddVertex(null);
-                IVertex c = graph.AddVertex(null);
-                IEdge w = graph.AddEdge(null, a, b, ConvertId(graph, "knows"));
-                IEdge x = graph.AddEdge(null, b, c, ConvertId(graph, "knows"));
-                IEdge y = graph.AddEdge(null, a, c, ConvertId(graph, "hates"));
-                IEdge z = graph.AddEdge(null, a, b, ConvertId(graph, "hates"));
-                IEdge zz = graph.AddEdge(null, c, c, ConvertId(graph, "hates"));
+                var a = graph.AddVertex(null);
+                var b = graph.AddVertex(null);
+                var c = graph.AddVertex(null);
+                var w = graph.AddEdge(null, a, b, ConvertId(graph, "knows"));
+                var x = graph.AddEdge(null, b, c, ConvertId(graph, "knows"));
+                var y = graph.AddEdge(null, a, c, ConvertId(graph, "hates"));
+                var z = graph.AddEdge(null, a, b, ConvertId(graph, "hates"));
+                var zz = graph.AddEdge(null, c, c, ConvertId(graph, "hates"));
 
                 Assert.AreEqual(Count(a.GetEdges(Direction.Out)), 3);
                 Assert.AreEqual(Count(a.GetEdges(Direction.Out, ConvertId(graph, "hates"))), 2);
@@ -649,14 +645,14 @@ namespace Frontenac.Blueprints
                 Assert.AreEqual(Count(c.GetEdges(Direction.In, ConvertId(graph, "hates"))), 2);
                 Assert.AreEqual(Count(c.GetEdges(Direction.Out, ConvertId(graph, "hates"))), 1);
 
-                try
+                x.GetVertex(Direction.Both);
+                Assert.Fail();
+            }
+            catch (Exception x)
+            {
+                if (x.GetType().FullName != Portability.ContractExceptionName)
                 {
-                    x.GetVertex(Direction.Both);
-                    Assert.True(false);
-                }
-                catch (ArgumentException)
-                {
-                    Assert.True(true);
+                    throw;
                 }
             }
             finally
@@ -675,16 +671,16 @@ namespace Frontenac.Blueprints
                 // fail based on the empty key.
                 if (graph.Features.SupportsVertexProperties)
                 {
-                    IVertex v = graph.AddVertex(null);
-                    try
-                    {
-                        v.SetProperty("", "value");
-                        Assert.Fail();
-                    }
-                    catch (ArgumentException)
-                    {
-                        Assert.True(true);
-                    }
+                    var v = graph.AddVertex(null);
+                    v.SetProperty("", "value");
+                    Assert.Fail();
+                }
+            }
+            catch (Exception x)
+            {
+                if (x.GetType().FullName != Portability.ContractExceptionName)
+                {
+                    throw;
                 }
             }
             finally
@@ -761,7 +757,7 @@ namespace Frontenac.Blueprints
             {
                 if (graph.Features.SupportsVertexProperties)
                 {
-                    IVertex a = graph.AddVertex(null);
+                    var a = graph.AddVertex(null);
                     a.SetProperty("test1", 1);
                     a.SetProperty("test2", 2);
                     a.SetProperty("test3", 3);
@@ -782,48 +778,47 @@ namespace Frontenac.Blueprints
             var graph = GraphTest.GenerateGraph();
             try
             {
-                if (graph.Features.SupportsVertexProperties)
+                if (!graph.Features.SupportsVertexProperties) return;
+
+                var v = graph.AddVertex(null);
+                try
                 {
-                    var v = graph.AddVertex(null);
-                    try
-                    {
-                        v.SetProperty(null, -1);
-                        Assert.False(true);
-                    }
-                    catch (Exception)
-                    {
-                        Assert.True(true);
-                    }
+                    v.SetProperty(null, -1);
+                    Assert.False(true);
+                }
+                catch (Exception)
+                {
+                    Assert.True(true);
+                }
 
-                    try
-                    {
-                        v.SetProperty("", -1);
-                        Assert.False(true);
-                    }
-                    catch (Exception)
-                    {
-                        Assert.True(true);
-                    }
+                try
+                {
+                    v.SetProperty("", -1);
+                    Assert.False(true);
+                }
+                catch (Exception)
+                {
+                    Assert.True(true);
+                }
 
-                    try
-                    {
-                        v.SetProperty(StringFactory.Id, -1);
-                        Assert.False(true);
-                    }
-                    catch (Exception)
-                    {
-                        Assert.True(true);
-                    }
+                try
+                {
+                    v.SetProperty(StringFactory.Id, -1);
+                    Assert.False(true);
+                }
+                catch (Exception)
+                {
+                    Assert.True(true);
+                }
 
-                    try
-                    {
-                        v.SetProperty(ConvertId(graph, "good"), null);
-                        Assert.False(true);
-                    }
-                    catch (Exception)
-                    {
-                        Assert.True(true);
-                    }
+                try
+                {
+                    v.SetProperty(ConvertId(graph, "good"), null);
+                    Assert.False(true);
+                }
+                catch (Exception)
+                {
+                    Assert.True(true);
                 }
             }
             finally

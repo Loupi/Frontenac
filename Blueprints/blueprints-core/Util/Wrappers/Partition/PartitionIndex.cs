@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics.Contracts;
 using System.Linq;
 
 namespace Frontenac.Blueprints.Util.Wrappers.Partition
@@ -11,6 +12,9 @@ namespace Frontenac.Blueprints.Util.Wrappers.Partition
 
         public PartitionIndex(IIndex rawIndex, PartitionGraph graph)
         {
+            Contract.Requires(rawIndex != null);
+            Contract.Requires(graph != null);
+
             RawIndex = rawIndex;
             Graph = graph;
         }

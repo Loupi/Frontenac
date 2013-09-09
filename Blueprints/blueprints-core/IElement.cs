@@ -1,4 +1,6 @@
-﻿using System.Collections.Generic;
+﻿using Frontenac.Blueprints.Contracts;
+using System.Collections.Generic;
+using System.Diagnostics.Contracts;
 
 namespace Frontenac.Blueprints
 {
@@ -10,6 +12,7 @@ namespace Frontenac.Blueprints
     /// Particular implementations can reduce the space of objects that can be used as values.
     /// Typically, objects are C# primitives (e.g. string, long, int, boolean, etc.)
     /// </summary>
+    [ContractClass(typeof(ElementContract))]
     public interface IElement
     {
         /// <summary>

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics.Contracts;
 
 namespace Frontenac.Blueprints.Util.Wrappers.Event
 {
@@ -15,6 +16,9 @@ namespace Frontenac.Blueprints.Util.Wrappers.Event
 
         public EventIndex(IIndex rawIndex, EventGraph eventGraph)
         {
+            Contract.Requires(rawIndex != null);
+            Contract.Requires(eventGraph != null);
+
             RawIndex = rawIndex;
             _eventGraph = eventGraph;
         }

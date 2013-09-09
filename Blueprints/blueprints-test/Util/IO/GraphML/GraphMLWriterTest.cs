@@ -12,8 +12,7 @@ namespace Frontenac.Blueprints.Util.IO.GraphML
         {
             var g = new TinkerGraph();
 
-            using (var stream = typeof(GraphMlReader).Assembly.GetManifestResourceStream(typeof(GraphMlReader),
-                                                                                           "graph-example-1.xml"))
+            using (var stream = typeof(GraphMlReader).Assembly.GetManifestResourceStream(typeof(GraphMlReader), "graph-example-1.xml"))
             {
                 GraphMlReader.InputGraph(g, stream);
             }
@@ -24,15 +23,14 @@ namespace Frontenac.Blueprints.Util.IO.GraphML
                 w.SetNormalize(true);
                 w.OutputGraph(bos);
                 bos.Position = 0;
-                string outGraphMl = new StreamReader(bos).ReadToEnd();
+                var outGraphMl = new StreamReader(bos).ReadToEnd();
 
-                using (var stream = typeof (GraphMlWriterTest).Assembly.GetManifestResourceStream(typeof (GraphMlWriterTest),
-                                                                                           "graph-example-1-normalized.xml"))
+                using (var stream = typeof (GraphMlWriterTest).Assembly.GetManifestResourceStream(typeof (GraphMlWriterTest), "graph-example-1-normalized.xml"))
                 {
                     if (stream != null)
                     {
-                        string expected = new StreamReader(stream).ReadToEnd();
-                        Assert.AreEqual(expected.Replace("\n", "").Replace("\r", ""), outGraphMl.Replace("\n", "").Replace("\r", ""));
+                        var expected = new StreamReader(stream).ReadToEnd();
+                        Assert.AreEqual(expected.Replace("\n", "").Replace("\r", "").Replace("\t", ""), outGraphMl.Replace("\n", "").Replace("\r", "").Replace("\t", ""));
                     }
                 }
             }
@@ -43,8 +41,7 @@ namespace Frontenac.Blueprints.Util.IO.GraphML
         {
             var g = new TinkerGraph();
             
-            using (var stream = typeof(GraphMlReader).Assembly.GetManifestResourceStream(typeof(GraphMlReader),
-                                                                                           "graph-example-1.xml"))
+            using (var stream = typeof(GraphMlReader).Assembly.GetManifestResourceStream(typeof(GraphMlReader), "graph-example-1.xml"))
             {
                 GraphMlReader.InputGraph(g, stream);
             }
@@ -56,14 +53,13 @@ namespace Frontenac.Blueprints.Util.IO.GraphML
                 w.SetNormalize(true);
                 w.OutputGraph(bos);
                 bos.Position = 0;
-                string outGraphMl = new StreamReader(bos).ReadToEnd();
+                var outGraphMl = new StreamReader(bos).ReadToEnd();
 
-                using (var stream = typeof (GraphMlWriterTest).Assembly.GetManifestResourceStream(typeof (GraphMlWriterTest),
-                                                                                           "graph-example-1-schema-valid.xml"))
+                using (var stream = typeof (GraphMlWriterTest).Assembly.GetManifestResourceStream(typeof (GraphMlWriterTest), "graph-example-1-schema-valid.xml"))
                 {
                     if (stream != null)
                     {
-                        string expected = new StreamReader(stream).ReadToEnd();
+                        var expected = new StreamReader(stream).ReadToEnd();
                         Assert.AreEqual(expected.Replace("\n", "").Replace("\r", ""), outGraphMl.Replace("\n", "").Replace("\r", ""));
                     }
                 }
@@ -77,11 +73,11 @@ namespace Frontenac.Blueprints.Util.IO.GraphML
         [Test]
         public void TestEncoding()
         {
-            IGraph g = new TinkerGraph();
-            IVertex v = g.AddVertex(1);
+            var g = new TinkerGraph();
+            var v = g.AddVertex(1);
             v.SetProperty("text", "\u00E9");
 
-            IGraph g2 = new TinkerGraph();
+            var g2 = new TinkerGraph();
             using (var bos = new MemoryStream())
             {
                 var w = new GraphMlWriter(g);
@@ -91,7 +87,7 @@ namespace Frontenac.Blueprints.Util.IO.GraphML
                 r.InputGraph(bos);
             }
 
-            IVertex v2 = g2.GetVertex(1);
+            var v2 = g2.GetVertex(1);
             Assert.AreEqual("\u00E9", v2.GetProperty("text"));
         }
     }

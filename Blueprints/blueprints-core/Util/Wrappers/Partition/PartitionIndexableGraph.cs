@@ -30,11 +30,8 @@ namespace Frontenac.Blueprints.Util.Wrappers.Partition
 
         public IIndex GetIndex(string indexName, Type indexClass)
         {
-            IIndex index = BaseIndexableGraph.GetIndex(indexName, indexClass);
-            if (null == index)
-                return null;
-
-            return new PartitionIndex(index, this);
+            var index = BaseIndexableGraph.GetIndex(indexName, indexClass);
+            return null == index ? null : new PartitionIndex(index, this);
         }
 
         public IIndex CreateIndex(string indexName, Type indexClass, params Parameter[] indexParameters)

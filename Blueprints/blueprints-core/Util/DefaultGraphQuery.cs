@@ -1,60 +1,23 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics.Contracts;
 using System.Linq;
 
 namespace Frontenac.Blueprints.Util
 {
     /// <summary>
-    /// For those graph engines that do not support the low-level querying of the vertices or edges, then DefaultGraphQuery can be used.
-    /// DefaultGraphQuery assumes, at minimum, that Graph.getVertices() and Graph.getEdges() is implemented by the respective Graph.
+    /// For those graph engines that do not support the low-level querying of the vertices or edges, then DefaultQuery can be used.
+    /// DefaultQuery assumes, at minimum, that Graph.getVertices() and Graph.getEdges() is implemented by the respective Graph.
     /// </summary>
-    public class DefaultGraphQuery : DefaultQuery, IGraphQuery
+    public class DefaultGraphQuery : DefaultQuery
     {
         readonly IGraph _graph;
 
         public DefaultGraphQuery(IGraph graph)
         {
+            Contract.Requires(graph != null);
+
             _graph = graph;
-        }
-
-        IGraphQuery IGraphQuery.Has(string key, object value)
-        {
-            HasContainers.Add(new HasContainer(key, value, Compare.Equal));
-            return this;
-        }
-
-        IGraphQuery IGraphQuery.Has<T>(string key, Compare compare, T value)
-        {
-            HasContainers.Add(new HasContainer(key, value, compare));
-            return this;
-        }
-
-        IGraphQuery IGraphQuery.Interval<T>(string key, T startValue, T endValue)
-        {
-            HasContainers.Add(new HasContainer(key, startValue, Compare.GreaterThanEqual));
-            HasContainers.Add(new HasContainer(key, endValue, Compare.LessThan));
-            return this;
-        }
-
-        IGraphQuery IGraphQuery.Limit(long max)
-        {
-            Innerlimit = max;
-            return this;
-        }
-
-        public override IQuery Has(string key, object value)
-        {
-            return (this as IGraphQuery).Has(key, value);
-        }
-
-        public override IQuery Has<T>(string key, Compare compare, T value)
-        {
-            return (this as IGraphQuery).Has(key, compare, value);
-        }
-
-        public override IQuery Interval<T>(string key, T startValue, T endValue)
-        {
-            return (this as IGraphQuery).Interval(key, startValue, endValue);
         }
 
         public override IEnumerable<IEdge> Edges()
@@ -67,21 +30,19 @@ namespace Frontenac.Blueprints.Util
             return new DefaultGraphQueryIterable<IVertex>(this, GetElementIterable<IVertex>(typeof(IVertex)));
         }
 
-        public override IQuery Limit(long max)
-        {
-            return (this as IGraphQuery).Limit(max);
-        }
-
         private class DefaultGraphQueryIterable<T> : IEnumerable<T> where T : IElement
         {
-            readonly DefaultGraphQuery _defaultGraphQuery;
+            readonly DefaultGraphQuery _defaultQuery;
             readonly IEnumerable<T> _iterable;
             T _nextElement;
             long _count;
 
-            public DefaultGraphQueryIterable(DefaultGraphQuery defaultGraphQuery, IEnumerable<T> iterable)
+            public DefaultGraphQueryIterable(DefaultGraphQuery defaultQuery, IEnumerable<T> iterable)
             {
-                _defaultGraphQuery = defaultGraphQuery;
+                Contract.Requires(defaultQuery != null);
+                Contract.Requires(iterable != null);
+
+                _defaultQuery = defaultQuery;
                 _iterable = iterable;
             }
 
@@ -98,19 +59,17 @@ namespace Frontenac.Blueprints.Util
             private bool LoadNext()
             {
                 _nextElement = default(T);
-                if (_count >= _defaultGraphQuery.Innerlimit)
+                if (_count >= _defaultQuery.Innerlimit)
                     return false;
 
-                foreach (T element in _iterable)
+                foreach (var element in _iterable)
                 {
-                    bool filter = _defaultGraphQuery.HasContainers.Any(hasContainer => !hasContainer.IsLegal(element));
+                    var filter = _defaultQuery.HasContainers.Any(hasContainer => !hasContainer.IsLegal(element));
 
-                    if (!filter)
-                    {
-                        _nextElement = element;
-                        _count++;
-                        return true;
-                    }
+                    if (filter) continue;
+                    _nextElement = element;
+                    _count++;
+                    return true;
                 }
                 return false;
             }
@@ -118,23 +77,12 @@ namespace Frontenac.Blueprints.Util
 
         private IEnumerable<T> GetElementIterable<T>(Type elementClass) where T : IElement
         {
+            Contract.Ensures(elementClass != null);
+
             if (_graph is IKeyIndexableGraph)
             {
                 var keys = (_graph as IKeyIndexableGraph).GetIndexedKeys(elementClass).ToArray();
-                foreach (HasContainer hasContainer in HasContainers)
-                {
-                    if (hasContainer.Compare == Compare.Equal && hasContainer.Value != null && keys.Contains(hasContainer.Key))
-                    {
-                        if (typeof(IVertex).IsAssignableFrom(elementClass))
-                            return (IEnumerable<T>)_graph.GetVertices(hasContainer.Key, hasContainer.Value);
-                        return (IEnumerable<T>)_graph.GetEdges(hasContainer.Key, hasContainer.Value);
-                    }
-                }
-            }
-
-            foreach (HasContainer hasContainer in HasContainers)
-            {
-                if (hasContainer.Compare == Compare.Equal)
+                foreach (var hasContainer in HasContainers.Where(hasContainer => hasContainer.Compare == Compare.Equal && hasContainer.Value != null && keys.Contains(hasContainer.Key)))
                 {
                     if (typeof(IVertex).IsAssignableFrom(elementClass))
                         return (IEnumerable<T>)_graph.GetVertices(hasContainer.Key, hasContainer.Value);
@@ -142,9 +90,16 @@ namespace Frontenac.Blueprints.Util
                 }
             }
 
-            if (typeof(IVertex).IsAssignableFrom(elementClass))
-                return (IEnumerable<T>)_graph.GetVertices();
-            return (IEnumerable<T>)_graph.GetEdges();
+            foreach (var hasContainer in HasContainers.Where(hasContainer => hasContainer.Compare == Compare.Equal))
+            {
+                if (typeof(IVertex).IsAssignableFrom(elementClass))
+                    return (IEnumerable<T>)_graph.GetVertices(hasContainer.Key, hasContainer.Value);
+                return (IEnumerable<T>)_graph.GetEdges(hasContainer.Key, hasContainer.Value);
+            }
+
+            return typeof (IVertex).IsAssignableFrom(elementClass)
+                       ? (IEnumerable<T>) _graph.GetVertices()
+                       : (IEnumerable<T>) _graph.GetEdges();
         }
     }
 }

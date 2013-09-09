@@ -421,7 +421,7 @@ namespace Frontenac.Blueprints.Util.IO.GML
                                                                                            "graph-example-3.gml"))
                     {
                         var gmlReader = new GmlReader(graph);
-                        gmlReader.SetEdgeIdKey(GmlTokens.Id);
+                        gmlReader.EdgeIdKey = GmlTokens.Id;
                         gmlReader.InputGraph(stream, 1000);
                     }
 
@@ -598,8 +598,8 @@ namespace Frontenac.Blueprints.Util.IO.GML
                 {
                     StopWatch();
                     var r = new GmlReader(graph);
-                    r.SetEdgeLabelKey("label2");
-                    r.SetEdgeIdKey("id");
+                    r.EdgeLabelKey = "label2";
+                    r.EdgeIdKey = "id";
 
                     using (
                         var stream =
@@ -607,8 +607,8 @@ namespace Frontenac.Blueprints.Util.IO.GML
                                                                                            "graph-example-3.gml"))
                     {
                         var gmlReader = new GmlReader(graph);
-                        gmlReader.SetEdgeLabelKey("label2");
-                        gmlReader.SetEdgeIdKey("id");
+                        gmlReader.EdgeLabelKey = "label2";
+                        gmlReader.EdgeIdKey = "id";
                         gmlReader.InputGraph(stream, 1000);
                     }
 
@@ -692,8 +692,8 @@ namespace Frontenac.Blueprints.Util.IO.GML
                                                                                            "graph-example-3.gml"))
                     {
                         var gmlReader = new GmlReader(graph);
-                        gmlReader.SetVertexIdKey("id2");
-                        gmlReader.SetEdgeIdKey("id2");
+                        gmlReader.VertexIdKey = "id2";
+                        gmlReader.EdgeIdKey = "id2";
                         gmlReader.InputGraph(stream, 1000);
                     }
 
@@ -773,9 +773,9 @@ namespace Frontenac.Blueprints.Util.IO.GML
                     using (var stream = typeof(GmlReaderTestSuite).Assembly.GetManifestResourceStream(typeof(GmlReaderTestSuite), "graph-example-3.gml"))
                     {
                         var gmlReader = new GmlReader(graph);
-                        gmlReader.SetVertexIdKey("id2");
-                        gmlReader.SetEdgeIdKey("id2");
-                        gmlReader.SetEdgeLabelKey("label2");
+                        gmlReader.VertexIdKey = "id2";
+                        gmlReader.EdgeIdKey = "id2";
+                        gmlReader.EdgeLabelKey = "label2";
                         gmlReader.InputGraph(stream, 1000);
                     }
 
@@ -860,7 +860,7 @@ namespace Frontenac.Blueprints.Util.IO.GML
                                                                                            "graph-example-3.gml"))
                     {
                         var gmlReader = new GmlReader(graph);
-                        gmlReader.SetEdgeIdKey("id");
+                        gmlReader.EdgeIdKey = "id";
                         gmlReader.InputGraph(stream, 1000);
                     }
 

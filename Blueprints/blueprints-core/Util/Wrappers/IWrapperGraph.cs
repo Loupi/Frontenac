@@ -1,8 +1,11 @@
-﻿namespace Frontenac.Blueprints.Util.Wrappers
+﻿using System.Diagnostics.Contracts;
+
+namespace Frontenac.Blueprints.Util.Wrappers
 {
     /// <summary>
     /// A WrapperGraph has an underlying graph object to which it delegates its operations.
     /// </summary>
+    [ContractClass(typeof(WrapperGraphContract))]
     public interface IWrapperGraph
     {
         /// <summary>

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics.Contracts;
 using System.Linq;
 
 namespace Frontenac.Blueprints.Util.Wrappers.Event
@@ -15,6 +16,9 @@ namespace Frontenac.Blueprints.Util.Wrappers.Event
 
         public EventVertexIterable(IEnumerable<IVertex> iterable, EventGraph eventGraph)
         {
+            Contract.Requires(iterable != null);
+            Contract.Requires(eventGraph != null);
+
             _iterable = iterable;
             _eventGraph = eventGraph;
         }

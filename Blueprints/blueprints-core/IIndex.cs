@@ -1,7 +1,10 @@
-﻿using System;
+﻿using Frontenac.Blueprints.Contracts;
+using System;
+using System.Diagnostics.Contracts;
 
 namespace Frontenac.Blueprints
 {
+    [ContractClass(typeof(IndexContract))]
     public interface IIndex
     {
         /// <summary>

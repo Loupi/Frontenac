@@ -1,4 +1,5 @@
-﻿using System.IO;
+﻿using System.Diagnostics.Contracts;
+using System.IO;
 using System.Linq;
 using System.Text;
 using Frontenac.Blueprints.Util.Wrappers.Batch;
@@ -20,8 +21,6 @@ namespace Frontenac.Blueprints.Util.IO.GML
 
         readonly IGraph _graph;
         readonly string _defaultEdgeLabel;
-        string _vertexIdKey;
-        string _edgeIdKey;
         string _edgeLabelKey = GmlTokens.Label;
 
         /// <summary>
@@ -33,7 +32,7 @@ namespace Frontenac.Blueprints.Util.IO.GML
         public GmlReader(IGraph graph)
             : this(graph, DefaultLabel)
         {
-
+            
         }
 
         /// <summary>
@@ -43,6 +42,9 @@ namespace Frontenac.Blueprints.Util.IO.GML
         /// <param name="defaultEdgeLabel">the default edge label to be used if the GML edge does not define a label</param>
         public GmlReader(IGraph graph, string defaultEdgeLabel)
         {
+            Contract.Requires(graph != null);
+            Contract.Requires(!string.IsNullOrWhiteSpace(defaultEdgeLabel));
+
             _graph = graph;
             _defaultEdgeLabel = defaultEdgeLabel;
         }
@@ -50,28 +52,31 @@ namespace Frontenac.Blueprints.Util.IO.GML
         /// <summary>
         /// gml property to use as id for vertices
         /// </summary>
-        /// <param name="vertexIdKey"></param>
-        public void SetVertexIdKey(string vertexIdKey)
-        {
-            _vertexIdKey = vertexIdKey;
-        }
+        /// <value></value>
+        public string VertexIdKey { get; set; }
 
         /// <summary>
         /// gml property to use as id for edges
         /// </summary>
-        /// <param name="edgeIdKey"></param>
-        public void SetEdgeIdKey(string edgeIdKey)
-        {
-            _edgeIdKey = edgeIdKey;
-        }
+        /// <value></value>
+        public string EdgeIdKey { get; set; }
 
         /// <summary>
         /// gml property to assign edge labels to
         /// </summary>
-        /// <param name="edgeLabelKey"></param>
-        public void SetEdgeLabelKey(string edgeLabelKey)
+        /// <value></value>
+        public string EdgeLabelKey
         {
-            _edgeLabelKey = edgeLabelKey;
+            get
+            {
+                Contract.Ensures(!string.IsNullOrWhiteSpace(Contract.Result<string>()));
+                return _edgeLabelKey;
+            }
+            set
+            {
+                Contract.Requires(!string.IsNullOrWhiteSpace(value));
+                _edgeLabelKey = value;
+            }
         }
 
         /// <summary>
@@ -82,8 +87,10 @@ namespace Frontenac.Blueprints.Util.IO.GML
         /// <param name="inputStream"></param>
         public void InputGraph(Stream inputStream)
         {
+            Contract.Requires(inputStream != null);
+
             InputGraph(_graph, inputStream, DefaultBufferSize, _defaultEdgeLabel,
-                    _vertexIdKey, _edgeIdKey, _edgeLabelKey);
+                    VertexIdKey, EdgeIdKey, EdgeLabelKey);
         }
 
         /// <summary>
@@ -94,8 +101,10 @@ namespace Frontenac.Blueprints.Util.IO.GML
         /// <param name="filename"></param>
         public void InputGraph(string filename)
         {
+            Contract.Requires(!string.IsNullOrWhiteSpace(filename));
+
             InputGraph(_graph, filename, DefaultBufferSize, _defaultEdgeLabel,
-                    _vertexIdKey, _edgeIdKey, _edgeLabelKey);
+                    VertexIdKey, EdgeIdKey, EdgeLabelKey);
         }
 
         /// <summary>
@@ -107,8 +116,11 @@ namespace Frontenac.Blueprints.Util.IO.GML
         /// <param name="bufferSize"></param>
         public void InputGraph(Stream inputStream, int bufferSize)
         {
+            Contract.Requires(inputStream != null);
+            Contract.Requires(bufferSize > 0);
+
             InputGraph(_graph, inputStream, bufferSize, _defaultEdgeLabel,
-                    _vertexIdKey, _edgeIdKey, _edgeLabelKey);
+                    VertexIdKey, EdgeIdKey, EdgeLabelKey);
         }
 
         /// <summary>
@@ -120,8 +132,11 @@ namespace Frontenac.Blueprints.Util.IO.GML
         /// <param name="bufferSize"></param>
         public void InputGraph(string filename, int bufferSize)
         {
+            Contract.Requires(!string.IsNullOrWhiteSpace(filename));
+            Contract.Requires(bufferSize > 0);
+
             InputGraph(_graph, filename, bufferSize, _defaultEdgeLabel,
-                    _vertexIdKey, _edgeIdKey, _edgeLabelKey);
+                    VertexIdKey, EdgeIdKey, EdgeLabelKey);
         }
 
         /// <summary>
@@ -131,6 +146,9 @@ namespace Frontenac.Blueprints.Util.IO.GML
         /// <param name="filename">GML file</param>
         public static void InputGraph(IGraph graph, string filename)
         {
+            Contract.Requires(graph != null);
+            Contract.Requires(!string.IsNullOrWhiteSpace(filename));
+
             InputGraph(graph, filename, DefaultBufferSize, DefaultLabel, GmlTokens.BlueprintsId, GmlTokens.BlueprintsId, null);
         }
 
@@ -141,6 +159,9 @@ namespace Frontenac.Blueprints.Util.IO.GML
         /// <param name="inputStream">GML file</param>
         public static void InputGraph(IGraph graph, Stream inputStream)
         {
+            Contract.Requires(graph != null);
+            Contract.Requires(inputStream != null);
+
             InputGraph(graph, inputStream, DefaultBufferSize, DefaultLabel, GmlTokens.BlueprintsId, GmlTokens.BlueprintsId, null);
         }
 
@@ -158,6 +179,11 @@ namespace Frontenac.Blueprints.Util.IO.GML
                                       string defaultEdgeLabel, string vertexIdKey, string edgeIdKey,
                                       string edgeLabelKey)
         {
+            Contract.Requires(inputGraph != null);
+            Contract.Requires(!string.IsNullOrWhiteSpace(filename));
+            Contract.Requires(bufferSize > 0);
+            Contract.Requires(!string.IsNullOrWhiteSpace(defaultEdgeLabel));
+
             using (var fis = File.OpenRead(filename))
             {
                 InputGraph(inputGraph, fis, bufferSize, defaultEdgeLabel,
@@ -169,7 +195,12 @@ namespace Frontenac.Blueprints.Util.IO.GML
                                   string defaultEdgeLabel, string vertexIdKey, string edgeIdKey,
                                   string edgeLabelKey)
         {
-            BatchGraph graph = BatchGraph.Wrap(inputGraph, bufferSize);
+            Contract.Requires(inputGraph != null);
+            Contract.Requires(inputStream != null);
+            Contract.Requires(bufferSize > 0);
+            Contract.Requires(!string.IsNullOrWhiteSpace(defaultEdgeLabel));
+
+            var graph = BatchGraph.Wrap(inputGraph, bufferSize);
 
             using (var r = new StreamReader(inputStream, Encoding.GetEncoding("ISO-8859-1")))
             {
@@ -182,7 +213,7 @@ namespace Frontenac.Blueprints.Util.IO.GML
                     st.OrdinaryChar(']');
 
                     const string stringCharacters = "/\\(){}<>!£$%^&*-+=,.?:;@_`|~";
-                    for (int i = 0; i < stringCharacters.Length; i++)
+                    for (var i = 0; i < stringCharacters.Length; i++)
                         st.WordChars(stringCharacters.ElementAt(i), stringCharacters.ElementAt(i));
 
                     new GmlParser(graph, defaultEdgeLabel, vertexIdKey, edgeIdKey, edgeLabelKey).Parse(st);

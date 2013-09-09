@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics.Contracts;
 using System.Linq;
 using Frontenac.Blueprints.Util;
 
@@ -20,10 +21,10 @@ namespace Frontenac.Blueprints.Impls.TG
         public IEnumerable<IEdge> GetEdges(Direction direction, params string[] labels)
         {
             if (direction == Direction.Out)
-                return GetOutEdges(labels);
+                return FilterEdgesByLabel(OutEdges, labels);
             if (direction == Direction.In)
-                return GetInEdges(labels);
-            return new MultiIterable<IEdge>(new List<IEnumerable<IEdge>> { GetInEdges(labels), GetOutEdges(labels) });
+                return FilterEdgesByLabel(InEdges, labels);
+            return new MultiIterable<IEdge>(new List<IEnumerable<IEdge>> { FilterEdgesByLabel(InEdges, labels), FilterEdgesByLabel(OutEdges, labels) });
         }
 
         public IEnumerable<IVertex> GetVertices(Direction direction, params string[] labels)
@@ -31,56 +32,29 @@ namespace Frontenac.Blueprints.Impls.TG
             return new VerticesFromEdgesIterable(this, direction, labels);
         }
 
-        IEnumerable<IEdge> GetInEdges(params string[] labels)
+        static IEnumerable<IEdge> FilterEdgesByLabel(IDictionary<string, HashSet<IEdge>> edgesToGet, params string[] labels)
         {
+            Contract.Requires(edgesToGet != null);
+            Contract.Requires(labels != null);
+            Contract.Ensures(Contract.Result<IEnumerable<IEdge>>() != null);
+
             if (labels.Length == 0)
             {
                 var totalEdgesList = new List<IEdge>();
-                foreach (var edges in InEdges.Values)
+                foreach (var edges in edgesToGet.Values)
                     totalEdgesList.AddRange(edges);
 
                 return totalEdgesList;
             }
             if (labels.Length == 1)
             {
-                HashSet<IEdge> edges = InEdges.Get(labels[0]);
-                if (null == edges)
-                    return Enumerable.Empty<IEdge>();
-                return new List<IEdge>(edges);
+                var edges = edgesToGet.Get(labels[0]);
+                return null == edges ? Enumerable.Empty<IEdge>() : new List<IEdge>(edges);
             }
             var totalEdges = new List<IEdge>();
-            foreach (string label in labels)
+            foreach (var edges in labels.Select(edgesToGet.Get).Where(edges => null != edges))
             {
-                HashSet<IEdge> edges = InEdges.Get(label);
-                if (null != edges)
-                    totalEdges.AddRange(edges);
-            }
-            return totalEdges;
-        }
-
-        IEnumerable<IEdge> GetOutEdges(params string[] labels)
-        {
-            if (labels.Length == 0)
-            {
-                var totalEdgesList = new List<IEdge>();
-                foreach (var edges in OutEdges.Values)
-                    totalEdgesList.AddRange(edges);
-
-                return totalEdgesList;
-            }
-            if (labels.Length == 1)
-            {
-                HashSet<IEdge> edges = OutEdges.Get(labels[0]);
-                if (null == edges)
-                    return Enumerable.Empty<IEdge>();
-                return new List<IEdge>(edges);
-            }
-            var totalEdges = new List<IEdge>();
-            foreach (string label in labels)
-            {
-                HashSet<IEdge> edges = OutEdges.Get(label);
-                if (null != edges)
-                    totalEdges.AddRange(edges);
+                totalEdges.AddRange(edges);
             }
             return totalEdges;
         }
@@ -102,7 +76,10 @@ namespace Frontenac.Blueprints.Impls.TG
 
         public void AddOutEdge(string label, IEdge edge)
         {
-            HashSet<IEdge> edges = OutEdges.Get(label);
+            Contract.Requires(!string.IsNullOrWhiteSpace(label));
+            Contract.Requires(edge != null);
+
+            var edges = OutEdges.Get(label);
             if (null == edges)
             {
                 edges = new HashSet<IEdge>();
@@ -113,7 +90,10 @@ namespace Frontenac.Blueprints.Impls.TG
 
         public void AddInEdge(string label, IEdge edge)
         {
-            HashSet<IEdge> edges = InEdges.Get(label);
+            Contract.Requires(!string.IsNullOrWhiteSpace(label));
+            Contract.Requires(edge != null);
+
+            var edges = InEdges.Get(label);
             if (null == edges)
             {
                 edges = new HashSet<IEdge>();

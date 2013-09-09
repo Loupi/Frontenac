@@ -1,4 +1,6 @@
-﻿namespace Frontenac.Blueprints.Util.IO.GraphSON
+﻿using System.Diagnostics.Contracts;
+
+namespace Frontenac.Blueprints.Util.IO.GraphSON
 {
     /// <summary>
     /// The standard factory used for most graph element creation.  It uses an actual
@@ -8,9 +10,11 @@
     {
         readonly IGraph _graph;
 
-        public GraphElementFactory(IGraph g)
+        public GraphElementFactory(IGraph graph)
         {
-            _graph = g;
+            Contract.Requires(graph != null);
+
+            _graph = graph;
         }
 
         public IEdge CreateEdge(object id, IVertex out_, IVertex in_, string label)

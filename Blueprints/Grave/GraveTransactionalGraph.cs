@@ -21,6 +21,7 @@ namespace Grave
         {
             if (_transaction != null)
             {
+                Commit();
                 _transaction.Dispose();
                 _transaction = null;
             }
@@ -130,7 +131,7 @@ namespace Grave
             return base.GetVertices(key, value);
         }
 
-        public override IGraphQuery Query()
+        public override IQuery Query()
         {
             BeginTransaction();
             return base.Query();

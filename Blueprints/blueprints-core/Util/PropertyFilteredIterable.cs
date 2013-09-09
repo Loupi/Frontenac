@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics.Contracts;
 using System.Linq;
 
 namespace Frontenac.Blueprints.Util
@@ -18,6 +19,9 @@ namespace Frontenac.Blueprints.Util
 
         public PropertyFilteredIterable(string key, object value, IEnumerable<T> iterable)
         {
+            Contract.Requires(!string.IsNullOrWhiteSpace(key));
+            Contract.Requires(iterable != null);
+
             _key = key;
             _value = value;
             _iterable = iterable;
@@ -66,6 +70,8 @@ namespace Frontenac.Blueprints.Util
 
             public PropertyFilteredIterableIterable(PropertyFilteredIterable<TU> propertyFilteredIterable)
             {
+                Contract.Requires(propertyFilteredIterable != null);
+
                 _propertyFilteredIterable = propertyFilteredIterable;
                 _itty = _propertyFilteredIterable._iterable.GetEnumerator();
             }
@@ -76,7 +82,7 @@ namespace Frontenac.Blueprints.Util
                 {
                     if (null != _nextElement)
                     {
-                        TU temp = _nextElement;
+                        var temp = _nextElement;
                         _nextElement = default(TU);
                         yield return temp;
                     }
@@ -84,7 +90,7 @@ namespace Frontenac.Blueprints.Util
                     {
                         while (_itty.MoveNext())
                         {
-                            TU element = _itty.Current;
+                            var element = _itty.Current;
                             if (element.GetPropertyKeys().Contains(_propertyFilteredIterable._key) &&
                                 AreEqual(element.GetProperty(_propertyFilteredIterable._key), _propertyFilteredIterable._value))
                                 yield return element;
@@ -99,8 +105,8 @@ namespace Frontenac.Blueprints.Util
                     return true;
                 while (_itty.MoveNext())
                 {
-                    TU element = _itty.Current;
-                    object temp = element.GetProperty(_propertyFilteredIterable._key);
+                    var element = _itty.Current;
+                    var temp = element.GetProperty(_propertyFilteredIterable._key);
                     if (null != temp)
                     {
                         if (AreEqual(temp, _propertyFilteredIterable._value))
@@ -128,7 +134,7 @@ namespace Frontenac.Blueprints.Util
                 return GetEnumerator();
             }
 
-            bool AreEqual(object aVal, object bVal)
+            static bool AreEqual(object aVal, object bVal)
             {
                 if (aVal == null && bVal == null)
                     return true;

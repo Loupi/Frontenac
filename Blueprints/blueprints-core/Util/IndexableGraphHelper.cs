@@ -1,4 +1,5 @@
-﻿using System.Linq;
+﻿using System.Diagnostics.Contracts;
+using System.Linq;
 
 namespace Frontenac.Blueprints.Util
 {
@@ -16,6 +17,11 @@ namespace Frontenac.Blueprints.Util
         /// <returns>the newly created vertex or the vertex that satisfies the uniqueness criteria</returns>
         public static IVertex AddUniqueVertex(IIndexableGraph graph, object id, IIndex index, string uniqueKey, object uniqueValue)
         {
+            Contract.Requires(graph != null);
+            Contract.Requires(index != null);
+            Contract.Requires(!string.IsNullOrWhiteSpace(uniqueKey));
+            Contract.Ensures(Contract.Result<IVertex>() != null);
+
             var result = (IVertex)index.Get(uniqueKey, uniqueValue).FirstOrDefault();
             if (result == null)
             {

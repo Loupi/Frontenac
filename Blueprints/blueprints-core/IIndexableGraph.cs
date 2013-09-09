@@ -1,5 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics.Contracts;
+using Frontenac.Blueprints.Contracts;
 
 namespace Frontenac.Blueprints
 {
@@ -8,6 +10,7 @@ namespace Frontenac.Blueprints
     /// An index is typically some sort of tree structure that allows for the fast lookup of elements by key/value pairs.
     /// Indices have an Index object associated with them and allow the user to specify the putting and getting of elements into the index.
     /// </summary>
+    [ContractClass(typeof(IndexableGraphContract))]
     public interface IIndexableGraph : IGraph
     {
         /// <summary>

@@ -25,7 +25,7 @@ namespace Frontenac.Blueprints.Util.Wrappers.ReadOnly
 
         public IIndex GetIndex(string indexName, Type indexClass)
         {
-            IIndex index = _baseIndexableGraph.GetIndex(indexName, indexClass);
+            var index = _baseIndexableGraph.GetIndex(indexName, indexClass);
             return new ReadOnlyIndex(index);
         }
 

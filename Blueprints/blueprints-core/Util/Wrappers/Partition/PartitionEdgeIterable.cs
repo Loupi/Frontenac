@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics.Contracts;
 
 namespace Frontenac.Blueprints.Util.Wrappers.Partition
 {
@@ -11,6 +12,9 @@ namespace Frontenac.Blueprints.Util.Wrappers.Partition
 
         public PartitionEdgeIterable(IEnumerable<IEdge> iterable, PartitionGraph graph)
         {
+            Contract.Requires(iterable != null);
+            Contract.Requires(graph != null);
+
             _iterable = iterable;
             _graph = graph;
         }
@@ -53,6 +57,8 @@ namespace Frontenac.Blueprints.Util.Wrappers.Partition
 
             public InnerPartitionEdgeIterable(PartitionEdgeIterable partitionEdgeIterable)
             {
+                Contract.Requires(partitionEdgeIterable != null);
+
                 _partitionEdgeIterable = partitionEdgeIterable;
                 _itty = _partitionEdgeIterable._iterable.GetEnumerator();
             }
@@ -63,7 +69,7 @@ namespace Frontenac.Blueprints.Util.Wrappers.Partition
                 {
                     if (null != _nextEdge)
                     {
-                        PartitionEdge temp = _nextEdge;
+                        var temp = _nextEdge;
                         _nextEdge = null;
                         yield return temp;
                     }
@@ -71,7 +77,7 @@ namespace Frontenac.Blueprints.Util.Wrappers.Partition
                     {
                         while (_itty.MoveNext())
                         {
-                            IEdge edge = _itty.Current;
+                            var edge = _itty.Current;
                             if (_partitionEdgeIterable._graph.IsInPartition(edge))
                                 yield return new PartitionEdge(edge, _partitionEdgeIterable._graph);
                         }
@@ -86,7 +92,7 @@ namespace Frontenac.Blueprints.Util.Wrappers.Partition
 
                 while (_itty.MoveNext())
                 {
-                    IEdge edge = _itty.Current;
+                    var edge = _itty.Current;
                     if (_partitionEdgeIterable._graph.IsInPartition(edge))
                     {
                         _nextEdge = new PartitionEdge(edge, _partitionEdgeIterable._graph);

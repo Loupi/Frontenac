@@ -18,16 +18,16 @@ namespace Frontenac.Blueprints.Util.IO.GraphSON
 
             const string json = "{ \"mode\":\"EXTENDED\", \"vertices\": [ {\"_id\":1, \"_type\":\"vertex\", \"test\": { \"type\":\"string\", \"value\":\"please work\"}, \"testlist\":{\"type\":\"list\", \"value\":[{\"type\":\"int\", \"value\":1}, {\"type\":\"int\",\"value\":2}, {\"type\":\"int\",\"value\":3}]}, \"testmap\":{\"type\":\"map\", \"value\":{\"big\":{\"type\":\"long\", \"value\":10000000000}, \"small\":{\"type\":\"double\", \"value\":0.4954959595959}}}}, {\"_id\":2, \"_type\":\"vertex\", \"testagain\":{\"type\":\"string\", \"value\":\"please work again\"}}], \"edges\":[{\"_id\":100, \"_type\":\"edge\", \"_outV\":1, \"_inV\":2, \"_label\":\"works\", \"teste\": {\"type\":\"string\", \"value\":\"please worke\"}}]}";
 
-            byte[] bytes = Encoding.Default.GetBytes(json);
+            var bytes = Encoding.Default.GetBytes(json);
             using (var inputStream = new MemoryStream(bytes))
             {
-                GraphSonReader.InputGraph(graph, inputStream);
+                GraphSONReader.InputGraph(graph, inputStream);
             }
 
             Assert.AreEqual(2, graph.GetVertices().Count());
             Assert.AreEqual(1, graph.GetEdges().Count());
 
-            IVertex v1 = graph.GetVertex(1);
+            var v1 = graph.GetVertex(1);
             Assert.NotNull(v1);
             Assert.AreEqual("please work", v1.GetProperty("test"));
 
@@ -53,11 +53,11 @@ namespace Frontenac.Blueprints.Util.IO.GraphSON
 
             Assert.True(foundNull);*/
 
-            IVertex v2 = graph.GetVertex(2);
+            var v2 = graph.GetVertex(2);
             Assert.NotNull(v2);
             Assert.AreEqual("please work again", v2.GetProperty("testagain"));
 
-            IEdge e = graph.GetEdge(100);
+            var e = graph.GetEdge(100);
             Assert.NotNull(e);
             Assert.AreEqual("works", e.Label);
             Assert.AreEqual(v1, e.GetVertex(Direction.Out));
@@ -73,16 +73,16 @@ namespace Frontenac.Blueprints.Util.IO.GraphSON
 
             const string json = "{ \"mode\":\"NORMAL\",\"vertices\": [ {\"_id\":1, \"_type\":\"vertex\", \"test\": \"please work\", \"testlist\":[1, 2, 3, null], \"testmap\":{\"big\":10000000000, \"small\":0.4954959595959}}, {\"_id\":2, \"_type\":\"vertex\", \"testagain\":\"please work again\"}], \"edges\":[{\"_id\":100, \"_type\":\"edge\", \"_outV\":1, \"_inV\":2, \"_label\":\"works\", \"teste\": \"please worke\"}]}";
 
-            byte[] bytes = Encoding.Default.GetBytes(json);
+            var bytes = Encoding.Default.GetBytes(json);
             using (var inputStream = new MemoryStream(bytes))
             {
-                GraphSonReader.InputGraph(graph, inputStream);
+                GraphSONReader.InputGraph(graph, inputStream);
             }
 
             Assert.AreEqual(2, graph.GetVertices().Count());
             Assert.AreEqual(1, graph.GetEdges().Count());
 
-            IVertex v1 = graph.GetVertex(1);
+            var v1 = graph.GetVertex(1);
             Assert.NotNull(v1);
             Assert.AreEqual("please work", v1.GetProperty("test"));
 
@@ -95,8 +95,8 @@ namespace Frontenac.Blueprints.Util.IO.GraphSON
             var list = (IList<object>)v1.GetProperty("testlist");
             Assert.AreEqual(4, list.Count);
 
-            bool foundNull = false;
-            for (int ix = 0; ix < list.Count; ix++)
+            var foundNull = false;
+            for (var ix = 0; ix < list.Count; ix++)
             {
                 if (list.Get(ix) == null)
                 {
@@ -107,11 +107,11 @@ namespace Frontenac.Blueprints.Util.IO.GraphSON
 
             Assert.True(foundNull);
 
-            IVertex v2 = graph.GetVertex(2);
+            var v2 = graph.GetVertex(2);
             Assert.NotNull(v2);
             Assert.AreEqual("please work again", v2.GetProperty("testagain"));
 
-            IEdge e = graph.GetEdge(100);
+            var e = graph.GetEdge(100);
             Assert.NotNull(e);
             Assert.AreEqual("works", e.Label);
             Assert.AreEqual(v1, e.GetVertex(Direction.Out));
@@ -127,16 +127,16 @@ namespace Frontenac.Blueprints.Util.IO.GraphSON
 
             const string json = "{ \"mode\":\"COMPACT\",\"vertices\": [ {\"_id\":1, \"test\": \"please work\", \"testlist\":[1, 2, 3, null], \"testmap\":{\"big\":10000000000, \"small\":0.4954959595959}}, {\"_id\":2, \"testagain\":\"please work again\"}], \"edges\":[{\"_id\":100, \"_outV\":1, \"_inV\":2, \"_label\":\"works\", \"teste\": \"please worke\"}]}";
 
-            byte[] bytes = Encoding.Default.GetBytes(json);
+            var bytes = Encoding.Default.GetBytes(json);
             using (var inputStream = new MemoryStream(bytes))
             {
-                GraphSonReader.InputGraph(graph, inputStream);
+                GraphSONReader.InputGraph(graph, inputStream);
             }
 
             Assert.AreEqual(2, graph.GetVertices().Count());
             Assert.AreEqual(1, graph.GetEdges().Count());
 
-            IVertex v1 = graph.GetVertex(1);
+            var v1 = graph.GetVertex(1);
             Assert.NotNull(v1);
             Assert.AreEqual("please work", v1.GetProperty("test"));
 
@@ -149,8 +149,8 @@ namespace Frontenac.Blueprints.Util.IO.GraphSON
             var list = (IList<object>)v1.GetProperty("testlist");
             Assert.AreEqual(4, list.Count);
 
-            bool foundNull = false;
-            for (int ix = 0; ix < list.Count; ix++)
+            var foundNull = false;
+            for (var ix = 0; ix < list.Count; ix++)
             {
                 if (list.Get(ix) == null)
                 {
@@ -161,11 +161,11 @@ namespace Frontenac.Blueprints.Util.IO.GraphSON
 
             Assert.True(foundNull);
 
-            IVertex v2 = graph.GetVertex(2);
+            var v2 = graph.GetVertex(2);
             Assert.NotNull(v2);
             Assert.AreEqual("please work again", v2.GetProperty("testagain"));
 
-            IEdge e = graph.GetEdge(100);
+            var e = graph.GetEdge(100);
             Assert.NotNull(e);
             Assert.AreEqual("works", e.Label);
             Assert.AreEqual(v1, e.GetVertex(Direction.Out));
@@ -178,41 +178,41 @@ namespace Frontenac.Blueprints.Util.IO.GraphSON
         [Test]
         public void InputGraphExtendedFullCycle()
         {
-            TinkerGraph graph = TinkerGraphFactory.CreateTinkerGraph();
+            var graph = TinkerGraphFactory.CreateTinkerGraph();
             var emptyGraph = new TinkerGraph();
 
             using (var stream = new MemoryStream())
             {
                 var writer = new GraphSonWriter(graph);
-                writer.OutputGraph(stream, null, null, GraphSonMode.EXTENDED);
+                writer.OutputGraph(stream, null, null, GraphSONMode.EXTENDED);
 
                 stream.Position = 0;
 
-                GraphSonReader.InputGraph(emptyGraph, stream);
+                GraphSONReader.InputGraph(emptyGraph, stream);
             }
 
             Assert.AreEqual(7, emptyGraph.GetVertices().Count());
             Assert.AreEqual(6, emptyGraph.GetEdges().Count());
 
-            foreach (IVertex v in graph.GetVertices())
+            foreach (var v in graph.GetVertices())
             {
-                IVertex found = emptyGraph.GetVertex(v.Id);
+                var found = emptyGraph.GetVertex(v.Id);
 
                 Assert.NotNull(v);
 
-                foreach (string key in found.GetPropertyKeys())
+                foreach (var key in found.GetPropertyKeys())
                 {
                     Assert.AreEqual(v.GetProperty(key), found.GetProperty(key));
                 }
             }
 
-            foreach (IEdge e in graph.GetEdges())
+            foreach (var e in graph.GetEdges())
             {
-                IEdge found = emptyGraph.GetEdge(e.Id);
+                var found = emptyGraph.GetEdge(e.Id);
 
                 Assert.NotNull(e);
 
-                foreach (string key in found.GetPropertyKeys())
+                foreach (var key in found.GetPropertyKeys())
                 {
                     Assert.AreEqual(e.GetProperty(key), found.GetProperty(key));
                 }
@@ -222,7 +222,7 @@ namespace Frontenac.Blueprints.Util.IO.GraphSON
         [Test]
         public void InputGraphCompactFullCycle()
         {
-            TinkerGraph graph = TinkerGraphFactory.CreateTinkerGraph();
+            var graph = TinkerGraphFactory.CreateTinkerGraph();
             var emptyGraph = new TinkerGraph();
 
             var edgeKeys = new HashSet<string>
@@ -238,23 +238,23 @@ namespace Frontenac.Blueprints.Util.IO.GraphSON
             using (var stream = new MemoryStream())
             {
                 var writer = new GraphSonWriter(graph);
-                writer.OutputGraph(stream, vertexKeys, edgeKeys, GraphSonMode.COMPACT);
+                writer.OutputGraph(stream, vertexKeys, edgeKeys, GraphSONMode.COMPACT);
 
                 stream.Position = 0;
 
-                GraphSonReader.InputGraph(emptyGraph, stream);
+                GraphSONReader.InputGraph(emptyGraph, stream);
             }
 
             Assert.AreEqual(7, emptyGraph.GetVertices().Count());
             Assert.AreEqual(6, emptyGraph.GetEdges().Count());
 
-            foreach (IVertex v in graph.GetVertices())
+            foreach (var v in graph.GetVertices())
             {
-                IVertex found = emptyGraph.GetVertex(v.Id);
+                var found = emptyGraph.GetVertex(v.Id);
 
                 Assert.NotNull(v);
 
-                foreach (string key in found.GetPropertyKeys())
+                foreach (var key in found.GetPropertyKeys())
                 {
                     Assert.AreEqual(v.GetProperty(key), found.GetProperty(key));
                 }
@@ -263,13 +263,13 @@ namespace Frontenac.Blueprints.Util.IO.GraphSON
                 Assert.AreEqual(null, found.GetProperty("name"));
             }
 
-            foreach (IEdge e in graph.GetEdges())
+            foreach (var e in graph.GetEdges())
             {
-                IEdge found = emptyGraph.GetEdge(e.Id);
+                var found = emptyGraph.GetEdge(e.Id);
 
                 Assert.NotNull(e);
 
-                foreach (string key in found.GetPropertyKeys())
+                foreach (var key in found.GetPropertyKeys())
                 {
                     Assert.AreEqual(e.GetProperty(key), found.GetProperty(key));
                 }
@@ -280,24 +280,30 @@ namespace Frontenac.Blueprints.Util.IO.GraphSON
         }
 
         [Test]
-        [ExpectedException(typeof(ArgumentException))]
         public void InputGraphCompactFullCycleBroken()
         {
-            TinkerGraph graph = TinkerGraphFactory.CreateTinkerGraph();
-            var emptyGraph = new TinkerGraph();
-
-            var edgeKeys = new HashSet<string> {GraphSonTokens.InV, GraphSonTokens.OutV, GraphSonTokens.Label};
-
-            var vertexKeys = new HashSet<string>();
-
-            using (var stream = new MemoryStream())
+            try
             {
-                var writer = new GraphSonWriter(graph);
-                writer.OutputGraph(stream, vertexKeys, edgeKeys, GraphSonMode.COMPACT);
+                var graph = TinkerGraphFactory.CreateTinkerGraph();
+                var emptyGraph = new TinkerGraph();
+                var edgeKeys = new HashSet<string> { GraphSonTokens.InV, GraphSonTokens.OutV, GraphSonTokens.Label };
+                var vertexKeys = new HashSet<string>();
 
-                stream.Position = 0;
+                using (var stream = new MemoryStream())
+                {
+                    var writer = new GraphSonWriter(graph);
+                    writer.OutputGraph(stream, vertexKeys, edgeKeys, GraphSONMode.COMPACT);
 
-                GraphSonReader.InputGraph(emptyGraph, stream);
+                    stream.Position = 0;
+
+                    GraphSONReader.InputGraph(emptyGraph, stream);
+                }
+
+                Assert.Fail();
+            }
+            catch (Exception ex)
+            {
+                Assert.True(ex.GetType().FullName == Portability.ContractExceptionName);
             }
         }
     }

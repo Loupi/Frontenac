@@ -1,4 +1,5 @@
 ﻿using System.Collections.Concurrent;
+using System.Diagnostics.Contracts;
 using System.Threading;
 
 namespace Frontenac.Blueprints.Util.Wrappers.Event
@@ -22,6 +23,8 @@ namespace Frontenac.Blueprints.Util.Wrappers.Event
 
         public EventTrigger(EventGraph graph, bool enqueEvents)
         {
+            Contract.Requires(graph != null);
+
             _enqueEvents = enqueEvents;
             _graph = graph;
         }
@@ -33,6 +36,8 @@ namespace Frontenac.Blueprints.Util.Wrappers.Event
         /// <param name="evt">The event to add to the event queue</param>
         public void AddEvent(Listener.IEvent evt)
         {
+            Contract.Requires(evt != null);
+
             _eventQueue.Value.Enqueue(evt);
 
             if (!_enqueEvents)
@@ -49,7 +54,7 @@ namespace Frontenac.Blueprints.Util.Wrappers.Event
 
         public void FireEventQueue()
         {
-            ConcurrentQueue<Listener.IEvent> concurrentQueue = _eventQueue.Value;
+            var concurrentQueue = _eventQueue.Value;
             Listener.IEvent event_;
             while (concurrentQueue.TryDequeue(out event_))
             {

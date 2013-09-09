@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics.Contracts;
 using Frontenac.Blueprints.Util.Wrappers.Batch.Cache;
 
 namespace Frontenac.Blueprints.Util.Wrappers.Batch
@@ -53,8 +54,8 @@ namespace Frontenac.Blueprints.Util.Wrappers.Batch
         /// <param name="bufferSize">Defines the number of vertices and edges loaded before starting a new transaction. The larger this value, the more memory is required but the faster the loading process.</param>
         public BatchGraph(ITransactionalGraph graph, VertexIdType type, long bufferSize)
         {
-            if (graph == null) throw new ArgumentNullException("graph");
-            if (bufferSize <= 0) throw new ArgumentException("BufferSize must be positive");
+            Contract.Requires(graph != null);
+            Contract.Requires(bufferSize > 0);
 
             _baseGraph = graph;
             _bufferSize = bufferSize;
@@ -71,6 +72,7 @@ namespace Frontenac.Blueprints.Util.Wrappers.Batch
         public BatchGraph(ITransactionalGraph graph)
             : this(graph, VertexIdType.Object, DefaultBufferSize)
         {
+
         }
 
         /// <summary>
@@ -81,6 +83,9 @@ namespace Frontenac.Blueprints.Util.Wrappers.Batch
         /// <returns>a BatchGraph wrapping the provided baseGraph</returns>
         public static BatchGraph Wrap(IGraph graph)
         {
+            Contract.Requires(graph != null);
+            Contract.Ensures(Contract.Result<BatchGraph>() != null);
+
             var wrap = graph as BatchGraph;
             if (wrap != null) return wrap;
             var transactionalGraph = graph as ITransactionalGraph;
@@ -97,6 +102,10 @@ namespace Frontenac.Blueprints.Util.Wrappers.Batch
         /// <returns>a BatchGraph wrapping the provided baseGraph</returns>
         public static BatchGraph Wrap(IGraph graph, long buffer)
         {
+            Contract.Requires(graph != null);
+            Contract.Requires(buffer > 0);
+            Contract.Ensures(Contract.Result<BatchGraph>() != null);
+
             var wrap = graph as BatchGraph;
             if (wrap != null) return wrap;
             return graph is ITransactionalGraph
@@ -212,7 +221,7 @@ namespace Frontenac.Blueprints.Util.Wrappers.Batch
         /// </summary>
         public void Rollback()
         {
-            throw new InvalidOperationException("Can not rollback during batch loading");
+            Contract.Assert(false);
         }
 
         public void Shutdown()
@@ -232,7 +241,7 @@ namespace Frontenac.Blueprints.Util.Wrappers.Batch
         {
             get
             {
-                Features features = _baseGraph.Features.CopyFeatures();
+                var features = _baseGraph.Features.CopyFeatures();
                 features.IgnoresSuppliedIds = false;
                 features.IsWrapper = true;
                 features.SupportsEdgeIteration = false;
@@ -244,14 +253,16 @@ namespace Frontenac.Blueprints.Util.Wrappers.Batch
 
         IVertex RetrieveFromCache(object externalId)
         {
-            object internal_ = _cache.GetEntry(externalId);
+            Contract.Requires(externalId != null);
+            
+            var internal_ = _cache.GetEntry(externalId);
             var cache = internal_ as IVertex;
             if (cache != null)
                 return cache;
             if (internal_ != null)
             {
                 //its an internal id
-                IVertex v = _baseGraph.GetVertex(internal_);
+                var v = _baseGraph.GetVertex(internal_);
                 _cache.Set(v, externalId);
                 return v;
             }
@@ -260,8 +271,11 @@ namespace Frontenac.Blueprints.Util.Wrappers.Batch
 
         IVertex GetCachedVertex(object externalId)
         {
-            IVertex v = RetrieveFromCache(externalId);
-            if (v == null) throw new ArgumentException(string.Concat("Vertex for given ID cannot be found: ", externalId));
+            Contract.Requires(externalId != null);
+            Contract.Ensures(Contract.Result<IVertex>() != null);
+            
+            var v = RetrieveFromCache(externalId);
+            
             return v;
         }
 
@@ -275,14 +289,14 @@ namespace Frontenac.Blueprints.Util.Wrappers.Batch
         {
             if ((_previousOutVertexId != null) && (_previousOutVertexId == id))
                 return new BatchVertex(_previousOutVertexId, this);
-            IVertex v = RetrieveFromCache(id);
+            var v = RetrieveFromCache(id);
             if (v == null)
             {
                 if (_loadingFromScratch) return null;
                 if (_baseGraph.Features.IgnoresSuppliedIds)
                 {
                     System.Diagnostics.Debug.Assert(_vertexIdKey != null);
-                    IEnumerator<IVertex> iter = _baseGraph.GetVertices(_vertexIdKey, id).GetEnumerator();
+                    var iter = _baseGraph.GetVertices(_vertexIdKey, id).GetEnumerator();
                     if (!iter.MoveNext()) return null;
                     v = iter.Current;
                     if (iter.MoveNext()) throw new ArgumentException(string.Concat("There are multiple vertices with the provided id in the database: ", id));
@@ -299,11 +313,10 @@ namespace Frontenac.Blueprints.Util.Wrappers.Batch
 
         public IVertex AddVertex(object id)
         {
-            if (id == null) throw ExceptionFactory.VertexIdCanNotBeNull();
             if (RetrieveFromCache(id) != null) throw ExceptionFactory.VertexWithIdAlreadyExists(id);
             NextElement();
 
-            IVertex v = _baseGraph.AddVertex(id);
+            var v = _baseGraph.AddVertex(id);
             if (_vertexIdKey != null)
                 v.SetProperty(_vertexIdKey, id);
 
@@ -317,8 +330,8 @@ namespace Frontenac.Blueprints.Util.Wrappers.Batch
                 throw new ArgumentException("Given element was not created in this baseGraph");
             NextElement();
 
-            IVertex ov = GetCachedVertex(outVertex.Id);
-            IVertex iv = GetCachedVertex(inVertex.Id);
+            var ov = GetCachedVertex(outVertex.Id);
+            var iv = GetCachedVertex(inVertex.Id);
 
             _previousOutVertexId = outVertex.Id; //keep track of the previous out vertex id
 
@@ -332,6 +345,10 @@ namespace Frontenac.Blueprints.Util.Wrappers.Batch
 
         protected IEdge AddEdgeSupport(IVertex outVertex, IVertex inVertex, string label)
         {
+            Contract.Requires(outVertex != null);
+            Contract.Requires(inVertex != null);
+            Contract.Ensures(Contract.Result<IEdge>() != null);
+
             return AddEdge(null, outVertex, inVertex, label);
         }
 
@@ -377,7 +394,7 @@ namespace Frontenac.Blueprints.Util.Wrappers.Batch
             throw RetrievalNotSupported();
         }
 
-        public IGraphQuery Query()
+        public IQuery Query()
         {
             throw RetrievalNotSupported();
         }
@@ -389,6 +406,9 @@ namespace Frontenac.Blueprints.Util.Wrappers.Batch
 
             public BatchVertex(object id, BatchGraph batchGraph)
             {
+                Contract.Requires(id != null);
+                Contract.Requires(batchGraph != null);
+
                 if (id == null) throw new ArgumentNullException("id");
                 _externalId = id;
                 _batchGraph = batchGraph;
@@ -456,6 +476,8 @@ namespace Frontenac.Blueprints.Util.Wrappers.Batch
 
             public BatchEdge(BatchGraph batchGraph)
             {
+                Contract.Requires(batchGraph != null);
+
                 _batchGraph = batchGraph;
             }
 
@@ -490,8 +512,8 @@ namespace Frontenac.Blueprints.Util.Wrappers.Batch
 
             IEdge GetWrappedEdge()
             {
-                if (this != _batchGraph._currentEdge)
-                    throw new InvalidOperationException("This edge is no longer in scope");
+                Contract.Requires(this == _batchGraph._currentEdge);
+                Contract.Ensures(Contract.Result<IEdge>() != null);
 
                 return _batchGraph._currentEdgeCached;
             }
@@ -510,13 +532,6 @@ namespace Frontenac.Blueprints.Util.Wrappers.Batch
         static InvalidOperationException RetrievalNotSupported()
         {
             return new InvalidOperationException("Retrieval operations are not supported during batch loading");
-        }
-
-// ReSharper disable UnusedMember.Local
-        static InvalidOperationException RemovalNotSupported()
-// ReSharper restore UnusedMember.Local
-        {
-            return new InvalidOperationException("Removal operations are not supported during batch loading");
         }
     }
 }

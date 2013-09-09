@@ -130,5 +130,7 @@ namespace Grave.Indexing
         public abstract long DeleteUserDocuments(Type indexType, int id, string key, object value);
 
         public abstract long DeleteIndex(Type indexType, string indexName, bool isUserIndex);
+
+        public abstract IEnumerable<int> Query(Type indexType, IEnumerable<GraveQueryElement> query, int hitsLimit = 1000);
     }
 }

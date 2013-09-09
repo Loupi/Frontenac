@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel;
+using System.Diagnostics.Contracts;
 using System.Linq;
 
 namespace Frontenac.Blueprints.Util
@@ -17,8 +18,9 @@ namespace Frontenac.Blueprints.Util
         /// <param name="value">the value of the property</param>
         public static void ValidateProperty(IElement element, string key, object value)
         {
-            if (null == value)
-                throw ExceptionFactory.PropertyValueCanNotBeNull();
+            Contract.Requires(element != null);
+            Contract.Requires(!string.IsNullOrWhiteSpace(key));
+
             if (null == key)
                 throw ExceptionFactory.PropertyKeyCanNotBeNull();
             if (key.Equals(StringFactory.Id))
@@ -38,7 +40,10 @@ namespace Frontenac.Blueprints.Util
         /// <param name="to">the element to copy properties to</param>
         public static void CopyProperties(IElement from, IElement to)
         {
-            foreach (string key in from.GetPropertyKeys())
+            Contract.Requires(from != null);
+            Contract.Requires(to != null);
+
+            foreach (var key in from.GetPropertyKeys())
                 to.SetProperty(key, from.GetProperty(key));
         }
 
@@ -48,11 +53,11 @@ namespace Frontenac.Blueprints.Util
         /// <param name="elements">the elements to remove properties from</param>
         public static void RemoveProperties(IEnumerable<IElement> elements)
         {
-            foreach (IElement element in elements)
+            Contract.Requires(elements != null);
+
+            foreach (var element in elements)
             {
-                var keys = new List<string>();
-                keys.AddRange(element.GetPropertyKeys());
-                foreach (string key in keys)
+                foreach (var key in element.GetPropertyKeys())
                     element.RemoveProperty(key);
             }
         }
@@ -64,7 +69,10 @@ namespace Frontenac.Blueprints.Util
         /// <param name="elements">the elements to remove the property from</param>
         public static void RemoveProperty(string key, IEnumerable<IElement> elements)
         {
-            foreach (IElement element in elements)
+            Contract.Requires(!string.IsNullOrWhiteSpace(key));
+            Contract.Requires(elements != null);
+
+            foreach (var element in elements)
                 element.RemoveProperty(key);
         }
 
@@ -77,9 +85,13 @@ namespace Frontenac.Blueprints.Util
         /// <param name="elements">the elements to rename</param>
         public static void RenameProperty(string oldKey, string newKey, IEnumerable<IElement> elements)
         {
-            foreach (IElement element in elements)
+            Contract.Requires(!string.IsNullOrWhiteSpace(oldKey));
+            Contract.Requires(!string.IsNullOrWhiteSpace(newKey));
+            Contract.Requires(elements != null);
+
+            foreach (var element in elements)
             {
-                object value = element.RemoveProperty(oldKey);
+                var value = element.RemoveProperty(oldKey);
                 if (null != value)
                     element.SetProperty(newKey, value);
             }
@@ -94,29 +106,31 @@ namespace Frontenac.Blueprints.Util
         /// <param name="elements">the elements to have their property typecasted</param>
         public static void TypecastProperty(string key, Type classCast, IEnumerable<IElement> elements)
         {
-            foreach (IElement element in elements)
-            {
-                object value = element.RemoveProperty(key);
-                if (null != value)
-                {
-                    try
-                    {
-                        object convertedValue;
-                        if (classCast.IsPrimitive)
-                        {
-                            TypeConverter tc = TypeDescriptor.GetConverter(classCast);
-                            convertedValue = tc.ConvertFromString(value.ToString());
-                        }
-                        else
-                            convertedValue = Activator.CreateInstance(classCast, value.ToString());
+            Contract.Requires(!string.IsNullOrWhiteSpace(key));
+            Contract.Requires(classCast != null);
+            Contract.Requires(elements != null);
 
-                        element.SetProperty(key, convertedValue);
-                    }
-                    catch (Exception)
+            foreach (var element in elements)
+            {
+                var value = element.RemoveProperty(key);
+                if (null == value) continue;
+                try
+                {
+                    object convertedValue;
+                    if (classCast.IsPrimitive)
                     {
-                        element.SetProperty(key, value);
-                        throw;
+                        var tc = TypeDescriptor.GetConverter(classCast);
+                        convertedValue = tc.ConvertFromString(value.ToString());
                     }
+                    else
+                        convertedValue = Activator.CreateInstance(classCast, value.ToString());
+
+                    element.SetProperty(key, convertedValue);
+                }
+                catch (Exception)
+                {
+                    element.SetProperty(key, value);
+                    throw;
                 }
             }
         }
@@ -130,6 +144,9 @@ namespace Frontenac.Blueprints.Util
         /// <returns>whether the two elements have equal properties</returns>
         public static bool HaveEqualProperties(IElement a, IElement b)
         {
+            Contract.Requires(a != null);
+            Contract.Requires(b != null);
+
             var aKeys = a.GetPropertyKeys().ToArray();
             var bKeys = b.GetPropertyKeys().ToArray();
 
@@ -163,6 +180,9 @@ namespace Frontenac.Blueprints.Util
         /// <returns>a clone of the properties of the element</returns>
         public static IDictionary<string, object> GetProperties(IElement element)
         {
+            Contract.Requires(element != null);
+            Contract.Ensures(Contract.Result<IDictionary<string, object>>() != null);
+
             return element.GetPropertyKeys().ToDictionary(key => key, element.GetProperty);
         }
 
@@ -173,6 +193,9 @@ namespace Frontenac.Blueprints.Util
         /// <param name="properties">the properties to set as a IDictionary&lt;string, object></param>
         public static void SetProperties(IElement element, IDictionary<string, object> properties)
         {
+            Contract.Requires(element != null);
+            Contract.Requires(properties != null);
+
             foreach (var property in properties)
                 element.SetProperty(property.Key, property.Value);
         }
@@ -185,9 +208,11 @@ namespace Frontenac.Blueprints.Util
         /// <param name="keysValues">the key value pairs of the properties</param>
         public static void SetProperties(IElement element, params object[] keysValues)
         {
-            if (keysValues.Length % 2 != 0)
-                throw new ArgumentException("The object var args must be divisible by 2");
-            for (int i = 0; i < keysValues.Length; i = i + 2)
+            Contract.Requires(element != null);
+            Contract.Requires(keysValues != null);
+            Contract.Requires(keysValues.Length % 2 == 0);
+
+            for (var i = 0; i < keysValues.Length; i = i + 2)
                 element.SetProperty((string)keysValues[i], keysValues[i + 1]);
         }
 
@@ -217,6 +242,9 @@ namespace Frontenac.Blueprints.Util
         /// <returns>Whether the two elements have equal ids</returns>
         public static bool HaveEqualIds(IElement a, IElement b)
         {
+            Contract.Requires(a != null);
+            Contract.Requires(b != null);
+
             return a.Id.Equals(b.Id);
         }
     }

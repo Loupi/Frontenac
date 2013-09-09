@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics.Contracts;
 
 namespace Frontenac.Blueprints.Util.Wrappers.Batch
 {
@@ -19,15 +20,15 @@ namespace Frontenac.Blueprints.Util.Wrappers.Batch
 
         public WritethroughGraph(IGraph graph)
         {
-            if (graph == null) throw new ArgumentException("Graph expected");
-            if (graph is ITransactionalGraph)
-                throw new ArgumentException("Can only wrap non-transactional graphs");
+            Contract.Requires(graph != null);
+            Contract.Requires(!(graph is ITransactionalGraph));
+
             _graph = graph;
         }
 
         public void Rollback()
         {
-            throw new InvalidOperationException("Transactions can not be rolled back");
+            Contract.Assert(false);
         }
 
         public void Commit()
@@ -43,7 +44,7 @@ namespace Frontenac.Blueprints.Util.Wrappers.Batch
         {
             get
             {
-                Features f = _graph.Features.CopyFeatures();
+                var f = _graph.Features.CopyFeatures();
                 f.IsWrapper = true;
                 f.SupportsTransactions = true;
                 return f;
@@ -95,7 +96,7 @@ namespace Frontenac.Blueprints.Util.Wrappers.Batch
             return _graph.GetEdges();
         }
 
-        public IGraphQuery Query()
+        public IQuery Query()
         {
             return _graph.Query();
         }

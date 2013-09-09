@@ -1,8 +1,11 @@
-﻿namespace Frontenac.Blueprints.Impls.TG
+﻿using System.Diagnostics.Contracts;
+
+namespace Frontenac.Blueprints.Impls.TG
 {
     /// <summary>
     /// Implementations are responsible for loading and saving a TinkerGraph data.
     /// </summary>
+    [ContractClass(typeof(TinkerStorageContract))]
     interface ITinkerStorage
     {
         TinkerGraph Load(string directory);

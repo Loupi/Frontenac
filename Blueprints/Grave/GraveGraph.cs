@@ -391,7 +391,7 @@ namespace Grave
                 UpdateGeneration(generation);
         }
 
-        public virtual IGraphQuery Query()
+        public virtual IQuery Query()
         {
             WaitForGeneration();
             throw new NotImplementedException();

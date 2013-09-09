@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics.Contracts;
 using System.Linq;
 using Frontenac.Blueprints.Util;
 
@@ -14,6 +15,9 @@ namespace Frontenac.Blueprints.Impls.TG
 
         public TinkerIndex(string indexName, Type indexClass)
         {
+            Contract.Requires(!string.IsNullOrWhiteSpace(indexName));
+            Contract.Requires(typeof(IVertex).IsAssignableFrom(indexClass) || typeof(IEdge).IsAssignableFrom(indexClass));
+
             IndexName = indexName;
             IndexClass = indexClass;
         }
@@ -36,7 +40,7 @@ namespace Frontenac.Blueprints.Impls.TG
                 keyMap = new Dictionary<object, HashSet<IElement>>();
                 Index.Put(key, keyMap);
             }
-            HashSet<IElement> objects = keyMap.Get(value);
+            var objects = keyMap.Get(value);
             if (null == objects)
             {
                 objects = new HashSet<IElement>();
@@ -50,10 +54,10 @@ namespace Frontenac.Blueprints.Impls.TG
             var keyMap = Index.Get(key);
             if (null == keyMap)
                 return new WrappingCloseableIterable<IElement>(Enumerable.Empty<IElement>());
+
             var set = keyMap.Get(value);
-            if (null == set)
-                return new WrappingCloseableIterable<IElement>(Enumerable.Empty<IElement>());
-            return new WrappingCloseableIterable<IElement>(new List<IElement>(set));
+            return null == set ? new WrappingCloseableIterable<IElement>(Enumerable.Empty<IElement>()) : 
+                                 new WrappingCloseableIterable<IElement>(new List<IElement>(set));
         }
 
         public ICloseableIterable<IElement> Query(string key, object query)
@@ -67,9 +71,7 @@ namespace Frontenac.Blueprints.Impls.TG
             if (null == keyMap)
                 return 0;
             var set = keyMap.Get(value);
-            if (null == set)
-                return 0;
-            return set.LongCount();
+            return null == set ? 0 : set.LongCount();
         }
 
         public void Remove(string key, object value, IElement element)
@@ -77,7 +79,7 @@ namespace Frontenac.Blueprints.Impls.TG
             var keyMap = Index.Get(key);
             if (null != keyMap)
             {
-                HashSet<IElement> objects = keyMap.Get(value);
+                var objects = keyMap.Get(value);
                 if (null != objects)
                 {
                     objects.Remove(element);
@@ -89,11 +91,13 @@ namespace Frontenac.Blueprints.Impls.TG
 
         public void RemoveElement(IElement element)
         {
+            Contract.Requires(element != null);
+
             if (IndexClass.IsInstanceOfType(element))
             {
                 foreach (var map in Index.Values)
                 {
-                    foreach (HashSet<IElement> set in map.Values)
+                    foreach (var set in map.Values)
                         set.Remove(element);
                 }
             }

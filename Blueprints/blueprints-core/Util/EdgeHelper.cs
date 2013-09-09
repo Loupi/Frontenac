@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Diagnostics.Contracts;
 
 namespace Frontenac.Blueprints.Util
 {
@@ -15,9 +16,14 @@ namespace Frontenac.Blueprints.Util
         /// <returns>the newly created edge</returns>
         public static IEdge RelabelEdge(IGraph graph, IEdge oldEdge, object newId, string newLabel)
         {
-            IVertex outVertex = oldEdge.GetVertex(Direction.Out);
-            IVertex inVertex = oldEdge.GetVertex(Direction.In);
-            IEdge newEdge = graph.AddEdge(newId, outVertex, inVertex, newLabel);
+            Contract.Requires(graph != null);
+            Contract.Requires(oldEdge != null);
+            Contract.Requires(!string.IsNullOrWhiteSpace(newLabel));
+            Contract.Ensures(Contract.Result<IEdge>() != null);
+
+            var outVertex = oldEdge.GetVertex(Direction.Out);
+            var inVertex = oldEdge.GetVertex(Direction.In);
+            var newEdge = graph.AddEdge(newId, outVertex, inVertex, newLabel);
             ElementHelper.CopyProperties(oldEdge, newEdge);
             graph.RemoveEdge(oldEdge);
             return newEdge;
@@ -32,11 +38,15 @@ namespace Frontenac.Blueprints.Util
         /// <param name="newLabel">the label of the new edge</param>
         public static void RelabelEdges(IGraph graph, IEnumerable<IEdge> oldEdges, string newLabel)
         {
-            foreach (IEdge oldEdge in oldEdges)
+            Contract.Requires(graph != null);
+            Contract.Requires(oldEdges != null);
+            Contract.Requires(!string.IsNullOrWhiteSpace(newLabel));
+
+            foreach (var oldEdge in oldEdges)
             {
-                IVertex outVertex = oldEdge.GetVertex(Direction.Out);
-                IVertex inVertex = oldEdge.GetVertex(Direction.In);
-                IEdge newEdge = graph.AddEdge(null, outVertex, inVertex, newLabel);
+                var outVertex = oldEdge.GetVertex(Direction.Out);
+                var inVertex = oldEdge.GetVertex(Direction.In);
+                var newEdge = graph.AddEdge(null, outVertex, inVertex, newLabel);
                 ElementHelper.CopyProperties(oldEdge, newEdge);
                 graph.RemoveEdge(oldEdge);
             }

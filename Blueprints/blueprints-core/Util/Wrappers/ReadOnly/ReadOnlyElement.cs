@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics.Contracts;
 
 namespace Frontenac.Blueprints.Util.Wrappers.ReadOnly
 {
@@ -9,6 +10,8 @@ namespace Frontenac.Blueprints.Util.Wrappers.ReadOnly
 
         protected ReadOnlyElement(IElement baseElement)
         {
+            Contract.Requires(baseElement != null);
+
             BaseElement = baseElement;
         }
 

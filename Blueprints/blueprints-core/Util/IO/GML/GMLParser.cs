@@ -1,11 +1,12 @@
 ﻿using System.Collections.Generic;
+using System.Diagnostics.Contracts;
 using System.IO;
 
 namespace Frontenac.Blueprints.Util.IO.GML
 {
     class GmlParser
     {
-        readonly Dictionary<object, object> _vertexMappedIdMap = new Dictionary<object, object>();
+        readonly IDictionary<object, object> _vertexMappedIdMap = new Dictionary<object, object>();
         readonly string _defaultEdgeLabel;
         readonly IGraph _graph;
         readonly string _vertexIdKey;
@@ -16,6 +17,9 @@ namespace Frontenac.Blueprints.Util.IO.GML
 
         public GmlParser(IGraph graph, string defaultEdgeLabel, string vertexIdKey, string edgeIdKey, string edgeLabelKey)
         {
+            Contract.Requires(graph != null);
+            Contract.Requires(!string.IsNullOrWhiteSpace(defaultEdgeLabel));
+
             _graph = graph;
             _vertexIdKey = vertexIdKey;
             _edgeIdKey = edgeIdKey;
@@ -25,12 +29,14 @@ namespace Frontenac.Blueprints.Util.IO.GML
 
         public void Parse(StreamTokenizer st)
         {
+            Contract.Requires(st != null);
+
             while (HasNext(st))
             {
-                int type = st.Ttype;
+                var type = st.Ttype;
                 if (NotLineBreak(type))
                 {
-                    string value = st.StringValue;
+                    var value = st.StringValue;
                     if (GmlTokens.Graph == value)
                     {
                         ParseGraph(st);
@@ -44,62 +50,71 @@ namespace Frontenac.Blueprints.Util.IO.GML
 
         void ParseGraph(StreamTokenizer st)
         {
+            Contract.Requires(st != null);
+
             CheckValid(st, GmlTokens.Graph);
             while (HasNext(st))
             {
                 // st.nextToken();
-                int type = st.Ttype;
+                var type = st.Ttype;
                 if (NotLineBreak(type))
                 {
                     if (type == ']')
                         return;
-                    string key = st.StringValue;
-                    if (GmlTokens.Node == key)
-                        AddNode(ParseNode(st));
-                    else if (GmlTokens.Edge == key)
-                        AddEdge(ParseEdge(st));
-                    else if (GmlTokens.Directed == key)
-                        _directed = ParseBoolean(st);
-                    else
+                    var key = st.StringValue;
+                    switch (key)
                     {
-                        // IGNORE
-                        ParseValue("ignore", st);
+                        case GmlTokens.Node:
+                            AddNode(ParseNode(st));
+                            break;
+                        case GmlTokens.Edge:
+                            AddEdge(ParseEdge(st));
+                            break;
+                        case GmlTokens.Directed:
+                            _directed = ParseBoolean(st);
+                            break;
+                        default:
+                            ParseValue("ignore", st);
+                            break;
                     }
                 }
             }
             throw new IOException("Graph not complete");
         }
 
-        void AddNode(Dictionary<string, object> map)
+        void AddNode(IDictionary<string, object> map)
         {
-            object id = map.JavaRemove(GmlTokens.Id);
-            if (id != null)
-            {
-                IVertex vertex = CreateVertex(map, id);
-                AddProperties(vertex, map);
-            }
-            else
+            Contract.Requires(map != null);
+            
+            var id = map.JavaRemove(GmlTokens.Id);
+            if (id == null)
                 throw new IOException("No id found for node");
+            var vertex = CreateVertex(map, id);
+            AddProperties(vertex, map);
         }
 
-        IVertex CreateVertex(Dictionary<string, object> map, object id)
+        IVertex CreateVertex(IDictionary<string, object> map, object id)
         {
+            Contract.Requires(map != null);
+
             //final object vertexId = vertexIdKey == null ? (graph.getFeatures().ignoresSuppliedIds ? null : id) : map.remove(vertexIdKey);
-            object vertexId = id;
+            var vertexId = id;
             if (_vertexIdKey != null)
             {
                 vertexId = map.JavaRemove(_vertexIdKey) ?? id;
                 _vertexMappedIdMap[id] = vertexId;
             }
-            IVertex createdVertex = _graph.AddVertex(vertexId);
+            var createdVertex = _graph.AddVertex(vertexId);
 
             return createdVertex;
         }
 
-        void AddEdge(Dictionary<string, object> map)
+        void AddEdge(IDictionary<string, object> map)
         {
-            object source = map.JavaRemove(GmlTokens.Source);
-            object target = map.JavaRemove(GmlTokens.Target);
+            Contract.Requires(map != null);
+
+            var source = map.JavaRemove(GmlTokens.Source);
+            var target = map.JavaRemove(GmlTokens.Target);
 
             if (source == null)
                 throw new IOException("Edge has no source");
@@ -113,15 +128,17 @@ namespace Frontenac.Blueprints.Util.IO.GML
                 _vertexMappedIdMap.TryGetValue(target, out target);
             }
 
-            IVertex outVertex = _graph.GetVertex(source);
-            IVertex inVertex = _graph.GetVertex(target);
+            var outVertex = _graph.GetVertex(source);
+            var inVertex = _graph.GetVertex(target);
             if (outVertex == null)
                 throw new IOException(string.Concat("Edge source ", source, " not found"));
 
             if (inVertex == null)
                 throw new IOException(string.Concat("Edge target ", target, " not found"));
 
-            object label = map.JavaRemove(_edgeLabelKey);
+            object label = null;
+            if(_edgeLabelKey != null)
+                label = map.JavaRemove(_edgeLabelKey);
             if (label == null)
             {
                 // try standard label key
@@ -141,7 +158,7 @@ namespace Frontenac.Blueprints.Util.IO.GML
             object edgeId = _edgeCount++;
             if (_edgeIdKey != null)
             {
-                object mappedKey = map.JavaRemove(_edgeIdKey);
+                var mappedKey = map.JavaRemove(_edgeIdKey);
                 if (mappedKey != null)
                     edgeId = mappedKey;
                 // else use edgecount - could fail if mapped ids overlap with edge count
@@ -151,24 +168,31 @@ namespace Frontenac.Blueprints.Util.IO.GML
             // This data will be lost
             map.Remove(GmlTokens.Id);
 
-            IEdge edge = _graph.AddEdge(edgeId, outVertex, inVertex, label.ToString());
+            var edge = _graph.AddEdge(edgeId, outVertex, inVertex, label.ToString());
             if (_directed)
                 edge.SetProperty(GmlTokens.Directed, _directed);
 
             AddProperties(edge, map);
         }
 
-        void AddProperties(IElement element, Dictionary<string, object> map)
+        static void AddProperties(IElement element, IEnumerable<KeyValuePair<string, object>> map)
         {
+            Contract.Requires(element != null);
+            Contract.Requires(map != null);
+
             foreach (var entry in map)
                 element.SetProperty(entry.Key, entry.Value);
         }
 
         object ParseValue(string key, StreamTokenizer st)
         {
+            Contract.Requires(!string.IsNullOrWhiteSpace(key));
+            Contract.Requires(st != null);
+            Contract.Ensures(Contract.Result<object>() != null);
+
             while (HasNext(st))
             {
-                int type = st.Ttype;
+                var type = st.Ttype;
                 if (NotLineBreak(type))
                 {
                     if (type == StreamTokenizer.TtNumber)
@@ -176,7 +200,8 @@ namespace Frontenac.Blueprints.Util.IO.GML
                         int intVal;
                         if (int.TryParse(st.StringValue, out intVal))
                             return intVal;
-                        return st.NumberValue;
+                        else
+                            return st.NumberValue;
                     }
                     if (type == '[')
                         return ParseMap(key, st);
@@ -187,11 +212,13 @@ namespace Frontenac.Blueprints.Util.IO.GML
             throw new IOException("value not found");
         }
 
-        bool ParseBoolean(StreamTokenizer st)
+        static bool ParseBoolean(StreamTokenizer st)
         {
+            Contract.Requires(st != null);
+
             while (HasNext(st))
             {
-                int type = st.Ttype;
+                var type = st.Ttype;
                 if (NotLineBreak(type))
                 {
                     if (type == StreamTokenizer.TtNumber)
@@ -201,34 +228,48 @@ namespace Frontenac.Blueprints.Util.IO.GML
             throw new IOException("boolean not found");
         }
 
-        Dictionary<string, object> ParseNode(StreamTokenizer st)
+        IDictionary<string, object> ParseNode(StreamTokenizer st)
         {
+            Contract.Requires(st != null);
+            Contract.Ensures(Contract.Result<IDictionary<string, object>>() != null);
+
             return ParseElement(st, GmlTokens.Node);
         }
 
-        Dictionary<string, object> ParseEdge(StreamTokenizer st)
+        IDictionary<string, object> ParseEdge(StreamTokenizer st)
         {
+            Contract.Requires(st != null);
+            Contract.Ensures(Contract.Result<IDictionary<string, object>>() != null);
+
             return ParseElement(st, GmlTokens.Edge);
         }
 
-        Dictionary<string, object> ParseElement(StreamTokenizer st, string node)
+        IDictionary<string, object> ParseElement(StreamTokenizer st, string node)
         {
+            Contract.Requires(st != null);
+            Contract.Requires(!string.IsNullOrWhiteSpace(node));
+            Contract.Ensures(Contract.Result<IDictionary<string, object>>() != null);
+            
             CheckValid(st, node);
             return ParseMap(node, st);
         }
 
-        Dictionary<string, object> ParseMap(string node, StreamTokenizer st)
+        IDictionary<string, object> ParseMap(string node, StreamTokenizer st)
         {
+            Contract.Requires(!string.IsNullOrWhiteSpace(node));
+            Contract.Requires(st != null);
+            Contract.Ensures(Contract.Result<IDictionary<string, object>>() != null);
+
             var map = new Dictionary<string, object>();
             while (HasNext(st))
             {
-                int type = st.Ttype;
+                var type = st.Ttype;
                 if (NotLineBreak(type))
                 {
                     if (type == ']')
                         return map;
-                    string key = st.StringValue;
-                    object value = ParseValue(key, st);
+                    var key = st.StringValue;
+                    var value = ParseValue(key, st);
                     map[key] = value;
                 }
             }
@@ -237,12 +278,17 @@ namespace Frontenac.Blueprints.Util.IO.GML
 
         static void CheckValid(StreamTokenizer st, string token)
         {
+            Contract.Requires(st != null);
+            Contract.Requires(token != null);
+
             if (st.NextToken() != '[')
                 throw new IOException(string.Concat(token, " not followed by ["));
         }
 
         static bool HasNext(StreamTokenizer st)
         {
+            Contract.Requires(st != null);
+
             return st.NextToken() != StreamTokenizer.TtEof;
         }
 

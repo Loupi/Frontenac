@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics.Contracts;
 
 namespace Frontenac.Blueprints.Util.Wrappers.Partition
 {
@@ -11,6 +12,9 @@ namespace Frontenac.Blueprints.Util.Wrappers.Partition
 
         public PartitionVertexIterable(IEnumerable<IVertex> iterable, PartitionGraph graph)
         {
+            Contract.Requires(iterable != null);
+            Contract.Requires(graph != null);
+
             _iterable = iterable;
             _graph = graph;
         }
@@ -53,6 +57,8 @@ namespace Frontenac.Blueprints.Util.Wrappers.Partition
 
             public InnerPartitionVertexIterable(PartitionVertexIterable partitionVertexIterable)
             {
+                Contract.Requires(partitionVertexIterable != null);
+
                 _partitionVertexIterable = partitionVertexIterable;
                 _itty = _partitionVertexIterable._iterable.GetEnumerator();
             }
@@ -63,7 +69,7 @@ namespace Frontenac.Blueprints.Util.Wrappers.Partition
                 {
                     if (null != _nextVertex)
                     {
-                        PartitionVertex temp = _nextVertex;
+                        var temp = _nextVertex;
                         _nextVertex = null;
                         yield return temp;
                     }
@@ -71,7 +77,7 @@ namespace Frontenac.Blueprints.Util.Wrappers.Partition
                     {
                         while (_itty.MoveNext())
                         {
-                            IVertex vertex = _itty.Current;
+                            var vertex = _itty.Current;
                             if (_partitionVertexIterable._graph.IsInPartition(vertex))
                                 yield return new PartitionVertex(vertex, _partitionVertexIterable._graph);
                         }
@@ -86,7 +92,7 @@ namespace Frontenac.Blueprints.Util.Wrappers.Partition
 
                 while (_itty.MoveNext())
                 {
-                    IVertex vertex = _itty.Current;
+                    var vertex = _itty.Current;
                     if (_partitionVertexIterable._graph.IsInPartition(vertex))
                     {
                         _nextVertex = new PartitionVertex(vertex, _partitionVertexIterable._graph);

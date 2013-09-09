@@ -1,4 +1,6 @@
-﻿namespace Frontenac.Blueprints.Util.Wrappers.Event
+﻿using System.Diagnostics.Contracts;
+
+namespace Frontenac.Blueprints.Util.Wrappers.Event
 {
     /// <summary>
     /// An edge with a GraphChangedListener attached.  Those listeners are notified when changes occur to
@@ -6,9 +8,12 @@
     /// </summary>
     public class EventEdge : EventElement, IEdge
     {
+        readonly IEdge _baseEdge;
+
         public EventEdge(IEdge baseEdge, EventGraph eventGraph)
             : base(baseEdge, eventGraph)
         {
+            _baseEdge = baseEdge;
         }
 
         public IVertex GetVertex(Direction direction)
@@ -18,12 +23,14 @@
 
         public string Label
         {
-            get { return ((IEdge)BaseElement).Label; }
+            get { return _baseEdge.Label; }
         }
 
         public IEdge GetBaseEdge()
         {
-            return (IEdge)BaseElement;
+            Contract.Ensures(Contract.Result<IEdge>() != null);
+
+            return _baseEdge;
         }
     }
 }

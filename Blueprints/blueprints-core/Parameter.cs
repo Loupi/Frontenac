@@ -50,7 +50,7 @@
         public override int GetHashCode()
         {
             const int prime = 31;
-            int result = 1;
+            var result = 1;
 // ReSharper disable NonReadonlyFieldInGetHashCode
             result = prime * result + ((Key == null) ? 0 : Key.GetHashCode());
             result = prime * result + ((Value == null) ? 0 : Value.GetHashCode());

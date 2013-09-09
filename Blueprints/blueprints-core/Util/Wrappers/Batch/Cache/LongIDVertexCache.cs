@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics.Contracts;
 using System.Linq;
 
 namespace Frontenac.Blueprints.Util.Wrappers.Batch.Cache
@@ -14,16 +15,17 @@ namespace Frontenac.Blueprints.Util.Wrappers.Batch.Cache
         {
             _map = new Dictionary<long, object>(InitialCapacity);
         }
-
+        
         static long GetId(object externalId)
         {
-            if (!(Portability.IsNumber(externalId))) throw new ArgumentException("Number expected.");
+            Contract.Requires(Portability.IsNumber(externalId));
+
             return Convert.ToInt64(externalId);
         }
 
         public object GetEntry(object externalId)
         {
-            long id = GetId(externalId);
+            var id = GetId(externalId);
             return _map.Get(id);
         }
 
@@ -34,7 +36,7 @@ namespace Frontenac.Blueprints.Util.Wrappers.Batch.Cache
 
         public void SetId(object vertexId, object externalId)
         {
-            long id = GetId(externalId);
+            var id = GetId(externalId);
             _map[id] = vertexId;
         }
 

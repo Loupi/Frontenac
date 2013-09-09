@@ -1,25 +1,31 @@
-﻿namespace Frontenac.Blueprints.Util.Wrappers.Partition
+﻿using System.Diagnostics.Contracts;
+
+namespace Frontenac.Blueprints.Util.Wrappers.Partition
 {
     public class PartitionEdge : PartitionElement, IEdge
     {
+        readonly IEdge _baseEdge;
+
         public PartitionEdge(IEdge baseEdge, PartitionGraph graph)
             : base(baseEdge, graph)
         {
+            _baseEdge = baseEdge;
         }
 
         public IVertex GetVertex(Direction direction)
         {
-            return new PartitionVertex(((IEdge)BaseElement).GetVertex(direction), Graph);
+            return new PartitionVertex(_baseEdge.GetVertex(direction), Graph);
         }
 
         public string Label
         {
-            get { return ((IEdge)BaseElement).Label; }
+            get { return _baseEdge.Label; }
         }
 
         public IEdge GetBaseEdge()
         {
-            return (IEdge)BaseElement;
+            Contract.Ensures(Contract.Result<IEdge>() != null);
+            return _baseEdge;
         }
     }
 }

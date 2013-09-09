@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics.Contracts;
 
 namespace Frontenac.Blueprints.Util.Wrappers
 {
@@ -15,6 +16,10 @@ namespace Frontenac.Blueprints.Util.Wrappers
 
         public WrapperVertexQuery(IVertexQuery query, Func<IVertexQuery, IEnumerable<IEdge>> edgesSelector, Func<IVertexQuery, IEnumerable<IVertex>> verticesSelector)
         {
+            Contract.Requires(query != null);
+            Contract.Requires(edgesSelector != null);
+            Contract.Requires(verticesSelector != null);
+
             Query = query;
             EdgesSelector = edgesSelector;
             VerticesSelector = verticesSelector;
@@ -37,7 +42,7 @@ namespace Frontenac.Blueprints.Util.Wrappers
             return Query.Count();
         }
 
-        public object VertexIds()
+        public IEnumerable<object> VertexIds()
         {
             return Query.VertexIds();
         }

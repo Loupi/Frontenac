@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Diagnostics.Contracts;
 using System.Linq;
 
 namespace Frontenac.Blueprints.Util.Wrappers.Event
@@ -13,13 +14,16 @@ namespace Frontenac.Blueprints.Util.Wrappers.Event
 
         public EventIndexIterable(IEnumerable<IIndex> iterable, EventGraph eventGraph)
         {
+            Contract.Requires(iterable != null);
+            Contract.Requires(eventGraph != null);
+
             _iterable = iterable;
             _eventGraph = eventGraph;
         }
 
         public IEnumerator<IIndex> GetEnumerator()
         {
-            return _iterable.Select(index => new EventIndex(index, _eventGraph)).Cast<IIndex>().GetEnumerator();
+            return _iterable.Select(index => new EventIndex(index, _eventGraph)).GetEnumerator();
         }
 
         System.Collections.IEnumerator System.Collections.IEnumerable.GetEnumerator()

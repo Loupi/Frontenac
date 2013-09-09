@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Diagnostics.Contracts;
 
 namespace Frontenac.Blueprints.Util.Wrappers.Event.Listener
 {
@@ -11,6 +12,8 @@ namespace Frontenac.Blueprints.Util.Wrappers.Event.Listener
 
         public VertexAddedEvent(IVertex vertex)
         {
+            Contract.Requires(vertex != null);
+
             _vertex = vertex;
         }
 

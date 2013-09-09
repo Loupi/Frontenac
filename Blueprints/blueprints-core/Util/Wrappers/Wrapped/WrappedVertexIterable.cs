@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics.Contracts;
 using System.Linq;
 
 namespace Frontenac.Blueprints.Util.Wrappers.Wrapped
@@ -11,6 +12,8 @@ namespace Frontenac.Blueprints.Util.Wrappers.Wrapped
 
         public WrappedVertexIterable(IEnumerable<IVertex> iterable)
         {
+            Contract.Requires(iterable != null);
+
             _iterable = iterable;
         }
 
@@ -41,7 +44,7 @@ namespace Frontenac.Blueprints.Util.Wrappers.Wrapped
 
         public IEnumerator<IVertex> GetEnumerator()
         {
-            return _iterable.Select(v => new WrappedVertex(v)).Cast<IVertex>().GetEnumerator();
+            return _iterable.Select(v => new WrappedVertex(v)).GetEnumerator();
         }
 
         System.Collections.IEnumerator System.Collections.IEnumerable.GetEnumerator()

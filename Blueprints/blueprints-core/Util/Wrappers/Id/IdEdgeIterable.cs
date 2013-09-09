@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics.Contracts;
 using System.Linq;
 
 namespace Frontenac.Blueprints.Util.Wrappers.Id
@@ -12,6 +13,9 @@ namespace Frontenac.Blueprints.Util.Wrappers.Id
 
         public IdEdgeIterable(IEnumerable<IElement> iterable, IdGraph idGraph)
         {
+            Contract.Requires(iterable != null);
+            Contract.Requires(idGraph != null);
+
             _iterable = iterable;
             _idGraph = idGraph;
         }
@@ -43,7 +47,7 @@ namespace Frontenac.Blueprints.Util.Wrappers.Id
 
         public IEnumerator<IEdge> GetEnumerator()
         {
-            return (from IEdge edge in _iterable select new IdEdge(edge, _idGraph)).Cast<IEdge>().GetEnumerator();
+            return (_iterable.OfType<IEdge>().Select(edge => new IdEdge(edge, _idGraph))).GetEnumerator();
         }
 
         System.Collections.IEnumerator System.Collections.IEnumerable.GetEnumerator()

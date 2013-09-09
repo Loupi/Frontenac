@@ -5,10 +5,12 @@ namespace Frontenac.Blueprints.Util.Wrappers.ReadOnly
 {
     public class ReadOnlyVertex : ReadOnlyElement, IVertex
     {
+        readonly IVertex _baseVertex;
+
         public ReadOnlyVertex(IVertex baseVertex)
             : base(baseVertex)
         {
-
+            _baseVertex = baseVertex;
         }
 
         public IEnumerable<IEdge> GetEdges(Direction direction, params string[] labels)
@@ -28,7 +30,7 @@ namespace Frontenac.Blueprints.Util.Wrappers.ReadOnly
 
         public IVertexQuery Query()
         {
-            return new WrapperVertexQuery(((IVertex) BaseElement).Query(),
+            return new WrapperVertexQuery(_baseVertex.Query(),
                 t => new ReadOnlyEdgeIterable(t.Edges()),
                 t => new ReadOnlyVertexIterable(t.Vertices()));
         }

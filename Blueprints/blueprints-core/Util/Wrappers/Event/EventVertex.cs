@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Diagnostics.Contracts;
 
 namespace Frontenac.Blueprints.Util.Wrappers.Event
 {
@@ -8,36 +9,29 @@ namespace Frontenac.Blueprints.Util.Wrappers.Event
     /// </summary>
     public class EventVertex : EventElement, IVertex
     {
+        readonly IVertex _baseVertex;
+
         public EventVertex(IVertex baseVertex, EventGraph eventGraph)
             : base(baseVertex, eventGraph)
         {
-
+            _baseVertex = baseVertex;
         }
 
         public IEnumerable<IEdge> GetEdges(Direction direction, params string[] labels)
         {
-            var vertex = BaseElement as IVertex;
-            if (vertex != null)
-                return new EventEdgeIterable(vertex.GetEdges(direction, labels), EventGraph);
-            return null;
+            return _baseVertex != null ? new EventEdgeIterable(_baseVertex.GetEdges(direction, labels), EventGraph) : null;
         }
 
         public IEnumerable<IVertex> GetVertices(Direction direction, params string[] labels)
         {
-            var vertex = BaseElement as IVertex;
-            if (vertex != null)
-                return new EventVertexIterable(vertex.GetVertices(direction, labels), EventGraph);
-            return null;
+            return _baseVertex != null ? new EventVertexIterable(_baseVertex.GetVertices(direction, labels), EventGraph) : null;
         }
 
         public IVertexQuery Query()
         {
-            var vertex = BaseElement as IVertex;
-            if (vertex != null)
-                return new WrapperVertexQuery(vertex.Query(),
+            return new WrapperVertexQuery(_baseVertex.Query(),
                                               t => new EventEdgeIterable(t.Edges(), EventGraph),
                                               t => new EventVertexIterable(t.Vertices(), EventGraph));
-            return null;
         }
 
         public IEdge AddEdge(string label, IVertex vertex)
@@ -47,7 +41,9 @@ namespace Frontenac.Blueprints.Util.Wrappers.Event
 
         public IVertex GetBaseVertex()
         {
-            return BaseElement as IVertex;
+            Contract.Ensures(Contract.Result<IVertex>() != null);
+
+            return _baseVertex;
         }
     }
 }

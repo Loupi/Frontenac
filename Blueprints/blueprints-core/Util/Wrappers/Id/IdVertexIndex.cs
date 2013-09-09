@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Diagnostics.Contracts;
 
 namespace Frontenac.Blueprints.Util.Wrappers.Id
 {
@@ -9,8 +10,8 @@ namespace Frontenac.Blueprints.Util.Wrappers.Id
 
         public IdVertexIndex(IIndex baseIndex, IdGraph idGraph)
         {
-            if (null == baseIndex)
-                throw new ArgumentException("null base index");
+            Contract.Requires(baseIndex != null);
+            Contract.Requires(idGraph != null);
 
             _idGraph = idGraph;
             _baseIndex = baseIndex;
@@ -53,6 +54,8 @@ namespace Frontenac.Blueprints.Util.Wrappers.Id
 
         IVertex GetBaseElement(IElement e)
         {
+            Contract.Requires(e is IdVertex);
+            Contract.Ensures(Contract.Result<IVertex>() != null);
             return ((IdVertex)e).GetBaseVertex();
         }
 

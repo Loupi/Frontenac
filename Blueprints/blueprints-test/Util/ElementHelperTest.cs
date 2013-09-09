@@ -12,11 +12,11 @@ namespace Frontenac.Blueprints.Util
         [Test]
         public void TestCopyElementProperties()
         {
-            IGraph graph = new TinkerGraph();
-            IVertex v = graph.AddVertex(null);
+            var graph = new TinkerGraph();
+            var v = graph.AddVertex(null);
             v.SetProperty("name", "marko");
             v.SetProperty("age", 31);
-            IVertex u = graph.AddVertex(null);
+            var u = graph.AddVertex(null);
             Assert.AreEqual(u.GetPropertyKeys().Count(), 0);
             ElementHelper.CopyProperties(v, u);
             Assert.AreEqual(u.GetPropertyKeys().Count(), 2);
@@ -27,8 +27,8 @@ namespace Frontenac.Blueprints.Util
         [Test]
         public void TestRemoveProperties()
         {
-            IGraph graph = TinkerGraphFactory.CreateTinkerGraph();
-            IVertex vertex = graph.GetVertex(1);
+            var graph = TinkerGraphFactory.CreateTinkerGraph();
+            var vertex = graph.GetVertex(1);
             Assert.AreEqual(vertex.GetProperty("name"), "marko");
             Assert.AreEqual(vertex.GetProperty("age"), 29);
             Assert.AreEqual(vertex.GetPropertyKeys().Count(), 2);
@@ -47,18 +47,18 @@ namespace Frontenac.Blueprints.Util
         [Test]
         public void TestRemoveProperty()
         {
-            IGraph graph = TinkerGraphFactory.CreateTinkerGraph();
+            var graph = TinkerGraphFactory.CreateTinkerGraph();
             ElementHelper.RemoveProperty("name", graph.GetVertices());
-            foreach (IVertex v in graph.GetVertices())
+            foreach (var v in graph.GetVertices())
                 Assert.IsNull(v.GetProperty("name"));
         }
 
         [Test]
         public void TestRenameProperty()
         {
-            IGraph graph = TinkerGraphFactory.CreateTinkerGraph();
+            var graph = TinkerGraphFactory.CreateTinkerGraph();
             ElementHelper.RenameProperty("name", "name2", graph.GetVertices());
-            foreach (IVertex v in graph.GetVertices())
+            foreach (var v in graph.GetVertices())
             {
                 Assert.IsNull(v.GetProperty("name"));
                 Assert.IsNotNull(v.GetProperty("name2"));
@@ -70,23 +70,23 @@ namespace Frontenac.Blueprints.Util
         [Test]
         public void TestTypecastProperty()
         {
-            IGraph graph = TinkerGraphFactory.CreateTinkerGraph();
-            foreach (IEdge e in graph.GetEdges())
+            var graph = TinkerGraphFactory.CreateTinkerGraph();
+            foreach (var e in graph.GetEdges())
                 Assert.True(e.GetProperty("weight") is double);
             
             ElementHelper.TypecastProperty("weight", typeof(double), graph.GetEdges());
-            foreach (IEdge e in graph.GetEdges())
+            foreach (var e in graph.GetEdges())
                 Assert.True(e.GetProperty("weight") is double);
         }
 
         [Test]
         public void TestHaveEqualProperties()
         {
-            IGraph graph = new TinkerGraph();
-            IVertex a = graph.AddVertex(null);
-            IVertex b = graph.AddVertex(null);
-            IVertex c = graph.AddVertex(null);
-            IVertex d = graph.AddVertex(null);
+            var graph = new TinkerGraph();
+            var a = graph.AddVertex(null);
+            var b = graph.AddVertex(null);
+            var c = graph.AddVertex(null);
+            var d = graph.AddVertex(null);
 
             a.SetProperty("name", "marko");
             a.SetProperty("age", 31);
@@ -107,9 +107,9 @@ namespace Frontenac.Blueprints.Util
         [Test]
         public void TestGetProperties()
         {
-            IGraph graph = TinkerGraphFactory.CreateTinkerGraph();
-            IVertex vertex = graph.GetVertex(1);
-            IDictionary<string, object> map = ElementHelper.GetProperties(vertex);
+            var graph = TinkerGraphFactory.CreateTinkerGraph();
+            var vertex = graph.GetVertex(1);
+            var map = ElementHelper.GetProperties(vertex);
             Assert.AreEqual(map.Count, 2);
             Assert.AreEqual(map.Get("name"), "marko");
             Assert.AreEqual(map.Get("age"), 29);
@@ -123,9 +123,9 @@ namespace Frontenac.Blueprints.Util
         [Test]
         public void TestSetProperties()
         {
-            IGraph graph = new TinkerGraph();
-            IVertex vertex = graph.AddVertex(null);
-            IDictionary<string, object> map = new Dictionary<string, object>();
+            var graph = new TinkerGraph();
+            var vertex = graph.AddVertex(null);
+            var map = new Dictionary<string, object>();
             map.Put("name", "pierre");
             ElementHelper.SetProperties(vertex, map);
             Assert.AreEqual(vertex.GetPropertyKeys().Count(), 1);
@@ -142,8 +142,8 @@ namespace Frontenac.Blueprints.Util
         [Test]
         public void TestSetPropertiesVarArgs()
         {
-            IGraph graph = new TinkerGraph();
-            IVertex vertex = graph.AddVertex(null);
+            var graph = new TinkerGraph();
+            var vertex = graph.AddVertex(null);
             ElementHelper.SetProperties(vertex, "name", "pierre");
             Assert.AreEqual(vertex.GetPropertyKeys().Count(), 1);
             Assert.AreEqual(vertex.GetProperty("name"), "pierre");
@@ -157,11 +157,14 @@ namespace Frontenac.Blueprints.Util
             try
             {
                 ElementHelper.SetProperties(vertex, "a", 12, "b");
-                Assert.True(false);
+                Assert.Fail();
             }
-            catch (ArgumentException)
+            catch (Exception x)
             {
-                Assert.False(false);
+                if (x.GetType().FullName != Portability.ContractExceptionName)
+                {
+                    throw;
+                }
             }
         }
     }

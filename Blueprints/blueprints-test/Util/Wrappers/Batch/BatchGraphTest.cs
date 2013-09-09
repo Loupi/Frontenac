@@ -392,7 +392,7 @@ namespace Frontenac.Blueprints.Util.Wrappers.Batch
                 return _graph.GetEdges(key, value);
             }
 
-            public IGraphQuery Query()
+            public IQuery Query()
             {
                 return _graph.Query();
             }

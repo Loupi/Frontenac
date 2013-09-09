@@ -1,8 +1,13 @@
-﻿namespace Frontenac.Blueprints
+﻿using System.Collections.Generic;
+using System.Diagnostics.Contracts;
+using Frontenac.Blueprints.Contracts;
+
+namespace Frontenac.Blueprints
 {
     /// <summary>
     /// A VertexQuery object defines a collection of filters and modifiers that are used to intelligently select edges from a vertex.
     /// </summary>
+    [ContractClass(typeof(VertexQueryContract))]
     public interface IVertexQuery : IQuery
     {
         /// <summary>
@@ -29,6 +34,6 @@
         /// Return the raw ids of the vertices on the other end of the edges.
         /// </summary>
         /// <returns>the raw ids of the vertices on the other end of the edges</returns>
-        object VertexIds();
+        IEnumerable<object> VertexIds();
     }
 }

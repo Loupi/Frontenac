@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics.Contracts;
 
 namespace Frontenac.Blueprints.Util.Wrappers.ReadOnly
 {
@@ -9,6 +10,8 @@ namespace Frontenac.Blueprints.Util.Wrappers.ReadOnly
 
         public ReadOnlyIndex(IIndex rawIndex)
         {
+            Contract.Requires(rawIndex != null);
+
             RawIndex = rawIndex;
         }
 

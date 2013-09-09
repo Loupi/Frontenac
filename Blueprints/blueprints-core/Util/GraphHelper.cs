@@ -1,4 +1,4 @@
-﻿using System;
+﻿using System.Diagnostics.Contracts;
 
 namespace Frontenac.Blueprints.Util
 {
@@ -13,11 +13,13 @@ namespace Frontenac.Blueprints.Util
         /// <returns>the vertex created in the graph with the provided properties set</returns>
         public static IVertex AddVertex(IGraph graph, object id, params object[] properties)
         {
-            if ((properties.Length % 2) != 0)
-                throw new ArgumentException("There must be an equal number of keys and values");
+            Contract.Requires(graph != null);
+            Contract.Requires(properties != null);
+            Contract.Requires(properties.Length % 2 == 0);
+            Contract.Ensures(Contract.Result<IVertex>() != null);
 
-            IVertex vertex = graph.AddVertex(id);
-            for (int i = 0; i < properties.Length; i = i + 2)
+            var vertex = graph.AddVertex(id);
+            for (var i = 0; i < properties.Length; i = i + 2)
                 vertex.SetProperty((string)properties[i], properties[i + 1]);
 
             return vertex;
@@ -35,11 +37,16 @@ namespace Frontenac.Blueprints.Util
         /// <returns>the edge created in the graph with the provided properties set</returns>
         public static IEdge AddEdge(IGraph graph, object id, IVertex outVertex, IVertex inVertex, string label, params object[] properties)
         {
-            if ((properties.Length % 2) != 0)
-                throw new ArgumentException("There must be an equal number of keys and values");
+            Contract.Requires(graph != null);
+            Contract.Requires(outVertex != null);
+            Contract.Requires(inVertex != null);
+            Contract.Requires(!string.IsNullOrWhiteSpace(label));
+            Contract.Requires(properties != null);
+            Contract.Requires(properties.Length % 2 == 0);
+            Contract.Ensures(Contract.Result<IEdge>() != null);
 
-            IEdge edge = graph.AddEdge(id, outVertex, inVertex, label);
-            for (int i = 0; i < properties.Length; i = i + 2)
+            var edge = graph.AddEdge(id, outVertex, inVertex, label);
+            for (var i = 0; i < properties.Length; i = i + 2)
                 edge.SetProperty((string)properties[i], properties[i + 1]);
 
             return edge;
@@ -54,17 +61,20 @@ namespace Frontenac.Blueprints.Util
         /// <param name="to">the graph to copy to</param>
         public static void CopyGraph(IGraph from, IGraph to)
         {
-            foreach (IVertex fromVertex in @from.GetVertices())
+            Contract.Requires(from != null);
+            Contract.Requires(to != null);
+
+            foreach (var fromVertex in @from.GetVertices())
             {
-                IVertex toVertex = to.AddVertex(fromVertex.Id);
+                var toVertex = to.AddVertex(fromVertex.Id);
                 ElementHelper.CopyProperties(fromVertex, toVertex);
             }
 
-            foreach (IEdge fromEdge in from.GetEdges())
+            foreach (var fromEdge in from.GetEdges())
             {
-                IVertex outVertex = to.GetVertex(fromEdge.GetVertex(Direction.Out).Id);
-                IVertex inVertex = to.GetVertex(fromEdge.GetVertex(Direction.In).Id);
-                IEdge toEdge = to.AddEdge(fromEdge.Id, outVertex, inVertex, fromEdge.Label);
+                var outVertex = to.GetVertex(fromEdge.GetVertex(Direction.Out).Id);
+                var inVertex = to.GetVertex(fromEdge.GetVertex(Direction.In).Id);
+                var toEdge = to.AddEdge(fromEdge.Id, outVertex, inVertex, fromEdge.Label);
                 ElementHelper.CopyProperties(fromEdge, toEdge);
             }
         }

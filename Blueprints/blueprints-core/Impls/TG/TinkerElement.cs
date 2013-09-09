@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics.Contracts;
 using Frontenac.Blueprints.Util;
 
 namespace Frontenac.Blueprints.Impls.TG
@@ -13,6 +14,9 @@ namespace Frontenac.Blueprints.Impls.TG
 
         protected TinkerElement(string id, TinkerGraph graph)
         {
+            Contract.Requires(id != null);
+            Contract.Requires(graph != null);
+
             Graph = graph;
             RawId = id;
         }
@@ -30,7 +34,7 @@ namespace Frontenac.Blueprints.Impls.TG
         public void SetProperty(string key, object value)
         {
             ElementHelper.ValidateProperty(this, key, value);
-            object oldValue = Properties.Put(key, value);
+            var oldValue = Properties.Put(key, value);
             if (this is TinkerVertex)
                 Graph.VertexKeyIndex.AutoUpdate(key, value, oldValue, this);
             else
@@ -39,7 +43,7 @@ namespace Frontenac.Blueprints.Impls.TG
 
         public object RemoveProperty(string key)
         {
-            object oldValue = Properties.JavaRemove(key);
+            var oldValue = Properties.JavaRemove(key);
             if (this is TinkerVertex)
                 Graph.VertexKeyIndex.AutoRemove(key, oldValue, this);
             else

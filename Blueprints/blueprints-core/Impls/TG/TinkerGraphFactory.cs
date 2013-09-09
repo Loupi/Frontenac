@@ -1,36 +1,40 @@
-﻿namespace Frontenac.Blueprints.Impls.TG
+﻿using System.Diagnostics.Contracts;
+
+namespace Frontenac.Blueprints.Impls.TG
 {
     public static class TinkerGraphFactory
     {
         public static TinkerGraph CreateTinkerGraph()
         {
+            Contract.Ensures(Contract.Result<TinkerGraph>() != null);
+
             var graph = new TinkerGraph();
 
-            IVertex marko = graph.AddVertex("1");
+            var marko = graph.AddVertex("1");
             marko.SetProperty("name", "marko");
             marko.SetProperty("age", 29);
 
-            IVertex vadas = graph.AddVertex("2");
+            var vadas = graph.AddVertex("2");
             vadas.SetProperty("name", "vadas");
             vadas.SetProperty("age", 27);
 
-            IVertex lop = graph.AddVertex("3");
+            var lop = graph.AddVertex("3");
             lop.SetProperty("name", "lop");
             lop.SetProperty("lang", "java");
 
-            IVertex josh = graph.AddVertex("4");
+            var josh = graph.AddVertex("4");
             josh.SetProperty("name", "josh");
             josh.SetProperty("age", 32);
 
-            IVertex ripple = graph.AddVertex("5");
+            var ripple = graph.AddVertex("5");
             ripple.SetProperty("name", "ripple");
             ripple.SetProperty("lang", "java");
 
-            IVertex peter = graph.AddVertex("6");
+            var peter = graph.AddVertex("6");
             peter.SetProperty("name", "peter");
             peter.SetProperty("age", 35);
 
-            IVertex loupi = graph.AddVertex("7");
+            var loupi = graph.AddVertex("7");
             loupi.SetProperty("name", "loupi");
             loupi.SetProperty("age", 33);
             loupi.SetProperty("lang", "c#");

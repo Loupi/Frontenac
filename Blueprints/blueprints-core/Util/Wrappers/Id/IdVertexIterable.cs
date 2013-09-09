@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics.Contracts;
 using System.Linq;
 
 namespace Frontenac.Blueprints.Util.Wrappers.Id
@@ -12,6 +13,9 @@ namespace Frontenac.Blueprints.Util.Wrappers.Id
 
         public IdVertexIterable(IEnumerable<IElement> iterable, IdGraph idGraph)
         {
+            Contract.Requires(iterable != null);
+            Contract.Requires(idGraph != null);
+
             _iterable = iterable;
             _idGraph = idGraph;
         }
@@ -43,7 +47,7 @@ namespace Frontenac.Blueprints.Util.Wrappers.Id
 
         public IEnumerator<IVertex> GetEnumerator()
         {
-            return (from IVertex v in _iterable select new IdVertex(v, _idGraph)).Cast<IVertex>().GetEnumerator();
+            return (_iterable.OfType<IVertex>().Select(v => new IdVertex(v, _idGraph))).GetEnumerator();
         }
 
         System.Collections.IEnumerator System.Collections.IEnumerable.GetEnumerator()

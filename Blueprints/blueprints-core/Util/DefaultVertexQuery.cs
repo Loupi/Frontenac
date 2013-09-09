@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Diagnostics.Contracts;
 using System.Linq;
 
 namespace Frontenac.Blueprints.Util
@@ -13,26 +14,9 @@ namespace Frontenac.Blueprints.Util
 
         public DefaultVertexQuery(IVertex vertex)
         {
+            Contract.Requires(vertex != null);
+
             _vertex = vertex;
-        }
-
-        public override IQuery Has(string key, object value)
-        {
-            HasContainers.Add(new HasContainer(key, value, Compare.Equal));
-            return this;
-        }
-
-        public override IQuery Has<T>(string key, Compare compare, T value)
-        {
-            HasContainers.Add(new HasContainer(key, value, compare));
-            return this;
-        }
-
-        public override IQuery Interval<T>(string key, T startValue, T endValue)
-        {
-            HasContainers.Add(new HasContainer(key, startValue, Compare.GreaterThanEqual));
-            HasContainers.Add(new HasContainer(key, endValue, Compare.LessThan));
-            return this;
         }
 
         public override IEnumerable<IEdge> Edges()
@@ -43,12 +27,6 @@ namespace Frontenac.Blueprints.Util
         public override IEnumerable<IVertex> Vertices()
         {
             return new DefaultVertexQueryIterable<IVertex>(this, true);
-        }
-
-        public override IQuery Limit(long max)
-        {
-            Innerlimit = max;
-            return this;
         }
 
         public new IVertexQuery Direction(Direction direction)
@@ -68,9 +46,9 @@ namespace Frontenac.Blueprints.Util
             return Edges().LongCount();
         }
 
-        public object VertexIds()
+        public IEnumerable<object> VertexIds()
         {
-            return Vertices().Select(vertex => vertex.Id).ToList();
+            return Vertices().Select(vertex => vertex.Id);
         }
 
         class DefaultVertexQueryIterable<T> : IEnumerable<T> where T : IElement
@@ -83,6 +61,8 @@ namespace Frontenac.Blueprints.Util
 
             public DefaultVertexQueryIterable(DefaultVertexQuery defaultVertexQuery, bool forVertex)
             {
+                Contract.Requires(defaultVertexQuery != null);
+
                 _defaultVertexQuery = defaultVertexQuery;
                 _forVertex = forVertex;
                 _itty = _defaultVertexQuery._vertex.GetEdges(((DefaultQuery) _defaultVertexQuery).Direction, ((DefaultQuery) _defaultVertexQuery).Labels).GetEnumerator();
@@ -92,20 +72,24 @@ namespace Frontenac.Blueprints.Util
             {
                 while (LoadNext())
                 {
-                    IEdge temp = _nextEdge;
+                    var temp = _nextEdge;
                     _nextEdge = null;
                     if (_forVertex && temp != null)
                     {
-                        if (((DefaultQuery) _defaultVertexQuery).Direction == Blueprints.Direction.Out)
-                            yield return (T)temp.GetVertex(Blueprints.Direction.In);
-                        else if (((DefaultQuery) _defaultVertexQuery).Direction == Blueprints.Direction.In)
-                            yield return (T)temp.GetVertex(Blueprints.Direction.Out);
-                        else
+                        switch (((DefaultQuery) _defaultVertexQuery).Direction)
                         {
-                            if (temp.GetVertex(Blueprints.Direction.Out).Equals(_defaultVertexQuery._vertex))
-                                yield return (T)temp.GetVertex(Blueprints.Direction.In);
-                            else
-                                yield return (T)temp.GetVertex(Blueprints.Direction.Out);
+                            case Blueprints.Direction.Out:
+                                yield return (T) temp.GetVertex(Blueprints.Direction.In);
+                                break;
+                            case Blueprints.Direction.In:
+                                yield return (T) temp.GetVertex(Blueprints.Direction.Out);
+                                break;
+                            default:
+                                if (temp.GetVertex(Blueprints.Direction.Out).Equals(_defaultVertexQuery._vertex))
+                                    yield return (T) temp.GetVertex(Blueprints.Direction.In);
+                                else
+                                    yield return (T) temp.GetVertex(Blueprints.Direction.Out);
+                                break;
                         }
                     }
                     else
@@ -124,8 +108,8 @@ namespace Frontenac.Blueprints.Util
                 if (_count >= _defaultVertexQuery.Innerlimit) return false;
                 while (_itty.MoveNext())
                 {
-                    IEdge edge = _itty.Current;
-                    bool filter = _defaultVertexQuery.HasContainers.Any(hasContainer => !hasContainer.IsLegal(edge));
+                    var edge = _itty.Current;
+                    var filter = _defaultVertexQuery.HasContainers.Any(hasContainer => !hasContainer.IsLegal(edge));
                     if (!filter)
                     {
                         _nextEdge = edge;

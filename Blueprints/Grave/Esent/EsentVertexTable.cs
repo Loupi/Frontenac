@@ -36,15 +36,16 @@ namespace Grave.Esent
                 using (var update = new Update(Session, TableId, JET_prep.Replace))
                 {
                     var setInfo = new JET_SETINFO {itagSequence = iTag};
-                    
-                    byte[] data = null;
+
                     if (edgeId.HasValue && targetId.HasValue)
                     {
                         var key = ((((ulong)edgeId.Value) << 32)) | (ulong)(long)targetId.Value;
-                        data = BitConverter.GetBytes(key);
+                        var data = BitConverter.GetBytes(key);
+                        Api.JetSetColumn(Session, TableId, Columns[labelColumn], data, data.Length, SetColumnGrbit.UniqueMultiValues, setInfo);
                     }
-                    Api.JetSetColumn(Session, TableId, Columns[labelColumn], 
-                                     data, data == null ? 0 : data.Length, 0, SetColumnGrbit.UniqueMultiValues, setInfo);
+                    else
+                        Api.JetSetColumn(Session, TableId, Columns[labelColumn], null, 0, SetColumnGrbit.UniqueMultiValues, setInfo);
+
                     update.Save();
                 }
                 transaction.Commit(CommitTransactionGrbit.None);
@@ -65,7 +66,7 @@ namespace Grave.Esent
 
             if (!SetEdgeCursor(labelColumn, edgeId, targetId)) return;
 
-            var retrievecolumn = new JET_RETRIEVECOLUMN { columnid = Columns[labelColumn], grbit = RetrieveColumnGrbit.RetrieveTag };
+            var retrievecolumn = new JET_RETRIEVECOLUMN { columnid = Columns[labelColumn], grbit = RetrieveColumnGrbit.RetrieveTag | RetrieveColumnGrbit.RetrieveFromIndex };
             Api.JetRetrieveColumns(Session, TableId, new[] { retrievecolumn }, 1);
 
             WriteEdgeContent(labelColumn, null, null, retrievecolumn.itagSequence);
@@ -101,26 +102,11 @@ namespace Grave.Esent
 
         void CreateEdgeColumn(string columnName)
         {
-            if (string.IsNullOrWhiteSpace(columnName))
-                throw new ArgumentException("labelName");
-
-            JET_COLUMNID columnId;
-            if (Columns.TryGetValue(columnName, out columnId)) return;
-            var bookmark = new byte[5];
-            int sz;
-            Api.JetGetBookmark(Session, TableId, bookmark, bookmark.Length, out sz);
-
-            Api.JetAddColumn(Session, TableId, columnName, new JET_COLUMNDEF
+            if (CreateColumn(columnName, VistaColtyp.LongLong, ColumndefGrbit.ColumnMultiValued | ColumndefGrbit.ColumnTagged))
             {
-                coltyp = VistaColtyp.LongLong,
-                grbit = ColumndefGrbit.ColumnMultiValued | ColumndefGrbit.ColumnTagged
-            }, null, 0, out columnId);
-            Columns.Add(columnName, columnId);
-
-            var description = string.Format("+{0}\0\0", columnName);
-            Api.JetCreateIndex(Session, TableId, string.Concat(columnName, "Index"), CreateIndexGrbit.None, description, description.Length, 50);
-
-            Api.JetGotoBookmark(Session, TableId, bookmark, bookmark.Length);
+                var description = string.Format("+{0}\0\0", columnName);
+                Api.JetCreateIndex(Session, TableId, string.Concat(columnName, "Index"), CreateIndexGrbit.None, description, description.Length, 50);
+            }
         }
 
         public int CountEdges(int vertexId, string labelName)

@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Diagnostics.Contracts;
 
 namespace Frontenac.Blueprints.Util.Wrappers.Partition
 {
@@ -9,36 +10,33 @@ namespace Frontenac.Blueprints.Util.Wrappers.Partition
 
         protected PartitionElement(IElement baseElement, PartitionGraph partitionGraph)
         {
+            Contract.Requires(baseElement != null);
+            Contract.Requires(partitionGraph != null);
+
             BaseElement = baseElement;
             Graph = partitionGraph;
         }
 
         public void SetProperty(string key, object value)
         {
-            if (!key.Equals(Graph.GetPartitionKey()))
+            if (!key.Equals(Graph.PartitionKey))
                 BaseElement.SetProperty(key, value);
         }
 
         public object GetProperty(string key)
         {
-            if (key.Equals(Graph.GetPartitionKey()))
-                return null;
-
-            return BaseElement.GetProperty(key);
+            return key.Equals(Graph.PartitionKey) ? null : BaseElement.GetProperty(key);
         }
 
         public object RemoveProperty(string key)
         {
-            if (key.Equals(Graph.GetPartitionKey()))
-                return null;
-
-            return BaseElement.RemoveProperty(key);
+            return key.Equals(Graph.PartitionKey) ? null : BaseElement.RemoveProperty(key);
         }
 
         public IEnumerable<string> GetPropertyKeys()
         {
-            ISet<string> keys = new HashSet<string>(BaseElement.GetPropertyKeys());
-            keys.Remove(Graph.GetPartitionKey());
+            var keys = new HashSet<string>(BaseElement.GetPropertyKeys());
+            keys.Remove(Graph.PartitionKey);
             return keys;
         }
 
@@ -59,17 +57,20 @@ namespace Frontenac.Blueprints.Util.Wrappers.Partition
 
         public IElement GetBaseElement()
         {
+            Contract.Ensures(Contract.Result<IElement>() != null);
             return BaseElement;
         }
 
         public string GetPartition()
         {
-            return (string)BaseElement.GetProperty(Graph.GetPartitionKey());
+            Contract.Ensures(!string.IsNullOrWhiteSpace(Contract.Result<string>()));
+            return (string)BaseElement.GetProperty(Graph.PartitionKey);
         }
 
         public void SetPartition(string partition)
         {
-            BaseElement.SetProperty(Graph.GetPartitionKey(), partition);
+            Contract.Requires(!string.IsNullOrWhiteSpace(partition));
+            BaseElement.SetProperty(Graph.PartitionKey, partition);
         }
 
         public void Remove()

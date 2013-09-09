@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics.Contracts;
 using System.Linq;
 
 namespace Frontenac.Blueprints.Util.Wrappers.Batch.Cache
@@ -13,7 +14,8 @@ namespace Frontenac.Blueprints.Util.Wrappers.Batch.Cache
 
         public StringIdVertexCache(StringCompression compression)
         {
-            if (compression == null) throw new ArgumentNullException("compression");
+            Contract.Requires(compression != null);
+
             _compression = compression;
             _map = new Dictionary<string, object>(InitialCapacity);
         }
@@ -26,7 +28,7 @@ namespace Frontenac.Blueprints.Util.Wrappers.Batch.Cache
 
         public object GetEntry(object externalId)
         {
-            string id = _compression.Compress(externalId.ToString());
+            var id = _compression.Compress(externalId.ToString());
             return _map.Get(id);
         }
 
@@ -37,7 +39,7 @@ namespace Frontenac.Blueprints.Util.Wrappers.Batch.Cache
 
         public void SetId(object vertexId, object externalId)
         {
-            string id = _compression.Compress(externalId.ToString());
+            var id = _compression.Compress(externalId.ToString());
             _map[id] = vertexId;
         }
 

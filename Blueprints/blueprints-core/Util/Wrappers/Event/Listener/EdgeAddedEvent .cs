@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Diagnostics.Contracts;
 
 namespace Frontenac.Blueprints.Util.Wrappers.Event.Listener
 {
@@ -8,6 +9,8 @@ namespace Frontenac.Blueprints.Util.Wrappers.Event.Listener
 
         public EdgeAddedEvent(IEdge edge)
         {
+            Contract.Requires(edge != null);
+
             _edge = edge;
         }
 

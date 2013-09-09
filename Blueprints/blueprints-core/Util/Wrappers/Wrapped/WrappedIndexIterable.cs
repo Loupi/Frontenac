@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Diagnostics.Contracts;
 using System.Linq;
 
 namespace Frontenac.Blueprints.Util.Wrappers.Wrapped
@@ -9,6 +10,8 @@ namespace Frontenac.Blueprints.Util.Wrappers.Wrapped
 
         public WrappedIndexIterable(IEnumerable<IIndex> iterable)
         {
+            Contract.Requires(iterable != null);
+
             _iterable = iterable;
         }
 

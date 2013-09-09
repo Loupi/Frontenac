@@ -12,64 +12,43 @@ namespace Frontenac.Blueprints.Util.IO.GraphSON
             Include, Exclude
         }
 
-        readonly IEnumerable<string> _vertexPropertyKeys;
-        readonly IEnumerable<string> _edgePropertyKeys;
-        readonly ElementPropertiesRule _vertexPropertiesRule;
-        readonly ElementPropertiesRule _edgePropertiesRule;
-
         /// <summary>
         /// A configuration that includes all properties of vertices and edges.
         /// </summary>
-        public static readonly ElementPropertyConfig AllProperties = new ElementPropertyConfig(null, null,
-            ElementPropertiesRule.Include, ElementPropertiesRule.Include);
+        public static readonly ElementPropertyConfig AllProperties = 
+            new ElementPropertyConfig(null, null, ElementPropertiesRule.Include, ElementPropertiesRule.Include);
 
         public ElementPropertyConfig(IEnumerable<string> vertexPropertyKeys, IEnumerable<string> edgePropertyKeys,
-                                 ElementPropertiesRule vertexPropertiesRule, ElementPropertiesRule edgePropertiesRule)
+                                     ElementPropertiesRule vertexPropertiesRule, ElementPropertiesRule edgePropertiesRule)
         {
-            _vertexPropertiesRule = vertexPropertiesRule;
-            _vertexPropertyKeys = vertexPropertyKeys;
-            _edgePropertiesRule = edgePropertiesRule;
-            _edgePropertyKeys = edgePropertyKeys;
+            VertexPropertiesRule = vertexPropertiesRule;
+            VertexPropertyKeys = vertexPropertyKeys;
+            EdgePropertiesRule = edgePropertiesRule;
+            EdgePropertyKeys = edgePropertyKeys;
         }
 
         /// <summary>
         /// Construct a configuration that includes the specified properties from both vertices and edges.
         /// </summary>
-        public static ElementPropertyConfig IncludeProperties(IEnumerable<string> vertexPropertyKeys,
-                                                          IEnumerable<string> edgePropertyKeys)
+        public static ElementPropertyConfig IncludeProperties(IEnumerable<string> vertexPropertyKeys, IEnumerable<string> edgePropertyKeys)
         {
-            return new ElementPropertyConfig(vertexPropertyKeys, edgePropertyKeys, ElementPropertiesRule.Include,
-                    ElementPropertiesRule.Include);
+            return new ElementPropertyConfig(vertexPropertyKeys, edgePropertyKeys, ElementPropertiesRule.Include, ElementPropertiesRule.Include);
         }
 
         /// <summary>
         /// Construct a configuration that excludes the specified properties from both vertices and edges.
         /// </summary>
-        public static ElementPropertyConfig ExcludeProperties(IEnumerable<string> vertexPropertyKeys,
-                                                          IEnumerable<string> edgePropertyKeys)
+        public static ElementPropertyConfig ExcludeProperties(IEnumerable<string> vertexPropertyKeys, IEnumerable<string> edgePropertyKeys)
         {
-            return new ElementPropertyConfig(vertexPropertyKeys, edgePropertyKeys, ElementPropertiesRule.Exclude,
-                    ElementPropertiesRule.Exclude);
+            return new ElementPropertyConfig(vertexPropertyKeys, edgePropertyKeys, ElementPropertiesRule.Exclude, ElementPropertiesRule.Exclude);
         }
 
-        public IEnumerable<string> GetVertexPropertyKeys()
-        {
-            return _vertexPropertyKeys;
-        }
+        public IEnumerable<string> VertexPropertyKeys { get; protected set; }
 
-        public IEnumerable<string> GetEdgePropertyKeys()
-        {
-            return _edgePropertyKeys;
-        }
+        public IEnumerable<string> EdgePropertyKeys { get; protected set; }
 
-        public ElementPropertiesRule GetVertexPropertiesRule()
-        {
-            return _vertexPropertiesRule;
-        }
+        public ElementPropertiesRule VertexPropertiesRule { get; protected set; }
 
-        public ElementPropertiesRule GetEdgePropertiesRule()
-        {
-            return _edgePropertiesRule;
-        }
+        public ElementPropertiesRule EdgePropertiesRule { get; protected set; }
     }
 }

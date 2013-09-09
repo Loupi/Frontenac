@@ -125,14 +125,14 @@ namespace Grave_test
 
             public override void LoadGraphData(GraveGraph graph, string directory)
             {
-                GraphSonReader.InputGraph(graph, string.Concat(directory, GraphFileGraphson));
+                GraphSONReader.InputGraph(graph, string.Concat(directory, GraphFileGraphson));
             }
 
             public override void SaveGraphData(GraveGraph graph, string directory)
             {
                 string filePath = string.Concat(directory, GraphFileGraphson);
                 DeleteFile(filePath);
-                GraphSonWriter.OutputGraph(graph, filePath, GraphSonMode.EXTENDED);
+                GraphSonWriter.OutputGraph(graph, filePath, GraphSONMode.EXTENDED);
             }
         }
 

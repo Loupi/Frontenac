@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Diagnostics.Contracts;
 using Frontenac.Blueprints.Util.Wrappers.Event.Listener;
 
 namespace Frontenac.Blueprints.Util.Wrappers.Event
@@ -24,6 +25,8 @@ namespace Frontenac.Blueprints.Util.Wrappers.Event
 
         public EventGraph(IGraph baseGraph)
         {
+            Contract.Requires(baseGraph != null);
+
             BaseGraph = baseGraph;
             _features = BaseGraph.Features.CopyFeatures();
             _features.IsWrapper = true;
@@ -38,41 +41,59 @@ namespace Frontenac.Blueprints.Util.Wrappers.Event
 
         public void AddListener(IGraphChangedListener listener)
         {
+            Contract.Requires(listener != null);
+
             GraphChangedListeners.Add(listener);
         }
 
         public IEnumerator<IGraphChangedListener> GetListenerIterator()
         {
+            Contract.Ensures(Contract.Result<IEnumerator<IGraphChangedListener>>() != null);
+
             return GraphChangedListeners.GetEnumerator();
         }
 
         public EventTrigger GetTrigger()
         {
+            Contract.Ensures(Contract.Result<EventTrigger>() != null);
+
             return Trigger;
         }
 
         public void RemoveListener(IGraphChangedListener listener)
         {
+            Contract.Requires(listener != null);
+
             GraphChangedListeners.Remove(listener);
         }
 
         protected void OnVertexAdded(IVertex vertex)
         {
+            Contract.Requires(vertex != null);
+
             Trigger.AddEvent(new VertexAddedEvent(vertex));
         }
 
         protected void OnVertexRemoved(IVertex vertex, IDictionary<string, object> props)
         {
+            Contract.Requires(vertex != null);
+            Contract.Requires(props != null);
+
             Trigger.AddEvent(new VertexRemovedEvent(vertex, props));
         }
 
         protected void OnEdgeAdded(IEdge edge)
         {
+            Contract.Requires(edge != null);
+
             Trigger.AddEvent(new EdgeAddedEvent(edge));
         }
 
         protected void OnEdgeRemoved(IEdge edge, IDictionary<string, object> props)
         {
+            Contract.Requires(edge != null);
+            Contract.Requires(props != null);
+
             Trigger.AddEvent(new EdgeRemovedEvent(edge, props));
         }
 
@@ -81,7 +102,7 @@ namespace Frontenac.Blueprints.Util.Wrappers.Event
         /// </note>
         public IVertex AddVertex(object id)
         {
-            IVertex vertex = BaseGraph.AddVertex(id);
+            var vertex = BaseGraph.AddVertex(id);
             if (vertex == null)
                 return null;
             OnVertexAdded(vertex);
@@ -90,11 +111,8 @@ namespace Frontenac.Blueprints.Util.Wrappers.Event
 
         public IVertex GetVertex(object id)
         {
-            IVertex vertex = BaseGraph.GetVertex(id);
-            if (null == vertex)
-                return null;
-
-            return new EventVertex(vertex, this);
+            var vertex = BaseGraph.GetVertex(id);
+            return null == vertex ? null : new EventVertex(vertex, this);
         }
 
         /// <note>
@@ -102,11 +120,11 @@ namespace Frontenac.Blueprints.Util.Wrappers.Event
         /// </note>
         public void RemoveVertex(IVertex vertex)
         {
-            IVertex vertexToRemove = vertex;
+            var vertexToRemove = vertex;
             if (vertex is EventVertex)
                 vertexToRemove = (vertex as EventVertex).GetBaseVertex();
 
-            IDictionary<string, object> props = ElementHelper.GetProperties(vertex); 
+            var props = ElementHelper.GetProperties(vertex); 
             BaseGraph.RemoveVertex(vertexToRemove);
             OnVertexRemoved(vertex, props);
         }
@@ -126,15 +144,15 @@ namespace Frontenac.Blueprints.Util.Wrappers.Event
         /// </note>
         public IEdge AddEdge(object id, IVertex outVertex, IVertex inVertex, string label)
         {
-            IVertex outVertexToSet = outVertex;
+            var outVertexToSet = outVertex;
             if (outVertex is EventVertex)
                 outVertexToSet = (outVertex as EventVertex).GetBaseVertex();
 
-            IVertex inVertexToSet = inVertex;
+            var inVertexToSet = inVertex;
             if (inVertex is EventVertex)
                 inVertexToSet = (inVertex as EventVertex).GetBaseVertex();
 
-            IEdge edge = BaseGraph.AddEdge(id, outVertexToSet, inVertexToSet, label);
+            var edge = BaseGraph.AddEdge(id, outVertexToSet, inVertexToSet, label);
             if (edge == null)
                 return null;
             OnEdgeAdded(edge);
@@ -143,11 +161,8 @@ namespace Frontenac.Blueprints.Util.Wrappers.Event
 
         public IEdge GetEdge(object id)
         {
-            IEdge edge = BaseGraph.GetEdge(id);
-            if (null == edge)
-                return null;
-
-            return new EventEdge(edge, this);
+            var edge = BaseGraph.GetEdge(id);
+            return null == edge ? null : new EventEdge(edge, this);
         }
 
         /// <note>
@@ -155,11 +170,11 @@ namespace Frontenac.Blueprints.Util.Wrappers.Event
         /// </note>
         public void RemoveEdge(IEdge edge)
         {
-            IEdge edgeToRemove = edge;
+            var edgeToRemove = edge;
             if (edge is EventEdge)
                 edgeToRemove = (edge as EventEdge).GetBaseEdge();
 
-            IDictionary<string, object> props = ElementHelper.GetProperties(edge); 
+            var props = ElementHelper.GetProperties(edge); 
             BaseGraph.RemoveEdge(edgeToRemove);
             OnEdgeRemoved(edge, props);
         }
@@ -174,9 +189,9 @@ namespace Frontenac.Blueprints.Util.Wrappers.Event
             return new EventEdgeIterable(BaseGraph.GetEdges(key, value), this);
         }
 
-        public IGraphQuery Query()
+        public IQuery Query()
         {
-            return new WrappedGraphQuery(BaseGraph.Query(),
+            return new WrappedQuery(BaseGraph.Query(),
                 t => new EventEdgeIterable(t.Edges(), this),
                 t => new EventVertexIterable(t.Vertices(), this));
         }

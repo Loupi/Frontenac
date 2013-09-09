@@ -1,4 +1,7 @@
-﻿namespace Frontenac.Blueprints
+﻿using System.Diagnostics.Contracts;
+using Frontenac.Blueprints.Contracts;
+
+namespace Frontenac.Blueprints
 {
     /// <summary>
     /// An Edge links two vertices. Along with its key/value properties, an edge has both a directionality and a label.
@@ -6,6 +9,7 @@
     /// The edge label determines the type of relationship that exists between the two vertices.
     /// Diagrammatically, outVertex ---label---> inVertex.
     /// </summary>
+    [ContractClass(typeof(EdgeContract))]
     public interface IEdge : IElement
     {
         /// <summary>

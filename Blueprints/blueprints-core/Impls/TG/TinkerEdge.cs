@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Diagnostics.Contracts;
 using Frontenac.Blueprints.Util;
 
 namespace Frontenac.Blueprints.Impls.TG
@@ -12,6 +13,11 @@ namespace Frontenac.Blueprints.Impls.TG
         public TinkerEdge(string id, IVertex outVertex, IVertex inVertex, string label, TinkerGraph graph)
             : base(id, graph)
         {
+            Contract.Requires(outVertex != null);
+            Contract.Requires(inVertex != null);
+            Contract.Requires(!string.IsNullOrWhiteSpace(label));
+            Contract.Requires(graph != null);
+
             Label = label;
             _outVertex = outVertex;
             _inVertex = inVertex;

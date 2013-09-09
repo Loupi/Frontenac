@@ -1,4 +1,5 @@
-﻿using Newtonsoft.Json;
+﻿using System.Diagnostics.Contracts;
+using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using System;
 using System.Collections.Generic;
@@ -10,7 +11,9 @@ namespace Frontenac.Blueprints.Util.IO.GraphSON
     /// <summary>
     /// GraphSONReader reads the data from a TinkerPop JSON stream to a graph.
     /// </summary>
-    public class GraphSonReader
+// ReSharper disable InconsistentNaming
+    public class GraphSONReader
+// ReSharper restore InconsistentNaming
     {
         readonly IGraph _graph;
 
@@ -18,8 +21,10 @@ namespace Frontenac.Blueprints.Util.IO.GraphSON
         /// 
         /// </summary>
         /// <param name="graph">the graph to populate with the JSON data</param>
-        public GraphSonReader(IGraph graph)
+        public GraphSONReader(IGraph graph)
         {
+            Contract.Requires(graph != null);
+
             _graph = graph;
         }
 
@@ -30,6 +35,8 @@ namespace Frontenac.Blueprints.Util.IO.GraphSON
         /// <param name="jsonInputStream">a Stream of JSON data</param>
         public void InputGraph(Stream jsonInputStream)
         {
+            Contract.Requires(jsonInputStream != null);
+
             InputGraph(_graph, jsonInputStream, 1000);
         }
 
@@ -40,6 +47,8 @@ namespace Frontenac.Blueprints.Util.IO.GraphSON
         /// <param name="filename">name of a file of JSON data</param>
         public void InputGraph(string filename)
         {
+            Contract.Requires(!string.IsNullOrWhiteSpace(filename));
+
             InputGraph(_graph, filename, 1000);
         }
 
@@ -51,6 +60,9 @@ namespace Frontenac.Blueprints.Util.IO.GraphSON
         /// <param name="bufferSize">the amount of elements to hold in memory before committing a transactions (only valid for TransactionalGraphs)</param>
         public void InputGraph(Stream jsonInputStream, int bufferSize)
         {
+            Contract.Requires(jsonInputStream != null);
+            Contract.Requires(bufferSize > 0);
+
             InputGraph(_graph, jsonInputStream, bufferSize);
         }
 
@@ -62,6 +74,9 @@ namespace Frontenac.Blueprints.Util.IO.GraphSON
         /// <param name="bufferSize">the amount of elements to hold in memory before committing a transactions (only valid for TransactionalGraphs)</param>
         public void InputGraph(string filename, int bufferSize)
         {
+            Contract.Requires(!string.IsNullOrWhiteSpace(filename));
+            Contract.Requires(bufferSize > 0);
+
             InputGraph(_graph, filename, bufferSize);
         }
 
@@ -73,6 +88,9 @@ namespace Frontenac.Blueprints.Util.IO.GraphSON
         /// <param name="jsonInputStream">a Stream of JSON data</param>
         public static void InputGraph(IGraph graph, Stream jsonInputStream)
         {
+            Contract.Requires(graph != null);
+            Contract.Requires(jsonInputStream != null);
+
             InputGraph(graph, jsonInputStream, 1000);
         }
 
@@ -84,16 +102,27 @@ namespace Frontenac.Blueprints.Util.IO.GraphSON
         /// <param name="filename">name of a file of JSON data</param>
         public static void InputGraph(IGraph graph, string filename)
         {
+            Contract.Requires(graph != null);
+            Contract.Requires(!string.IsNullOrWhiteSpace(filename));
+
             InputGraph(graph, filename, 1000);
         }
 
         public static void InputGraph(IGraph inputGraph, Stream jsonInputStream, int bufferSize)
         {
+            Contract.Requires(inputGraph != null);
+            Contract.Requires(jsonInputStream != null);
+            Contract.Requires(bufferSize > 0);
+
             InputGraph(inputGraph, jsonInputStream, bufferSize, null, null);
         }
 
         public static void InputGraph(IGraph inputGraph, string filename, int bufferSize)
         {
+            Contract.Requires(inputGraph != null);
+            Contract.Requires(!string.IsNullOrWhiteSpace(filename));
+            Contract.Requires(bufferSize > 0);
+
             InputGraph(inputGraph, filename, bufferSize, null, null);
         }
 
@@ -109,7 +138,11 @@ namespace Frontenac.Blueprints.Util.IO.GraphSON
         public static void InputGraph(IGraph inputGraph, string filename, int bufferSize,
                                   IEnumerable<string> edgePropertyKeys, IEnumerable<string> vertexPropertyKeys)
         {
-            using (FileStream fis = File.OpenRead(filename))
+            Contract.Requires(inputGraph != null);
+            Contract.Requires(!string.IsNullOrWhiteSpace(filename));
+            Contract.Requires(bufferSize > 0);
+
+            using (var fis = File.OpenRead(filename))
             {
                 InputGraph(inputGraph, fis, bufferSize, edgePropertyKeys, vertexPropertyKeys);
             }
@@ -127,18 +160,20 @@ namespace Frontenac.Blueprints.Util.IO.GraphSON
         public static void InputGraph(IGraph inputGraph, Stream jsonInputStream, int bufferSize,
                                   IEnumerable<string> edgePropertyKeys, IEnumerable<string> vertexPropertyKeys)
         {
+            Contract.Requires(inputGraph != null);
+            Contract.Requires(jsonInputStream != null);
+            Contract.Requires(bufferSize > 0);
 
             using (var sr = new StreamReader(jsonInputStream))
             {
                 using (var jp = new JsonTextReader(sr))
                 {
                     // if this is a transactional graph then we're buffering
-                    BatchGraph graph = BatchGraph.Wrap(inputGraph, bufferSize);
-
-                    IElementFactory elementFactory = new GraphElementFactory(graph);
+                    var graph = BatchGraph.Wrap(inputGraph, bufferSize);
+                    var elementFactory = new GraphElementFactory(graph);
                     
 // ReSharper disable PossibleMultipleEnumeration
-                    var graphson = new GraphSonUtility(GraphSonMode.NORMAL, elementFactory, vertexPropertyKeys, edgePropertyKeys);
+                    var graphson = new GraphSonUtility(GraphSONMode.NORMAL, elementFactory, vertexPropertyKeys, edgePropertyKeys);
 // ReSharper restore PossibleMultipleEnumeration
 
                     var serializer = JsonSerializer.Create(null);
@@ -148,7 +183,7 @@ namespace Frontenac.Blueprints.Util.IO.GraphSON
                         string fieldname = Convert.ToString(jp.Value);
                         if (fieldname == GraphSonTokens.Mode)
                         {
-                            var mode = (GraphSonMode)Enum.Parse(typeof(GraphSonMode), jp.ReadAsString());
+                            var mode = (GraphSONMode)Enum.Parse(typeof(GraphSONMode), jp.ReadAsString());
 // ReSharper disable PossibleMultipleEnumeration
                             graphson = new GraphSonUtility(mode, elementFactory, vertexPropertyKeys, edgePropertyKeys);
 // ReSharper restore PossibleMultipleEnumeration
@@ -168,8 +203,8 @@ namespace Frontenac.Blueprints.Util.IO.GraphSON
                             while (jp.Read() && jp.TokenType != JsonToken.EndArray)
                             {
                                 var node = (JObject)serializer.Deserialize(jp);
-                                IVertex inV = graph.GetVertex(GraphSonUtility.GetTypedValueFromJsonNode(node[GraphSonTokens.InV]));
-                                IVertex outV = graph.GetVertex(GraphSonUtility.GetTypedValueFromJsonNode(node[GraphSonTokens.OutV]));
+                                var inV = graph.GetVertex(GraphSonUtility.GetTypedValueFromJsonNode(node[GraphSonTokens.InV]));
+                                var outV = graph.GetVertex(GraphSonUtility.GetTypedValueFromJsonNode(node[GraphSonTokens.OutV]));
                                 graphson.EdgeFromJson(node, outV, inV);
                             }
                         }

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics.Contracts;
 using System.Globalization;
 using System.IO;
 
@@ -170,10 +171,8 @@ namespace Frontenac.Blueprints.Util.IO
         public StreamTokenizer(StreamReader r)
             : this()
         {
-            if (r == null)
-            {
-                throw new ArgumentNullException();
-            }
+            Contract.Requires(r != null);
+
             _reader = r;
         }
 

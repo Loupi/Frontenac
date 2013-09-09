@@ -19,7 +19,7 @@ namespace Frontenac.Blueprints.Util.Wrappers.Event
         /// </summary>
         public void Commit()
         {
-            bool transactionFailure = false;
+            var transactionFailure = false;
             try
             {
                 TransactionalGraph.Commit();
@@ -45,7 +45,7 @@ namespace Frontenac.Blueprints.Util.Wrappers.Event
         /// </summary>
         public void Rollback()
         {
-            bool transactionFailure = false;
+            var transactionFailure = false;
             try
             {
                 TransactionalGraph.Rollback();

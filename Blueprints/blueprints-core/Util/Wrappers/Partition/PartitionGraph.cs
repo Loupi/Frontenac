@@ -1,4 +1,6 @@
 ﻿using System.Collections.Generic;
+using System.Diagnostics.Contracts;
+using System.Linq;
 
 namespace Frontenac.Blueprints.Util.Wrappers.Partition
 {
@@ -12,6 +14,11 @@ namespace Frontenac.Blueprints.Util.Wrappers.Partition
 
         public PartitionGraph(IGraph baseGraph, string partitionKey, string writePartition, IEnumerable<string> readPartitions)
         {
+            Contract.Requires(baseGraph != null);
+            Contract.Requires(!string.IsNullOrWhiteSpace(partitionKey));
+            Contract.Requires(!string.IsNullOrWhiteSpace(writePartition));
+            Contract.Requires(readPartitions != null);
+
             BaseGraph = baseGraph;
             _partitionKey = partitionKey;
             _writePartition = writePartition;
@@ -26,43 +33,56 @@ namespace Frontenac.Blueprints.Util.Wrappers.Partition
 
         }
 
-        public string GetWritePartition()
+        public string WritePartition
         {
-            return _writePartition;
+            get
+            {
+                Contract.Ensures(Contract.Result<string>() != null);
+                return _writePartition;
+            }
+            set
+            {
+                Contract.Requires(value != null);
+                _writePartition = value;
+            }
         }
 
-        public void SetWritePartition(string writePartition)
+        public IEnumerable<string> GetReadPartitions()
         {
-            _writePartition = writePartition;
-        }
-
-        public ISet<string> GetReadPartitions()
-        {
-            return new HashSet<string>(_readPartitions);
+            Contract.Ensures(Contract.Result<IEnumerable<string>>() != null);
+            return _readPartitions.ToArray();
         }
 
         public void RemoveReadPartition(string readPartition)
         {
+            Contract.Requires(readPartition != null);
             _readPartitions.Remove(readPartition);
         }
 
         public void AddReadPartition(string readPartition)
         {
+            Contract.Requires(readPartition != null);
             _readPartitions.Add(readPartition);
         }
 
-        public void SetPartitionKey(string partitionKey)
+        public string PartitionKey
         {
-            _partitionKey = partitionKey;
-        }
-
-        public string GetPartitionKey()
-        {
-            return _partitionKey;
+            set
+            {
+                Contract.Requires(value != null);
+                _partitionKey = value;
+            }
+            get
+            {
+                Contract.Ensures(Contract.Result<string>() != null);
+                return _partitionKey;
+            }
         }
 
         public bool IsInPartition(IElement element)
         {
+            Contract.Requires(element != null);
+
             string writePartition;
             var partitionElement = element as PartitionElement;
             if (partitionElement != null)
@@ -107,11 +127,8 @@ namespace Frontenac.Blueprints.Util.Wrappers.Partition
 
         public IEdge GetEdge(object id)
         {
-            IEdge edge = BaseGraph.GetEdge(id);
-            if (null == edge)
-                return null;
-
-            return new PartitionEdge(edge, this);
+            var edge = BaseGraph.GetEdge(id);
+            return null == edge ? null : new PartitionEdge(edge, this);
         }
 
         public IEnumerable<IEdge> GetEdges()
@@ -149,9 +166,9 @@ namespace Frontenac.Blueprints.Util.Wrappers.Partition
             get { return _features; }
         }
 
-        public IGraphQuery Query()
+        public IQuery Query()
         {
-            return new WrappedGraphQuery(BaseGraph.Query(),
+            return new WrappedQuery(BaseGraph.Query(),
                 t => new PartitionEdgeIterable(t.Edges(), this),
                 t => new PartitionVertexIterable(t.Vertices(), this));
         }

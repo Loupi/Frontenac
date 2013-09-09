@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Diagnostics.Contracts;
 
 namespace Frontenac.Blueprints.Util
 {
@@ -13,6 +14,9 @@ namespace Frontenac.Blueprints.Util
         /// <returns>whether the two vertices are semantically the same </returns>
         public static bool HaveEqualNeighborhood(IVertex a, IVertex b, bool checkIdEquality)
         {
+            Contract.Requires(a != null);
+            Contract.Requires(b != null);
+
             if (checkIdEquality && !ElementHelper.HaveEqualIds(a, b))
                 return false;
 
@@ -28,6 +32,9 @@ namespace Frontenac.Blueprints.Util
         /// <returns>whether the two vertices have the same edge sets</returns>
         public static bool HaveEqualEdges(IVertex a, IVertex b, bool checkIdEquality)
         {
+            Contract.Requires(a != null);
+            Contract.Requires(b != null);
+
             var aEdgeSet = new HashSet<IEdge>(a.GetEdges(Direction.Out));
             var bEdgeSet = new HashSet<IEdge>(b.GetEdges(Direction.Out));
 
@@ -37,24 +44,27 @@ namespace Frontenac.Blueprints.Util
             aEdgeSet.Clear();
             bEdgeSet.Clear();
 
-            foreach (IEdge edge in a.GetEdges(Direction.In))
+            foreach (var edge in a.GetEdges(Direction.In))
                 aEdgeSet.Add(edge);
 
-            foreach (IEdge edge in b.GetEdges(Direction.In))
+            foreach (var edge in b.GetEdges(Direction.In))
                 bEdgeSet.Add(edge);
 
             return HasEqualEdgeSets(aEdgeSet, bEdgeSet, checkIdEquality);
         }
 
-        static bool HasEqualEdgeSets(HashSet<IEdge> aEdgeSet, HashSet<IEdge> bEdgeSet, bool checkIdEquality)
+        static bool HasEqualEdgeSets(ICollection<IEdge> aEdgeSet, ICollection<IEdge> bEdgeSet, bool checkIdEquality)
         {
+            Contract.Requires(aEdgeSet != null);
+            Contract.Requires(bEdgeSet != null);
+
             if (aEdgeSet.Count != bEdgeSet.Count)
                 return false;
 
-            foreach (IEdge aEdge in aEdgeSet)
+            foreach (var aEdge in aEdgeSet)
             {
                 IEdge tempEdge = null;
-                foreach (IEdge bEdge in bEdgeSet)
+                foreach (var bEdge in bEdgeSet)
                 {
                     if (bEdge.Label == aEdge.Label)
                     {

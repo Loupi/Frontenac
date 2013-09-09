@@ -87,10 +87,10 @@ namespace Frontenac.Blueprints
                 const int vertexCount = 200;
                 long counter = 0;
                 StopWatch();
-                for (int i = 0; i < edgeCount; i++)
+                for (var i = 0; i < edgeCount; i++)
                 {
-                    IVertex out_ = graph.AddVertex(ConvertId(graph, "" + counter++));
-                    IVertex in_ = graph.AddVertex(ConvertId(graph, "" + counter++));
+                    var out_ = graph.AddVertex(ConvertId(graph, "" + counter++));
+                    var in_ = graph.AddVertex(ConvertId(graph, "" + counter++));
                     graph.AddEdge(null, out_, in_, ConvertId(graph, Guid.NewGuid().ToString()));
                 }
                 PrintPerformance(graph.ToString(), vertexCount + edgeCount, "elements added", StopWatch());
@@ -108,7 +108,7 @@ namespace Frontenac.Blueprints
                     Assert.AreEqual(vertexCount, Count(graph.GetVertices()));
                     PrintPerformance(graph.ToString(), vertexCount, "vertices counted", StopWatch());
                     StopWatch();
-                    foreach (IVertex vertex in graph.GetVertices())
+                    foreach (var vertex in graph.GetVertices())
                     {
                         if (Count(vertex.GetEdges(Direction.Out)) > 0)
                         {
@@ -192,11 +192,14 @@ namespace Frontenac.Blueprints
                     try
                     {
                         graph.GetEdge(null);
-                        Assert.Fail("Getting an element with a null identifier must throw IllegalArgumentException");
+                        Assert.Fail();
                     }
-                    catch (ArgumentException)
+                    catch (Exception x)
                     {
-                        Assert.True(true);
+                        if (x.GetType().FullName != Portability.ContractExceptionName)
+                        {
+                            throw;
+                        }
                     }
 
                     Assert.Null(graph.GetEdge("asbv"));
@@ -215,10 +218,10 @@ namespace Frontenac.Blueprints
             var graph = GraphTest.GenerateGraph();
             try
             {
-                long counter = 200000;
+                var counter = 200000;
                 const int edgeCount = 10;
                 var edges = new HashSet<IEdge>();
-                for (int i = 0; i < edgeCount; i++)
+                for (var i = 0; i < edgeCount; i++)
                 {
                     var out_ = graph.AddVertex(ConvertId(graph, "" + counter++));
                     var in_ = graph.AddVertex(ConvertId(graph, "" + counter++));
@@ -239,7 +242,7 @@ namespace Frontenac.Blueprints
                     Assert.AreEqual(edgeCount, Count(graph.GetEdges()));
                     PrintPerformance(graph.ToString(), edgeCount, "edges counted", StopWatch());
 
-                    int i = edgeCount;
+                    var i = edgeCount;
                     StopWatch();
                     foreach (var edge in edges)
                     {
@@ -248,7 +251,7 @@ namespace Frontenac.Blueprints
                         Assert.AreEqual(i, Count(graph.GetEdges()));
                         if (graph.Features.SupportsVertexIteration)
                         {
-                            int x = 0;
+                            var x = 0;
                             foreach (var vertex in graph.GetVertices())
                             {
                                 if (Count(vertex.GetEdges(Direction.Out)) > 0)
@@ -525,7 +528,7 @@ namespace Frontenac.Blueprints
                     if (graph.Features.SupportsEdgeIteration)
                     {
                         Assert.AreEqual(3, Count(graph.GetEdges()));
-                        foreach (IEdge edge in graph.GetEdges())
+                        foreach (var edge in graph.GetEdges())
                         {
                             Assert.AreEqual(edge.GetVertex(Direction.In), edge.GetVertex(Direction.Out));
                             Assert.AreEqual(edge.GetVertex(Direction.In).Id, edge.GetVertex(Direction.Out).Id);
@@ -537,7 +540,7 @@ namespace Frontenac.Blueprints
                     if (graph.Features.SupportsEdgeIteration)
                     {
                         Assert.AreEqual(2, Count(graph.GetEdges()));
-                        foreach (IEdge edge in graph.GetEdges())
+                        foreach (var edge in graph.GetEdges())
                         {
                             Assert.AreEqual(edge.GetVertex(Direction.In), edge.GetVertex(Direction.Out));
                             Assert.AreEqual(edge.GetVertex(Direction.In).Id, edge.GetVertex(Direction.Out).Id);
@@ -553,7 +556,7 @@ namespace Frontenac.Blueprints
                     if (graph.Features.SupportsEdgeIteration)
                     {
                         Assert.AreEqual(Count(graph.GetEdges()), 1);
-                        foreach (IEdge edge in graph.GetEdges())
+                        foreach (var edge in graph.GetEdges())
                         {
                             Assert.AreEqual(edge.GetVertex(Direction.In), edge.GetVertex(Direction.Out));
                             Assert.AreEqual(edge.GetVertex(Direction.In).Id, edge.GetVertex(Direction.Out).Id);
@@ -588,8 +591,8 @@ namespace Frontenac.Blueprints
                     Assert.AreEqual(3, Count(graph.GetEdges()));
 
                     var edgeIds = new HashSet<string>();
-                    int count = 0;
-                    foreach (IEdge e in graph.GetEdges())
+                    var count = 0;
+                    foreach (var e in graph.GetEdges())
                     {
                         count++;
                         edgeIds.Add(e.Id.ToString());
@@ -753,15 +756,18 @@ namespace Frontenac.Blueprints
                 // fail based on the empty key.
                 if (graph.Features.SupportsEdgeProperties)
                 {
-                    IEdge e = graph.AddEdge(null, graph.AddVertex(null), graph.AddVertex(null), "friend");
+                    var e = graph.AddEdge(null, graph.AddVertex(null), graph.AddVertex(null), "friend");
                     try
                     {
                         e.SetProperty("", "value");
                         Assert.Fail();
                     }
-                    catch (ArgumentException)
+                    catch (Exception x)
                     {
-                        Assert.True(true);
+                        if (x.GetType().FullName != Portability.ContractExceptionName)
+                        {
+                            throw;
+                        }
                     }
                 }
             }
@@ -781,7 +787,7 @@ namespace Frontenac.Blueprints
                 var b = graph.AddEdge(null, graph.AddVertex(null), graph.AddVertex(null), ConvertId(graph, "knows"));
                 var c = graph.AddEdge(null, graph.AddVertex(null), graph.AddVertex(null), ConvertId(graph, "knows"));
 
-                object cId = c.Id;
+                var cId = c.Id;
 
                 if (graph.Features.SupportsEdgeIteration)
                     Assert.AreEqual(Count(graph.GetEdges()), 3);

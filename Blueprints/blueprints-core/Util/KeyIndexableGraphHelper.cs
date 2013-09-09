@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Diagnostics.Contracts;
 using System.Linq;
 
 namespace Frontenac.Blueprints.Util
@@ -18,6 +19,10 @@ namespace Frontenac.Blueprints.Util
         /// <returns>the number of element properties that were indexed</returns>
         public static long ReIndexElements<T>(IGraph graph, IEnumerable<T> elements, IEnumerable<string> keys) where T : IElement
         {
+            Contract.Requires(graph != null);
+            Contract.Requires(elements != null);
+            Contract.Requires(keys != null);
+
             var isTransactional = graph is ITransactionalGraph;
             var counter = 0;
             var k = keys.ToArray();

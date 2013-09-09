@@ -1,4 +1,6 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
+using System.Diagnostics.Contracts;
 
 namespace Frontenac.Blueprints.Util.IO
 {
@@ -9,7 +11,10 @@ namespace Frontenac.Blueprints.Util.IO
     {
         public int Compare(IElement a, IElement b)
         {
-            return System.String.Compare(a.Id.ToString(), b.Id.ToString(), System.StringComparison.Ordinal);
+            Contract.Requires(a != null);
+            Contract.Requires(b != null);
+
+            return string.Compare(a.Id.ToString(), b.Id.ToString(), StringComparison.Ordinal);
         }
     }
 }

@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Diagnostics.Contracts;
 
 namespace Frontenac.Blueprints.Util.Wrappers.Wrapped
 {
@@ -8,6 +9,8 @@ namespace Frontenac.Blueprints.Util.Wrappers.Wrapped
 
         protected WrappedElement(IElement baseElement)
         {
+            Contract.Requires(baseElement != null);
+
             BaseElement = baseElement;
         }
 
@@ -48,6 +51,7 @@ namespace Frontenac.Blueprints.Util.Wrappers.Wrapped
 
         public IElement GetBaseElement()
         {
+            Contract.Ensures(Contract.Result<IElement>() != null);
             return BaseElement;
         }
 

@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Diagnostics.Contracts;
 
 namespace Frontenac.Blueprints.Util
 {
@@ -13,6 +14,8 @@ namespace Frontenac.Blueprints.Util
 
         public VerticesFromEdgesIterable(IVertex vertex, Direction direction, params string[] labels)
         {
+            Contract.Requires(vertex != null);
+
             _direction = direction;
             _vertex = vertex;
             _iterable = vertex.GetEdges(direction, labels);
@@ -20,7 +23,7 @@ namespace Frontenac.Blueprints.Util
 
         public IEnumerator<IVertex> GetEnumerator()
         {
-            foreach (IEdge edge in _iterable)
+            foreach (var edge in _iterable)
             {
                 if (_direction == Direction.Out)
                     yield return edge.GetVertex(Direction.In);

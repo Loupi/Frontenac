@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics.Contracts;
 
 namespace Frontenac.Blueprints.Util.Wrappers.Id
 {
@@ -11,6 +12,9 @@ namespace Frontenac.Blueprints.Util.Wrappers.Id
 
         protected IdElement(IElement baseElement, IdGraph idGraph, bool propertyBased)
         {
+            Contract.Requires(baseElement != null);
+            Contract.Requires(idGraph != null);
+
             BaseElement = baseElement;
             IdGraph = idGraph;
             PropertyBased = propertyBased;
@@ -28,7 +32,7 @@ namespace Frontenac.Blueprints.Util.Wrappers.Id
         {
             if (PropertyBased)
             {
-                IEnumerable<string> keys = BaseElement.GetPropertyKeys();
+                var keys = BaseElement.GetPropertyKeys();
                 var s = new HashSet<string>(keys);
                 s.Remove(IdGraph.Id);
                 return s;

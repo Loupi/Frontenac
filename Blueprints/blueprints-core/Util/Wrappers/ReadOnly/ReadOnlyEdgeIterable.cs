@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics.Contracts;
 using System.Linq;
 
 namespace Frontenac.Blueprints.Util.Wrappers.ReadOnly
@@ -11,6 +12,8 @@ namespace Frontenac.Blueprints.Util.Wrappers.ReadOnly
 
         public ReadOnlyEdgeIterable(IEnumerable<IEdge> iterable)
         {
+            Contract.Requires(iterable != null);
+
             _iterable = iterable;
         }
 

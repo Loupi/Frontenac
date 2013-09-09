@@ -224,11 +224,17 @@ namespace Grave.Esent
 
         public void CreateColumn(string columnName)
         {
+            CreateColumn(columnName, _contentSerializer.IsBinary ? JET_coltyp.LongBinary : JET_coltyp.LongText,
+                         ColumndefGrbit.ColumnMaybeNull);
+        }
+
+        public bool CreateColumn(string columnName, JET_coltyp colType, ColumndefGrbit grBit)
+        {
             if (string.IsNullOrWhiteSpace(columnName))
                 throw new ArgumentException("columnName");
 
             JET_COLUMNID columnId;
-            if (Columns.TryGetValue(columnName, out columnId)) return;
+            if (Columns.TryGetValue(columnName, out columnId)) return false;
             var bookmark = new byte[5];
             int sz;
             Api.JetGetBookmark(Session, TableId, bookmark, bookmark.Length, out sz);
@@ -241,6 +247,7 @@ namespace Grave.Esent
             Columns.Add(columnName, columnId);
 
             Api.JetGotoBookmark(Session, TableId, bookmark, bookmark.Length);
+            return true;
         }
 
         public long GetApproximateRecordCount(int samples)

@@ -25,11 +25,8 @@ namespace Frontenac.Blueprints.Util.Wrappers.Wrapped
 
         public IIndex GetIndex(string indexName, Type indexClass)
         {
-            IIndex index = _baseIndexableGraph.GetIndex(indexName, indexClass);
-            if (null == index)
-                return null;
-
-            return new WrappedIndex(index);
+            var index = _baseIndexableGraph.GetIndex(indexName, indexClass);
+            return null == index ? null : new WrappedIndex(index);
         }
 
         public IIndex CreateIndex(string indexName, Type indexClass, params Parameter[] indexParameters)

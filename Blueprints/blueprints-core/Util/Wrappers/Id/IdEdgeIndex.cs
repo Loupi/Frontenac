@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Diagnostics.Contracts;
 
 namespace Frontenac.Blueprints.Util.Wrappers.Id
 {
@@ -9,8 +10,8 @@ namespace Frontenac.Blueprints.Util.Wrappers.Id
 
         public IdEdgeIndex(IIndex baseIndex, IdGraph idGraph)
         {
-            if (null == baseIndex)
-                throw new ArgumentException("null base index");
+            Contract.Requires(baseIndex != null);
+            Contract.Requires(idGraph != null);
 
             IdGraph = idGraph;
             BaseIndex = baseIndex;
@@ -18,7 +19,11 @@ namespace Frontenac.Blueprints.Util.Wrappers.Id
 
         public string Name
         {
-            get { return BaseIndex.Name; }
+            get
+            {
+                Contract.Ensures(!string.IsNullOrWhiteSpace(Contract.Result<string>()));
+                return BaseIndex.Name;
+            }
         }
 
         public Type Type
@@ -56,8 +61,11 @@ namespace Frontenac.Blueprints.Util.Wrappers.Id
             return StringFactory.IndexString(this);
         }
 
-        IEdge GetBaseElement(IElement e)
+        static IEdge GetBaseElement(IElement e)
         {
+            Contract.Requires(e is IdEdge);
+            Contract.Ensures(Contract.Result<IEdge>() != null);
+
             return ((IdEdge)e).GetBaseEdge();
         }
     }

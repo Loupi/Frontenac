@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics.Contracts;
 
 namespace Frontenac.Blueprints.Util
 {
@@ -10,6 +11,8 @@ namespace Frontenac.Blueprints.Util
 
         public WrappingCloseableIterable(IEnumerable<T> iterable)
         {
+            Contract.Requires(iterable != null);
+
             _iterable = iterable;
         }
 
