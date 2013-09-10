@@ -4,28 +4,16 @@ Frontenac
 A .NET port of the [Tinkerpop Stack](http://www.tinkerpop.com/).
 
 ## News
+* 2013-09-09 
+ * Frontenac.Blueprints 2.3.4 released.
+ * Blueprint interfaces are now enforced with code contracts.
+ 
 * 2013-08-25 
- * Frontenac.Blueprints 2.3.3 released
+ * Frontenac.Blueprints 2.3.3 released.
  * Initial commit for Grave, a graph database backed by Microsoft ESENT and Lucent.NET.
 
 * 2013-07-29 
  * [VelocityDB](http://velocitydb.com/) now supports Frontenac through it's [VelocityGraph](https://github.com/VelocityDB/VelocityGraph) library. Available on NuGet.
-
-## Credits
-Special thanks to the authors and contributors of the original library:
-* [alexaverbuch](http://www.github.com/alexaverbuch/)(Alex Averbuch)
-* [bdeggleston](http://www.github.com/bdeggleston/)(Blake Eggleston)
-* [BrynCooke](http://www.github.com/BrynCooke/)(Bryn Cooke)
-* [espeed](http://www.github.com/espeed/)(James Thornton)
-* [joshsh](http://www.github.com/joshsh/)(Joshua Shinavier)
-* [mbroecheler](http://www.github.com/mbroecheler/)(Matthias Broecheler)
-* [okram](http://www.github.com/okram/)(Marko A. Rodriguez)
-* [pangloss](http://www.github.com/pangloss/)(Darrick Wiebe)
-* [peterneubauer](http://www.github.com/peterneubauer/)(Peter Neubauer)
-* [pierredewilde](http://www.github.com/pierredewilde/)(Pierre De Wilde)
-* [spmallette](http://www.github.com/spmallette/)(stephen mallette)
-* [xedin](http://www.github.com/xedin/)(Pavel Yaskevich)
-* and others :)
 
 ## What is inside
 For now, blueprints-core 2.3.0 has been ported. It is not production ready yet. It includes
@@ -52,3 +40,19 @@ Making sure it's root component is solid is fundamental. This is why, before pro
 
 ## Why that name?
 This is in reference to the [Château Frontenac](http://en.wikipedia.org/wiki/Chateau_Frontenac) in Quebec City, Canada, because writing softwares is a bit like building castles.
+
+## Credits
+Special thanks to the authors and contributors of the original library:
+* [alexaverbuch](http://www.github.com/alexaverbuch/)(Alex Averbuch)
+* [bdeggleston](http://www.github.com/bdeggleston/)(Blake Eggleston)
+* [BrynCooke](http://www.github.com/BrynCooke/)(Bryn Cooke)
+* [espeed](http://www.github.com/espeed/)(James Thornton)
+* [joshsh](http://www.github.com/joshsh/)(Joshua Shinavier)
+* [mbroecheler](http://www.github.com/mbroecheler/)(Matthias Broecheler)
+* [okram](http://www.github.com/okram/)(Marko A. Rodriguez)
+* [pangloss](http://www.github.com/pangloss/)(Darrick Wiebe)
+* [peterneubauer](http://www.github.com/peterneubauer/)(Peter Neubauer)
+* [pierredewilde](http://www.github.com/pierredewilde/)(Pierre De Wilde)
+* [spmallette](http://www.github.com/spmallette/)(stephen mallette)
+* [xedin](http://www.github.com/xedin/)(Pavel Yaskevich)
+* and others :)
