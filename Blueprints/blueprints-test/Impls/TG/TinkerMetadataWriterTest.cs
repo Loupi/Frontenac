@@ -9,7 +9,7 @@ namespace Frontenac.Blueprints.Impls.TG
         [Test]
         public void TestNormal()
         {
-            TinkerGraph g = TinkerGraphFactory.CreateTinkerGraph();
+            var g = TinkerGraphFactory.CreateTinkerGraph();
             CreateManualIndices(g);
             CreateKeyIndices(g);
 
@@ -19,20 +19,19 @@ namespace Frontenac.Blueprints.Impls.TG
 
                 using (var stream = typeof(TinkerMetadataWriterTest).Assembly.GetManifestResourceStream(typeof(TinkerMetadataWriterTest), "example-tinkergraph-metadata.dat"))
                 {
-                    if (stream != null)
+                    if (stream == null) return;
+
+                    var ms = new MemoryStream((int)stream.Length);
+                    stream.CopyTo(ms);
+
+                    var expected = ms.ToArray();
+                    var actual = bos.ToArray();
+
+                    Assert.AreEqual(expected.Length, actual.Length);
+
+                    for (var ix = 0; ix < actual.Length; ix++)
                     {
-                        var ms = new MemoryStream((int)stream.Length);
-                        stream.CopyTo(ms);
-
-                        byte[] expected = ms.ToArray();
-                        byte[] actual = bos.ToArray();
-
-                        Assert.AreEqual(expected.Length, actual.Length);
-
-                        for (int ix = 0; ix < actual.Length; ix++)
-                        {
-                            Assert.AreEqual(expected[ix], actual[ix]);
-                        }
+                        Assert.AreEqual(expected[ix], actual[ix]);
                     }
                 }
             }
@@ -46,15 +45,15 @@ namespace Frontenac.Blueprints.Impls.TG
 
         static void CreateManualIndices(TinkerGraph g)
         {
-            IIndex idxAge = g.CreateIndex("age", typeof(IVertex));
-            IVertex v1 = g.GetVertex(1);
-            IVertex v2 = g.GetVertex(2);
+            var idxAge = g.CreateIndex("age", typeof(IVertex));
+            var v1 = g.GetVertex(1);
+            var v2 = g.GetVertex(2);
             idxAge.Put("age", v1.GetProperty("age"), v1);
             idxAge.Put("age", v2.GetProperty("age"), v2);
 
-            IIndex idxWeight = g.CreateIndex("weight", typeof(IEdge));
-            IEdge e7 = g.GetEdge(7);
-            IEdge e12 = g.GetEdge(12);
+            var idxWeight = g.CreateIndex("weight", typeof(IEdge));
+            var e7 = g.GetEdge(7);
+            var e12 = g.GetEdge(12);
             idxWeight.Put("weight", e7.GetProperty("weight"), e7);
             idxWeight.Put("weight", e12.GetProperty("weight"), e12);
         }

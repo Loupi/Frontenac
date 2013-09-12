@@ -55,8 +55,9 @@
     <Prefer32Bit>false</Prefer32Bit>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="Frontenac.Blueprints">
-      <HintPath>..\packages\Frontenac.Blueprints.2.3.3.0\lib\net45\Frontenac.Blueprints.dll</HintPath>
+    <Reference Include="Frontenac.Blueprints, Version=2.3.4.0, Culture=neutral, PublicKeyToken=9b0cb3c4280f56a7, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\packages\Frontenac.Blueprints.2.3.4.0\lib\net45\Frontenac.Blueprints.dll</HintPath>
     </Reference>
     <Reference Include="Newtonsoft.Json, Version=4.5.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
@@ -72,8 +73,9 @@
     <Reference Include="Microsoft.CSharp" />
     <Reference Include="System.Data" />
     <Reference Include="System.Xml" />
-    <Reference Include="VelocityDb">
-      <HintPath>..\packages\VelocityDB.2.9.6\lib\net40\VelocityDb.dll</HintPath>
+    <Reference Include="VelocityDb, Version=2.9.7.0, Culture=neutral, PublicKeyToken=9d412ecd5a0c8179, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\packages\VelocityDB.2.9.7\lib\net40\VelocityDb.dll</HintPath>
     </Reference>
     <Reference Include="VelocityGraph">
       <HintPath>..\packages\VelocityGraph.0.9.6.1\lib\Net40\VelocityGraph.dll</HintPath>

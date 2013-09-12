@@ -25,6 +25,37 @@ namespace Lucene.Net.Contrib.Management
             }
         }
 
+        #region IDisposable
+        bool _disposed;
+
+        ~SearcherManager()
+        {
+            Dispose(false);
+        }
+
+        public void Dispose()
+        {
+            Dispose(true);
+            GC.SuppressFinalize(this);
+        }
+
+        protected virtual void Dispose(bool disposing)
+        {
+            if (_disposed)
+                return;
+
+            if (disposing && _currentSearcher != null)
+            {
+                var oldSearcher = _currentSearcher;
+                SwapSearcher(null);
+                oldSearcher.Dispose();
+            }
+
+            _disposed = true;
+        }
+
+        #endregion
+
         public bool MaybeReopen()
         {
             EnsureOpen();
@@ -85,14 +116,13 @@ namespace Lucene.Net.Contrib.Management
             IndexSearcher searcher;
 
             if ((searcher = _currentSearcher) == null)
-            {
                 throw new AlreadyClosedException("this SearcherManager is closed");
-            }
+            
             searcher.IndexReader.IncRef();
             return searcher;
         }
 
-        private void ReleaseSearcher(IndexSearcher searcher)
+        private static void ReleaseSearcher(IndexSearcher searcher)
         {            
             searcher.IndexReader.DecRef();
         }
@@ -113,18 +143,6 @@ namespace Lucene.Net.Contrib.Management
             ReleaseSearcher(oldSearcher);            
         }
 
-        public void Dispose()
-        {
-            if (_currentSearcher != null)
-            {
-                // make sure we can call this more than once
-                // closeable javadoc says:
-                // if this is already closed then invoking this method has no effect.
-                SwapSearcher(null);
-            }
-        }
-
-
         public class IndexSearcherToken : IDisposable
         {
             private readonly SearcherManager _manager;
@@ -136,10 +154,34 @@ namespace Lucene.Net.Contrib.Management
                 Searcher = searcher;
             }
 
+            #region IDisposable
+            bool _disposed;
+
+            ~IndexSearcherToken()
+            {
+                Dispose(false);
+            }
+
             public void Dispose()
             {
-                _manager.ReleaseSearcher(Searcher);
+                Dispose(true);
+                GC.SuppressFinalize(this);
             }
+
+            protected virtual void Dispose(bool disposing)
+            {
+                if (_disposed)
+                    return;
+
+                if (disposing)
+                {
+                    ReleaseSearcher(Searcher);
+                }
+
+                _disposed = true;
+            }
+
+            #endregion
         }
 
         class WarmerWrapper : IndexWriter.IndexReaderWarmer

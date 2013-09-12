@@ -4,34 +4,23 @@ using Microsoft.Isam.Esent.Interop;
 
 namespace Grave.Esent
 {
-    public class EsentConfigContext : EsentContext
+    public class EsentConfigContext : EsentContextBase
     {
         public EsentConfigTable ConfigTable { get; private set; }
 
         public EsentConfigContext(Session session, string databaseName, IContentSerializer contentSerializer) : 
             base(session, databaseName, contentSerializer)
         {
-
-        }
-
-        protected override JET_DBID OpenDatabase()
-        {
             ConfigTable = new EsentConfigTable(Session, ContentSerializer);
             CreateDatabase();
-            return base.OpenDatabase();
+            OpenDatabase();
+            ConfigTable.Open(Dbid);
         }
 
         protected override void CloseDatabase()
         {
             base.CloseDatabase();
             ConfigTable.Close();
-        }
-
-        protected override JET_DBID OpenDatabase(OpenDatabaseGrbit openFlags)
-        {
-            var dbid = base.OpenDatabase(openFlags);
-            ConfigTable.Open(dbid);
-            return dbid;
         }
 
         void CreateDatabase()

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics.Contracts;
 using System.Linq;
 using Frontenac.Blueprints;
 using Grave.Indexing;
@@ -15,42 +16,33 @@ namespace Grave
 
         public GraveQuery(GraveGraph graph, IndexingService indexingService)
         {
+            Contract.Requires(graph != null);
+            Contract.Requires(indexingService != null);
+
             _graph = graph;
             _indexingService = indexingService;
         }
 
         public IQuery Has<T>(string key, Compare compare, T value) where T : IComparable<T>
         {
-            if (string.IsNullOrWhiteSpace(key))
-                throw new ArgumentNullException("key");
-
             _queryElements.Add(new GraveComparableQueryElement(key, compare, value));
             return this;
         }
 
         public IQuery Interval<T>(string key, T startValue, T endValue) where T : IComparable<T>
         {
-            if (string.IsNullOrWhiteSpace(key))
-                throw new ArgumentNullException("key");
-
             _queryElements.Add(new GraveIntervalQueryElement(key, startValue, endValue));
             return this;
         }
 
         public IQuery Limit(long max)
         {
-            if(max <= 0)
-                throw new ArgumentException("max");
-
             _limit = max;
             return this;
         }
 
         public IQuery Has(string key, object value)
         {
-            if(value != null && !(value is IComparable<object>))
-                throw new ArgumentException("value");
-
             return Has(key, Compare.Equal, value as IComparable<object>);
         }
 
@@ -68,18 +60,36 @@ namespace Grave
 
     public abstract class GraveQueryElement
     {
-        public string Key { get; private set; }
+        private string _key;
 
         protected GraveQueryElement(string key)
         {
+            Contract.Requires(!string.IsNullOrWhiteSpace(key));
+
             Key = key;
         }
-    }
 
+        public string Key
+        {
+            get
+            {
+                Contract.Ensures(Contract.Result<string>() != null);
+                return _key;
+            }
+            private set
+            {
+                Contract.Requires(value != null);
+                _key = value;
+            }
+        }
+    }
+    
     class GraveComparableQueryElement : GraveQueryElement
     {
         public GraveComparableQueryElement(string key, Compare comparison, object value) : base(key)
         {
+            Contract.Requires(!string.IsNullOrWhiteSpace(key));
+
             Comparison = comparison;
             Value = value;
         }
@@ -90,13 +100,45 @@ namespace Grave
 
     class GraveIntervalQueryElement : GraveQueryElement
     {
+        private object _startValue;
+        private object _endValue;
+
         public GraveIntervalQueryElement(string key, object startValue, object endValue) : base(key)
         {
+            Contract.Requires(!string.IsNullOrWhiteSpace(key));
+            Contract.Requires(startValue != null);
+            Contract.Requires(endValue != null);
+
             EndValue = endValue;
             StartValue = startValue;
         }
 
-        public object StartValue { get; private set; }
-        public object EndValue { get; private set; }
+        public object StartValue
+        {
+            get
+            {
+                Contract.Ensures(Contract.Result<object>() != null);
+                return _startValue;
+            }
+            private set
+            {
+                Contract.Requires(value != null);
+                _startValue = value;
+            }
+        }
+
+        public object EndValue
+        {
+            get
+            {
+                Contract.Ensures(Contract.Result<object>() != null);
+                return _endValue;
+            }
+            private set
+            {
+                Contract.Requires(value != null);
+                _endValue = value;
+            }
+        }
     }
 }

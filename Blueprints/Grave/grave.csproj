@@ -113,10 +113,6 @@
     <Reference Include="Castle.Windsor">
       <HintPath>..\packages\Castle.Windsor.3.2.1\lib\net45\Castle.Windsor.dll</HintPath>
     </Reference>
-    <Reference Include="Common.Logging, Version=2.1.2.0, Culture=neutral, PublicKeyToken=af08829b84f0328e, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\packages\Common.Logging.2.1.2\lib\net40\Common.Logging.dll</HintPath>
-    </Reference>
     <Reference Include="Esent.Interop, Version=1.8.3.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\packages\ManagedEsent.1.8.3.2\lib\net40\Esent.Interop.dll</HintPath>
@@ -148,16 +144,19 @@
   <ItemGroup>
     <Compile Include="Entities\Person.cs" />
     <Compile Include="Esent\EsentConfigContext.cs" />
+    <Compile Include="Esent\EsentContextBase.cs" />
     <Compile Include="Esent\Serializers\BsonContentSerializer.cs" />
     <Compile Include="Esent\EsentConfigTable.cs" />
     <Compile Include="GraveEdge.cs" />
     <Compile Include="GraveFactory.cs" />
+    <Compile Include="GraveGraphFactoryContract.cs" />
     <Compile Include="GraveQuery.cs" />
     <Compile Include="GraveTransactionalGraph.cs" />
     <Compile Include="IGraveGraphFactory.cs" />
     <Compile Include="Indexing\IDocumentFactory.cs" />
     <Compile Include="Indexing\IndexCollection.cs" />
     <Compile Include="Indexing\IndexingService.cs" />
+    <Compile Include="Indexing\IndexingServiceContract.cs" />
     <Compile Include="Installers\GraveInstaller.cs" />
     <Compile Include="Esent\EsentContext.cs" />
     <Compile Include="GraveIndex.cs" />

@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Diagnostics;
 using System.Threading;
+using System.Threading.Tasks;
 
 namespace Lucene.Net.Contrib.Management
 {
@@ -12,10 +13,12 @@ namespace Lucene.Net.Contrib.Management
         private bool _finish;
         private long _waitingGen;
         private bool _waitingNeedsDeletes;
+        private readonly Task _reopenerTask;
+        private readonly int _closeTimeout;
 
         private readonly AutoResetEvent _waitHandle = new AutoResetEvent(false);
 
-        public NrtManagerReopener(NrtManager manager, TimeSpan targetMaxStale, TimeSpan targetMinStale)
+        public NrtManagerReopener(NrtManager manager, TimeSpan targetMaxStale, TimeSpan targetMinStale, int closeTimeout)
         {
             if (targetMaxStale < targetMinStale)
             {
@@ -26,7 +29,42 @@ namespace Lucene.Net.Contrib.Management
             _targetMaxStale = targetMaxStale;
             _targetMinStale = targetMinStale;
             _manager.AddWaitingListener(this);
+            _reopenerTask = Task.Factory.StartNew(Start);
+            _closeTimeout = closeTimeout;
         }
+
+        #region IDisposable
+        bool _disposed;
+
+        ~NrtManagerReopener()
+        {
+            Dispose(false);
+        }
+
+        public void Dispose()
+        {
+            Dispose(true);
+            GC.SuppressFinalize(this);
+        }
+
+        protected virtual void Dispose(bool disposing)
+        {
+            if (_disposed)
+                return;
+
+            if (disposing)
+            {
+                _manager.RemoveWaitingListener(this);
+                _finish = true;
+                _waitHandle.Set();
+                _reopenerTask.Wait(TimeSpan.FromSeconds(_closeTimeout));
+                _waitHandle.Dispose();
+            }
+
+            _disposed = true;
+        }
+
+        #endregion
 
         public void Waiting(bool needsDeletes, long targetGen)
         {
@@ -89,13 +127,6 @@ namespace Lucene.Net.Contrib.Management
                 lastReopen = sw.ElapsedTicks;
                 _manager.MaybeReopen(_waitingNeedsDeletes);
             }
-        }
-
-        public void Dispose()
-        {            
-            _manager.RemoveWaitingListener(this);
-            _finish = true;
-            _waitHandle.Set();
         }
     }
 }

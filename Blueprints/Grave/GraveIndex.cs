@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Diagnostics.Contracts;
 using Frontenac.Blueprints;
 using System;
 using System.Linq;
@@ -16,18 +17,12 @@ namespace Grave
 
         public GraveIndex(string indexName, Type indexType, GraveGraph graph, IndexingService indexingService)
         {
-            if (string.IsNullOrWhiteSpace(indexName))
-                throw new ArgumentException("indexName");
-
-            if (indexType == null)
-                throw new ArgumentNullException("indexType");
-
-            if (graph == null)
-                throw new ArgumentNullException("graph");
-
-            if (indexingService == null)
-                throw new ArgumentNullException("indexingService");
-
+            Contract.Requires(!string.IsNullOrWhiteSpace(indexName));
+            Contract.Requires(indexType != null);
+            Contract.Requires(indexType.IsAssignableFrom(typeof(GraveVertex)) || indexType.IsAssignableFrom(typeof(GraveEdge)));
+            Contract.Requires(graph != null);
+            Contract.Requires(indexingService != null);
+            
             _indexName = indexName;
             _indexType = indexType;
             _graph = graph;
@@ -36,9 +31,6 @@ namespace Grave
 
         public long Count(string key, object value)
         {
-            if (string.IsNullOrWhiteSpace(key))
-                throw new ArgumentException("key");
-
             _graph.WaitForGeneration();
 
             return _indexingService.Get(_indexType, _indexName, key, value, true).Count();
@@ -46,9 +38,6 @@ namespace Grave
 
         public ICloseableIterable<IElement> Get(string key, object value)
         {
-            if (string.IsNullOrWhiteSpace(key))
-                throw new ArgumentException("key");
-
             _graph.WaitForGeneration();
 
             var hits = _indexingService.Get(_indexType,_indexName, key, value, true);
@@ -58,6 +47,9 @@ namespace Grave
 
         IEnumerable<IElement> ElementsFromHits(IEnumerable<int> hits)
         {
+            Contract.Requires(hits != null);
+            Contract.Ensures(Contract.Result<IEnumerable<IElement>>() != null);
+
             IEnumerable<IElement> elements;
 
             if(_indexType == typeof(IVertex))
@@ -80,12 +72,6 @@ namespace Grave
 
         public void Put(string key, object value, IElement element)
         {
-            if (string.IsNullOrWhiteSpace(key))
-                throw new ArgumentException("key");
-
-            if (element == null)
-                throw new ArgumentNullException("element");
-
             var id = (int)element.Id;
             long generation;
             if (_indexType == typeof (IVertex))
@@ -98,12 +84,6 @@ namespace Grave
 
         public ICloseableIterable<IElement> Query(string key, object query)
         {
-            if (string.IsNullOrWhiteSpace(key))
-                throw new ArgumentException("key");
-
-            if (query == null)
-                throw new ArgumentNullException("query");
-
             _graph.WaitForGeneration();
 
             throw new NotImplementedException();
@@ -111,12 +91,6 @@ namespace Grave
 
         public void Remove(string key, object value, IElement element)
         {
-            if (string.IsNullOrWhiteSpace(key))
-                throw new ArgumentException("key");
-
-            if (element == null)
-                throw new ArgumentNullException("element");
-
             var id = (int)element.Id;
             var generation = _indexingService.DeleteUserDocuments(_indexType, id, key, value);
             _graph.UpdateGeneration(generation);

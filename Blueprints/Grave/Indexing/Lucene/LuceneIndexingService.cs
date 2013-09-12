@@ -26,7 +26,6 @@ namespace Grave.Indexing.Lucene
         readonly SearcherManager _searcherManager;
         readonly StandardAnalyzer _analyzer;
         readonly NrtManagerReopener _reopener;
-        readonly Task _reopenerTask;
 
         public Dictionary<Type, object> ClassMaps = new Dictionary<Type, object>();
 
@@ -48,17 +47,20 @@ namespace Grave.Indexing.Lucene
             _nrtManager = new NrtManager(_writer);
             _searcherManager = _nrtManager.GetSearcherManager();
             _reopener = new NrtManagerReopener(_nrtManager, TimeSpan.FromSeconds(_parameters.MaxStaleSeconds),
-                                                            TimeSpan.FromMilliseconds(_parameters.MinStaleMilliseconds));
-            _reopenerTask = Task.Factory.StartNew(() => _reopener.Start());
+                                                            TimeSpan.FromMilliseconds(_parameters.MinStaleMilliseconds),
+                                                            _parameters.CloseTimeoutSeconds);
+            
         }
 
         #region IDisposable
 
         protected override void Dispose(bool disposing)
         {
+            base.Dispose(disposing);
+
             if (!disposing) return;
             _reopener.Dispose();
-            _reopenerTask.Wait(TimeSpan.FromSeconds(_parameters.CloseTimeoutSeconds));
+            
             _searcherManager.Dispose();
             _nrtManager.Dispose();
             _writer.Dispose();

@@ -1,10 +1,11 @@
-﻿using System.Collections.Concurrent;
+﻿using System;
+using System.Collections.Concurrent;
 using System.Diagnostics.Contracts;
 using System.Threading;
 
 namespace Frontenac.Blueprints.Util.Wrappers.Event
 {
-    public class EventTrigger
+    public class EventTrigger : IDisposable
     {
         /// <summary>
         /// A queue of events that are triggered by change to the graph.  The queue builds
@@ -28,6 +29,35 @@ namespace Frontenac.Blueprints.Util.Wrappers.Event
             _enqueEvents = enqueEvents;
             _graph = graph;
         }
+
+        #region IDisposable
+        bool _disposed;
+
+        ~EventTrigger()
+        {
+            Dispose(false);
+        }
+
+        public void Dispose()
+        {
+            Dispose(true);
+            GC.SuppressFinalize(this);
+        }
+
+        protected virtual void Dispose(bool disposing)
+        {
+            if (_disposed)
+                return;
+
+            if (disposing)
+            {
+                _eventQueue.Dispose();
+            }
+
+            _disposed = true;
+        }
+
+        #endregion
 
         /// <summary>
         /// Add an event to the event queue.

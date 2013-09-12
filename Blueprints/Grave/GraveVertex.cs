@@ -1,4 +1,5 @@
-﻿using Frontenac.Blueprints;
+﻿using System.Diagnostics.Contracts;
+using Frontenac.Blueprints;
 using System;
 using System.Linq;
 using System.Collections.Generic;
@@ -20,12 +21,6 @@ namespace Grave
 
         public IEdge AddEdge(string label, IVertex inVertex)
         {
-            if (string.IsNullOrWhiteSpace(label))
-                throw new ArgumentException("label");
-
-            if (inVertex == null)
-                throw new ArgumentNullException("inVertex");
-
             return Graph.AddEdge(0, this, inVertex, label);
         }
 
@@ -62,6 +57,10 @@ namespace Grave
 
         static IEnumerable<string> FilterLabels(Direction direction, string[] labels, Direction directionFilter, IEnumerable<string> columns, string prefix)
         {
+            Contract.Requires(labels != null);
+            Contract.Requires(columns != null);
+            Contract.Requires(!string.IsNullOrWhiteSpace(prefix));
+
             if (direction == directionFilter || direction == Direction.Both)
             {
                 if (labels.Length == 0)

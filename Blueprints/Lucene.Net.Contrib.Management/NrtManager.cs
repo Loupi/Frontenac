@@ -33,6 +33,56 @@ namespace Lucene.Net.Contrib.Management
             _withDeletes = _withoutDeletes = new SearcherManagerRef(true, 0, new SearcherManager(writer, true, warmer));
         }
 
+        #region IDisposable
+        bool _disposed;
+
+        ~NrtManager()
+        {
+            Dispose(false);
+        }
+
+        public void Dispose()
+        {
+            Dispose(true);
+            GC.SuppressFinalize(this);
+        }
+
+        protected virtual void Dispose(bool disposing)
+        {
+            if (_disposed)
+                return;
+
+            if (disposing)
+            {
+                lock (_reopenLock)
+                {
+                    try
+                    {
+                        var disposeActions = new List<Action>
+                            {
+                                _withDeletes.Dispose
+                            };
+                    
+                        if (_withoutDeletes != _withDeletes)
+                        {
+                            disposeActions.Add(_withoutDeletes.Dispose);
+                        }
+                    
+                        DisposeUtil.PostponeExceptions(disposeActions.ToArray());
+                    }
+                    finally
+                    {
+                        // make sure we signal even if close throws an exception
+                        Monitor.PulseAll(_reopenLock);
+                    }
+                }
+            }
+
+            _disposed = true;
+        }
+
+        #endregion
+
         public interface IWaitingListener
         {
             void Waiting(bool needsDeletes, long targetGen);
@@ -216,32 +266,6 @@ namespace Lucene.Net.Contrib.Management
                 return _withDeletes.Manager;
 
             return _withDeletes.Generation > _withoutDeletes.Generation ? _withDeletes.Manager : _withoutDeletes.Manager;
-        }
-
-        public void Dispose()
-        {
-            lock (_reopenLock)
-            {
-                try
-                {
-                    var disposeActions = new List<Action>
-                        {
-                            _withDeletes.Dispose
-                        };
-                    
-                    if (_withoutDeletes != _withDeletes)
-                    {
-                        disposeActions.Add(_withoutDeletes.Dispose);
-                    }
-                    
-                    DisposeUtil.PostponeExceptions(disposeActions.ToArray());
-                }
-                finally
-                {
-                    // make sure we signal even if close throws an exception
-                    Monitor.PulseAll(_reopenLock);
-                }
-            }
         }
 
         private class SearcherManagerRef : IDisposable

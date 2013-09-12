@@ -1,4 +1,5 @@
-﻿using System.Linq;
+﻿using System.Diagnostics.Contracts;
+using System.Linq;
 using Frontenac.Blueprints;
 using System;
 using System.Collections.Generic;
@@ -55,14 +56,9 @@ namespace Grave
 
         public GraveGraph(IGraveGraphFactory factory, IndexingService indexingService, EsentContext context)
         {
-            if (factory == null)
-                throw new ArgumentNullException("factory");
-
-            if (context == null)
-                throw new ArgumentNullException("context");
-
-            if (indexingService == null)
-                throw new ArgumentNullException("indexingService");
+            Contract.Requires(factory != null);
+            Contract.Requires(indexingService != null);
+            Contract.Requires(context != null);
 
             _factory = factory;
             Context = context;
@@ -97,9 +93,6 @@ namespace Grave
 
         public virtual IVertex GetVertex(object id)
         {
-            if (id == null)
-                throw new ArgumentNullException("id");
-
             IVertex result = null;
             var vertexId = TryToInt32(id);
             if (!vertexId.HasValue) return null;
@@ -112,9 +105,6 @@ namespace Grave
 
         public virtual void RemoveVertex(IVertex vertex)
         {
-            if (!(vertex is GraveVertex))
-                throw new ArgumentException("vertex");
-
             foreach (var edge in vertex.GetEdges(Direction.Both))
                 RemoveEdge(edge);
 
@@ -144,9 +134,6 @@ namespace Grave
 
         public virtual IEnumerable<IVertex> GetVertices(string key, object value)
         {
-            if (string.IsNullOrWhiteSpace(key))
-                throw new ArgumentException("key");
-
             if (!IndexingService.VertexIndices.HasIndex(key))
                 return new PropertyFilteredIterable<IVertex>(key, value, GetVertices());
 
@@ -157,15 +144,6 @@ namespace Grave
 
         public virtual IEdge AddEdge(object unused, IVertex outVertex, IVertex inVertex, string label)
         {
-            if (outVertex == null)
-                throw new ArgumentNullException("outVertex");
-
-            if (inVertex == null)
-                throw new ArgumentNullException("inVertex");
-
-            if (string.IsNullOrWhiteSpace(label))
-                throw new ArgumentException("label");
-
             var inVertexId = (int)inVertex.Id;
             var outVertexId = (int)outVertex.Id;
             var edgeId = Context.EdgesTable.AddEdge(label, inVertexId, outVertexId);
@@ -176,9 +154,6 @@ namespace Grave
 
         public virtual IEdge GetEdge(object id)
         {
-            if (id == null)
-                throw new ArgumentNullException("id");
-
             IEdge result = null;
             var edgeId = TryToInt32(id);
             if (!edgeId.HasValue) return null;
@@ -223,9 +198,6 @@ namespace Grave
 
         public virtual void RemoveEdge(IEdge edge)
         {
-            if (edge == null)
-                throw new ArgumentNullException("edge");
-
             var edgeId = (int)edge.Id;
             Context.EdgesTable.DeleteRow(edgeId);
             var inVertexId = (int) edge.GetVertex(Direction.In).Id;
@@ -262,9 +234,6 @@ namespace Grave
 
         public virtual IEnumerable<IEdge> GetEdges(string key, object value)
         {
-            if (string.IsNullOrWhiteSpace(key))
-                throw new ArgumentException("key");
-
             if (!IndexingService.EdgeIndices.HasIndex(key))
                 return new PropertyFilteredIterable<IEdge>(key, value, GetEdges());
 
@@ -274,8 +243,7 @@ namespace Grave
 
         IEnumerable<IEdge> IterateEdges(string key, object value)
         {
-            if (string.IsNullOrWhiteSpace(key))
-                throw new ArgumentException("key");
+            Contract.Requires(!string.IsNullOrWhiteSpace(key));
 
             var cursor = Context.GetEdgesCursor();
             try
@@ -300,12 +268,6 @@ namespace Grave
 
         public void DropKeyIndex(string key, Type elementClass)
         {
-            if (string.IsNullOrWhiteSpace(key))
-                throw new ArgumentException("key");
-
-            if (elementClass == null)
-                throw new ArgumentNullException("elementClass");
-
             var generation = GetIndices(elementClass, false).DropIndex(key);
             if (generation != -1)
                 UpdateGeneration(generation);
@@ -313,12 +275,6 @@ namespace Grave
 
         public virtual void CreateKeyIndex(string key, Type elementClass, params Parameter[] indexParameters)
         {
-            if (string.IsNullOrWhiteSpace(key))
-                throw new ArgumentException("key");
-
-            if (elementClass == null)
-                throw new ArgumentNullException("elementClass");
-
             var indices = GetIndices(elementClass, false);
             if (indices.HasIndex(key)) return;
             
@@ -332,14 +288,14 @@ namespace Grave
 
         public virtual IEnumerable<string> GetIndexedKeys(Type elementClass)
         {
-            if (elementClass == null)
-                throw new ArgumentNullException("elementClass");
-
             return GetIndices(elementClass, false).GetIndices();
         }
 
         internal IndexCollection GetIndices(Type indexType, bool isUserIndex)
         {
+            Contract.Requires(indexType != null);
+            Contract.Requires(indexType.IsAssignableFrom(typeof(IVertex)) || indexType.IsAssignableFrom(typeof(IEdge)));
+
             if (indexType == null)
                 throw new ArgumentNullException("indexType");
 
@@ -351,12 +307,6 @@ namespace Grave
 
         public virtual IIndex CreateIndex(string indexName, Type indexClass, params Parameter[] indexParameters)
         {
-            if (string.IsNullOrWhiteSpace(indexName))
-                throw new ArgumentException("indexName");
-
-            if (indexClass == null)
-                throw new ArgumentNullException("indexClass");
-
             if (GetIndices(typeof(IVertex), true).HasIndex(indexName) ||
                 GetIndices(typeof(IEdge), true).HasIndex(indexName))
                 throw ExceptionFactory.IndexAlreadyExists(indexName);

@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Diagnostics.Contracts;
 using Frontenac.Blueprints.Util.Wrappers.Event.Listener;
+using System;
 
 namespace Frontenac.Blueprints.Util.Wrappers.Event
 {
@@ -16,7 +17,7 @@ namespace Frontenac.Blueprints.Util.Wrappers.Event
     /// the EventGraph by utilizing the addListener method. EventGraph allows the addition of multiple GraphChangedListener
     /// implementations. Each listener will be notified in the order that it was added.
     /// </summary>
-    public class EventGraph : IGraph, IWrapperGraph
+    public class EventGraph : IGraph, IWrapperGraph, IDisposable
     {
         protected EventTrigger Trigger;
         protected IGraph BaseGraph;
@@ -33,6 +34,35 @@ namespace Frontenac.Blueprints.Util.Wrappers.Event
 
             Trigger = new EventTrigger(this, false);
         }
+
+        #region IDisposable
+        bool _disposed;
+
+        ~EventGraph()
+        {
+            Dispose(false);
+        }
+
+        public void Dispose()
+        {
+            Dispose(true);
+            GC.SuppressFinalize(this);
+        }
+
+        protected virtual void Dispose(bool disposing)
+        {
+            if (_disposed)
+                return;
+
+            if (disposing)
+            {
+                Trigger.Dispose();
+            }
+
+            _disposed = true;
+        }
+
+        #endregion
 
         public void RemoveAllListeners()
         {

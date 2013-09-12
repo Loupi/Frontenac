@@ -164,54 +164,69 @@ namespace Frontenac.Blueprints.Util.IO.GraphSON
             Contract.Requires(jsonInputStream != null);
             Contract.Requires(bufferSize > 0);
 
-            using (var sr = new StreamReader(jsonInputStream))
+            StreamReader sr = null;
+
+            try
             {
+                sr = new StreamReader(jsonInputStream);
+
                 using (var jp = new JsonTextReader(sr))
                 {
+                    sr = null;
                     // if this is a transactional graph then we're buffering
                     var graph = BatchGraph.Wrap(inputGraph, bufferSize);
                     var elementFactory = new GraphElementFactory(graph);
-                    
-// ReSharper disable PossibleMultipleEnumeration
-                    var graphson = new GraphSonUtility(GraphSONMode.NORMAL, elementFactory, vertexPropertyKeys, edgePropertyKeys);
-// ReSharper restore PossibleMultipleEnumeration
+
+                    // ReSharper disable PossibleMultipleEnumeration
+                    var graphson = new GraphSonUtility(GraphSONMode.NORMAL, elementFactory, vertexPropertyKeys,
+                                                       edgePropertyKeys);
+                    // ReSharper restore PossibleMultipleEnumeration
 
                     var serializer = JsonSerializer.Create(null);
 
                     while (jp.Read() && jp.TokenType != JsonToken.EndObject)
                     {
-                        string fieldname = Convert.ToString(jp.Value);
-                        if (fieldname == GraphSonTokens.Mode)
+                        var fieldname = Convert.ToString(jp.Value);
+                        switch (fieldname)
                         {
-                            var mode = (GraphSONMode)Enum.Parse(typeof(GraphSONMode), jp.ReadAsString());
-// ReSharper disable PossibleMultipleEnumeration
-                            graphson = new GraphSonUtility(mode, elementFactory, vertexPropertyKeys, edgePropertyKeys);
-// ReSharper restore PossibleMultipleEnumeration
-                        }
-                        else if (fieldname == GraphSonTokens.Vertices)
-                        {
-                            jp.Read();
-                            while (jp.Read() && jp.TokenType != JsonToken.EndArray)
-                            {
-                                var node = (JObject) serializer.Deserialize(jp);
-                                graphson.VertexFromJson(node);
-                            }
-                        }
-                        else if (fieldname == GraphSonTokens.Edges)
-                        {
-                            jp.Read();
-                            while (jp.Read() && jp.TokenType != JsonToken.EndArray)
-                            {
-                                var node = (JObject)serializer.Deserialize(jp);
-                                var inV = graph.GetVertex(GraphSonUtility.GetTypedValueFromJsonNode(node[GraphSonTokens.InV]));
-                                var outV = graph.GetVertex(GraphSonUtility.GetTypedValueFromJsonNode(node[GraphSonTokens.OutV]));
-                                graphson.EdgeFromJson(node, outV, inV);
-                            }
+                            case GraphSonTokens.Mode:
+                                {
+                                    var mode = (GraphSONMode) Enum.Parse(typeof (GraphSONMode), jp.ReadAsString());
+                                    // ReSharper disable PossibleMultipleEnumeration
+                                    graphson = new GraphSonUtility(mode, elementFactory, vertexPropertyKeys, edgePropertyKeys);
+                                    // ReSharper restore PossibleMultipleEnumeration
+                                }
+                                break;
+                            case GraphSonTokens.Vertices:
+                                jp.Read();
+                                while (jp.Read() && jp.TokenType != JsonToken.EndArray)
+                                {
+                                    var node = (JObject) serializer.Deserialize(jp);
+                                    graphson.VertexFromJson(node);
+                                }
+                                break;
+                            case GraphSonTokens.Edges:
+                                jp.Read();
+                                while (jp.Read() && jp.TokenType != JsonToken.EndArray)
+                                {
+                                    var node = (JObject) serializer.Deserialize(jp);
+                                    var inV =
+                                        graph.GetVertex(GraphSonUtility.GetTypedValueFromJsonNode(node[GraphSonTokens.InV]));
+                                    var outV =
+                                        graph.GetVertex(GraphSonUtility.GetTypedValueFromJsonNode(node[GraphSonTokens.OutV]));
+                                    graphson.EdgeFromJson(node, outV, inV);
+                                }
+                                break;
                         }
                     }
 
                     graph.Commit();
                 }
+            }
+            finally
+            {
+                if(sr != null)
+                    sr.Dispose();
             }
         }
     }

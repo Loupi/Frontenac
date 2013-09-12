@@ -89,8 +89,7 @@ namespace Frontenac.Blueprints.Util.Wrappers.Batch
             var wrap = graph as BatchGraph;
             if (wrap != null) return wrap;
             var transactionalGraph = graph as ITransactionalGraph;
-            if (transactionalGraph != null) return new BatchGraph(transactionalGraph);
-            return new BatchGraph(new WritethroughGraph(graph));
+            return transactionalGraph != null ? new BatchGraph(transactionalGraph) : new BatchGraph(new WritethroughGraph(graph));
         }
 
         /// <summary>

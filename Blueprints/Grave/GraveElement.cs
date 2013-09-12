@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Diagnostics.Contracts;
 using System.Linq;
 using Frontenac.Blueprints;
 using System.Collections.Generic;
@@ -15,11 +16,8 @@ namespace Grave
 
         protected GraveElement(GraveGraph graph, EsentTable table, int id)
         {
-            if(graph == null)
-                throw new ArgumentNullException("graph");
-
-            if(table == null)
-                throw new ArgumentNullException("table");
+            Contract.Requires(graph != null);
+            Contract.Requires(table != null);
 
             Graph = graph;
             Table = table;
@@ -50,9 +48,6 @@ namespace Grave
 
         public object RemoveProperty(string key)
         {
-            if(string.IsNullOrWhiteSpace(key))
-                throw new ArgumentException("key");
-
             var result = Table.DeleteCell(RawId, key);
             SetIndexedKeyValue(key, null);
             return result;
@@ -60,6 +55,8 @@ namespace Grave
 
         void SetIndexedKeyValue(string key, object value)
         {
+            Contract.Requires(!string.IsNullOrWhiteSpace(key));
+
             var type = this is IVertex ? typeof(IVertex) : typeof(IEdge);
             var indices = Graph.GetIndices(type, false);
             if (indices.HasIndex(key))

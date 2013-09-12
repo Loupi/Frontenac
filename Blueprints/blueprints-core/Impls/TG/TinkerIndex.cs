@@ -15,6 +15,7 @@ namespace Frontenac.Blueprints.Impls.TG
 
         public TinkerIndex(string indexName, Type indexClass)
         {
+            Contract.Requires(indexClass != null);
             Contract.Requires(typeof(IVertex).IsAssignableFrom(indexClass) || typeof(IEdge).IsAssignableFrom(indexClass));
 
             IndexName = indexName;

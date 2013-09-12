@@ -159,20 +159,14 @@ namespace Frontenac.Blueprints.Util.IO.GML
         {
             using(var buffer = new MemoryStream())
             {
-                try
-                {
-                    int nRead;
-                    var data = new byte[1024];
+                int nRead;
+                var data = new byte[1024];
 
-                    while ((nRead = in_.Read(data, 0, data.Length)) > 0)
-                        buffer.Write(data, 0, nRead);
+                while ((nRead = in_.Read(data, 0, data.Length)) > 0)
+                    buffer.Write(data, 0, nRead);
 
-                    buffer.Flush();
-                }
-                finally
-                {
-                    buffer.Close();
-                }
+                buffer.Flush();
+
                 return Encoding.GetEncoding("ISO-8859-1").GetString(buffer.ToArray());
             }
         }

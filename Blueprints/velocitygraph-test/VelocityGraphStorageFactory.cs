@@ -128,14 +128,14 @@ namespace Frontenac.Blueprints.Impls.VG
 
             public override void LoadGraphData(Graph graph, string directory)
             {
-                GraphSonReader.InputGraph(graph, string.Concat(directory, GraphFileGraphson));
+                GraphSONReader.InputGraph(graph, string.Concat(directory, GraphFileGraphson));
             }
 
             public override void SaveGraphData(Graph graph, string directory)
             {
                 string filePath = string.Concat(directory, GraphFileGraphson);
                 DeleteFile(filePath);
-                GraphSonWriter.OutputGraph(graph, filePath, GraphSonMode.EXTENDED);
+                GraphSonWriter.OutputGraph(graph, filePath, GraphSONMode.EXTENDED);
             }
         }
 

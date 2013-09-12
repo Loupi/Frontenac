@@ -1,4 +1,4 @@
-﻿using System;
+﻿using System.Diagnostics.Contracts;
 using Castle.Core;
 using Castle.Facilities.TypedFactory;
 using Castle.MicroKernel.Registration;
@@ -19,8 +19,7 @@ namespace Grave.Installers
 
         public InstanceStarter(Instance instance)
         {
-            if (instance == null)
-                throw new ArgumentNullException("instance");
+            Contract.Requires(instance != null);
 
             _instance = instance;
         }

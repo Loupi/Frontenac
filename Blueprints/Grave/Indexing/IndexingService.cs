@@ -1,11 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics.Contracts;
 using System.Threading;
 using Frontenac.Blueprints;
 using Grave.Esent;
 
 namespace Grave.Indexing
 {
+    [ContractClass(typeof(IndexingServiceContract))]
     public abstract class IndexingService : IDisposable
     {
         const string VertexIndicesColumnName = "VertexIndices";
@@ -24,9 +26,8 @@ namespace Grave.Indexing
         
         protected IndexingService(EsentConfigContext context)
         {
-            if(context == null)
-                throw new ArgumentNullException("context");
-
+            Contract.Requires(context != null);
+            
             _context = context;
             IndicesLock = new ReaderWriterLockSlim();
             LoadConfig();
@@ -75,6 +76,10 @@ namespace Grave.Indexing
 
         public void CreateIndexOfType(string indexName, string indexColumn, List<string> indices)
         {
+            Contract.Requires(!string.IsNullOrWhiteSpace(indexName));
+            Contract.Requires(!string.IsNullOrWhiteSpace(indexColumn));
+            Contract.Requires(indices != null);
+
             IndicesLock.EnterWriteLock();
             try
             {
@@ -92,11 +97,19 @@ namespace Grave.Indexing
 
         public List<string> GetIndicesOfType(string indexType)
         {
+            Contract.Requires(!string.IsNullOrWhiteSpace(indexType));
+
             return _context.ConfigTable.ReadCell(ConfigVertexId, indexType) as List<string> ?? new List<string>();
         }
 
         public long DropIndexOfType(string indexName, string indexColumn, Type indexType, List<string> indices, bool isUserIndex)
         {
+            Contract.Requires(!string.IsNullOrWhiteSpace(indexName));
+            Contract.Requires(!string.IsNullOrWhiteSpace(indexColumn));
+            Contract.Requires(indexType != null);
+            Contract.Requires(indexType.IsAssignableFrom(typeof(GraveVertex)) || indexType.IsAssignableFrom(typeof(GraveEdge)));
+            Contract.Requires(indices != null);
+
             long result;
 
             IndicesLock.EnterWriteLock();

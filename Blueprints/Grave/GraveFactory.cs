@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Diagnostics.Contracts;
 using Castle.Facilities.Startable;
 using Castle.Facilities.TypedFactory;
 using Castle.Windsor;
@@ -8,13 +9,16 @@ namespace Grave
 {
     public class GraveFactory
     {
+        static readonly object SyncRoot = new object();
         static FactoryContext _context;
 
         static FactoryContext Context
         {
             get
             {
-                lock (typeof(GraveFactory))
+                Contract.Ensures(Contract.Result<FactoryContext>() != null);
+
+                lock (SyncRoot)
                 {
                     if (_context == null)
                     {
@@ -27,7 +31,7 @@ namespace Grave
 
         public static void Release()
         {
-            lock (typeof(GraveFactory))
+            lock (SyncRoot)
             {
                 if (_context != null)
                 { 
@@ -84,11 +88,15 @@ namespace Grave
 
         public static GraveGraph CreateGraph()
         {
+            Contract.Ensures(Contract.Result<GraveGraph>() != null);
+
             return Context.GraphFactory.Create();
         }
 
         public static GraveGraph CreateTinkerGraph()
         {
+            Contract.Ensures(Contract.Result<GraveGraph>() != null);
+
             var graph = Context.GraphFactory.Create();
 
             var marko = graph.AddVertex("1");

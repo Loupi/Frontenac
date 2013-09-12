@@ -11,7 +11,7 @@ using Newtonsoft.Json.Linq;
 namespace Frontenac.Blueprints.Util.IO.GraphSON
 {
     [TestFixture(Category = "GraphSONUtilityTest")]
-    public class GraphSonUtilityTest
+    public class GraphSonUtilityTest : IDisposable
     {
         readonly TinkerGraph _graph = new TinkerGraph();
 
@@ -28,10 +28,46 @@ namespace Frontenac.Blueprints.Util.IO.GraphSON
         public void Setup()
         {
             _graph.Clear();
-
             _inputStreamVertexJson1 = new MemoryStream(Encoding.Default.GetBytes(VertexJson1));
             _inputStreamEdgeJsonLight = new MemoryStream(Encoding.Default.GetBytes(EdgeJsonLight));
         }
+
+        [TearDown]
+        public void TearDown()
+        {
+            Dispose();
+        }
+
+        #region IDisposable
+        bool _disposed;
+
+        ~GraphSonUtilityTest()
+        {
+            Dispose(false);
+        }
+
+        public void Dispose()
+        {
+            Dispose(true);
+            GC.SuppressFinalize(this);
+        }
+
+        protected virtual void Dispose(bool disposing)
+        {
+            if (_disposed)
+                return;
+
+            if (disposing)
+            {
+                _graph.Shutdown();
+                _inputStreamVertexJson1.Dispose();
+                _inputStreamEdgeJsonLight.Dispose();
+            }
+
+            _disposed = true;
+        }
+
+        #endregion
 
         [Test]
         public void JsonFromElementEdgeNoPropertiesNoKeysNoTypes()

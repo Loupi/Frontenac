@@ -1,4 +1,5 @@
-﻿using System.IO;
+﻿using System;
+using System.IO;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Bson;
 
@@ -20,25 +21,19 @@ namespace Grave.Esent.Serializers
 
         public byte[] Serialize(object value)
         {
-            using (var ms = new MemoryStream())
+            var ms = new MemoryStream();
+            using (var writer = new BsonWriter(ms))
             {
-                using (var writer = new BsonWriter(ms))
-                {
-                    _serializer.Serialize(writer, new BsonWrapper {Data = value});
-                }
-
+                _serializer.Serialize(writer, new BsonWrapper { Data = value });
                 return ms.ToArray();
             }
         }
 
         public object Deserialize(byte[] raw)
         {
-            using (var ms = new MemoryStream(raw))
+            using (var reader = new BsonReader(new MemoryStream(raw)))
             {
-                using (var reader = new BsonReader(ms))
-                {
-                    return ((BsonWrapper)_serializer.Deserialize(reader)).Data;
-                }
+                return ((BsonWrapper)_serializer.Deserialize(reader)).Data;
             }
         }
 

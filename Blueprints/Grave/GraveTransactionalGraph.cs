@@ -7,7 +7,7 @@ using Microsoft.Isam.Esent.Interop;
 
 namespace Grave
 {
-    public class GraveTransactionalGraph : GraveGraph, ITransactionalGraph
+    public class GraveTransactionalGraph : GraveGraph, ITransactionalGraph, IDisposable
     {
         Transaction _transaction;
 
@@ -16,6 +16,35 @@ namespace Grave
         {
 
         }
+
+        #region IDisposable
+        bool _disposed;
+
+        ~GraveTransactionalGraph()
+        {
+            Dispose(false);
+        }
+
+        public void Dispose()
+        {
+            Dispose(true);
+            GC.SuppressFinalize(this);
+        }
+
+        protected virtual void Dispose(bool disposing)
+        {
+            if (_disposed)
+                return;
+
+            if (disposing && _transaction != null)
+            {
+                _transaction.Dispose();
+            }
+
+            _disposed = true;
+        }
+
+        #endregion
 
         public override void Shutdown()
         {

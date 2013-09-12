@@ -144,7 +144,7 @@ namespace Frontenac.Blueprints.Util.Wrappers.Batch
                     bg.SetVertexIdKey(null);
                     Assert.Fail();
                 }
-                catch (InvalidOperationException x)
+                catch (InvalidOperationException)
                 {
 
                 }

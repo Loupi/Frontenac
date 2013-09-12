@@ -1,4 +1,5 @@
-﻿using Frontenac.Blueprints;
+﻿using System.Diagnostics.Contracts;
+using Frontenac.Blueprints;
 using Frontenac.Blueprints.Util;
 using Grave.Esent;
 
@@ -13,6 +14,12 @@ namespace Grave
         public GraveEdge(int id, IVertex outVertex, IVertex inVertex, string label,  GraveGraph graph, EsentTable table)
             : base(graph, table, id)
         {
+            Contract.Requires(outVertex != null);
+            Contract.Requires(inVertex != null);
+            Contract.Requires(!string.IsNullOrWhiteSpace(label));
+            Contract.Requires(graph != null);
+            Contract.Requires(table != null);
+
             _outVertex = outVertex;
             _inVertex = inVertex;
             _label = label;
