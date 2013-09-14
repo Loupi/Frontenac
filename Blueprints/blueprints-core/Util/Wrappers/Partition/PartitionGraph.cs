@@ -6,13 +6,14 @@ namespace Frontenac.Blueprints.Util.Wrappers.Partition
 {
     public class PartitionGraph : IGraph, IWrapperGraph
     {
+        private readonly Features _features;
+        private readonly ISet<string> _readPartitions;
         protected IGraph BaseGraph;
-        string _writePartition;
-        readonly ISet<string> _readPartitions;
-        string _partitionKey;
-        readonly Features _features;
+        private string _partitionKey;
+        private string _writePartition;
 
-        public PartitionGraph(IGraph baseGraph, string partitionKey, string writePartition, IEnumerable<string> readPartitions)
+        public PartitionGraph(IGraph baseGraph, string partitionKey, string writePartition,
+                              IEnumerable<string> readPartitions)
         {
             Contract.Requires(baseGraph != null);
             Contract.Requires(!string.IsNullOrWhiteSpace(partitionKey));
@@ -28,9 +29,8 @@ namespace Frontenac.Blueprints.Util.Wrappers.Partition
         }
 
         public PartitionGraph(IGraph baseGraph, string partitionKey, string readWritePartition) :
-            this(baseGraph, partitionKey, readWritePartition, new[] { readWritePartition })
+            this(baseGraph, partitionKey, readWritePartition, new[] {readWritePartition})
         {
-
         }
 
         public string WritePartition
@@ -47,24 +47,6 @@ namespace Frontenac.Blueprints.Util.Wrappers.Partition
             }
         }
 
-        public IEnumerable<string> GetReadPartitions()
-        {
-            Contract.Ensures(Contract.Result<IEnumerable<string>>() != null);
-            return _readPartitions.ToArray();
-        }
-
-        public void RemoveReadPartition(string readPartition)
-        {
-            Contract.Requires(readPartition != null);
-            _readPartitions.Remove(readPartition);
-        }
-
-        public void AddReadPartition(string readPartition)
-        {
-            Contract.Requires(readPartition != null);
-            _readPartitions.Add(readPartition);
-        }
-
         public string PartitionKey
         {
             set
@@ -77,19 +59,6 @@ namespace Frontenac.Blueprints.Util.Wrappers.Partition
                 Contract.Ensures(Contract.Result<string>() != null);
                 return _partitionKey;
             }
-        }
-
-        public bool IsInPartition(IElement element)
-        {
-            Contract.Requires(element != null);
-
-            string writePartition;
-            var partitionElement = element as PartitionElement;
-            if (partitionElement != null)
-                writePartition = partitionElement.GetPartition();
-            else
-                writePartition = (string)element.GetProperty(_partitionKey);
-            return (null == writePartition || _readPartitions.Contains(writePartition));
         }
 
         public IVertex AddVertex(object id)
@@ -120,7 +89,10 @@ namespace Frontenac.Blueprints.Util.Wrappers.Partition
 
         public IEdge AddEdge(object id, IVertex outVertex, IVertex inVertex, string label)
         {
-            var edge = new PartitionEdge(BaseGraph.AddEdge(id, ((PartitionVertex)outVertex).GetBaseVertex(), ((PartitionVertex)inVertex).GetBaseVertex(), label), this);
+            var edge =
+                new PartitionEdge(
+                    BaseGraph.AddEdge(id, ((PartitionVertex) outVertex).GetBaseVertex(),
+                                      ((PartitionVertex) inVertex).GetBaseVertex(), label), this);
             edge.SetPartition(_writePartition);
             return edge;
         }
@@ -143,22 +115,12 @@ namespace Frontenac.Blueprints.Util.Wrappers.Partition
 
         public void RemoveEdge(IEdge edge)
         {
-            BaseGraph.RemoveEdge(((PartitionEdge)edge).GetBaseEdge());
+            BaseGraph.RemoveEdge(((PartitionEdge) edge).GetBaseEdge());
         }
 
         public void RemoveVertex(IVertex vertex)
         {
-            BaseGraph.RemoveVertex(((PartitionVertex)vertex).GetBaseVertex());
-        }
-
-        public IGraph GetBaseGraph()
-        {
-            return BaseGraph;
-        }
-
-        public override string ToString()
-        {
-            return StringFactory.GraphString(this, BaseGraph.ToString());
+            BaseGraph.RemoveVertex(((PartitionVertex) vertex).GetBaseVertex());
         }
 
         public Features Features
@@ -169,13 +131,54 @@ namespace Frontenac.Blueprints.Util.Wrappers.Partition
         public IQuery Query()
         {
             return new WrappedQuery(BaseGraph.Query(),
-                t => new PartitionEdgeIterable(t.Edges(), this),
-                t => new PartitionVertexIterable(t.Vertices(), this));
+                                    t => new PartitionEdgeIterable(t.Edges(), this),
+                                    t => new PartitionVertexIterable(t.Vertices(), this));
         }
 
         public void Shutdown()
         {
             BaseGraph.Shutdown();
+        }
+
+        public IGraph GetBaseGraph()
+        {
+            return BaseGraph;
+        }
+
+        public IEnumerable<string> GetReadPartitions()
+        {
+            Contract.Ensures(Contract.Result<IEnumerable<string>>() != null);
+            return _readPartitions.ToArray();
+        }
+
+        public void RemoveReadPartition(string readPartition)
+        {
+            Contract.Requires(readPartition != null);
+            _readPartitions.Remove(readPartition);
+        }
+
+        public void AddReadPartition(string readPartition)
+        {
+            Contract.Requires(readPartition != null);
+            _readPartitions.Add(readPartition);
+        }
+
+        public bool IsInPartition(IElement element)
+        {
+            Contract.Requires(element != null);
+
+            string writePartition;
+            var partitionElement = element as PartitionElement;
+            if (partitionElement != null)
+                writePartition = partitionElement.GetPartition();
+            else
+                writePartition = (string) element.GetProperty(_partitionKey);
+            return (null == writePartition || _readPartitions.Contains(writePartition));
+        }
+
+        public override string ToString()
+        {
+            return StringFactory.GraphString(this, BaseGraph.ToString());
         }
     }
 }

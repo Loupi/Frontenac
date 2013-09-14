@@ -1,9 +1,9 @@
-﻿using NUnit.Framework;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using Frontenac.Blueprints.Impls;
 using Frontenac.Blueprints.Util.IO;
+using NUnit.Framework;
 
 namespace Frontenac.Blueprints
 {
@@ -12,7 +12,6 @@ namespace Frontenac.Blueprints
         protected GraphTestSuite(GraphTest graphTest)
             : base("GraphTestSuite", graphTest)
         {
-
         }
 
         [Test]
@@ -151,11 +150,11 @@ namespace Frontenac.Blueprints
                 if (graph.Features.SupportsEdgeProperties)
                 {
                     var e1 = graph.AddEdge(null, graph.AddVertex(null), graph.AddVertex(null),
-                                             ConvertId(graph, "knows"));
+                                           ConvertId(graph, "knows"));
                     e1.SetProperty("name", "marko");
                     e1.SetProperty("location", "everywhere");
                     var e2 = graph.AddEdge(null, graph.AddVertex(null), graph.AddVertex(null),
-                                             ConvertId(graph, "knows"));
+                                           ConvertId(graph, "knows"));
                     e2.SetProperty("name", "stephen");
                     e2.SetProperty("location", "everywhere");
 
@@ -338,7 +337,7 @@ namespace Frontenac.Blueprints
             }
         }
 
-        static void TrySetProperty(IElement element, string key, object value, bool allowDataType)
+        private static void TrySetProperty(IElement element, string key, object value, bool allowDataType)
         {
             var exceptionTossed = false;
             try
@@ -351,7 +350,8 @@ namespace Frontenac.Blueprints
                 if (!allowDataType)
                     Assert.True(t is ArgumentException);
                 else
-                    Assert.Fail("SetProperty should not have thrown an exception as this data type is accepted according to the GraphTest settings.");
+                    Assert.Fail(
+                        "SetProperty should not have thrown an exception as this data type is accepted according to the GraphTest settings.");
             }
 
             if (!allowDataType && !exceptionTossed)
@@ -430,7 +430,8 @@ namespace Frontenac.Blueprints
                     if (graph.Features.SupportsVertexIteration)
                         Assert.AreEqual(vertices.Count(), Count(graph.GetVertices()));
                 }
-                PrintPerformance(graph.ToString(), edgeCount, "edges deleted (with Count check on each delete)", StopWatch());
+                PrintPerformance(graph.ToString(), edgeCount, "edges deleted (with Count check on each delete)",
+                                 StopWatch());
             }
             finally
             {
@@ -460,7 +461,6 @@ namespace Frontenac.Blueprints
                     var a = vertices.ElementAt(i);
                     var b = vertices.ElementAt(i + 1);
                     edges.Add(graph.AddEdge(null, a, b, ConvertId(graph, string.Concat("a", Guid.NewGuid()))));
-
                 }
                 PrintPerformance(graph.ToString(), vertexCount/2, "edges added", StopWatch());
 
@@ -649,7 +649,7 @@ namespace Frontenac.Blueprints
                 var cHateB = graph.AddEdge(null, c, b, ConvertId(graph, "hate"));
 
                 var results = a.GetEdges(Direction.Out, ConvertId(graph, "friend"),
-                                                        ConvertId(graph, "hate")).ToArray();
+                                         ConvertId(graph, "hate")).ToArray();
                 Assert.AreEqual(results.Count(), 3);
                 Assert.True(results.Contains(aFriendB));
                 Assert.True(results.Contains(aFriendC));

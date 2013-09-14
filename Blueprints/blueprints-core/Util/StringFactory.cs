@@ -3,7 +3,7 @@
 namespace Frontenac.Blueprints.Util
 {
     /// <summary>
-    /// A collection of helpful methods for creating standard toString() representations of graph-related objects.
+    ///     A collection of helpful methods for creating standard toString() representations of graph-related objects.
     /// </summary>
     public static class StringFactory
     {

@@ -1,8 +1,8 @@
-﻿using NUnit.Framework;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using Frontenac.Blueprints.Impls;
+using NUnit.Framework;
 
 namespace Frontenac.Blueprints
 {
@@ -11,7 +11,6 @@ namespace Frontenac.Blueprints
         protected IndexableGraphTestSuite(GraphTest graphTest)
             : base("IndexableGraphTestSuite", graphTest)
         {
-
         }
 
         [Test]
@@ -235,7 +234,7 @@ namespace Frontenac.Blueprints
             var graph = (IIndexableGraph) GraphTest.GenerateGraph();
             try
             {
-                if(graph.Features.SupportsIndices && graph.Features.SupportsVertexIndex)
+                if (graph.Features.SupportsIndices && graph.Features.SupportsVertexIndex)
                 {
                     loop = 1;
                     if (graph.Features.IsPersistent)
@@ -290,7 +289,7 @@ namespace Frontenac.Blueprints
             try
             {
                 var hasFeatures = (graph.Features.IsPersistent && graph.Features.SupportsIndices &&
-                                    graph.Features.SupportsVertexIndex);
+                                   graph.Features.SupportsVertexIndex);
                 if (!hasFeatures) return;
 
                 graph.CreateIndex("blah", typeof (IVertex));

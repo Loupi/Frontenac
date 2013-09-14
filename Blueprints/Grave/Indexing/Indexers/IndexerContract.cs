@@ -2,7 +2,7 @@
 
 namespace Grave.Indexing.Indexers
 {
-    [ContractClassFor(typeof(Indexer))]
+    [ContractClassFor(typeof (Indexer))]
     public abstract class IndexerContract : Indexer
     {
         protected IndexerContract(IDocument document) : base(document)

@@ -1,14 +1,15 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Diagnostics.Contracts;
 using System.Linq;
 
 namespace Frontenac.Blueprints.Util.Wrappers.ReadOnly
 {
-    class ReadOnlyEdgeIterable : ICloseableIterable<IEdge>
+    internal class ReadOnlyEdgeIterable : ICloseableIterable<IEdge>
     {
-        readonly IEnumerable<IEdge> _iterable;
-        bool _disposed;
+        private readonly IEnumerable<IEdge> _iterable;
+        private bool _disposed;
 
         public ReadOnlyEdgeIterable(IEnumerable<IEdge> iterable)
         {
@@ -17,15 +18,25 @@ namespace Frontenac.Blueprints.Util.Wrappers.ReadOnly
             _iterable = iterable;
         }
 
-        ~ReadOnlyEdgeIterable()
-        {
-            Dispose(false);
-        }
-
         public void Dispose()
         {
             Dispose(true);
             GC.SuppressFinalize(this);
+        }
+
+        public IEnumerator<IEdge> GetEnumerator()
+        {
+            return _iterable.Select(edge => new ReadOnlyEdge(edge)).Cast<IEdge>().GetEnumerator();
+        }
+
+        IEnumerator IEnumerable.GetEnumerator()
+        {
+            return (this as IEnumerable<IEdge>).GetEnumerator();
+        }
+
+        ~ReadOnlyEdgeIterable()
+        {
+            Dispose(false);
         }
 
         protected virtual void Dispose(bool disposing)
@@ -40,16 +51,6 @@ namespace Frontenac.Blueprints.Util.Wrappers.ReadOnly
             }
 
             _disposed = true;
-        }
-
-        public IEnumerator<IEdge> GetEnumerator()
-        {
-            return _iterable.Select(edge => new ReadOnlyEdge(edge)).Cast<IEdge>().GetEnumerator();
-        }
-
-        System.Collections.IEnumerator System.Collections.IEnumerable.GetEnumerator()
-        {
-            return (this as IEnumerable<IEdge>).GetEnumerator();
         }
     }
 }

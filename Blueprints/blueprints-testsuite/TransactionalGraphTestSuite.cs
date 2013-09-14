@@ -1,10 +1,10 @@
-﻿using Frontenac.Blueprints.Impls;
-using NUnit.Framework;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using Frontenac.Blueprints.Impls;
+using NUnit.Framework;
 
 namespace Frontenac.Blueprints
 {
@@ -270,7 +270,9 @@ namespace Frontenac.Blueprints
                     graph.AddEdge(null, v, u, ConvertId(graph, "test"));
                     graph.Commit();
                 }
-                PrintPerformance(graph.ToString(), 100, "edges added in 100 successful transactions (2 vertices added for each edge)", StopWatch());
+                PrintPerformance(graph.ToString(), 100,
+                                 "edges added in 100 successful transactions (2 vertices added for each edge)",
+                                 StopWatch());
                 VertexCount(graph, 200);
                 EdgeCount(graph, 100);
 
@@ -282,7 +284,9 @@ namespace Frontenac.Blueprints
                     graph.AddEdge(null, v, u, ConvertId(graph, "test"));
                     graph.Rollback();
                 }
-                PrintPerformance(graph.ToString(), 100, "edges not added in 100 failed transactions (2 vertices added for each edge)", StopWatch());
+                PrintPerformance(graph.ToString(), 100,
+                                 "edges not added in 100 failed transactions (2 vertices added for each edge)",
+                                 StopWatch());
                 VertexCount(graph, 200);
                 EdgeCount(graph, 100);
 
@@ -296,7 +300,9 @@ namespace Frontenac.Blueprints
                 VertexCount(graph, 400);
                 EdgeCount(graph, 200);
                 graph.Commit();
-                PrintPerformance(graph.ToString(), 100, "edges added in 1 successful transactions (2 vertices added for each edge)", StopWatch());
+                PrintPerformance(graph.ToString(), 100,
+                                 "edges added in 1 successful transactions (2 vertices added for each edge)",
+                                 StopWatch());
                 VertexCount(graph, 400);
                 EdgeCount(graph, 200);
 
@@ -311,7 +317,9 @@ namespace Frontenac.Blueprints
                 EdgeCount(graph, 300);
 
                 graph.Rollback();
-                PrintPerformance(graph.ToString(), 100, "edges not added in 1 failed transactions (2 vertices added for each edge)", StopWatch());
+                PrintPerformance(graph.ToString(), 100,
+                                 "edges not added in 1 failed transactions (2 vertices added for each edge)",
+                                 StopWatch());
                 VertexCount(graph, 400);
                 EdgeCount(graph, 200);
             }
@@ -334,8 +342,9 @@ namespace Frontenac.Blueprints
                 var id = v.Id;
                 v.SetProperty("name", "marko");
                 graph.Commit();
-                PrintPerformance(graph.ToString(), 1, "vertex added with string property in a successful transaction", StopWatch());
-                
+                PrintPerformance(graph.ToString(), 1, "vertex added with string property in a successful transaction",
+                                 StopWatch());
+
                 StopWatch();
                 v = graph.GetVertex(id);
                 Assert.NotNull(v);
@@ -350,7 +359,8 @@ namespace Frontenac.Blueprints
                 Assert.NotNull(v);
                 Assert.AreEqual(v.GetProperty("name"), "marko");
                 Assert.Null(v.GetProperty("age"));
-                PrintPerformance(graph.ToString(), 2, "vertex properties checked in a successful transaction", StopWatch());
+                PrintPerformance(graph.ToString(), 2, "vertex properties checked in a successful transaction",
+                                 StopWatch());
 
                 EdgeCount(graph, 1);
                 graph.Commit();
@@ -362,7 +372,8 @@ namespace Frontenac.Blueprints
                 edge.SetProperty("transaction-1", "success");
                 Assert.AreEqual(edge.GetProperty("transaction-1"), "success");
                 graph.Commit();
-                PrintPerformance(graph.ToString(), 1, "edge property added and checked in a successful transaction", StopWatch());
+                PrintPerformance(graph.ToString(), 1, "edge property added and checked in a successful transaction",
+                                 StopWatch());
                 edge = GetOnlyElement(graph.GetVertex(v.Id).GetEdges(Direction.Out));
                 Assert.AreEqual(edge.GetProperty("transaction-1"), "success");
 
@@ -371,7 +382,8 @@ namespace Frontenac.Blueprints
                 Assert.AreEqual(edge.GetProperty("transaction-1"), "success");
                 Assert.AreEqual(edge.GetProperty("transaction-2"), "failure");
                 graph.Rollback();
-                PrintPerformance(graph.ToString(), 1, "edge property added and checked in a failed transaction", StopWatch());
+                PrintPerformance(graph.ToString(), 1, "edge property added and checked in a failed transaction",
+                                 StopWatch());
                 edge = GetOnlyElement(graph.GetVertex(v.Id).GetEdges(Direction.Out));
                 Assert.AreEqual(edge.GetProperty("transaction-1"), "success");
                 Assert.Null(edge.GetProperty("transaction-2"));
@@ -397,36 +409,49 @@ namespace Frontenac.Blueprints
                 v.SetProperty("name", "marko");
                 index.Put("name", "marko", v);
                 VertexCount(graph, 1);
-                v = (IVertex) GetOnlyElement(((IIndexableGraph) graph).GetIndex("txIdx", typeof (IVertex)).Get("name", "marko"));
+                v =
+                    (IVertex)
+                    GetOnlyElement(((IIndexableGraph) graph).GetIndex("txIdx", typeof (IVertex)).Get("name", "marko"));
                 Assert.AreEqual(v.Id, id);
                 Assert.AreEqual(v.GetProperty("name"), "marko");
                 graph.Commit();
-                PrintPerformance(graph.ToString(), 1, "vertex added and retrieved from index in a successful transaction", StopWatch());
-                
+                PrintPerformance(graph.ToString(), 1,
+                                 "vertex added and retrieved from index in a successful transaction", StopWatch());
+
                 StopWatch();
                 VertexCount(graph, 1);
-                v = (IVertex)GetOnlyElement(((IIndexableGraph) graph).GetIndex("txIdx", typeof (IVertex)).Get("name", "marko"));
+                v =
+                    (IVertex)
+                    GetOnlyElement(((IIndexableGraph) graph).GetIndex("txIdx", typeof (IVertex)).Get("name", "marko"));
                 Assert.AreEqual(v.Id, id);
                 Assert.AreEqual(v.GetProperty("name"), "marko");
-                PrintPerformance(graph.ToString(), 1, "vertex retrieved from index outside successful transaction", StopWatch());
-                
+                PrintPerformance(graph.ToString(), 1, "vertex retrieved from index outside successful transaction",
+                                 StopWatch());
+
                 StopWatch();
                 v = graph.AddVertex(null);
                 v.SetProperty("name", "pavel");
                 index.Put("name", "pavel", v);
                 VertexCount(graph, 2);
-                v = (IVertex)GetOnlyElement(((IIndexableGraph) graph).GetIndex("txIdx", typeof (IVertex)).Get("name", "marko"));
+                v =
+                    (IVertex)
+                    GetOnlyElement(((IIndexableGraph) graph).GetIndex("txIdx", typeof (IVertex)).Get("name", "marko"));
                 Assert.AreEqual(v.GetProperty("name"), "marko");
-                v = (IVertex)GetOnlyElement(((IIndexableGraph) graph).GetIndex("txIdx", typeof (IVertex)).Get("name", "pavel"));
+                v =
+                    (IVertex)
+                    GetOnlyElement(((IIndexableGraph) graph).GetIndex("txIdx", typeof (IVertex)).Get("name", "pavel"));
                 Assert.AreEqual(v.GetProperty("name"), "pavel");
                 graph.Rollback();
                 PrintPerformance(graph.ToString(), 1, "vertex not added in a failed transaction", StopWatch());
 
                 StopWatch();
                 VertexCount(graph, 1);
-                Assert.AreEqual(Count(((IIndexableGraph) graph).GetIndex("txIdx", typeof (IVertex)).Get("name", "pavel")), 0);
+                Assert.AreEqual(
+                    Count(((IIndexableGraph) graph).GetIndex("txIdx", typeof (IVertex)).Get("name", "pavel")), 0);
                 PrintPerformance(graph.ToString(), 1, "vertex not retrieved in a successful transaction", StopWatch());
-                v = (IVertex)GetOnlyElement(((IIndexableGraph) graph).GetIndex("txIdx", typeof (IVertex)).Get("name", "marko"));
+                v =
+                    (IVertex)
+                    GetOnlyElement(((IIndexableGraph) graph).GetIndex("txIdx", typeof (IVertex)).Get("name", "marko"));
                 Assert.AreEqual(v.GetProperty("name"), "marko");
             }
             finally
@@ -548,7 +573,7 @@ namespace Frontenac.Blueprints
                 Parallel.For(0, totalThreads, i =>
                     {
                         var random = new Random();
-                        if (random.Next() % 2 == 0)
+                        if (random.Next()%2 == 0)
                         {
                             var a = graph.AddVertex(null);
                             var b = graph.AddVertex(null);
@@ -616,7 +641,7 @@ namespace Frontenac.Blueprints
                         v.SetProperty("name", "stephen");
                         graph1.Commit();
                     }
-                    finally 
+                    finally
                     {
                         graph1.Shutdown();
                     }
@@ -624,7 +649,7 @@ namespace Frontenac.Blueprints
 
             var threadReadBothGraphs = Task.Factory.StartNew(() =>
                 {
-                    var graph2 = (ITransactionalGraph)GraphTest.GenerateGraph("second");
+                    var graph2 = (ITransactionalGraph) GraphTest.GenerateGraph("second");
                     try
                     {
                         if (graph2.Features.IsRdfModel) return;
@@ -634,7 +659,7 @@ namespace Frontenac.Blueprints
                         counter = graph2.GetVertices().Count();
                         Assert.AreEqual(0, counter);
                     }
-                    finally 
+                    finally
                     {
                         graph2.Shutdown();
                     }
@@ -677,7 +702,6 @@ namespace Frontenac.Blueprints
 
                 var threadRead = Task.Factory.StartNew(() =>
                     {
-
                         latchFirstRead.Wait();
 
                         Console.WriteLine("reading vertex before tx");

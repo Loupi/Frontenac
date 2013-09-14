@@ -2,7 +2,7 @@
 
 namespace Grave
 {
-    [ContractClassFor(typeof(IGraveGraphFactory))]
+    [ContractClassFor(typeof (IGraveGraphFactory))]
     public abstract class GraveGraphFactoryContract : IGraveGraphFactory
     {
         public GraveGraph Create()

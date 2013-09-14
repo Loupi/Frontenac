@@ -3,7 +3,7 @@ using System.Diagnostics.Contracts;
 
 namespace Frontenac.Blueprints.Contracts
 {
-    [ContractClassFor(typeof(IThreadedTransactionalGraph))]
+    [ContractClassFor(typeof (IThreadedTransactionalGraph))]
     public abstract class ThreadedTransactionalGraphContract : IThreadedTransactionalGraph
     {
         public ITransactionalGraph NewTransaction()

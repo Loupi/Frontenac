@@ -1,52 +1,51 @@
-﻿using System.Diagnostics.Contracts;
-using Newtonsoft.Json;
-using Newtonsoft.Json.Linq;
-using System.Collections;
+﻿using System.Collections;
 using System.Collections.Generic;
+using System.Diagnostics.Contracts;
 using System.Globalization;
 using System.IO;
 using System.Linq;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 
 namespace Frontenac.Blueprints.Util.IO.GraphSON
 {
     /// <summary>
-    /// Helps write individual graph elements to TinkerPop JSON format known as GraphSON.
+    ///     Helps write individual graph elements to TinkerPop JSON format known as GraphSON.
     /// </summary>
     public class GraphSonUtility
     {
-        readonly GraphSONMode _mode;
-        readonly IEnumerable<string> _vertexPropertyKeys;
-        readonly IEnumerable<string> _edgePropertyKeys;
-        readonly IElementFactory _factory;
-        readonly bool _hasEmbeddedTypes;
-        readonly ElementPropertyConfig.ElementPropertiesRule _vertexPropertiesRule;
-        readonly ElementPropertyConfig.ElementPropertiesRule _edgePropertiesRule;
-
-        readonly bool _includeReservedVertexId;
-        readonly bool _includeReservedEdgeId;
-        readonly bool _includeReservedVertexType;
-        readonly bool _includeReservedEdgeType;
-        readonly bool _includeReservedEdgeLabel;
-        readonly bool _includeReservedEdgeOutV;
-        readonly bool _includeReservedEdgeInV;
+        private readonly ElementPropertyConfig.ElementPropertiesRule _edgePropertiesRule;
+        private readonly IEnumerable<string> _edgePropertyKeys;
+        private readonly IElementFactory _factory;
+        private readonly bool _hasEmbeddedTypes;
+        private readonly bool _includeReservedEdgeId;
+        private readonly bool _includeReservedEdgeInV;
+        private readonly bool _includeReservedEdgeLabel;
+        private readonly bool _includeReservedEdgeOutV;
+        private readonly bool _includeReservedEdgeType;
+        private readonly bool _includeReservedVertexId;
+        private readonly bool _includeReservedVertexType;
+        private readonly GraphSONMode _mode;
+        private readonly ElementPropertyConfig.ElementPropertiesRule _vertexPropertiesRule;
+        private readonly IEnumerable<string> _vertexPropertyKeys;
 
         /// <summary>
-        /// A GraphSONUtiltiy that includes all properties of vertices and edges.
+        ///     A GraphSONUtiltiy that includes all properties of vertices and edges.
         /// </summary>
         public GraphSonUtility(GraphSONMode mode, IElementFactory factory)
             : this(mode, factory, ElementPropertyConfig.AllProperties)
         {
-
         }
 
         /// <summary>
-        /// A GraphSONUtility that includes the specified properties.
+        ///     A GraphSONUtility that includes the specified properties.
         /// </summary>
         public GraphSonUtility(GraphSONMode mode, IElementFactory factory,
-                           IEnumerable<string> vertexPropertyKeys, IEnumerable<string> edgePropertyKeys) :
-            this(mode, factory, ElementPropertyConfig.IncludeProperties(vertexPropertyKeys, edgePropertyKeys))
+                               IEnumerable<string> vertexPropertyKeys, IEnumerable<string> edgePropertyKeys) :
+                                   this(
+                                   mode, factory,
+                                   ElementPropertyConfig.IncludeProperties(vertexPropertyKeys, edgePropertyKeys))
         {
-
         }
 
         public GraphSonUtility(GraphSONMode mode, IElementFactory factory, ElementPropertyConfig config)
@@ -63,30 +62,36 @@ namespace Frontenac.Blueprints.Util.IO.GraphSON
             _hasEmbeddedTypes = mode == GraphSONMode.EXTENDED;
 
 // ReSharper disable PossibleMultipleEnumeration
-            _includeReservedVertexId = IncludeReservedKey(mode, GraphSonTokens.Id, _vertexPropertyKeys, _vertexPropertiesRule);
+            _includeReservedVertexId = IncludeReservedKey(mode, GraphSonTokens.Id, _vertexPropertyKeys,
+                                                          _vertexPropertiesRule);
             _includeReservedEdgeId = IncludeReservedKey(mode, GraphSonTokens.Id, _edgePropertyKeys, _edgePropertiesRule);
-            _includeReservedVertexType = IncludeReservedKey(mode, GraphSonTokens.UnderscoreType, _vertexPropertyKeys, _vertexPropertiesRule);
-            _includeReservedEdgeType = IncludeReservedKey(mode, GraphSonTokens.UnderscoreType, _edgePropertyKeys, _edgePropertiesRule);
-            _includeReservedEdgeLabel = IncludeReservedKey(mode, GraphSonTokens.Label, _edgePropertyKeys, _edgePropertiesRule);
-            _includeReservedEdgeOutV = IncludeReservedKey(mode, GraphSonTokens.OutV, _edgePropertyKeys, _edgePropertiesRule);
-            _includeReservedEdgeInV = IncludeReservedKey(mode, GraphSonTokens.InV, _edgePropertyKeys, _edgePropertiesRule);
+            _includeReservedVertexType = IncludeReservedKey(mode, GraphSonTokens.UnderscoreType, _vertexPropertyKeys,
+                                                            _vertexPropertiesRule);
+            _includeReservedEdgeType = IncludeReservedKey(mode, GraphSonTokens.UnderscoreType, _edgePropertyKeys,
+                                                          _edgePropertiesRule);
+            _includeReservedEdgeLabel = IncludeReservedKey(mode, GraphSonTokens.Label, _edgePropertyKeys,
+                                                           _edgePropertiesRule);
+            _includeReservedEdgeOutV = IncludeReservedKey(mode, GraphSonTokens.OutV, _edgePropertyKeys,
+                                                          _edgePropertiesRule);
+            _includeReservedEdgeInV = IncludeReservedKey(mode, GraphSonTokens.InV, _edgePropertyKeys,
+                                                         _edgePropertiesRule);
 // ReSharper restore PossibleMultipleEnumeration
         }
 
         /// <summary>
-        /// Creates a vertex from GraphSON using settings supplied in the constructor.
+        ///     Creates a vertex from GraphSON using settings supplied in the constructor.
         /// </summary>
         public IVertex VertexFromJson(string json)
         {
             Contract.Requires(json != null);
             Contract.Ensures(Contract.Result<IVertex>() != null);
 
-            var node = (JObject)JsonConvert.DeserializeObject(json);
+            var node = (JObject) JsonConvert.DeserializeObject(json);
             return VertexFromJson(node);
         }
 
         /// <summary>
-        /// Creates a vertex from GraphSON using settings supplied in the constructor.
+        ///     Creates a vertex from GraphSON using settings supplied in the constructor.
         /// </summary>
         public IVertex VertexFromJson(Stream json)
         {
@@ -95,13 +100,13 @@ namespace Frontenac.Blueprints.Util.IO.GraphSON
 
             using (var reader = new StreamReader(json))
             {
-                var node = (JObject)new JsonSerializer().Deserialize(reader, typeof(object));
+                var node = (JObject) new JsonSerializer().Deserialize(reader, typeof (object));
                 return VertexFromJson(node);
             }
         }
 
         /// <summary>
-        /// Creates a vertex from GraphSON using settings supplied in the constructor.
+        ///     Creates a vertex from GraphSON using settings supplied in the constructor.
         /// </summary>
         public IVertex VertexFromJson(JObject json)
         {
@@ -113,7 +118,8 @@ namespace Frontenac.Blueprints.Util.IO.GraphSON
             var vertexId = GetTypedValueFromJsonNode(json[GraphSonTokens.Id]);
             var v = _factory.CreateVertex(vertexId);
 
-            foreach (var entry in props.Where(entry => IncludeKey(entry.Key, _vertexPropertyKeys, _vertexPropertiesRule)))
+            foreach (
+                var entry in props.Where(entry => IncludeKey(entry.Key, _vertexPropertyKeys, _vertexPropertiesRule)))
             {
                 v.SetProperty(entry.Key, entry.Value);
             }
@@ -122,7 +128,7 @@ namespace Frontenac.Blueprints.Util.IO.GraphSON
         }
 
         /// <summary>
-        /// Creates an edge from GraphSON using settings supplied in the constructor.
+        ///     Creates an edge from GraphSON using settings supplied in the constructor.
         /// </summary>
         public IEdge EdgeFromJson(string json, IVertex out_, IVertex in_)
         {
@@ -131,7 +137,7 @@ namespace Frontenac.Blueprints.Util.IO.GraphSON
             Contract.Requires(out_ != null);
             Contract.Ensures(Contract.Result<IEdge>() != null);
 
-            var node = (JObject)JsonConvert.DeserializeObject(json);
+            var node = (JObject) JsonConvert.DeserializeObject(json);
             return EdgeFromJson(node, out_, in_);
         }
 
@@ -144,13 +150,13 @@ namespace Frontenac.Blueprints.Util.IO.GraphSON
 
             using (var reader = new StreamReader(json))
             {
-                var node = (JObject)new JsonSerializer().Deserialize(reader, typeof(object));
+                var node = (JObject) new JsonSerializer().Deserialize(reader, typeof (object));
                 return EdgeFromJson(node, out_, in_);
             }
         }
 
         /// <summary>
-        /// Creates an edge from GraphSON using settings supplied in the constructor.
+        ///     Creates an edge from GraphSON using settings supplied in the constructor.
         /// </summary>
         public IEdge EdgeFromJson(JObject json, IVertex out_, IVertex in_)
         {
@@ -174,7 +180,7 @@ namespace Frontenac.Blueprints.Util.IO.GraphSON
         }
 
         /// <summary>
-        /// Creates GraphSON for a single graph element.
+        ///     Creates GraphSON for a single graph element.
         /// </summary>
         public JObject JsonFromElement(IElement element)
         {
@@ -187,7 +193,8 @@ namespace Frontenac.Blueprints.Util.IO.GraphSON
             var elementPropertyConfig = isEdge ? _edgePropertiesRule : _vertexPropertiesRule;
 
 // ReSharper disable PossibleMultipleEnumeration
-            var jsonElement = CreateJsonMap(CreatePropertyMap(element, propertyKeys, elementPropertyConfig), propertyKeys, showTypes);
+            var jsonElement = CreateJsonMap(CreatePropertyMap(element, propertyKeys, elementPropertyConfig),
+                                            propertyKeys, showTypes);
 // ReSharper restore PossibleMultipleEnumeration
 
             if ((isEdge && _includeReservedEdgeId) || (!isEdge && _includeReservedVertexId))
@@ -227,14 +234,14 @@ namespace Frontenac.Blueprints.Util.IO.GraphSON
         }
 
         /// <summary>
-        /// Reads an individual Vertex from JSON.  The vertex must match the accepted GraphSON format.
+        ///     Reads an individual Vertex from JSON.  The vertex must match the accepted GraphSON format.
         /// </summary>
         /// <param name="json">a single vertex in GraphSON format as a string.</param>
         /// <param name="factory">the factory responsible for constructing graph elements</param>
         /// <param name="mode">the mode of the GraphSON</param>
         /// <param name="propertyKeys">a list of keys to include on reading of element properties</param>
         public static IVertex VertexFromJson(string json, IElementFactory factory, GraphSONMode mode,
-                                        IEnumerable<string> propertyKeys)
+                                             IEnumerable<string> propertyKeys)
         {
             Contract.Requires(json != null);
             Contract.Requires(factory != null);
@@ -245,14 +252,14 @@ namespace Frontenac.Blueprints.Util.IO.GraphSON
         }
 
         /// <summary>
-        /// Reads an individual Vertex from JSON.  The vertex must match the accepted GraphSON format.
+        ///     Reads an individual Vertex from JSON.  The vertex must match the accepted GraphSON format.
         /// </summary>
         /// <param name="json">a single vertex in GraphSON format as a Stream.</param>
         /// <param name="factory">the factory responsible for constructing graph elements</param>
         /// <param name="mode">the mode of the GraphSON</param>
         /// <param name="propertyKeys">a list of keys to include on reading of element properties</param>
         public static IVertex VertexFromJson(Stream json, IElementFactory factory, GraphSONMode mode,
-                                        IEnumerable<string> propertyKeys)
+                                             IEnumerable<string> propertyKeys)
         {
             Contract.Requires(json != null);
             Contract.Requires(factory != null);
@@ -263,14 +270,14 @@ namespace Frontenac.Blueprints.Util.IO.GraphSON
         }
 
         /// <summary>
-        /// Reads an individual Vertex from JSON.  The vertex must match the accepted GraphSON format.
+        ///     Reads an individual Vertex from JSON.  The vertex must match the accepted GraphSON format.
         /// </summary>
         /// <param name="json">a single vertex in GraphSON format as Jackson JsonNode</param>
         /// <param name="factory">the factory responsible for constructing graph elements</param>
         /// <param name="mode">the mode of the GraphSON</param>
         /// <param name="propertyKeys">a list of keys to include on reading of element properties</param>
         public static IVertex VertexFromJson(JObject json, IElementFactory factory, GraphSONMode mode,
-                                        IEnumerable<string> propertyKeys)
+                                             IEnumerable<string> propertyKeys)
         {
             Contract.Requires(json != null);
             Contract.Requires(factory != null);
@@ -281,7 +288,7 @@ namespace Frontenac.Blueprints.Util.IO.GraphSON
         }
 
         /// <summary>
-        /// Reads an individual Edge from JSON.  The edge must match the accepted GraphSON format.
+        ///     Reads an individual Edge from JSON.  The edge must match the accepted GraphSON format.
         /// </summary>
         /// <param name="json">a single edge in GraphSON format as a string</param>
         /// <param name="out_"></param>
@@ -290,8 +297,8 @@ namespace Frontenac.Blueprints.Util.IO.GraphSON
         /// <param name="mode">the mode of the GraphSON</param>
         /// <param name="propertyKeys">a list of keys to include when reading of element properties</param>
         public static IEdge EdgeFromJson(string json, IVertex out_, IVertex in_,
-                                    IElementFactory factory, GraphSONMode mode,
-                                    IEnumerable<string> propertyKeys)
+                                         IElementFactory factory, GraphSONMode mode,
+                                         IEnumerable<string> propertyKeys)
         {
             Contract.Requires(json != null);
             Contract.Requires(out_ != null);
@@ -304,7 +311,7 @@ namespace Frontenac.Blueprints.Util.IO.GraphSON
         }
 
         /// <summary>
-        /// Reads an individual Edge from JSON.  The edge must match the accepted GraphSON format.
+        ///     Reads an individual Edge from JSON.  The edge must match the accepted GraphSON format.
         /// </summary>
         /// <param name="json">a single edge in GraphSON format as a Stream</param>
         /// <param name="out_"></param>
@@ -313,8 +320,8 @@ namespace Frontenac.Blueprints.Util.IO.GraphSON
         /// <param name="mode">the mode of the GraphSON</param>
         /// <param name="propertyKeys">a list of keys to include when reading of element properties</param>
         public static IEdge EdgeFromJson(Stream json, IVertex out_, IVertex in_,
-                                        IElementFactory factory, GraphSONMode mode,
-                                        IEnumerable<string> propertyKeys)
+                                         IElementFactory factory, GraphSONMode mode,
+                                         IEnumerable<string> propertyKeys)
         {
             Contract.Requires(json != null);
             Contract.Requires(out_ != null);
@@ -327,7 +334,7 @@ namespace Frontenac.Blueprints.Util.IO.GraphSON
         }
 
         /// <summary>
-        /// Reads an individual Edge from JSON.  The edge must match the accepted GraphSON format.
+        ///     Reads an individual Edge from JSON.  The edge must match the accepted GraphSON format.
         /// </summary>
         /// <param name="json">a single edge in GraphSON format as a Stream</param>
         /// <param name="out_"></param>
@@ -336,8 +343,8 @@ namespace Frontenac.Blueprints.Util.IO.GraphSON
         /// <param name="mode">the mode of the GraphSON</param>
         /// <param name="propertyKeys">a list of keys to include when reading of element properties</param>
         public static IEdge EdgeFromJson(JObject json, IVertex out_, IVertex in_,
-                                        IElementFactory factory, GraphSONMode mode,
-                                        IEnumerable<string> propertyKeys)
+                                         IElementFactory factory, GraphSONMode mode,
+                                         IEnumerable<string> propertyKeys)
         {
             Contract.Requires(json != null);
             Contract.Requires(out_ != null);
@@ -350,7 +357,7 @@ namespace Frontenac.Blueprints.Util.IO.GraphSON
         }
 
         /// <summary>
-        /// Creates a JSON.NET ObjectNode from a graph element.
+        ///     Creates a JSON.NET ObjectNode from a graph element.
         /// </summary>
         /// <param name="element">the graph element to convert to JSON.</param>
         /// <param name="propertyKeys">The property keys at the root of the element to serialize.  If null, then all keys are serialized.</param>
@@ -360,21 +367,24 @@ namespace Frontenac.Blueprints.Util.IO.GraphSON
             Contract.Requires(element != null);
             Contract.Ensures(Contract.Result<JObject>() != null);
 
-            var graphson = element is IEdge ? new GraphSonUtility(mode, null, null, propertyKeys)
-                    : new GraphSonUtility(mode, null, propertyKeys, null);
+            var graphson = element is IEdge
+                               ? new GraphSonUtility(mode, null, null, propertyKeys)
+                               : new GraphSonUtility(mode, null, propertyKeys, null);
             return graphson.JsonFromElement(element);
         }
 
-        static IDictionary<string, object> ReadProperties(IEnumerable<KeyValuePair<string, JToken>> node, bool ignoreReservedKeys, bool hasEmbeddedTypes)
+        private static IDictionary<string, object> ReadProperties(IEnumerable<KeyValuePair<string, JToken>> node,
+                                                                  bool ignoreReservedKeys, bool hasEmbeddedTypes)
         {
             Contract.Requires(node != null);
             Contract.Ensures(Contract.Result<IDictionary<string, object>>() != null);
 
-            return node.Where(entry => !ignoreReservedKeys || !IsReservedKey(entry.Key)).ToDictionary(entry => entry.Key, entry => ReadProperty(entry.Value, hasEmbeddedTypes));
+            return node.Where(entry => !ignoreReservedKeys || !IsReservedKey(entry.Key))
+                       .ToDictionary(entry => entry.Key, entry => ReadProperty(entry.Value, hasEmbeddedTypes));
         }
 
-        static bool IncludeReservedKey(GraphSONMode mode, string key, IEnumerable<string> propertyKeys,
-                                       ElementPropertyConfig.ElementPropertiesRule rule)
+        private static bool IncludeReservedKey(GraphSONMode mode, string key, IEnumerable<string> propertyKeys,
+                                               ElementPropertyConfig.ElementPropertiesRule rule)
         {
             Contract.Ensures(!string.IsNullOrWhiteSpace(key));
 
@@ -383,7 +393,8 @@ namespace Frontenac.Blueprints.Util.IO.GraphSON
             return mode != GraphSONMode.COMPACT || IncludeKey(key, propertyKeys, rule);
         }
 
-        static bool IncludeKey(string key, IEnumerable<string> propertyKeys, ElementPropertyConfig.ElementPropertiesRule rule)
+        private static bool IncludeKey(string key, IEnumerable<string> propertyKeys,
+                                       ElementPropertyConfig.ElementPropertiesRule rule)
         {
             Contract.Ensures(!string.IsNullOrWhiteSpace(key));
 
@@ -410,13 +421,13 @@ namespace Frontenac.Blueprints.Util.IO.GraphSON
             return keySituation;
         }
 
-        static bool IsReservedKey(string key)
+        private static bool IsReservedKey(string key)
         {
             return key == GraphSonTokens.Id || key == GraphSonTokens.UnderscoreType || key == GraphSonTokens.Label
-                    || key == GraphSonTokens.OutV || key == GraphSonTokens.InV;
+                   || key == GraphSonTokens.OutV || key == GraphSonTokens.InV;
         }
 
-        static object ReadProperty(JToken node, bool hasEmbeddedTypes)
+        private static object ReadProperty(JToken node, bool hasEmbeddedTypes)
         {
             Contract.Requires(node != null);
 
@@ -434,7 +445,8 @@ namespace Frontenac.Blueprints.Util.IO.GraphSON
                         propertyValue = node[GraphSonTokens.Value].Value<bool>();
                         break;
                     case GraphSonTokens.TypeFloat:
-                        propertyValue = float.Parse(node[GraphSonTokens.Value].Value<string>(), CultureInfo.InvariantCulture);
+                        propertyValue = float.Parse(node[GraphSonTokens.Value].Value<string>(),
+                                                    CultureInfo.InvariantCulture);
                         break;
                     case GraphSonTokens.TypeDouble:
                         propertyValue = node[GraphSonTokens.Value].Value<double>();
@@ -496,7 +508,7 @@ namespace Frontenac.Blueprints.Util.IO.GraphSON
             return propertyValue;
         }
 
-        static IEnumerable ReadProperties(IEnumerable<JToken> listOfNodes, bool hasEmbeddedTypes)
+        private static IEnumerable ReadProperties(IEnumerable<JToken> listOfNodes, bool hasEmbeddedTypes)
         {
             Contract.Requires(listOfNodes != null);
             Contract.Ensures(Contract.Result<IEnumerable>() != null);
@@ -504,7 +516,7 @@ namespace Frontenac.Blueprints.Util.IO.GraphSON
             return listOfNodes.Select(t => ReadProperty(t, hasEmbeddedTypes)).ToArray();
         }
 
-        static JArray CreateJsonList(IEnumerable list, IEnumerable<string> propertyKeys, bool showTypes)
+        private static JArray CreateJsonList(IEnumerable list, IEnumerable<string> propertyKeys, bool showTypes)
         {
             Contract.Requires(list != null);
             Contract.Ensures(Contract.Result<JArray>() != null);
@@ -514,7 +526,8 @@ namespace Frontenac.Blueprints.Util.IO.GraphSON
             {
 // ReSharper disable PossibleMultipleEnumeration
                 if (item is IElement)
-                    jsonList.Add(JsonFromElement(item as IElement, propertyKeys, showTypes ? GraphSONMode.EXTENDED : GraphSONMode.NORMAL));
+                    jsonList.Add(JsonFromElement(item as IElement, propertyKeys,
+                                                 showTypes ? GraphSONMode.EXTENDED : GraphSONMode.NORMAL));
                 else if (item is IDictionary)
                     jsonList.Add(CreateJsonMap(item as IDictionary, propertyKeys, showTypes));
                 else if (item != null && !(item is string) && item is IEnumerable)
@@ -526,13 +539,13 @@ namespace Frontenac.Blueprints.Util.IO.GraphSON
             return jsonList;
         }
 
-        static JObject CreateJsonMap(IDictionary map, IEnumerable<string> propertyKeys, bool showTypes)
+        private static JObject CreateJsonMap(IDictionary map, IEnumerable<string> propertyKeys, bool showTypes)
         {
             Contract.Requires(map != null);
             Contract.Ensures(Contract.Result<JObject>() != null);
 
             var jsonMap = new JObject();
-            
+
             foreach (DictionaryEntry entry in map)
             {
                 var value = entry.Value;
@@ -542,7 +555,8 @@ namespace Frontenac.Blueprints.Util.IO.GraphSON
                     if (value is IDictionary)
                         value = CreateJsonMap(value as IDictionary, propertyKeys, showTypes);
                     else if (value is IElement)
-                        value = JsonFromElement((IElement)value, propertyKeys, showTypes ? GraphSONMode.EXTENDED : GraphSONMode.NORMAL);
+                        value = JsonFromElement((IElement) value, propertyKeys,
+                                                showTypes ? GraphSONMode.EXTENDED : GraphSONMode.NORMAL);
                     else if (!(value is string) && value is IEnumerable)
                         value = CreateJsonList(value as IEnumerable, propertyKeys, showTypes);
 // ReSharper restore PossibleMultipleEnumeration
@@ -551,25 +565,25 @@ namespace Frontenac.Blueprints.Util.IO.GraphSON
                 PutObject(jsonMap, entry.Key.ToString(), GetValue(value, showTypes));
             }
             return jsonMap;
-
         }
 
-        static void AddObject(JContainer jsonList, object value)
+        private static void AddObject(JContainer jsonList, object value)
         {
             Contract.Requires(jsonList != null);
 
             jsonList.Add(value == null || value is JToken ? value : JToken.FromObject(value));
         }
 
-        static void PutObject(IDictionary<string, JToken> jsonMap, string key, object value)
+        private static void PutObject(IDictionary<string, JToken> jsonMap, string key, object value)
         {
             Contract.Requires(jsonMap != null);
             Contract.Requires(!string.IsNullOrWhiteSpace(key));
 
-            jsonMap.Put(key, (JToken)(value == null || value is JToken ? value : JToken.FromObject(value)));
+            jsonMap.Put(key, (JToken) (value == null || value is JToken ? value : JToken.FromObject(value)));
         }
 
-        static IDictionary CreatePropertyMap(IElement element, IEnumerable<string> propertyKeys, ElementPropertyConfig.ElementPropertiesRule rule)
+        private static IDictionary CreatePropertyMap(IElement element, IEnumerable<string> propertyKeys,
+                                                     ElementPropertyConfig.ElementPropertiesRule rule)
         {
             Contract.Requires(element != null);
             Contract.Ensures(Contract.Result<IDictionary>() != null);
@@ -580,7 +594,6 @@ namespace Frontenac.Blueprints.Util.IO.GraphSON
             {
                 foreach (var key in element.GetPropertyKeys())
                     map.Add(key, element.GetProperty(key));
-
             }
             else
             {
@@ -608,7 +621,7 @@ namespace Frontenac.Blueprints.Util.IO.GraphSON
             return map;
         }
 
-        static object GetValue(object value, bool includeType)
+        private static object GetValue(object value, bool includeType)
         {
             var returnValue = value;
 
@@ -629,7 +642,7 @@ namespace Frontenac.Blueprints.Util.IO.GraphSON
                             // values of lists must be accumulated as ObjectNode objects under the value key.
                             // will return as a ArrayNode. called recursively to traverse the entire
                             // object graph of each item in the array.
-                            var list = (IEnumerable)value;
+                            var list = (IEnumerable) value;
 
                             // there is a set of values that must be accumulated as an array under a key
                             var valueArray = new JArray();
@@ -638,9 +651,8 @@ namespace Frontenac.Blueprints.Util.IO.GraphSON
                             {
                                 // the value of each item in the array is a node object from an ArrayNode...must
                                 // get the value of it.
-                                AddObject(valueArray, GetValue(GetTypedValueFromJsonNode((JToken)o), true));
+                                AddObject(valueArray, GetValue(GetTypedValueFromJsonNode((JToken) o), true));
                             }
-
                         }
                         break;
                     case GraphSonTokens.TypeMap:
@@ -648,7 +660,7 @@ namespace Frontenac.Blueprints.Util.IO.GraphSON
                             // maps are converted to a ObjectNode. called recursively to traverse
                             // the entire object graph within the map.
                             var convertedMap = new JObject();
-                            var jsonObject = (JObject)value;
+                            var jsonObject = (JObject) value;
                             foreach (var entry in jsonObject)
                             {
                                 // no need to getValue() here as this is already a ObjectNode and should have type info
@@ -702,7 +714,7 @@ namespace Frontenac.Blueprints.Util.IO.GraphSON
             return theValue;
         }
 
-        static string DetermineType(object value)
+        private static string DetermineType(object value)
         {
             var type = GraphSonTokens.TypeString;
             if (value == null)

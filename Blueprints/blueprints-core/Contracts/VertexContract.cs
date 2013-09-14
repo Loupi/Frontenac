@@ -3,7 +3,7 @@ using System.Diagnostics.Contracts;
 
 namespace Frontenac.Blueprints.Contracts
 {
-    [ContractClassFor(typeof(IVertex))]
+    [ContractClassFor(typeof (IVertex))]
     public abstract class VertexContract : IVertex
     {
         public IEnumerable<IEdge> GetEdges(Direction direction, params string[] labels)

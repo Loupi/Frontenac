@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Diagnostics.Contracts;
 using System.Linq;
@@ -6,12 +7,12 @@ using System.Linq;
 namespace Frontenac.Blueprints.Util
 {
     /// <summary>
-    /// For those graph engines that do not support the low-level querying of the vertices or edges, then DefaultQuery can be used.
-    /// DefaultQuery assumes, at minimum, that Graph.getVertices() and Graph.getEdges() is implemented by the respective Graph.
+    ///     For those graph engines that do not support the low-level querying of the vertices or edges, then DefaultQuery can be used.
+    ///     DefaultQuery assumes, at minimum, that Graph.getVertices() and Graph.getEdges() is implemented by the respective Graph.
     /// </summary>
     public class DefaultGraphQuery : DefaultQuery
     {
-        readonly IGraph _graph;
+        private readonly IGraph _graph;
 
         public DefaultGraphQuery(IGraph graph)
         {
@@ -22,20 +23,52 @@ namespace Frontenac.Blueprints.Util
 
         public override IEnumerable<IEdge> Edges()
         {
-            return new DefaultGraphQueryIterable<IEdge>(this, GetElementIterable<IEdge>(typeof(IEdge)));
+            return new DefaultGraphQueryIterable<IEdge>(this, GetElementIterable<IEdge>(typeof (IEdge)));
         }
 
         public override IEnumerable<IVertex> Vertices()
         {
-            return new DefaultGraphQueryIterable<IVertex>(this, GetElementIterable<IVertex>(typeof(IVertex)));
+            return new DefaultGraphQueryIterable<IVertex>(this, GetElementIterable<IVertex>(typeof (IVertex)));
+        }
+
+        private IEnumerable<T> GetElementIterable<T>(Type elementClass) where T : IElement
+        {
+            Contract.Ensures(elementClass != null);
+
+            if (_graph is IKeyIndexableGraph)
+            {
+                var keys = (_graph as IKeyIndexableGraph).GetIndexedKeys(elementClass).ToArray();
+                foreach (
+                    var hasContainer in
+                        HasContainers.Where(
+                            hasContainer =>
+                            hasContainer.Compare == Compare.Equal && hasContainer.Value != null &&
+                            keys.Contains(hasContainer.Key)))
+                {
+                    if (typeof (IVertex).IsAssignableFrom(elementClass))
+                        return (IEnumerable<T>) _graph.GetVertices(hasContainer.Key, hasContainer.Value);
+                    return (IEnumerable<T>) _graph.GetEdges(hasContainer.Key, hasContainer.Value);
+                }
+            }
+
+            foreach (var hasContainer in HasContainers.Where(hasContainer => hasContainer.Compare == Compare.Equal))
+            {
+                if (typeof (IVertex).IsAssignableFrom(elementClass))
+                    return (IEnumerable<T>) _graph.GetVertices(hasContainer.Key, hasContainer.Value);
+                return (IEnumerable<T>) _graph.GetEdges(hasContainer.Key, hasContainer.Value);
+            }
+
+            return typeof (IVertex).IsAssignableFrom(elementClass)
+                       ? (IEnumerable<T>) _graph.GetVertices()
+                       : (IEnumerable<T>) _graph.GetEdges();
         }
 
         private class DefaultGraphQueryIterable<T> : IEnumerable<T> where T : IElement
         {
-            readonly DefaultGraphQuery _defaultQuery;
-            readonly IEnumerable<T> _iterable;
-            T _nextElement;
-            long _count;
+            private readonly DefaultGraphQuery _defaultQuery;
+            private readonly IEnumerable<T> _iterable;
+            private long _count;
+            private T _nextElement;
 
             public DefaultGraphQueryIterable(DefaultGraphQuery defaultQuery, IEnumerable<T> iterable)
             {
@@ -51,7 +84,7 @@ namespace Frontenac.Blueprints.Util
                 while (LoadNext()) yield return _nextElement;
             }
 
-            System.Collections.IEnumerator System.Collections.IEnumerable.GetEnumerator()
+            IEnumerator IEnumerable.GetEnumerator()
             {
                 return GetEnumerator();
             }
@@ -73,33 +106,6 @@ namespace Frontenac.Blueprints.Util
                 }
                 return false;
             }
-        }
-
-        private IEnumerable<T> GetElementIterable<T>(Type elementClass) where T : IElement
-        {
-            Contract.Ensures(elementClass != null);
-
-            if (_graph is IKeyIndexableGraph)
-            {
-                var keys = (_graph as IKeyIndexableGraph).GetIndexedKeys(elementClass).ToArray();
-                foreach (var hasContainer in HasContainers.Where(hasContainer => hasContainer.Compare == Compare.Equal && hasContainer.Value != null && keys.Contains(hasContainer.Key)))
-                {
-                    if (typeof(IVertex).IsAssignableFrom(elementClass))
-                        return (IEnumerable<T>)_graph.GetVertices(hasContainer.Key, hasContainer.Value);
-                    return (IEnumerable<T>)_graph.GetEdges(hasContainer.Key, hasContainer.Value);
-                }
-            }
-
-            foreach (var hasContainer in HasContainers.Where(hasContainer => hasContainer.Compare == Compare.Equal))
-            {
-                if (typeof(IVertex).IsAssignableFrom(elementClass))
-                    return (IEnumerable<T>)_graph.GetVertices(hasContainer.Key, hasContainer.Value);
-                return (IEnumerable<T>)_graph.GetEdges(hasContainer.Key, hasContainer.Value);
-            }
-
-            return typeof (IVertex).IsAssignableFrom(elementClass)
-                       ? (IEnumerable<T>) _graph.GetVertices()
-                       : (IEnumerable<T>) _graph.GetEdges();
         }
     }
 }

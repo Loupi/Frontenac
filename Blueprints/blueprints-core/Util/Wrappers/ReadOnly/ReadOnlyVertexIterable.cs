@@ -1,14 +1,15 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Diagnostics.Contracts;
 using System.Linq;
 
 namespace Frontenac.Blueprints.Util.Wrappers.ReadOnly
 {
-    class ReadOnlyVertexIterable : ICloseableIterable<IVertex>
+    internal class ReadOnlyVertexIterable : ICloseableIterable<IVertex>
     {
-        readonly IEnumerable<IVertex> _iterable;
-        bool _disposed;
+        private readonly IEnumerable<IVertex> _iterable;
+        private bool _disposed;
 
         public ReadOnlyVertexIterable(IEnumerable<IVertex> iterable)
         {
@@ -17,15 +18,25 @@ namespace Frontenac.Blueprints.Util.Wrappers.ReadOnly
             _iterable = iterable;
         }
 
-        ~ReadOnlyVertexIterable()
-        {
-            Dispose(false);
-        }
-
         public void Dispose()
         {
             Dispose(true);
             GC.SuppressFinalize(this);
+        }
+
+        public IEnumerator<IVertex> GetEnumerator()
+        {
+            return _iterable.Select(v => new ReadOnlyVertex(v)).Cast<IVertex>().GetEnumerator();
+        }
+
+        IEnumerator IEnumerable.GetEnumerator()
+        {
+            return (this as IEnumerable<IVertex>).GetEnumerator();
+        }
+
+        ~ReadOnlyVertexIterable()
+        {
+            Dispose(false);
         }
 
         protected virtual void Dispose(bool disposing)
@@ -40,16 +51,6 @@ namespace Frontenac.Blueprints.Util.Wrappers.ReadOnly
             }
 
             _disposed = true;
-        }
-
-        public IEnumerator<IVertex> GetEnumerator()
-        {
-            return _iterable.Select(v => new ReadOnlyVertex(v)).Cast<IVertex>().GetEnumerator();
-        }
-
-        System.Collections.IEnumerator System.Collections.IEnumerable.GetEnumerator()
-        {
-            return (this as IEnumerable<IVertex>).GetEnumerator();
         }
     }
 }

@@ -4,8 +4,8 @@ using Frontenac.Blueprints.Util.Wrappers.Batch.Cache;
 namespace Frontenac.Blueprints.Util.Wrappers.Batch
 {
     /// <summary>
-    /// Type of vertex ids expected by BatchGraph. The default is IdType.OBJECT.
-    /// Use the IdType that best matches the used vertex id types in order to save memory.
+    ///     Type of vertex ids expected by BatchGraph. The default is IdType.OBJECT.
+    ///     Use the IdType that best matches the used vertex id types in order to save memory.
     /// </summary>
     public enum VertexIdType
     {

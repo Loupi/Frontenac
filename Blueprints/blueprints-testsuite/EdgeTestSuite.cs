@@ -1,9 +1,9 @@
-﻿using NUnit.Framework;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using Frontenac.Blueprints.Impls;
 using Frontenac.Blueprints.Util;
+using NUnit.Framework;
 
 namespace Frontenac.Blueprints
 {
@@ -12,7 +12,6 @@ namespace Frontenac.Blueprints
         protected EdgeTestSuite(GraphTest graphTest)
             : base("EdgeTestSuite", graphTest)
         {
-
         }
 
         [Test]
@@ -115,7 +114,6 @@ namespace Frontenac.Blueprints
                     {
                         Assert.AreEqual(1, Count(vertex.GetEdges(Direction.Out)));
                         Assert.False(Count(vertex.GetEdges(Direction.In)) > 0);
-
                     }
                     else
                     {
@@ -231,8 +229,8 @@ namespace Frontenac.Blueprints
                 if (graph.Features.SupportsVertexIteration)
                 {
                     StopWatch();
-                    Assert.AreEqual(edgeCount * 2, Count(graph.GetVertices()));
-                    PrintPerformance(graph.ToString(), edgeCount * 2, "vertices counted", StopWatch());
+                    Assert.AreEqual(edgeCount*2, Count(graph.GetVertices()));
+                    PrintPerformance(graph.ToString(), edgeCount*2, "vertices counted", StopWatch());
                 }
 
                 if (!graph.Features.SupportsEdgeIteration) return;
@@ -268,7 +266,7 @@ namespace Frontenac.Blueprints
                             x++;
                         }
                     }
-                    Assert.AreEqual((edgeCount - edgeCountdown) * 2, x);
+                    Assert.AreEqual((edgeCount - edgeCountdown)*2, x);
                 }
                 PrintPerformance(graph.ToString(), edgeCount, "edges removed and graph checked", StopWatch());
             }

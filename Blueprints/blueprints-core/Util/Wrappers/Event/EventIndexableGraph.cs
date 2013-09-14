@@ -5,14 +5,14 @@ using System.Diagnostics.Contracts;
 namespace Frontenac.Blueprints.Util.Wrappers.Event
 {
     /// <summary>
-    /// EventIndexableGraph is merely a proxy to index methods exposing EventGraph methods in the "evented" way. Like the
-    /// EventGraph it extends from, this graph implementations raise notifications to the listeners for the
-    /// following events: new vertex/edge, vertex/edge property changed, vertex/edge property removed,
-    /// vertex/edge removed.
+    ///     EventIndexableGraph is merely a proxy to index methods exposing EventGraph methods in the "evented" way. Like the
+    ///     EventGraph it extends from, this graph implementations raise notifications to the listeners for the
+    ///     following events: new vertex/edge, vertex/edge property changed, vertex/edge property removed,
+    ///     vertex/edge removed.
     /// </summary>
     public class EventIndexableGraph : EventGraph, IIndexableGraph
     {
-        readonly IIndexableGraph _baseIndexableGraph;
+        private readonly IIndexableGraph _baseIndexableGraph;
 
         public EventIndexableGraph(IIndexableGraph baseIndexableGraph)
             : base(baseIndexableGraph)

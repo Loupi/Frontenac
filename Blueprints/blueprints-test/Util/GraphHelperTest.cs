@@ -1,13 +1,38 @@
-﻿using NUnit.Framework;
-using System;
+﻿using System;
 using System.Linq;
 using Frontenac.Blueprints.Impls.TG;
+using NUnit.Framework;
 
 namespace Frontenac.Blueprints.Util
 {
     [TestFixture(Category = "GraphHelperTest")]
     public class GraphHelperTest : BaseTest
     {
+        [Test]
+        public void TestAddEdge()
+        {
+            var graph = new TinkerGraph();
+            var edge = GraphHelper.AddEdge(graph, null, graph.AddVertex(null), graph.AddVertex(null), "knows", "weight",
+                                           10.0);
+            Assert.AreEqual(edge.GetProperty("weight"), 10.0);
+            Assert.AreEqual(edge.Label, "knows");
+            Assert.AreEqual(edge.GetPropertyKeys().Count(), 1);
+            Assert.AreEqual(Count(graph.GetVertices()), 2);
+            Assert.AreEqual(Count(graph.GetEdges()), 1);
+
+            try
+            {
+                GraphHelper.AddEdge(graph, null, graph.AddVertex(null), graph.AddVertex(null), "knows", "weight");
+                Assert.True(false);
+            }
+            catch (Exception)
+            {
+                Assert.False(false);
+                Assert.AreEqual(Count(graph.GetVertices()), 4);
+                Assert.AreEqual(Count(graph.GetEdges()), 1);
+            }
+        }
+
         [Test]
         public void TestAddVertex()
         {
@@ -27,30 +52,6 @@ namespace Frontenac.Blueprints.Util
             {
                 Assert.False(false);
                 Assert.AreEqual(Count(graph.GetVertices()), 1);
-            }
-        }
-
-        [Test]
-        public void TestAddEdge()
-        {
-            var graph = new TinkerGraph();
-            var edge = GraphHelper.AddEdge(graph, null, graph.AddVertex(null), graph.AddVertex(null), "knows", "weight", 10.0);
-            Assert.AreEqual(edge.GetProperty("weight"), 10.0);
-            Assert.AreEqual(edge.Label, "knows");
-            Assert.AreEqual(edge.GetPropertyKeys().Count(), 1);
-            Assert.AreEqual(Count(graph.GetVertices()), 2);
-            Assert.AreEqual(Count(graph.GetEdges()), 1);
-
-            try
-            {
-                GraphHelper.AddEdge(graph, null, graph.AddVertex(null), graph.AddVertex(null), "knows", "weight");
-                Assert.True(false);
-            }
-            catch (Exception)
-            {
-                Assert.False(false);
-                Assert.AreEqual(Count(graph.GetVertices()), 4);
-                Assert.AreEqual(Count(graph.GetEdges()), 1);
             }
         }
 

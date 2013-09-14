@@ -6,11 +6,11 @@ using Frontenac.Blueprints.Util;
 namespace Frontenac.Blueprints.Impls.TG
 {
     [Serializable]
-    abstract class TinkerElement : IElement
+    internal abstract class TinkerElement : IElement
     {
-        protected Dictionary<string, object> Properties = new Dictionary<string, object>();
-        protected readonly string RawId;
         protected readonly TinkerGraph Graph;
+        protected readonly string RawId;
+        protected Dictionary<string, object> Properties = new Dictionary<string, object>();
 
         protected TinkerElement(string id, TinkerGraph graph)
         {
@@ -52,16 +52,9 @@ namespace Frontenac.Blueprints.Impls.TG
             return oldValue;
         }
 
-        public override int GetHashCode()
+        public object Id
         {
-            return Id.GetHashCode();
-        }
-
-        public object Id { get { return RawId; } }
-
-        public override bool Equals(object obj)
-        {
-            return ElementHelper.AreEqual(this, obj);
+            get { return RawId; }
         }
 
         public void Remove()
@@ -70,7 +63,17 @@ namespace Frontenac.Blueprints.Impls.TG
             if (vertex != null)
                 Graph.RemoveVertex(vertex);
             else
-                Graph.RemoveEdge((IEdge)this);
+                Graph.RemoveEdge((IEdge) this);
+        }
+
+        public override int GetHashCode()
+        {
+            return Id.GetHashCode();
+        }
+
+        public override bool Equals(object obj)
+        {
+            return ElementHelper.AreEqual(this, obj);
         }
     }
 }

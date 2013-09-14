@@ -5,7 +5,10 @@ namespace Grave.Esent.Serializers
 {
     public class JsonContentSerializer : IContentSerializer
     {
-        readonly JsonSerializerSettings _settings = new JsonSerializerSettings {  TypeNameHandling = TypeNameHandling.All };
+        private readonly JsonSerializerSettings _settings = new JsonSerializerSettings
+            {
+                TypeNameHandling = TypeNameHandling.All
+            };
 
         public bool IsBinary
         {

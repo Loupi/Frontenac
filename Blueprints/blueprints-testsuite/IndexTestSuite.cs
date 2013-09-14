@@ -1,6 +1,6 @@
-﻿using NUnit.Framework;
-using System.Linq;
+﻿using System.Linq;
 using Frontenac.Blueprints.Impls;
+using NUnit.Framework;
 
 namespace Frontenac.Blueprints
 {
@@ -9,7 +9,6 @@ namespace Frontenac.Blueprints
         protected IndexTestSuite(GraphTest graphTest)
             : base("IndexTestSuite", graphTest)
         {
-
         }
 
         [Test]

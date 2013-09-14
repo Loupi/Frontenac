@@ -9,11 +9,11 @@ using Grave;
 namespace Grave_test
 {
     /// <summary>
-    /// Constructs GraveFile instances to load and save GraveGraph instances.
+    ///     Constructs GraveFile instances to load and save GraveGraph instances.
     /// </summary>
     public class GraveGraphStorageFactory
     {
-        static GraveGraphStorageFactory _factory;
+        private static GraveGraphStorageFactory _factory;
 
         private GraveGraphStorageFactory()
         {
@@ -42,12 +42,15 @@ namespace Grave_test
         }
 
         /// <summary>
-        /// Base class for loading and saving a GraveGraph.
+        ///     Base class for loading and saving a GraveGraph.
         /// </summary>
-        abstract class AbstractGraveStorage : IGraveStorage
+        private abstract class AbstractGraveStorage : IGraveStorage
         {
+            public abstract GraveGraph Load(string directory);
+            public abstract void Save(GraveGraph graph, string directory);
+
             /// <summary>
-            /// Clean up the directory that houses the GraveGraph.
+            ///     Clean up the directory that houses the GraveGraph.
             /// </summary>
             /// <param name="path"></param>
             protected void DeleteFile(string path)
@@ -55,24 +58,21 @@ namespace Grave_test
                 if (File.Exists(path))
                     File.Delete(path);
             }
-
-            public abstract GraveGraph Load(string directory);
-            public abstract void Save(GraveGraph graph, string directory);
         }
 
         /// <summary>
-        /// Base class for loading and saving a GraveGraph where the implementation separates the data from the
-        /// meta data stored in the GraveGraph.
+        ///     Base class for loading and saving a GraveGraph where the implementation separates the data from the
+        ///     meta data stored in the GraveGraph.
         /// </summary>
-        abstract class AbstractSeparateGraveStorage : AbstractGraveStorage
+        private abstract class AbstractSeparateGraveStorage : AbstractGraveStorage
         {
             /// <summary>
-            /// Save the data of the graph with the specific file format of the implementation.
+            ///     Save the data of the graph with the specific file format of the implementation.
             /// </summary>
             public abstract void SaveGraphData(GraveGraph graph, string directory);
 
             /// <summary>
-            /// Load the data from the graph with the specific file format of the implementation.
+            ///     Load the data from the graph with the specific file format of the implementation.
             /// </summary>
             public abstract void LoadGraphData(GraveGraph graph, string directory);
 
@@ -97,11 +97,39 @@ namespace Grave_test
         }
 
         /// <summary>
-        /// Reads and writes a GraveGraph to GML as the format for the data.
+        ///     Reads and writes a GraveGraph using .NET object serialization.
         /// </summary>
-        class GmlGraveStorage : AbstractSeparateGraveStorage
+        private class DotNetGraveStorage : AbstractGraveStorage
         {
-            const string GraphFileGml = "/Gravegraph.gml";
+            private const string GraphFileDotNet = "/tinkergraph.dat";
+
+            public override GraveGraph Load(string directory)
+            {
+                using (var stream = File.OpenRead(string.Concat(directory, GraphFileDotNet)))
+                {
+                    var formatter = new BinaryFormatter();
+                    return (GraveGraph) formatter.Deserialize(stream);
+                }
+            }
+
+            public override void Save(GraveGraph graph, string directory)
+            {
+                string filePath = string.Concat(directory, GraphFileDotNet);
+                DeleteFile(filePath);
+                using (var stream = File.Create(string.Concat(directory, GraphFileDotNet)))
+                {
+                    var formatter = new BinaryFormatter();
+                    formatter.Serialize(stream, graph);
+                }
+            }
+        }
+
+        /// <summary>
+        ///     Reads and writes a GraveGraph to GML as the format for the data.
+        /// </summary>
+        private class GmlGraveStorage : AbstractSeparateGraveStorage
+        {
+            private const string GraphFileGml = "/Gravegraph.gml";
 
             public override void LoadGraphData(GraveGraph graph, string directory)
             {
@@ -117,31 +145,11 @@ namespace Grave_test
         }
 
         /// <summary>
-        /// Reads and writes a GraveGraph to GraphSON as the format for the data.
+        ///     Reads and writes a GraveGraph to GraphML as the format for the data.
         /// </summary>
-        class GraphSonGraveStorage : AbstractSeparateGraveStorage
+        private class GraphMlGraveStorage : AbstractSeparateGraveStorage
         {
-            const string GraphFileGraphson = "/Gravegraph.json";
-
-            public override void LoadGraphData(GraveGraph graph, string directory)
-            {
-                GraphSONReader.InputGraph(graph, string.Concat(directory, GraphFileGraphson));
-            }
-
-            public override void SaveGraphData(GraveGraph graph, string directory)
-            {
-                string filePath = string.Concat(directory, GraphFileGraphson);
-                DeleteFile(filePath);
-                GraphSonWriter.OutputGraph(graph, filePath, GraphSONMode.EXTENDED);
-            }
-        }
-
-        /// <summary>
-        /// Reads and writes a GraveGraph to GraphML as the format for the data.
-        /// </summary>
-        class GraphMlGraveStorage : AbstractSeparateGraveStorage
-        {
-            const string GraphFileGraphml = "/Gravegraph.xml";
+            private const string GraphFileGraphml = "/Gravegraph.xml";
 
             public override void LoadGraphData(GraveGraph graph, string directory)
             {
@@ -157,30 +165,22 @@ namespace Grave_test
         }
 
         /// <summary>
-        /// Reads and writes a GraveGraph using .NET object serialization.
+        ///     Reads and writes a GraveGraph to GraphSON as the format for the data.
         /// </summary>
-        class DotNetGraveStorage : AbstractGraveStorage
+        private class GraphSonGraveStorage : AbstractSeparateGraveStorage
         {
-            const string GraphFileDotNet = "/tinkergraph.dat";
+            private const string GraphFileGraphson = "/Gravegraph.json";
 
-            public override GraveGraph Load(string directory)
+            public override void LoadGraphData(GraveGraph graph, string directory)
             {
-                using (var stream = File.OpenRead(string.Concat(directory, GraphFileDotNet)))
-                {
-                    var formatter = new BinaryFormatter();
-                    return (GraveGraph)formatter.Deserialize(stream);
-                }
+                GraphSONReader.InputGraph(graph, string.Concat(directory, GraphFileGraphson));
             }
 
-            public override void Save(GraveGraph graph, string directory)
+            public override void SaveGraphData(GraveGraph graph, string directory)
             {
-                string filePath = string.Concat(directory, GraphFileDotNet);
+                string filePath = string.Concat(directory, GraphFileGraphson);
                 DeleteFile(filePath);
-                using (var stream = File.Create(string.Concat(directory, GraphFileDotNet)))
-                {
-                    var formatter = new BinaryFormatter();
-                    formatter.Serialize(stream, graph);
-                }
+                GraphSonWriter.OutputGraph(graph, filePath, GraphSONMode.EXTENDED);
             }
         }
     }

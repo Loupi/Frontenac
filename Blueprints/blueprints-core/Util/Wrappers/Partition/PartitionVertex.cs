@@ -5,7 +5,7 @@ namespace Frontenac.Blueprints.Util.Wrappers.Partition
 {
     public class PartitionVertex : PartitionElement, IVertex
     {
-        readonly IVertex _baseVertex;
+        private readonly IVertex _baseVertex;
 
         public PartitionVertex(IVertex baseVertex, PartitionGraph graph)
             : base(baseVertex, graph)

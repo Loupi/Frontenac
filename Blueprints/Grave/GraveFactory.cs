@@ -9,10 +9,10 @@ namespace Grave
 {
     public class GraveFactory
     {
-        static readonly object SyncRoot = new object();
-        static FactoryContext _context;
+        private static readonly object SyncRoot = new object();
+        private static FactoryContext _context;
 
-        static FactoryContext Context
+        private static FactoryContext Context
         {
             get
             {
@@ -34,56 +34,11 @@ namespace Grave
             lock (SyncRoot)
             {
                 if (_context != null)
-                { 
+                {
                     _context.Dispose();
                     _context = null;
                 }
             }
-        }
-
-        public class FactoryContext : IDisposable
-        {
-            readonly IWindsorContainer _container;
-            internal IGraveGraphFactory GraphFactory { get; private set; }
-
-            internal FactoryContext()
-            {
-                _container = new WindsorContainer();
-                _container.AddFacility<StartableFacility>(f => f.DeferredStart());
-                _container.AddFacility<TypedFactoryFacility>();
-                _container.Install(FromAssembly.Named("Grave"));
-                GraphFactory = _container.Resolve<IGraveGraphFactory>();
-            }
-
-            #region IDisposable
-            bool _disposed;
-
-            ~FactoryContext()
-            {
-                Dispose(false);
-            }
-
-            public void Dispose()
-            {
-                Dispose(true);
-                GC.SuppressFinalize(this);
-            }
-
-            protected virtual void Dispose(bool disposing)
-            {
-                if (_disposed)
-                    return;
-
-                if (disposing)
-                {
-                    _container.Release(GraphFactory);
-                    _container.Dispose();
-                }
-
-                _disposed = true;
-            }
-
-            #endregion
         }
 
         public static GraveGraph CreateGraph()
@@ -138,6 +93,53 @@ namespace Grave
             graph.AddEdge("12", peter, lop, "created").SetProperty("weight", 0.2);
 
             return graph;
+        }
+
+        public class FactoryContext : IDisposable
+        {
+            private readonly IWindsorContainer _container;
+
+            internal FactoryContext()
+            {
+                _container = new WindsorContainer();
+                _container.AddFacility<StartableFacility>(f => f.DeferredStart());
+                _container.AddFacility<TypedFactoryFacility>();
+                _container.Install(FromAssembly.Named("Grave"));
+                GraphFactory = _container.Resolve<IGraveGraphFactory>();
+            }
+
+            #region IDisposable
+
+            private bool _disposed;
+
+            public void Dispose()
+            {
+                Dispose(true);
+                GC.SuppressFinalize(this);
+            }
+
+            ~FactoryContext()
+            {
+                Dispose(false);
+            }
+
+            protected virtual void Dispose(bool disposing)
+            {
+                if (_disposed)
+                    return;
+
+                if (disposing)
+                {
+                    _container.Release(GraphFactory);
+                    _container.Dispose();
+                }
+
+                _disposed = true;
+            }
+
+            #endregion
+
+            internal IGraveGraphFactory GraphFactory { get; private set; }
         }
     }
 }

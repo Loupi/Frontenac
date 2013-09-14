@@ -1,14 +1,15 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Diagnostics.Contracts;
 
 namespace Frontenac.Blueprints.Util.Wrappers.Partition
 {
-    class PartitionVertexIterable : ICloseableIterable<IVertex>
+    internal class PartitionVertexIterable : ICloseableIterable<IVertex>
     {
-        readonly IEnumerable<IVertex> _iterable;
-        readonly PartitionGraph _graph;
-        bool _disposed;
+        private readonly PartitionGraph _graph;
+        private readonly IEnumerable<IVertex> _iterable;
+        private bool _disposed;
 
         public PartitionVertexIterable(IEnumerable<IVertex> iterable, PartitionGraph graph)
         {
@@ -19,15 +20,25 @@ namespace Frontenac.Blueprints.Util.Wrappers.Partition
             _graph = graph;
         }
 
-        ~PartitionVertexIterable()
-        {
-            Dispose(false);
-        }
-
         public void Dispose()
         {
             Dispose(true);
             GC.SuppressFinalize(this);
+        }
+
+        public IEnumerator<IVertex> GetEnumerator()
+        {
+            return new InnerPartitionVertexIterable(this).GetEnumerator();
+        }
+
+        IEnumerator IEnumerable.GetEnumerator()
+        {
+            return (this as IEnumerable<IVertex>).GetEnumerator();
+        }
+
+        ~PartitionVertexIterable()
+        {
+            Dispose(false);
         }
 
         protected virtual void Dispose(bool disposing)
@@ -44,16 +55,11 @@ namespace Frontenac.Blueprints.Util.Wrappers.Partition
             _disposed = true;
         }
 
-        public IEnumerator<IVertex> GetEnumerator()
+        private class InnerPartitionVertexIterable : IEnumerable<IVertex>
         {
-            return new InnerPartitionVertexIterable(this).GetEnumerator();
-        }
-
-        class InnerPartitionVertexIterable : IEnumerable<IVertex>
-        {
-            readonly PartitionVertexIterable _partitionVertexIterable;
-            readonly IEnumerator<IVertex> _itty;
-            PartitionVertex _nextVertex;
+            private readonly IEnumerator<IVertex> _itty;
+            private readonly PartitionVertexIterable _partitionVertexIterable;
+            private PartitionVertex _nextVertex;
 
             public InnerPartitionVertexIterable(PartitionVertexIterable partitionVertexIterable)
             {
@@ -85,7 +91,12 @@ namespace Frontenac.Blueprints.Util.Wrappers.Partition
                 }
             }
 
-            bool HasNext()
+            IEnumerator IEnumerable.GetEnumerator()
+            {
+                return GetEnumerator();
+            }
+
+            private bool HasNext()
             {
                 if (null != _nextVertex)
                     return true;
@@ -101,16 +112,6 @@ namespace Frontenac.Blueprints.Util.Wrappers.Partition
                 }
                 return false;
             }
-
-            System.Collections.IEnumerator System.Collections.IEnumerable.GetEnumerator()
-            {
-                return GetEnumerator();
-            }
-        }
-
-        System.Collections.IEnumerator System.Collections.IEnumerable.GetEnumerator()
-        {
-            return (this as IEnumerable<IVertex>).GetEnumerator();
         }
     }
 }

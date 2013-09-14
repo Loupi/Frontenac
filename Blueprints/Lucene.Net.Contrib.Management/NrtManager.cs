@@ -9,18 +9,17 @@ using Lucene.Net.Store;
 
 namespace Lucene.Net.Contrib.Management
 {
-
     public class NrtManager : IDisposable
     {
         //The Java condition _newGeneration is not used in this port. Monitor.Wait and PulseAll suffice.
 
         private const long MaxSearcherGen = long.MaxValue;
-        private readonly IndexWriter _writer;
-        private long _indexingGen = 1;
-        private readonly List<IWaitingListener> _waitingListeners = new List<IWaitingListener>();
         private readonly object _reopenLock = new object();
+        private readonly List<IWaitingListener> _waitingListeners = new List<IWaitingListener>();
         private readonly SearcherManagerRef _withDeletes;
         private readonly SearcherManagerRef _withoutDeletes;
+        private readonly IndexWriter _writer;
+        private long _indexingGen = 1;
 
         public NrtManager(IndexWriter writer, ISearcherWarmer warmer = null)
         {
@@ -29,17 +28,18 @@ namespace Lucene.Net.Contrib.Management
         }
 
         #region IDisposable
-        bool _disposed;
 
-        ~NrtManager()
-        {
-            Dispose(false);
-        }
+        private bool _disposed;
 
         public void Dispose()
         {
             Dispose(true);
             GC.SuppressFinalize(this);
+        }
+
+        ~NrtManager()
+        {
+            Dispose(false);
         }
 
         protected virtual void Dispose(bool disposing)
@@ -57,12 +57,12 @@ namespace Lucene.Net.Contrib.Management
                             {
                                 _withDeletes.Dispose
                             };
-                    
+
                         if (_withoutDeletes != _withDeletes)
                         {
                             disposeActions.Add(_withoutDeletes.Dispose);
                         }
-                    
+
                         DisposeUtil.PostponeExceptions(disposeActions.ToArray());
                     }
                     finally
@@ -77,11 +77,6 @@ namespace Lucene.Net.Contrib.Management
         }
 
         #endregion
-
-        public interface IWaitingListener
-        {
-            void Waiting(bool needsDeletes, long targetGen);
-        }
 
         public void AddWaitingListener(IWaitingListener listener)
         {
@@ -201,7 +196,6 @@ namespace Lucene.Net.Contrib.Management
 
         private bool WaitOnGenCondition(TimeSpan time)
         {
-
             if (time == TimeSpan.Zero)
             {
                 Monitor.Wait(_reopenLock);
@@ -213,7 +207,9 @@ namespace Lucene.Net.Contrib.Management
 
         public long GetCurrentSearchingGen(bool applyAllDeletes)
         {
-            return applyAllDeletes ? _withDeletes.Generation : Math.Max(_withoutDeletes.Generation, _withDeletes.Generation);
+            return applyAllDeletes
+                       ? _withDeletes.Generation
+                       : Math.Max(_withoutDeletes.Generation, _withDeletes.Generation);
         }
 
         public bool MaybeReopen(bool applyAllDeletes)
@@ -240,7 +236,8 @@ namespace Lucene.Net.Contrib.Management
                     if (setSearchGen)
                     {
                         reference.Generation = newSearcherGen; // update searcher gen
-                        Monitor.PulseAll(_reopenLock); // wake up threads if we have a new generation                    
+                        Monitor.PulseAll(_reopenLock);
+                            // wake up threads if we have a new generation                    
                     }
                     return setSearchGen;
                 }
@@ -260,16 +257,21 @@ namespace Lucene.Net.Contrib.Management
             return _withDeletes.Generation > _withoutDeletes.Generation ? _withDeletes.Manager : _withoutDeletes.Manager;
         }
 
+        public interface IWaitingListener
+        {
+            void Waiting(bool needsDeletes, long targetGen);
+        }
+
         private class SearcherManagerRef : IDisposable
         {
-            public long Generation { get; set; }
-            public SearcherManager Manager { get; private set; }
-
             public SearcherManagerRef(long generation, SearcherManager manager)
             {
                 Generation = generation;
                 Manager = manager;
             }
+
+            public long Generation { get; set; }
+            public SearcherManager Manager { get; private set; }
 
             public void Dispose()
             {

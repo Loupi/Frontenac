@@ -5,7 +5,7 @@ using Grave.Esent;
 
 namespace Grave.Indexing
 {
-    [ContractClassFor(typeof(IndexingService))]
+    [ContractClassFor(typeof (IndexingService))]
     public abstract class IndexingServiceContract : IndexingService
     {
         protected IndexingServiceContract(EsentConfigContext context) : base(context)
@@ -32,7 +32,8 @@ namespace Grave.Indexing
             return default(long);
         }
 
-        public override IEnumerable<int> Get(Type indexType, string indexName, string key, object value, bool isUserIndex, int hitsLimit = 1000)
+        public override IEnumerable<int> Get(Type indexType, string indexName, string key, object value,
+                                             bool isUserIndex, int hitsLimit = 1000)
         {
             Contract.Requires(IsValidIndexType(indexType));
             Contract.Requires(!string.IsNullOrWhiteSpace(indexName));
@@ -42,7 +43,8 @@ namespace Grave.Indexing
             return null;
         }
 
-        public override IEnumerable<int> Query(Type indexType, IEnumerable<GraveQueryElement> query, int hitsLimit = 1000)
+        public override IEnumerable<int> Query(Type indexType, IEnumerable<GraveQueryElement> query,
+                                               int hitsLimit = 1000)
         {
             Contract.Requires(IsValidIndexType(indexType));
             Contract.Requires(query != null);
@@ -51,7 +53,8 @@ namespace Grave.Indexing
             return null;
         }
 
-        public override long Set(Type indexType, int id, string indexName, string propertyName, object value, bool isUserIndex)
+        public override long Set(Type indexType, int id, string indexName, string propertyName, object value,
+                                 bool isUserIndex)
         {
             Contract.Requires(IsValidIndexType(indexType));
             Contract.Requires(!string.IsNullOrWhiteSpace(indexName));
@@ -61,7 +64,6 @@ namespace Grave.Indexing
 
         public override void WaitForGeneration(long generation)
         {
-            
         }
     }
 }

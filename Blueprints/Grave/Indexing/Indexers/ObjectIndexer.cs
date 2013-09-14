@@ -1,5 +1,6 @@
 ﻿using System.Collections;
 using System.Diagnostics.Contracts;
+using System.Security.Principal;
 using System.Text;
 using Fasterflect;
 
@@ -7,10 +8,10 @@ namespace Grave.Indexing.Indexers
 {
     public class ObjectIndexer : Indexer
     {
-        readonly object _content;
-        readonly IIndexerFactory _indexerFactory;
-        readonly uint _maxDepth;
-        readonly StringBuilder _nameBuilder = new StringBuilder();
+        private readonly object _content;
+        private readonly IIndexerFactory _indexerFactory;
+        private readonly uint _maxDepth;
+        private readonly StringBuilder _nameBuilder = new StringBuilder();
 
         public ObjectIndexer(object content, IDocument document, IIndexerFactory indexerFactory, uint maxDepth)
             : base(document)
@@ -30,7 +31,7 @@ namespace Grave.Indexing.Indexers
             Recurse(0, _content);
         }
 
-        void Recurse(uint depth, object value)
+        private void Recurse(uint depth, object value)
         {
             var type = value.GetType();
 
@@ -51,7 +52,7 @@ namespace Grave.Indexing.Indexers
 
             if ((type.IsValueType && type.FullName == string.Concat("System.", type.Name)) ||
                 (type.FullName == string.Concat("System.Reflection.", type.Name)) ||
-                (value is System.Security.Principal.SecurityIdentifier))
+                (value is SecurityIdentifier))
                 return;
 
             if (value is IEnumerable)
@@ -77,7 +78,7 @@ namespace Grave.Indexing.Indexers
 
             foreach (var property in properties)
             {
-                if(_nameBuilder.Length > 0)
+                if (_nameBuilder.Length > 0)
                     _nameBuilder.Append(".");
                 _nameBuilder.Append(property.Name);
                 Recurse(depth + 1, value.GetPropertyValue(property.Name));

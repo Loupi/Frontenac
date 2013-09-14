@@ -7,15 +7,14 @@ using Frontenac.Blueprints.Util;
 namespace Frontenac.Blueprints.Impls.TG
 {
     [Serializable]
-    class TinkerVertex : TinkerElement, IVertex
+    internal class TinkerVertex : TinkerElement, IVertex
     {
-        public Dictionary<string, HashSet<IEdge>> OutEdges = new Dictionary<string, HashSet<IEdge>>();
         public Dictionary<string, HashSet<IEdge>> InEdges = new Dictionary<string, HashSet<IEdge>>();
+        public Dictionary<string, HashSet<IEdge>> OutEdges = new Dictionary<string, HashSet<IEdge>>();
 
         public TinkerVertex(string id, TinkerGraph graph)
             : base(id, graph)
         {
-
         }
 
         public IEnumerable<IEdge> GetEdges(Direction direction, params string[] labels)
@@ -24,7 +23,12 @@ namespace Frontenac.Blueprints.Impls.TG
                 return FilterEdgesByLabel(OutEdges, labels);
             if (direction == Direction.In)
                 return FilterEdgesByLabel(InEdges, labels);
-            return new MultiIterable<IEdge>(new List<IEnumerable<IEdge>> { FilterEdgesByLabel(InEdges, labels), FilterEdgesByLabel(OutEdges, labels) });
+            return
+                new MultiIterable<IEdge>(new List<IEnumerable<IEdge>>
+                    {
+                        FilterEdgesByLabel(InEdges, labels),
+                        FilterEdgesByLabel(OutEdges, labels)
+                    });
         }
 
         public IEnumerable<IVertex> GetVertices(Direction direction, params string[] labels)
@@ -32,7 +36,18 @@ namespace Frontenac.Blueprints.Impls.TG
             return new VerticesFromEdgesIterable(this, direction, labels);
         }
 
-        static IEnumerable<IEdge> FilterEdgesByLabel(IDictionary<string, HashSet<IEdge>> edgesToGet, params string[] labels)
+        public IVertexQuery Query()
+        {
+            return new DefaultVertexQuery(this);
+        }
+
+        public IEdge AddEdge(string label, IVertex inVertex)
+        {
+            return Graph.AddEdge(null, this, inVertex, label);
+        }
+
+        private static IEnumerable<IEdge> FilterEdgesByLabel(IDictionary<string, HashSet<IEdge>> edgesToGet,
+                                                             params string[] labels)
         {
             Contract.Requires(edgesToGet != null);
             Contract.Requires(labels != null);
@@ -59,19 +74,9 @@ namespace Frontenac.Blueprints.Impls.TG
             return totalEdges;
         }
 
-        public IVertexQuery Query()
-        {
-            return new DefaultVertexQuery(this);
-        }
-
         public override string ToString()
         {
             return StringFactory.VertexString(this);
-        }
-
-        public IEdge AddEdge(string label, IVertex inVertex)
-        {
-            return Graph.AddEdge(null, this, inVertex, label);
         }
 
         public void AddOutEdge(string label, IEdge edge)

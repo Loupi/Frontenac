@@ -1,9 +1,9 @@
-﻿using NUnit.Framework;
-using Frontenac.Blueprints.Impls;
+﻿using Frontenac.Blueprints.Impls;
 using Frontenac.Blueprints.Impls.TG;
-using Frontenac.Blueprints.Util.IO.GraphML;
 using Frontenac.Blueprints.Util.IO.GML;
+using Frontenac.Blueprints.Util.IO.GraphML;
 using Frontenac.Blueprints.Util.IO.GraphSON;
+using NUnit.Framework;
 
 namespace Frontenac.Blueprints.Util.Wrappers.Batch
 {
@@ -61,7 +61,7 @@ namespace Frontenac.Blueprints.Util.Wrappers.Batch
         }
     }
 
-    class WritethroughGraphTestImpl : GraphTest
+    internal class WritethroughGraphTestImpl : GraphTest
     {
         public override IGraph GenerateGraph()
         {

@@ -2,7 +2,7 @@
 
 namespace Grave.Indexing
 {
-    [ContractClassFor(typeof(IDocument))]
+    [ContractClassFor(typeof (IDocument))]
     public abstract class DocumentContract : IDocument
     {
         public bool Write(string key, object value)

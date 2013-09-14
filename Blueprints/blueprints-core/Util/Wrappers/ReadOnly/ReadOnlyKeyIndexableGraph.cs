@@ -4,13 +4,13 @@ using System.Collections.Generic;
 namespace Frontenac.Blueprints.Util.Wrappers.ReadOnly
 {
     /// <summary>
-    /// A ReadOnlyKeyIndexableGraph wraps a KeyIndexableGraph and overrides the underlying graph's mutating methods.
-    /// In this way, a ReadOnlyKeyIndexableGraph can only be read from, not written to.
+    ///     A ReadOnlyKeyIndexableGraph wraps a KeyIndexableGraph and overrides the underlying graph's mutating methods.
+    ///     In this way, a ReadOnlyKeyIndexableGraph can only be read from, not written to.
     /// </summary>
     public class ReadOnlyKeyIndexableGraph : ReadOnlyIndexableGraph, IKeyIndexableGraph
     {
         public ReadOnlyKeyIndexableGraph(IKeyIndexableGraph baseKiGraph)
-            : base((IIndexableGraph)baseKiGraph)
+            : base((IIndexableGraph) baseKiGraph)
         {
         }
 
@@ -26,7 +26,7 @@ namespace Frontenac.Blueprints.Util.Wrappers.ReadOnly
 
         public IEnumerable<string> GetIndexedKeys(Type elementClass)
         {
-            return ((IKeyIndexableGraph)BaseGraph).GetIndexedKeys(elementClass);
+            return ((IKeyIndexableGraph) BaseGraph).GetIndexedKeys(elementClass);
         }
     }
 }

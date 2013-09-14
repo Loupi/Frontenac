@@ -3,7 +3,7 @@ using System.Diagnostics.Contracts;
 
 namespace Frontenac.Blueprints.Contracts
 {
-    [ContractClassFor(typeof(IEdge))]
+    [ContractClassFor(typeof (IEdge))]
     public abstract class EdgeContract : IEdge
     {
         public IVertex GetVertex(Direction direction)
@@ -13,13 +13,13 @@ namespace Frontenac.Blueprints.Contracts
             return null;
         }
 
-        public string Label 
-        { 
+        public string Label
+        {
             get
             {
                 Contract.Ensures(!string.IsNullOrWhiteSpace(Contract.Result<string>()));
                 return null;
-            } 
+            }
         }
 
         public abstract object GetProperty(string key);

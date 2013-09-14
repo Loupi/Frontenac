@@ -7,7 +7,8 @@ namespace Frontenac.Blueprints.Util.Wrappers.Partition
     {
         protected IIndexableGraph BaseIndexableGraph;
 
-        public PartitionIndexableGraph(IIndexableGraph baseIndexableGraph, string writeGraphKey, string writeGraph, IEnumerable<string> readGraphs)
+        public PartitionIndexableGraph(IIndexableGraph baseIndexableGraph, string writeGraphKey, string writeGraph,
+                                       IEnumerable<string> readGraphs)
             : base(baseIndexableGraph, writeGraphKey, writeGraph, readGraphs)
         {
             BaseIndexableGraph = baseIndexableGraph;

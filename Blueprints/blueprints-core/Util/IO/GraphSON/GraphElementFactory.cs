@@ -3,12 +3,12 @@
 namespace Frontenac.Blueprints.Util.IO.GraphSON
 {
     /// <summary>
-    /// The standard factory used for most graph element creation.  It uses an actual
-    /// Graph implementation to construct vertices and edges
+    ///     The standard factory used for most graph element creation.  It uses an actual
+    ///     Graph implementation to construct vertices and edges
     /// </summary>
     public class GraphElementFactory : IElementFactory
     {
-        readonly IGraph _graph;
+        private readonly IGraph _graph;
 
         public GraphElementFactory(IGraph graph)
         {

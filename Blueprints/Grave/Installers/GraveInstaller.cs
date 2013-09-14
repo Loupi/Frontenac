@@ -1,5 +1,6 @@
 ﻿using System.Diagnostics.Contracts;
 using Castle.Core;
+using Castle.Facilities.Startable;
 using Castle.Facilities.TypedFactory;
 using Castle.MicroKernel.Registration;
 using Castle.MicroKernel.SubSystems.Configuration;
@@ -9,13 +10,12 @@ using Grave.Esent;
 using Grave.Esent.Serializers;
 using Grave.Properties;
 using Microsoft.Isam.Esent.Interop;
-using Castle.Facilities.Startable;
 
 namespace Grave.Installers
 {
     public class InstanceStarter : IStartable
     {
-        readonly Instance _instance;
+        private readonly Instance _instance;
 
         public InstanceStarter(Instance instance)
         {
@@ -26,7 +26,6 @@ namespace Grave.Installers
 
         public void Start()
         {
-            
         }
 
         public void Stop()
@@ -41,33 +40,28 @@ namespace Grave.Installers
         {
             container.Register(
                 Component.For<Instance>()
-                         .UsingFactoryMethod(t => EsentContextBase.CreateInstance(Settings.Default.InstanceName, 
-                                                    Settings.Default.LogsPath, Settings.Default.TempPath, Settings.Default.SystemPath)),
-
+                         .UsingFactoryMethod(t => EsentContextBase.CreateInstance(Settings.Default.InstanceName,
+                                                                                  Settings.Default.LogsPath,
+                                                                                  Settings.Default.TempPath,
+                                                                                  Settings.Default.SystemPath)),
                 Component.For<InstanceStarter>()
                          .StartUsingMethod(t => t.Start)
                          .StopUsingMethod(t => t.Stop),
-
                 Component.For<IContentSerializer>()
                          .ImplementedBy<JsonContentSerializer>(),
-
                 Component.For<Session>()
                          .LifestyleTransient()
-                         .DynamicParameters((k, p) => p["instance"] = (JET_INSTANCE)k.Resolve<Instance>()),
-
+                         .DynamicParameters((k, p) => p["instance"] = (JET_INSTANCE) k.Resolve<Instance>()),
                 Component.For<EsentContext>()
                          .LifestyleTransient()
                          .DependsOn(Dependency.OnConfigValue("databaseName", Settings.Default.DatabaseFilePath)),
-
                 Component.For<EsentConfigContext>()
                          .DependsOn(Dependency.OnConfigValue("databaseName", Settings.Default.DatabaseFilePath))
                          .Start(),
-
                 Component.For<IGraveGraphFactory>()
                          .AsFactory(),
-
                 Component.For<IGraph>()
-                         .Forward<IKeyIndexableGraph,IIndexableGraph,GraveGraph>()
+                         .Forward<IKeyIndexableGraph, IIndexableGraph, GraveGraph>()
                          .ImplementedBy<GraveGraph>()
                          .LifestyleTransient()
                 );

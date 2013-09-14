@@ -3,7 +3,7 @@ using System.Diagnostics.Contracts;
 
 namespace Frontenac.Blueprints.Contracts
 {
-    [ContractClassFor(typeof(IIndex))]
+    [ContractClassFor(typeof (IIndex))]
     public abstract class IndexContract : IIndex
     {
         public string Name

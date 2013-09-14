@@ -1,12 +1,13 @@
-﻿using System.Collections.Generic;
+﻿using System.Collections;
+using System.Collections.Generic;
 using System.Diagnostics.Contracts;
 using System.Linq;
 
 namespace Frontenac.Blueprints.Util.Wrappers.ReadOnly
 {
-    class ReadOnlyIndexIterable : IEnumerable<IIndex>
+    internal class ReadOnlyIndexIterable : IEnumerable<IIndex>
     {
-        readonly IEnumerable<IIndex> _iterable;
+        private readonly IEnumerable<IIndex> _iterable;
 
         public ReadOnlyIndexIterable(IEnumerable<IIndex> iterable)
         {
@@ -20,7 +21,7 @@ namespace Frontenac.Blueprints.Util.Wrappers.ReadOnly
             return _iterable.Select(index => new ReadOnlyIndex(index)).Cast<IIndex>().GetEnumerator();
         }
 
-        System.Collections.IEnumerator System.Collections.IEnumerable.GetEnumerator()
+        IEnumerator IEnumerable.GetEnumerator()
         {
             return (this as IEnumerable<IIndex>).GetEnumerator();
         }

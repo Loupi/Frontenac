@@ -1,8 +1,8 @@
-﻿using NUnit.Framework;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using Frontenac.Blueprints.Impls.TG;
+using NUnit.Framework;
 
 namespace Frontenac.Blueprints.Util
 {
@@ -25,59 +25,19 @@ namespace Frontenac.Blueprints.Util
         }
 
         [Test]
-        public void TestRemoveProperties()
+        public void TestGetProperties()
         {
             var graph = TinkerGraphFactory.CreateTinkerGraph();
             var vertex = graph.GetVertex(1);
+            var map = ElementHelper.GetProperties(vertex);
+            Assert.AreEqual(map.Count, 2);
+            Assert.AreEqual(map.Get("name"), "marko");
+            Assert.AreEqual(map.Get("age"), 29);
+
+            map.Put("name", "pavel");
+            Assert.AreEqual(map.Get("name"), "pavel");
+
             Assert.AreEqual(vertex.GetProperty("name"), "marko");
-            Assert.AreEqual(vertex.GetProperty("age"), 29);
-            Assert.AreEqual(vertex.GetPropertyKeys().Count(), 2);
-
-            ElementHelper.RemoveProperties(new IElement[]{vertex});
-            Assert.IsNull(vertex.GetProperty("name"));
-            Assert.IsNull(vertex.GetProperty("age"));
-            Assert.AreEqual(vertex.GetPropertyKeys().Count(), 0);
-
-            ElementHelper.RemoveProperties(new IElement[]{vertex});
-            Assert.IsNull(vertex.GetProperty("name"));
-            Assert.IsNull(vertex.GetProperty("age"));
-            Assert.AreEqual(vertex.GetPropertyKeys().Count(), 0);
-        }
-
-        [Test]
-        public void TestRemoveProperty()
-        {
-            var graph = TinkerGraphFactory.CreateTinkerGraph();
-            ElementHelper.RemoveProperty("name", graph.GetVertices());
-            foreach (var v in graph.GetVertices())
-                Assert.IsNull(v.GetProperty("name"));
-        }
-
-        [Test]
-        public void TestRenameProperty()
-        {
-            var graph = TinkerGraphFactory.CreateTinkerGraph();
-            ElementHelper.RenameProperty("name", "name2", graph.GetVertices());
-            foreach (var v in graph.GetVertices())
-            {
-                Assert.IsNull(v.GetProperty("name"));
-                Assert.IsNotNull(v.GetProperty("name2"));
-                var name2 = (string) v.GetProperty("name2");
-                Assert.True(name2 == "marko" || name2 == "josh" || name2 == "vadas" || name2 == "ripple" || 
-                            name2 == "lop" || name2 == "peter" || name2 == "loupi");
-            }
-        }
-
-        [Test]
-        public void TestTypecastProperty()
-        {
-            var graph = TinkerGraphFactory.CreateTinkerGraph();
-            foreach (var e in graph.GetEdges())
-                Assert.True(e.GetProperty("weight") is double);
-            
-            ElementHelper.TypecastProperty("weight", typeof(double), graph.GetEdges());
-            foreach (var e in graph.GetEdges())
-                Assert.True(e.GetProperty("weight") is double);
         }
 
         [Test]
@@ -106,19 +66,47 @@ namespace Frontenac.Blueprints.Util
         }
 
         [Test]
-        public void TestGetProperties()
+        public void TestRemoveProperties()
         {
             var graph = TinkerGraphFactory.CreateTinkerGraph();
             var vertex = graph.GetVertex(1);
-            var map = ElementHelper.GetProperties(vertex);
-            Assert.AreEqual(map.Count, 2);
-            Assert.AreEqual(map.Get("name"), "marko");
-            Assert.AreEqual(map.Get("age"), 29);
-
-            map.Put("name", "pavel");
-            Assert.AreEqual(map.Get("name"), "pavel");
-
             Assert.AreEqual(vertex.GetProperty("name"), "marko");
+            Assert.AreEqual(vertex.GetProperty("age"), 29);
+            Assert.AreEqual(vertex.GetPropertyKeys().Count(), 2);
+
+            ElementHelper.RemoveProperties(new IElement[] {vertex});
+            Assert.IsNull(vertex.GetProperty("name"));
+            Assert.IsNull(vertex.GetProperty("age"));
+            Assert.AreEqual(vertex.GetPropertyKeys().Count(), 0);
+
+            ElementHelper.RemoveProperties(new IElement[] {vertex});
+            Assert.IsNull(vertex.GetProperty("name"));
+            Assert.IsNull(vertex.GetProperty("age"));
+            Assert.AreEqual(vertex.GetPropertyKeys().Count(), 0);
+        }
+
+        [Test]
+        public void TestRemoveProperty()
+        {
+            var graph = TinkerGraphFactory.CreateTinkerGraph();
+            ElementHelper.RemoveProperty("name", graph.GetVertices());
+            foreach (var v in graph.GetVertices())
+                Assert.IsNull(v.GetProperty("name"));
+        }
+
+        [Test]
+        public void TestRenameProperty()
+        {
+            var graph = TinkerGraphFactory.CreateTinkerGraph();
+            ElementHelper.RenameProperty("name", "name2", graph.GetVertices());
+            foreach (var v in graph.GetVertices())
+            {
+                Assert.IsNull(v.GetProperty("name"));
+                Assert.IsNotNull(v.GetProperty("name2"));
+                var name2 = (string) v.GetProperty("name2");
+                Assert.True(name2 == "marko" || name2 == "josh" || name2 == "vadas" || name2 == "ripple" ||
+                            name2 == "lop" || name2 == "peter" || name2 == "loupi");
+            }
         }
 
         [Test]
@@ -167,6 +155,18 @@ namespace Frontenac.Blueprints.Util
                     throw;
                 }
             }
+        }
+
+        [Test]
+        public void TestTypecastProperty()
+        {
+            var graph = TinkerGraphFactory.CreateTinkerGraph();
+            foreach (var e in graph.GetEdges())
+                Assert.True(e.GetProperty("weight") is double);
+
+            ElementHelper.TypecastProperty("weight", typeof (double), graph.GetEdges());
+            foreach (var e in graph.GetEdges())
+                Assert.True(e.GetProperty("weight") is double);
         }
     }
 }

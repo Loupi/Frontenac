@@ -5,11 +5,11 @@ using System.IO;
 namespace Frontenac.Blueprints.Impls.TG
 {
     /// <summary>
-    /// Reads TinkerGraph metadata from a Stream.
+    ///     Reads TinkerGraph metadata from a Stream.
     /// </summary>
     public class TinkerMetadataReader
     {
-        readonly TinkerGraph _graph;
+        private readonly TinkerGraph _graph;
 
         public TinkerMetadataReader(TinkerGraph graph)
         {
@@ -19,7 +19,7 @@ namespace Frontenac.Blueprints.Impls.TG
         }
 
         /// <summary>
-        /// Read TinkerGraph metadata from a file.
+        ///     Read TinkerGraph metadata from a file.
         /// </summary>
         /// <param name="filename">the name of the file to read the TinkerGraph metadata from</param>
         public void Load(string filename)
@@ -33,7 +33,7 @@ namespace Frontenac.Blueprints.Impls.TG
         }
 
         /// <summary>
-        /// Read TinkerGraph metadata from a Stream.
+        ///     Read TinkerGraph metadata from a Stream.
         /// </summary>
         /// <param name="inputStream">the Stream to read the TinkerGraph metadata from</param>
         public void Load(Stream inputStream)
@@ -50,7 +50,7 @@ namespace Frontenac.Blueprints.Impls.TG
         }
 
         /// <summary>
-        /// Read TinkerGraph metadata from a Stream.
+        ///     Read TinkerGraph metadata from a Stream.
         /// </summary>
         /// <param name="graph">the TinkerGraph to push the metadata to</param>
         /// <param name="inputStream">the Stream to read the TinkerGraph metadata from</param>
@@ -64,7 +64,7 @@ namespace Frontenac.Blueprints.Impls.TG
         }
 
         /// <summary>
-        /// Read TinkerGraph metadata from a file.
+        ///     Read TinkerGraph metadata from a file.
         /// </summary>
         /// <param name="graph">the TinkerGraph to push the data to</param>
         /// <param name="filename">the name of the file to read the TinkerGraph metadata from</param>
@@ -77,7 +77,7 @@ namespace Frontenac.Blueprints.Impls.TG
             reader.Load(filename);
         }
 
-        static void ReadIndices(BinaryReader reader, TinkerGraph graph)
+        private static void ReadIndices(BinaryReader reader, TinkerGraph graph)
         {
             Contract.Requires(reader != null);
             Contract.Requires(graph != null);
@@ -98,7 +98,7 @@ namespace Frontenac.Blueprints.Impls.TG
                     throw new InvalidDataException("Unknown index class type");
                 }
 
-                var tinkerIndex = new TinkerIndex(indexName, indexType == 1 ? typeof(IVertex) : typeof(IEdge));
+                var tinkerIndex = new TinkerIndex(indexName, indexType == 1 ? typeof (IVertex) : typeof (IEdge));
 
                 // Read the number of items associated with this index name
                 var indexItemCount = reader.ReadInt32();
@@ -136,7 +136,7 @@ namespace Frontenac.Blueprints.Impls.TG
             }
         }
 
-        static void ReadVertexKeyIndices(BinaryReader reader, TinkerGraph graph)
+        private static void ReadVertexKeyIndices(BinaryReader reader, TinkerGraph graph)
         {
             Contract.Requires(reader != null);
             Contract.Requires(graph != null);
@@ -179,7 +179,7 @@ namespace Frontenac.Blueprints.Impls.TG
             }
         }
 
-        static void ReadEdgeKeyIndices(BinaryReader reader, TinkerGraph graph)
+        private static void ReadEdgeKeyIndices(BinaryReader reader, TinkerGraph graph)
         {
             Contract.Requires(reader != null);
             Contract.Requires(graph != null);
@@ -222,7 +222,7 @@ namespace Frontenac.Blueprints.Impls.TG
             }
         }
 
-        static object ReadTypedData(BinaryReader reader)
+        private static object ReadTypedData(BinaryReader reader)
         {
             Contract.Requires(reader != null);
             Contract.Ensures(Contract.Result<object>() != null);

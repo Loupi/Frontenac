@@ -7,12 +7,17 @@ namespace Frontenac.Blueprints.Util.Wrappers.Batch.Cache
 {
     public class UrlCompression : StringCompression
     {
-        const string Delimiter = "$";
-        static readonly char[] UrlDelimiters = new[] { '/', '#', ':' };
+        private const string Delimiter = "$";
+        private static readonly char[] UrlDelimiters = new[] {'/', '#', ':'};
 
-        int _prefixCounter;
+        private static readonly char[] Base36Chars = new[]
+            {
+                '0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K',
+                'L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z'
+            };
 
-        readonly Dictionary<string, string> _urlPrefix = new Dictionary<string, string>();
+        private readonly Dictionary<string, string> _urlPrefix = new Dictionary<string, string>();
+        private int _prefixCounter;
 
         public override string Compress(string input)
         {
@@ -30,7 +35,7 @@ namespace Frontenac.Blueprints.Util.Wrappers.Batch.Cache
             return prefix + url[1];
         }
 
-        static string[] SplitUrl(string url)
+        private static string[] SplitUrl(string url)
         {
             Contract.Requires(url != null);
             Contract.Ensures(Contract.Result<string[]>() != null);
@@ -56,9 +61,8 @@ namespace Frontenac.Blueprints.Util.Wrappers.Batch.Cache
         //where I found out that MAX_RADIX = 36
 
         //const int MAX_RADIX = 36;
-        static readonly char[] Base36Chars = new[] { '0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z' };
 
-        static string IntToBase36String(int value)
+        private static string IntToBase36String(int value)
         {
             Contract.Ensures(Contract.Result<string>() != null);
 
@@ -66,9 +70,9 @@ namespace Frontenac.Blueprints.Util.Wrappers.Batch.Cache
         }
 
         /// <summary>
-        /// http://stackoverflow.com/questions/923771/quickest-way-to-convert-a-base-10-number-to-any-base-in-net
+        ///     http://stackoverflow.com/questions/923771/quickest-way-to-convert-a-base-10-number-to-any-base-in-net
         /// </summary>
-        static string IntToStringFast(int value, IList<char> baseChars)
+        private static string IntToStringFast(int value, IList<char> baseChars)
         {
             Contract.Requires(baseChars != null);
             Contract.Ensures(Contract.Result<string>() != null);
@@ -80,10 +84,9 @@ namespace Frontenac.Blueprints.Util.Wrappers.Batch.Cache
 
             do
             {
-                buffer[--i] = baseChars[value % targetBase];
-                value = value / targetBase;
-            }
-            while (value > 0);
+                buffer[--i] = baseChars[value%targetBase];
+                value = value/targetBase;
+            } while (value > 0);
 
             var result = new char[32 - i];
             Array.Copy(buffer, i, result, 0, 32 - i);

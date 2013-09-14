@@ -3,12 +3,12 @@
 namespace Frontenac.Blueprints.Util.Wrappers.Event
 {
     /// <summary>
-    /// An edge with a GraphChangedListener attached.  Those listeners are notified when changes occur to
-    /// the properties of the edge.
+    ///     An edge with a GraphChangedListener attached.  Those listeners are notified when changes occur to
+    ///     the properties of the edge.
     /// </summary>
     public class EventEdge : EventElement, IEdge
     {
-        readonly IEdge _baseEdge;
+        private readonly IEdge _baseEdge;
 
         public EventEdge(IEdge baseEdge, EventGraph eventGraph)
             : base(baseEdge, eventGraph)

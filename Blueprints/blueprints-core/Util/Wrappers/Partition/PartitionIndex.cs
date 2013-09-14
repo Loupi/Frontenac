@@ -7,8 +7,8 @@ namespace Frontenac.Blueprints.Util.Wrappers.Partition
 {
     public class PartitionIndex : IIndex
     {
-        protected IIndex RawIndex;
         protected PartitionGraph Graph;
+        protected IIndex RawIndex;
 
         public PartitionIndex(IIndex rawIndex, PartitionGraph graph)
         {
@@ -50,16 +50,16 @@ namespace Frontenac.Blueprints.Util.Wrappers.Partition
 
         public ICloseableIterable<IElement> Get(string key, object value)
         {
-            if (typeof(IVertex).IsAssignableFrom(Type))
-                return new PartitionVertexIterable((IEnumerable<IVertex>)RawIndex.Get(key, value), Graph);
-            return new PartitionEdgeIterable((IEnumerable<IEdge>)RawIndex.Get(key, value), Graph);
+            if (typeof (IVertex).IsAssignableFrom(Type))
+                return new PartitionVertexIterable((IEnumerable<IVertex>) RawIndex.Get(key, value), Graph);
+            return new PartitionEdgeIterable((IEnumerable<IEdge>) RawIndex.Get(key, value), Graph);
         }
 
         public ICloseableIterable<IElement> Query(string key, object value)
         {
-            if (typeof(IVertex).IsAssignableFrom(Type))
-                return new PartitionVertexIterable((IEnumerable<IVertex>)RawIndex.Query(key, value), Graph);
-            return new PartitionEdgeIterable((IEnumerable<IEdge>)RawIndex.Query(key, value), Graph);
+            if (typeof (IVertex).IsAssignableFrom(Type))
+                return new PartitionVertexIterable((IEnumerable<IVertex>) RawIndex.Query(key, value), Graph);
+            return new PartitionEdgeIterable((IEnumerable<IEdge>) RawIndex.Query(key, value), Graph);
         }
 
         public override string ToString()

@@ -5,13 +5,13 @@ using System.Diagnostics.Contracts;
 namespace Frontenac.Blueprints.Util.Wrappers.ReadOnly
 {
     /// <summary>
-    /// A ReadOnlyGraph wraps a Graph and overrides the underlying graph's mutating methods.
-    /// In this way, a ReadOnlyGraph can only be read from, not written to.
+    ///     A ReadOnlyGraph wraps a Graph and overrides the underlying graph's mutating methods.
+    ///     In this way, a ReadOnlyGraph can only be read from, not written to.
     /// </summary>
     public class ReadOnlyGraph : IGraph, IWrapperGraph
     {
+        private readonly Features _features;
         protected IGraph BaseGraph;
-        readonly Features _features;
 
         public ReadOnlyGraph(IGraph baseGraph)
         {
@@ -74,21 +74,11 @@ namespace Frontenac.Blueprints.Util.Wrappers.ReadOnly
             throw new InvalidOperationException(ReadOnlyTokens.MutateErrorMessage);
         }
 
-        public override string ToString()
-        {
-            return StringFactory.GraphString(this, BaseGraph.ToString());
-        }
-
-        public IGraph GetBaseGraph()
-        {
-            return BaseGraph;
-        }
-
         public IQuery Query()
         {
             return new WrappedQuery(BaseGraph.Query(),
-                t => new ReadOnlyEdgeIterable(t.Edges()),
-                t => new ReadOnlyVertexIterable(t.Vertices()));
+                                    t => new ReadOnlyEdgeIterable(t.Edges()),
+                                    t => new ReadOnlyVertexIterable(t.Vertices()));
         }
 
         public Features Features
@@ -99,6 +89,16 @@ namespace Frontenac.Blueprints.Util.Wrappers.ReadOnly
         public void Shutdown()
         {
             BaseGraph.Shutdown();
+        }
+
+        public IGraph GetBaseGraph()
+        {
+            return BaseGraph;
+        }
+
+        public override string ToString()
+        {
+            return StringFactory.GraphString(this, BaseGraph.ToString());
         }
     }
 }

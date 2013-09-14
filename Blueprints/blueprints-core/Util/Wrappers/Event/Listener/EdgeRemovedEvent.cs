@@ -4,12 +4,12 @@ using System.Diagnostics.Contracts;
 namespace Frontenac.Blueprints.Util.Wrappers.Event.Listener
 {
     /// <summary>
-    /// Event fired when an edge is removed. 
+    ///     Event fired when an edge is removed.
     /// </summary>
     public class EdgeRemovedEvent : IEvent
     {
-        readonly IEdge _edge;
-        readonly IDictionary<string, object> _props;
+        private readonly IEdge _edge;
+        private readonly IDictionary<string, object> _props;
 
         public EdgeRemovedEvent(IEdge edge, IDictionary<string, object> props)
         {

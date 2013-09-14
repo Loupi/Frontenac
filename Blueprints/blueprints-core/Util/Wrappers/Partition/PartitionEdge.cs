@@ -4,7 +4,7 @@ namespace Frontenac.Blueprints.Util.Wrappers.Partition
 {
     public class PartitionEdge : PartitionElement, IEdge
     {
-        readonly IEdge _baseEdge;
+        private readonly IEdge _baseEdge;
 
         public PartitionEdge(IEdge baseEdge, PartitionGraph graph)
             : base(baseEdge, graph)

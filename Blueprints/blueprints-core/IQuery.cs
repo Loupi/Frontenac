@@ -5,11 +5,11 @@ using Frontenac.Blueprints.Contracts;
 
 namespace Frontenac.Blueprints
 {
-    [ContractClass(typeof(QueryContract))]
+    [ContractClass(typeof (QueryContract))]
     public interface IQuery
     {
         /// <summary>
-        /// Filter out the edge if it does not have a property with the specified value.
+        ///     Filter out the edge if it does not have a property with the specified value.
         /// </summary>
         /// <param name="key">the key of the property</param>
         /// <param name="value">the value to check against</param>
@@ -17,17 +17,18 @@ namespace Frontenac.Blueprints
         IQuery Has(string key, object value);
 
         /// <summary>
-        /// Filter out the edge if it does not have a property with a comparable value.
+        ///     Filter out the edge if it does not have a property with a comparable value.
         /// </summary>
         /// <typeparam name="T"></typeparam>
         /// <param name="key">the key of the property</param>
-        /// /// <param name="compare">the comparator to use for comparison</param>
+        /// ///
+        /// <param name="compare">the comparator to use for comparison</param>
         /// <param name="value">the value to check against</param>
         /// <returns>the modified query object</returns>
         IQuery Has<T>(string key, Compare compare, T value) where T : IComparable<T>;
 
         /// <summary>
-        /// Filter out the edge of its property value is not within the provided interval.
+        ///     Filter out the edge of its property value is not within the provided interval.
         /// </summary>
         /// <typeparam name="T"></typeparam>
         /// <param name="key">the key of the property</param>
@@ -37,19 +38,19 @@ namespace Frontenac.Blueprints
         IQuery Interval<T>(string key, T startValue, T endValue) where T : IComparable<T>;
 
         /// <summary>
-        /// Execute the query and return the matching edges.
+        ///     Execute the query and return the matching edges.
         /// </summary>
         /// <returns>the unfiltered edges</returns>
         IEnumerable<IEdge> Edges();
 
         /// <summary>
-        /// Execute the query and return the vertices on the other end of the matching edges.
+        ///     Execute the query and return the vertices on the other end of the matching edges.
         /// </summary>
         /// <returns>the unfiltered edge's vertices</returns>
         IEnumerable<IVertex> Vertices();
 
         /// <summary>
-        /// Filter out the edge if the max number of edges to retrieve has already been reached.
+        ///     Filter out the edge if the max number of edges to retrieve has already been reached.
         /// </summary>
         /// <param name="max">the max number of edges to return</param>
         /// <returns>the modified query object</returns>

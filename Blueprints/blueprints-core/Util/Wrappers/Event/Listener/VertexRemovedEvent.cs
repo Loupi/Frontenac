@@ -4,12 +4,12 @@ using System.Diagnostics.Contracts;
 namespace Frontenac.Blueprints.Util.Wrappers.Event.Listener
 {
     /// <summary>
-    /// Event fired when a vertex is removed.
+    ///     Event fired when a vertex is removed.
     /// </summary>
     public class VertexRemovedEvent : IEvent
     {
-        readonly IVertex _vertex;
         private readonly IDictionary<string, object> _props;
+        private readonly IVertex _vertex;
 
         public VertexRemovedEvent(IVertex vertex, IDictionary<string, object> props)
         {

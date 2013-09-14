@@ -3,14 +3,14 @@ using System.Diagnostics.Contracts;
 
 namespace Frontenac.Blueprints.Contracts
 {
-    [ContractClassFor(typeof(IGraph))]
+    [ContractClassFor(typeof (IGraph))]
     public abstract class GraphContract : IGraph
     {
         public Features Features
         {
             get
             {
-                Contract.Ensures(Contract.Result<Features>() != null); 
+                Contract.Ensures(Contract.Result<Features>() != null);
                 return null;
             }
         }
@@ -86,7 +86,6 @@ namespace Frontenac.Blueprints.Contracts
 
         public void Shutdown()
         {
-            
         }
     }
 }

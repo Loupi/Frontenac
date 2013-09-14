@@ -7,12 +7,11 @@ namespace Grave_test
 {
     public abstract class GraveBenchmarkTestSuite : TestSuite
     {
-        const int TotalRuns = 10;
+        private const int TotalRuns = 10;
 
         protected GraveBenchmarkTestSuite(GraphTest graphTest)
             : base("GraveBenchmarkTestSuite", graphTest)
         {
-
         }
 
         [Test]
@@ -62,8 +61,8 @@ namespace Grave_test
             {
                 graph.Shutdown();
             }
-            
-            PrintPerformance("TinkerGraph", 1, "TinkerGraph experiment average", (long)(totalTime / TotalRuns));
+
+            PrintPerformance("TinkerGraph", 1, "TinkerGraph experiment average", (long) (totalTime/TotalRuns));
         }
     }
 }

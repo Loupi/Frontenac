@@ -4,22 +4,21 @@ using System.Diagnostics.Contracts;
 namespace Frontenac.Blueprints.Util.Wrappers.Event.Listener
 {
     /// <summary>
-    /// Interface for a listener to EventGraph change events.
-    /// 
-    /// Implementations of this interface should be added to the list of listeners on the addListener method on
-    /// the EventGraph.
+    ///     Interface for a listener to EventGraph change events.
+    ///     Implementations of this interface should be added to the list of listeners on the addListener method on
+    ///     the EventGraph.
     /// </summary>
-    [ContractClass(typeof(GraphChangedListenerContract))]
+    [ContractClass(typeof (GraphChangedListenerContract))]
     public interface IGraphChangedListener
     {
         /// <summary>
-        /// Raised when a new Vertex is added.
+        ///     Raised when a new Vertex is added.
         /// </summary>
         /// <param name="vertex">the vertex that was added</param>
         void VertexAdded(IVertex vertex);
 
         /// <summary>
-        /// Raised after the property of a vertex changed.
+        ///     Raised after the property of a vertex changed.
         /// </summary>
         /// <param name="vertex">the vertex that changed</param>
         /// <param name="key">the key of the property that changed</param>
@@ -28,7 +27,7 @@ namespace Frontenac.Blueprints.Util.Wrappers.Event.Listener
         void VertexPropertyChanged(IVertex vertex, string key, object oldValue, object setValue);
 
         /// <summary>
-        /// Raised after a vertex property was removed.
+        ///     Raised after a vertex property was removed.
         /// </summary>
         /// <param name="vertex">the vertex that changed</param>
         /// <param name="key">the key that was removed</param>
@@ -36,19 +35,19 @@ namespace Frontenac.Blueprints.Util.Wrappers.Event.Listener
         void VertexPropertyRemoved(IVertex vertex, string key, object removedValue);
 
         /// <summary>
-        /// Raised after a vertex was removed from the graph.
+        ///     Raised after a vertex was removed from the graph.
         /// </summary>
         /// <param name="vertex">the vertex that was removed</param>
         /// <param name="props" />
         void VertexRemoved(IVertex vertex, IDictionary<string, object> props);
 
         /// <summary>
-        /// Raised after a new edge is added.
+        ///     Raised after a new edge is added.
         /// </summary>
         void EdgeAdded(IEdge edge);
 
         /// <summary>
-        /// Raised after the property of a edge changed.
+        ///     Raised after the property of a edge changed.
         /// </summary>
         /// <param name="edge">the edge that changed</param>
         /// <param name="key">the key of the property that changed</param>
@@ -57,7 +56,7 @@ namespace Frontenac.Blueprints.Util.Wrappers.Event.Listener
         void EdgePropertyChanged(IEdge edge, string key, object oldValue, object setValue);
 
         /// <summary>
-        /// Raised after an edge property was removed.
+        ///     Raised after an edge property was removed.
         /// </summary>
         /// <param name="edge">the edge that changed</param>
         /// <param name="key">the key that was removed</param>
@@ -65,7 +64,7 @@ namespace Frontenac.Blueprints.Util.Wrappers.Event.Listener
         void EdgePropertyRemoved(IEdge edge, string key, object removedValue);
 
         /// <summary>
-        /// Raised after an edge was removed from the graph.
+        ///     Raised after an edge was removed from the graph.
         /// </summary>
         /// <param name="edge">the edge that was removed</param>
         /// <param name="props"></param>

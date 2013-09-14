@@ -6,13 +6,14 @@ namespace Grave.Indexing
 {
     public class IndexCollection
     {
-        readonly Type _indexType;
-        readonly bool _isUserIndex;
-        readonly string _indicesColumnName;
-        readonly IndexingService _indexingService;
-        readonly List<string> _indices;
-        
-        public IndexCollection(string indicesColumnName, Type indexType, bool isUserIndex, IndexingService indexingService)
+        private readonly Type _indexType;
+        private readonly IndexingService _indexingService;
+        private readonly List<string> _indices;
+        private readonly string _indicesColumnName;
+        private readonly bool _isUserIndex;
+
+        public IndexCollection(string indicesColumnName, Type indexType, bool isUserIndex,
+                               IndexingService indexingService)
         {
             Contract.Requires(!string.IsNullOrWhiteSpace(indicesColumnName));
             Contract.Requires(IndexingService.IsValidIndexType(indexType));

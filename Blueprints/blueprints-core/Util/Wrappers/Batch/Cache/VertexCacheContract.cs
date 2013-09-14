@@ -2,7 +2,7 @@
 
 namespace Frontenac.Blueprints.Util.Wrappers.Batch.Cache
 {
-    [ContractClassFor(typeof(IVertexCache))]
+    [ContractClassFor(typeof (IVertexCache))]
     public abstract class VertexCacheContract : IVertexCache
     {
         public object GetEntry(object externalId)
@@ -31,7 +31,6 @@ namespace Frontenac.Blueprints.Util.Wrappers.Batch.Cache
 
         public void NewTransaction()
         {
-            
         }
     }
 }

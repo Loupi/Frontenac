@@ -6,7 +6,7 @@ namespace Frontenac.Blueprints.Util
     public static class VertexHelper
     {
         /// <summary>
-        /// Test whether the two vertices have equal properties and edge sets. 
+        ///     Test whether the two vertices have equal properties and edge sets.
         /// </summary>
         /// <param name="a">the first vertex </param>
         /// <param name="b">the second vertex </param>
@@ -24,7 +24,7 @@ namespace Frontenac.Blueprints.Util
         }
 
         /// <summary>
-        /// Test whether the two vertices have equal edge sets
+        ///     Test whether the two vertices have equal edge sets
         /// </summary>
         /// <param name="a">the first vertex</param>
         /// <param name="b">the second vertex</param>
@@ -53,7 +53,8 @@ namespace Frontenac.Blueprints.Util
             return HasEqualEdgeSets(aEdgeSet, bEdgeSet, checkIdEquality);
         }
 
-        static bool HasEqualEdgeSets(ICollection<IEdge> aEdgeSet, ICollection<IEdge> bEdgeSet, bool checkIdEquality)
+        private static bool HasEqualEdgeSets(ICollection<IEdge> aEdgeSet, ICollection<IEdge> bEdgeSet,
+                                             bool checkIdEquality)
         {
             Contract.Requires(aEdgeSet != null);
             Contract.Requires(bEdgeSet != null);
@@ -72,7 +73,8 @@ namespace Frontenac.Blueprints.Util
                         {
                             if (ElementHelper.HaveEqualIds(aEdge, bEdge) &&
                                 ElementHelper.HaveEqualIds(aEdge.GetVertex(Direction.In), bEdge.GetVertex(Direction.In)) &&
-                                ElementHelper.HaveEqualIds(aEdge.GetVertex(Direction.Out), bEdge.GetVertex(Direction.Out)) &&
+                                ElementHelper.HaveEqualIds(aEdge.GetVertex(Direction.Out),
+                                                           bEdge.GetVertex(Direction.Out)) &&
                                 ElementHelper.HaveEqualProperties(aEdge, bEdge))
                             {
                                 tempEdge = bEdge;

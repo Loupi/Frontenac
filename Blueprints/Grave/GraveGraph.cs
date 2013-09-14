@@ -1,8 +1,8 @@
-﻿using System.Diagnostics.Contracts;
+﻿using System;
+using System.Collections.Generic;
+using System.Diagnostics.Contracts;
 using System.Linq;
 using Frontenac.Blueprints;
-using System;
-using System.Collections.Generic;
 using Frontenac.Blueprints.Util;
 using Grave.Esent;
 using Grave.Indexing;
@@ -11,48 +11,47 @@ namespace Grave
 {
     public class GraveGraph : IKeyIndexableGraph, IIndexableGraph
     {
-        internal readonly IndexingService IndexingService;
+        private static readonly Features GraveGraphFeatures = new Features
+            {
+                SupportsDuplicateEdges = true,
+                SupportsSelfLoops = true,
+                SupportsSerializableObjectProperty = true,
+                SupportsBooleanProperty = true,
+                SupportsDoubleProperty = true,
+                SupportsFloatProperty = true,
+                SupportsIntegerProperty = true,
+                SupportsPrimitiveArrayProperty = true,
+                SupportsUniformListProperty = true,
+                SupportsMixedListProperty = true,
+                SupportsLongProperty = true,
+                SupportsMapProperty = true,
+                SupportsStringProperty = true,
+                IgnoresSuppliedIds = true,
+                IsPersistent = true,
+                IsRdfModel = false,
+                IsWrapper = false,
+                SupportsIndices = true,
+                SupportsKeyIndices = true,
+                SupportsVertexKeyIndex = true,
+                SupportsEdgeKeyIndex = true,
+                SupportsVertexIndex = true,
+                SupportsEdgeIndex = true,
+                SupportsTransactions = false,
+                SupportsVertexIteration = true,
+                SupportsEdgeIteration = true,
+                SupportsEdgeRetrieval = true,
+                SupportsVertexProperties = true,
+                SupportsEdgeProperties = true,
+                SupportsThreadedTransactions = false,
+                SupportsIdProperty = true,
+                SupportsLabelProperty = true
+            };
 
-        static readonly Features GraveGraphFeatures = new Features
-        {
-            SupportsDuplicateEdges = true,
-            SupportsSelfLoops = true,
-            SupportsSerializableObjectProperty = true,
-            SupportsBooleanProperty = true,
-            SupportsDoubleProperty = true,
-            SupportsFloatProperty = true,
-            SupportsIntegerProperty = true,
-            SupportsPrimitiveArrayProperty = true,
-            SupportsUniformListProperty = true,
-            SupportsMixedListProperty = true,
-            SupportsLongProperty = true,
-            SupportsMapProperty = true,
-            SupportsStringProperty = true,
-            IgnoresSuppliedIds = true,
-            IsPersistent = true,
-            IsRdfModel = false,
-            IsWrapper = false,
-            SupportsIndices = true,
-            SupportsKeyIndices = true,
-            SupportsVertexKeyIndex = true,
-            SupportsEdgeKeyIndex = true,
-            SupportsVertexIndex = true,
-            SupportsEdgeIndex = true,
-            SupportsTransactions = false,
-            SupportsVertexIteration = true,
-            SupportsEdgeIteration = true,
-            SupportsEdgeRetrieval = true,
-            SupportsVertexProperties = true,
-            SupportsEdgeProperties = true,
-            SupportsThreadedTransactions = false,
-            SupportsIdProperty = true,
-            SupportsLabelProperty = true
-        };
-
-        readonly IGraveGraphFactory _factory;
         internal readonly EsentContext Context;
-        bool _refreshRequired;
-        long _generation;
+        internal readonly IndexingService IndexingService;
+        private readonly IGraveGraphFactory _factory;
+        private long _generation;
+        private bool _refreshRequired;
 
         public GraveGraph(IGraveGraphFactory factory, IndexingService indexingService, EsentContext context)
         {
@@ -65,19 +64,44 @@ namespace Grave
             IndexingService = indexingService;
         }
 
-        internal void UpdateGeneration(long generation)
+        public virtual IIndex CreateIndex(string indexName, Type indexClass, params Parameter[] indexParameters)
         {
-            _generation = generation;
-            _refreshRequired = true;
+            if (GetIndices(typeof (IVertex), true).HasIndex(indexName) ||
+                GetIndices(typeof (IEdge), true).HasIndex(indexName))
+                throw ExceptionFactory.IndexAlreadyExists(indexName);
+
+            GetIndices(indexClass, true).CreateIndex(indexName);
+            return new GraveIndex(indexName, indexClass, this, IndexingService);
         }
 
-        internal void WaitForGeneration()
+        public virtual IIndex GetIndex(string indexName, Type indexClass)
         {
-            if (_refreshRequired)
-            {
-                IndexingService.WaitForGeneration(_generation);
-                _refreshRequired = false;
-            }
+            return GetIndices(indexClass, true).HasIndex(indexName)
+                       ? new GraveIndex(indexName, indexClass, this, IndexingService)
+                       : null;
+        }
+
+        public virtual IEnumerable<IIndex> GetIndices()
+        {
+            return GetIndices(typeof (IVertex), true)
+                .GetIndices()
+                .Select(t => new GraveIndex(t, typeof (IVertex), this, IndexingService))
+                .Concat(
+                    GetIndices(typeof (IEdge), true)
+                        .GetIndices()
+                        .Select(t => new GraveIndex(t, typeof (IEdge), this, IndexingService)));
+        }
+
+        public virtual void DropIndex(string indexName)
+        {
+            long generation = -1;
+            if (GetIndices(typeof (IVertex), true).HasIndex(indexName))
+                generation = GetIndices(typeof (IVertex), true).DropIndex(indexName);
+            else if (GetIndices(typeof (IEdge), true).HasIndex(indexName))
+                generation = GetIndices(typeof (IEdge), true).DropIndex(indexName);
+
+            if (generation != -1)
+                UpdateGeneration(generation);
         }
 
         public virtual Features Features
@@ -108,7 +132,7 @@ namespace Grave
             foreach (var edge in vertex.GetEdges(Direction.Both))
                 RemoveEdge(edge);
 
-            var vertexId = (int)vertex.Id;
+            var vertexId = (int) vertex.Id;
             Context.VertexTable.DeleteRow(vertexId);
             var generation = IndexingService.VertexIndices.DeleteDocuments(vertexId);
             UpdateGeneration(generation);
@@ -139,13 +163,13 @@ namespace Grave
 
             WaitForGeneration();
             return IndexingService.VertexIndices.Get(key, key, value)
-                .Select(vertexId => new GraveVertex(this, Context.VertexTable, vertexId));
+                                  .Select(vertexId => new GraveVertex(this, Context.VertexTable, vertexId));
         }
 
         public virtual IEdge AddEdge(object unused, IVertex outVertex, IVertex inVertex, string label)
         {
-            var inVertexId = (int)inVertex.Id;
-            var outVertexId = (int)outVertex.Id;
+            var inVertexId = (int) inVertex.Id;
+            var outVertexId = (int) outVertex.Id;
             var edgeId = Context.EdgesTable.AddEdge(label, inVertexId, outVertexId);
             Context.VertexTable.AddEdge(inVertexId, Direction.In, label, edgeId, outVertexId);
             Context.VertexTable.AddEdge(outVertexId, Direction.Out, label, edgeId, inVertexId);
@@ -154,51 +178,19 @@ namespace Grave
 
         public virtual IEdge GetEdge(object id)
         {
-            IEdge result = null;
             var edgeId = TryToInt32(id);
             if (!edgeId.HasValue) return null;
 
             var data = Context.EdgesTable.TryGetEdge(edgeId.Value);
-            if (data != null)
-                result = new GraveEdge(edgeId.Value, GetVertex(data.Item3), GetVertex(data.Item2), data.Item1, this, Context.EdgesTable);
-
-            return result;
-        }
-
-        static int? TryToInt32(object value)
-        {
-            int? result;
-
-            if (value is int)
-                result = (int)value;
-            else if (value is string)
-            {
-                int intVal;
-                result = int.TryParse(value as string, out intVal) ? (int?)intVal : null;
-            }
-            else if (value == null)
-                result = null;
-            else
-            {
-                try
-                {
-                    result = Convert.ToInt32(value);
-                }
-                catch (Exception ex)
-                {
-                    if (ex is FormatException || ex is InvalidCastException || ex is OverflowException)
-                        result = null;
-                    else
-                        throw;
-                }
-            }
-
-            return result;
+            return data != null
+                       ? new GraveEdge(edgeId.Value, GetVertex(data.Item3), GetVertex(data.Item2), data.Item1, this,
+                                       Context.EdgesTable)
+                       : null;
         }
 
         public virtual void RemoveEdge(IEdge edge)
         {
-            var edgeId = (int)edge.Id;
+            var edgeId = (int) edge.Id;
             Context.EdgesTable.DeleteRow(edgeId);
             var inVertexId = (int) edge.GetVertex(Direction.In).Id;
             var outVertexId = (int) edge.GetVertex(Direction.Out).Id;
@@ -241,7 +233,89 @@ namespace Grave
             return IterateEdges(key, value);
         }
 
-        IEnumerable<IEdge> IterateEdges(string key, object value)
+        public void DropKeyIndex(string key, Type elementClass)
+        {
+            var generation = GetIndices(elementClass, false).DropIndex(key);
+            if (generation != -1)
+                UpdateGeneration(generation);
+        }
+
+        public virtual void CreateKeyIndex(string key, Type elementClass, params Parameter[] indexParameters)
+        {
+            var indices = GetIndices(elementClass, false);
+            if (indices.HasIndex(key)) return;
+
+            indices.CreateIndex(key);
+
+            if (elementClass == typeof (IVertex))
+                KeyIndexableGraphHelper.ReIndexElements(this, GetVertices(), new HashSet<string>(new[] {key}));
+            else
+                KeyIndexableGraphHelper.ReIndexElements(this, GetEdges(), new HashSet<string>(new[] {key}));
+        }
+
+        public virtual IEnumerable<string> GetIndexedKeys(Type elementClass)
+        {
+            return GetIndices(elementClass, false).GetIndices();
+        }
+
+        public virtual IQuery Query()
+        {
+            WaitForGeneration();
+            throw new NotImplementedException();
+        }
+
+        public virtual void Shutdown()
+        {
+            _factory.Destroy(this);
+        }
+
+        internal void UpdateGeneration(long generation)
+        {
+            _generation = generation;
+            _refreshRequired = true;
+        }
+
+        internal void WaitForGeneration()
+        {
+            if (_refreshRequired)
+            {
+                IndexingService.WaitForGeneration(_generation);
+                _refreshRequired = false;
+            }
+        }
+
+        private static int? TryToInt32(object value)
+        {
+            int? result;
+
+            if (value is int)
+                result = (int) value;
+            else if (value is string)
+            {
+                int intVal;
+                result = int.TryParse(value as string, out intVal) ? (int?) intVal : null;
+            }
+            else if (value == null)
+                result = null;
+            else
+            {
+                try
+                {
+                    result = Convert.ToInt32(value);
+                }
+                catch (Exception ex)
+                {
+                    if (ex is FormatException || ex is InvalidCastException || ex is OverflowException)
+                        result = null;
+                    else
+                        throw;
+                }
+            }
+
+            return result;
+        }
+
+        private IEnumerable<IEdge> IterateEdges(string key, object value)
         {
             Contract.Requires(!string.IsNullOrWhiteSpace(key));
 
@@ -266,98 +340,28 @@ namespace Grave
             }
         }
 
-        public void DropKeyIndex(string key, Type elementClass)
-        {
-            var generation = GetIndices(elementClass, false).DropIndex(key);
-            if (generation != -1)
-                UpdateGeneration(generation);
-        }
-
-        public virtual void CreateKeyIndex(string key, Type elementClass, params Parameter[] indexParameters)
-        {
-            var indices = GetIndices(elementClass, false);
-            if (indices.HasIndex(key)) return;
-            
-            indices.CreateIndex(key);
-
-            if (elementClass == typeof(IVertex))
-                KeyIndexableGraphHelper.ReIndexElements(this, GetVertices(), new HashSet<string>(new[] { key }));
-            else
-                KeyIndexableGraphHelper.ReIndexElements(this, GetEdges(), new HashSet<string>(new[] { key }));
-        }
-
-        public virtual IEnumerable<string> GetIndexedKeys(Type elementClass)
-        {
-            return GetIndices(elementClass, false).GetIndices();
-        }
-
         internal IndexCollection GetIndices(Type indexType, bool isUserIndex)
         {
             Contract.Requires(indexType != null);
-            Contract.Requires(indexType.IsAssignableFrom(typeof(IVertex)) || indexType.IsAssignableFrom(typeof(IEdge)));
+            Contract.Requires(indexType.IsAssignableFrom(typeof (IVertex)) || indexType.IsAssignableFrom(typeof (IEdge)));
 
             if (indexType == null)
                 throw new ArgumentNullException("indexType");
 
             if (isUserIndex)
-                return indexType == typeof(IVertex) ? IndexingService.UserVertexIndices : IndexingService.UserEdgeIndices;
+                return indexType == typeof (IVertex)
+                           ? IndexingService.UserVertexIndices
+                           : IndexingService.UserEdgeIndices;
 
-            return indexType == typeof(IVertex) ? IndexingService.VertexIndices : IndexingService.EdgeIndices;
-        }
-
-        public virtual IIndex CreateIndex(string indexName, Type indexClass, params Parameter[] indexParameters)
-        {
-            if (GetIndices(typeof(IVertex), true).HasIndex(indexName) ||
-                GetIndices(typeof(IEdge), true).HasIndex(indexName))
-                throw ExceptionFactory.IndexAlreadyExists(indexName);
-
-            GetIndices(indexClass, true).CreateIndex(indexName);
-            return new GraveIndex(indexName, indexClass, this, IndexingService);
-        }
-
-        public virtual IIndex GetIndex(string indexName, Type indexClass)
-        {
-            IIndex result = null;
-            if (GetIndices(indexClass, true).HasIndex(indexName))
-                result = new GraveIndex(indexName, indexClass, this, IndexingService);
-            return result;
-        }
-
-        public virtual IEnumerable<IIndex> GetIndices()
-        {
-            return GetIndices(typeof(IVertex), true).GetIndices().Select(t => new GraveIndex(t, typeof(IVertex), this, IndexingService))
-                .Concat(GetIndices(typeof(IEdge), true).GetIndices().Select(t => new GraveIndex(t, typeof(IEdge), this, IndexingService)));
-        }
-
-        public virtual void DropIndex(string indexName)
-        {
-            long generation = -1;
-            if (GetIndices(typeof(IVertex), true).HasIndex(indexName))
-                generation = GetIndices(typeof(IVertex), true).DropIndex(indexName);
-            else if (GetIndices(typeof(IEdge), true).HasIndex(indexName))
-                generation = GetIndices(typeof(IEdge), true).DropIndex(indexName);
-
-            if (generation != -1)
-                UpdateGeneration(generation);
-        }
-
-        public virtual IQuery Query()
-        {
-            WaitForGeneration();
-            throw new NotImplementedException();
+            return indexType == typeof (IVertex) ? IndexingService.VertexIndices : IndexingService.EdgeIndices;
         }
 
         public override string ToString()
         {
             return StringFactory.GraphString(this,
-                string.Format("vertices: {0} Edges: {1}",
-                Context.VertexTable.GetApproximateRecordCount(15),
-                Context.EdgesTable.GetApproximateRecordCount(15)));
-        }
-
-        public virtual void Shutdown()
-        {
-            _factory.Destroy(this);
+                                             string.Format("vertices: {0} Edges: {1}",
+                                                           Context.VertexTable.GetApproximateRecordCount(15),
+                                                           Context.EdgesTable.GetApproximateRecordCount(15)));
         }
     }
 }

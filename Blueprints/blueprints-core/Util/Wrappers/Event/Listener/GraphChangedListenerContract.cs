@@ -3,7 +3,7 @@ using System.Diagnostics.Contracts;
 
 namespace Frontenac.Blueprints.Util.Wrappers.Event.Listener
 {
-    [ContractClassFor(typeof(IGraphChangedListener))]
+    [ContractClassFor(typeof (IGraphChangedListener))]
     public abstract class GraphChangedListenerContract : IGraphChangedListener
     {
         public void VertexAdded(IVertex vertex)

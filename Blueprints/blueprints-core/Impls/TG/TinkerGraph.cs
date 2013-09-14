@@ -9,25 +9,11 @@ using Frontenac.Blueprints.Util;
 namespace Frontenac.Blueprints.Impls.TG
 {
     /// <summary>
-    /// An in-memory, reference implementation of the property graph interfaces provided by Blueprints.
+    ///     An in-memory, reference implementation of the property graph interfaces provided by Blueprints.
     /// </summary>
     [Serializable]
     public class TinkerGraph : IIndexableGraph, IKeyIndexableGraph
     {
-        internal long CurrentId = 0;
-        protected Dictionary<string, IVertex> InnerVertices = new Dictionary<string, IVertex>();
-        protected Dictionary<string, IEdge> Edges = new Dictionary<string, IEdge>();
-        internal Dictionary<string, TinkerIndex> Indices = new Dictionary<string, TinkerIndex>();
-
-        internal TinkerKeyIndex VertexKeyIndex;
-        internal TinkerKeyIndex EdgeKeyIndex;
-
-        readonly string _directory;
-        readonly FileType _fileType;
-
-        static readonly Features TinkerGraphFeatures = new Features();
-        static readonly Features PersistentFeatures;
-
         public enum FileType
         {
             DotNet,
@@ -35,6 +21,19 @@ namespace Frontenac.Blueprints.Impls.TG
             Graphml,
             Graphson
         }
+
+        private static readonly Features TinkerGraphFeatures = new Features();
+        private static readonly Features PersistentFeatures;
+        private readonly string _directory;
+        private readonly FileType _fileType;
+
+        internal long CurrentId = 0;
+        internal TinkerKeyIndex EdgeKeyIndex;
+        protected Dictionary<string, IEdge> Edges = new Dictionary<string, IEdge>();
+        internal Dictionary<string, TinkerIndex> Indices = new Dictionary<string, TinkerIndex>();
+        protected Dictionary<string, IVertex> InnerVertices = new Dictionary<string, IVertex>();
+
+        internal TinkerKeyIndex VertexKeyIndex;
 
         static TinkerGraph()
         {
@@ -81,8 +80,8 @@ namespace Frontenac.Blueprints.Impls.TG
         {
             Contract.Requires(!string.IsNullOrWhiteSpace(directory));
 
-            VertexKeyIndex = new TinkerKeyIndex(typeof(TinkerVertex), this);
-            EdgeKeyIndex = new TinkerKeyIndex(typeof(TinkerEdge), this);
+            VertexKeyIndex = new TinkerKeyIndex(typeof (TinkerVertex), this);
+            EdgeKeyIndex = new TinkerKeyIndex(typeof (TinkerEdge), this);
 
             _directory = directory;
             _fileType = fileType;
@@ -106,21 +105,21 @@ namespace Frontenac.Blueprints.Impls.TG
         public TinkerGraph(string directory)
             : this(directory, FileType.DotNet)
         {
-
         }
 
         public TinkerGraph()
         {
-            VertexKeyIndex = new TinkerKeyIndex(typeof(TinkerVertex), this);
-            EdgeKeyIndex = new TinkerKeyIndex(typeof(TinkerEdge), this);
+            VertexKeyIndex = new TinkerKeyIndex(typeof (TinkerVertex), this);
+            EdgeKeyIndex = new TinkerKeyIndex(typeof (TinkerEdge), this);
             _directory = null;
             _fileType = FileType.DotNet;
         }
 
         public virtual IEnumerable<IVertex> GetVertices(string key, object value)
         {
-            return VertexKeyIndex.GetIndexedKeys().Contains(key) ? VertexKeyIndex.Get(key, value).Cast<IVertex>() : 
-                                                                   new PropertyFilteredIterable<IVertex>(key, value, GetVertices());
+            return VertexKeyIndex.GetIndexedKeys().Contains(key)
+                       ? VertexKeyIndex.Get(key, value).Cast<IVertex>()
+                       : new PropertyFilteredIterable<IVertex>(key, value, GetVertices());
         }
 
         public virtual IEnumerable<IEdge> GetEdges(string key, object value)
@@ -128,27 +127,6 @@ namespace Frontenac.Blueprints.Impls.TG
             if (EdgeKeyIndex.GetIndexedKeys().Contains(key))
                 return EdgeKeyIndex.Get(key, value).Cast<IEdge>();
             return new PropertyFilteredIterable<IEdge>(key, value, GetEdges());
-        }
-
-        public virtual void CreateKeyIndex(string key, Type elementClass, params Parameter[] indexParameters)
-        {
-            if (typeof(IVertex).IsAssignableFrom(elementClass))
-                VertexKeyIndex.CreateKeyIndex(key);
-            else
-                EdgeKeyIndex.CreateKeyIndex(key);
-        }
-
-        public virtual void DropKeyIndex(string key, Type elementClass)
-        {
-            if (typeof(IVertex).IsAssignableFrom(elementClass))
-                VertexKeyIndex.DropKeyIndex(key);
-            else
-                EdgeKeyIndex.DropKeyIndex(key);
-        }
-
-        public virtual IEnumerable<string> GetIndexedKeys(Type elementClass)
-        {
-            return typeof(IVertex).IsAssignableFrom(elementClass) ? VertexKeyIndex.GetIndexedKeys() : EdgeKeyIndex.GetIndexedKeys();
         }
 
         public virtual IIndex CreateIndex(string indexName, Type indexClass, params Parameter[] indexParameters)
@@ -237,7 +215,7 @@ namespace Frontenac.Blueprints.Impls.TG
                 RemoveEdge(edge);
 
             VertexKeyIndex.RemoveElement(vertex);
-            foreach (var idx in GetIndices().Where(t => t.Type == typeof(IVertex)).Cast<TinkerIndex>())
+            foreach (var idx in GetIndices().Where(t => t.Type == typeof (IVertex)).Cast<TinkerIndex>())
             {
                 idx.RemoveElement(vertex);
             }
@@ -272,8 +250,8 @@ namespace Frontenac.Blueprints.Impls.TG
 
             edge = new TinkerEdge(idString, outVertex, inVertex, label, this);
             Edges.Put(edge.Id.ToString(), edge);
-            var out_ = (TinkerVertex)outVertex;
-            var in_ = (TinkerVertex)inVertex;
+            var out_ = (TinkerVertex) outVertex;
+            var in_ = (TinkerVertex) inVertex;
             out_.AddOutEdge(label, edge);
             in_.AddInEdge(label, edge);
             return edge;
@@ -281,8 +259,8 @@ namespace Frontenac.Blueprints.Impls.TG
 
         public virtual void RemoveEdge(IEdge edge)
         {
-            var outVertex = (TinkerVertex)edge.GetVertex(Direction.Out);
-            var inVertex = (TinkerVertex)edge.GetVertex(Direction.In);
+            var outVertex = (TinkerVertex) edge.GetVertex(Direction.Out);
+            var inVertex = (TinkerVertex) edge.GetVertex(Direction.In);
             if (null != outVertex && null != outVertex.OutEdges)
             {
                 var e = outVertex.OutEdges.Get(edge.Label);
@@ -298,7 +276,7 @@ namespace Frontenac.Blueprints.Impls.TG
 
 
             EdgeKeyIndex.RemoveElement(edge);
-            foreach (var idx in GetIndices().Where(t => t.Type == typeof(IEdge)).Cast<TinkerIndex>())
+            foreach (var idx in GetIndices().Where(t => t.Type == typeof (IEdge)).Cast<TinkerIndex>())
             {
                 idx.RemoveElement(edge);
             }
@@ -311,15 +289,58 @@ namespace Frontenac.Blueprints.Impls.TG
             return new DefaultGraphQuery(this);
         }
 
+        public void Shutdown()
+        {
+            if (null == _directory) return;
+            var tinkerStorage = TinkerStorageFactory.GetInstance().GetTinkerStorage(_fileType);
+            tinkerStorage.Save(this, _directory);
+        }
+
+        public virtual Features Features
+        {
+            get { return null == _directory ? TinkerGraphFeatures : PersistentFeatures; }
+        }
+
+        public virtual void CreateKeyIndex(string key, Type elementClass, params Parameter[] indexParameters)
+        {
+            if (typeof (IVertex).IsAssignableFrom(elementClass))
+                VertexKeyIndex.CreateKeyIndex(key);
+            else
+                EdgeKeyIndex.CreateKeyIndex(key);
+        }
+
+        public virtual void DropKeyIndex(string key, Type elementClass)
+        {
+            if (typeof (IVertex).IsAssignableFrom(elementClass))
+                VertexKeyIndex.DropKeyIndex(key);
+            else
+                EdgeKeyIndex.DropKeyIndex(key);
+        }
+
+        public virtual IEnumerable<string> GetIndexedKeys(Type elementClass)
+        {
+            return typeof (IVertex).IsAssignableFrom(elementClass)
+                       ? VertexKeyIndex.GetIndexedKeys()
+                       : EdgeKeyIndex.GetIndexedKeys();
+        }
+
         public override string ToString()
         {
             if (null == _directory)
-                return StringFactory.GraphString(this, string.Concat("vertices:", InnerVertices.LongCount().ToString(CultureInfo.InvariantCulture), 
-                                                                     " edges:", Edges.LongCount().ToString(CultureInfo.InvariantCulture)));
+                return StringFactory.GraphString(this,
+                                                 string.Concat("vertices:",
+                                                               InnerVertices.LongCount()
+                                                                            .ToString(CultureInfo.InvariantCulture),
+                                                               " edges:",
+                                                               Edges.LongCount().ToString(CultureInfo.InvariantCulture)));
 
-            return StringFactory.GraphString(this, string.Concat("vertices:", InnerVertices.LongCount().ToString(CultureInfo.InvariantCulture), 
-                                                                 " edges:", Edges.LongCount().ToString(CultureInfo.InvariantCulture), 
-                                                                 " directory:", _directory));
+            return StringFactory.GraphString(this,
+                                             string.Concat("vertices:",
+                                                           InnerVertices.LongCount()
+                                                                        .ToString(CultureInfo.InvariantCulture),
+                                                           " edges:",
+                                                           Edges.LongCount().ToString(CultureInfo.InvariantCulture),
+                                                           " directory:", _directory));
         }
 
         public void Clear()
@@ -328,18 +349,11 @@ namespace Frontenac.Blueprints.Impls.TG
             Edges.Clear();
             Indices.Clear();
             CurrentId = 0;
-            VertexKeyIndex = new TinkerKeyIndex(typeof(TinkerVertex), this);
-            EdgeKeyIndex = new TinkerKeyIndex(typeof(TinkerEdge), this);
+            VertexKeyIndex = new TinkerKeyIndex(typeof (TinkerVertex), this);
+            EdgeKeyIndex = new TinkerKeyIndex(typeof (TinkerEdge), this);
         }
 
-        public void Shutdown()
-        {
-            if (null == _directory) return;
-            var tinkerStorage = TinkerStorageFactory.GetInstance().GetTinkerStorage(_fileType);
-            tinkerStorage.Save(this, _directory);
-        }
-
-        string GetNextId()
+        private string GetNextId()
         {
             Contract.Ensures(Contract.Result<string>() != null);
 
@@ -354,19 +368,11 @@ namespace Frontenac.Blueprints.Impls.TG
             return idString;
         }
 
-        public virtual Features Features
-        {
-            get
-            {
-                return null == _directory ? TinkerGraphFeatures : PersistentFeatures;
-            }
-        }
-
         [Serializable]
         internal class TinkerKeyIndex : TinkerIndex
         {
-            readonly HashSet<string> _indexedKeys = new HashSet<string>();
-            readonly TinkerGraph _graph;
+            private readonly TinkerGraph _graph;
+            private readonly HashSet<string> _indexedKeys = new HashSet<string>();
 
             public TinkerKeyIndex(Type indexClass, TinkerGraph graph)
                 : base(null, indexClass)
@@ -405,10 +411,11 @@ namespace Frontenac.Blueprints.Impls.TG
 
                 _indexedKeys.Add(key);
 
-                if (typeof(TinkerVertex) == IndexClass)
-                    KeyIndexableGraphHelper.ReIndexElements(_graph, _graph.GetVertices(), new HashSet<string>(new[] { key }));
+                if (typeof (TinkerVertex) == IndexClass)
+                    KeyIndexableGraphHelper.ReIndexElements(_graph, _graph.GetVertices(),
+                                                            new HashSet<string>(new[] {key}));
                 else
-                    KeyIndexableGraphHelper.ReIndexElements(_graph, _graph.GetEdges(), new HashSet<string>(new[] { key }));
+                    KeyIndexableGraphHelper.ReIndexElements(_graph, _graph.GetEdges(), new HashSet<string>(new[] {key}));
             }
 
             public void DropKeyIndex(string key)

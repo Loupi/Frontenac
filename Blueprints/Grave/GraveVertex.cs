@@ -1,8 +1,8 @@
-﻿using System.Diagnostics.Contracts;
-using Frontenac.Blueprints;
-using System;
-using System.Linq;
+﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics.Contracts;
+using System.Linq;
+using Frontenac.Blueprints;
 using Frontenac.Blueprints.Util;
 using Grave.Esent;
 
@@ -12,11 +12,10 @@ namespace Grave
     {
         private const string EdgeInPrefix = "$e_i_";
         private const string EdgeOutPrefix = "$e_o_";
-    
+
         public GraveVertex(GraveGraph graph, EsentTable vertexTable, int id)
             : base(graph, vertexTable, id)
         {
-
         }
 
         public IEdge AddEdge(string label, IVertex inVertex)
@@ -40,12 +39,13 @@ namespace Grave
                     var labelName = label.Substring(EdgeInPrefix.Length);
                     foreach (var edgeData in cursor.GetEdges(RawId, label))
                     {
-                        var edgeId = (int)(edgeData >> 32);
-                        var targetId = (int)(edgeData & 0xFFFF);
+                        var edgeId = (int) (edgeData >> 32);
+                        var targetId = (int) (edgeData & 0xFFFF);
                         var vertex = new GraveVertex(Graph, Graph.Context.VertexTable, targetId);
                         var outVertex = isVertexIn ? vertex : this;
                         var inVertex = isVertexIn ? this : vertex;
-                        yield return new GraveEdge(edgeId, outVertex, inVertex, labelName, Graph, Graph.Context.EdgesTable);
+                        yield return
+                            new GraveEdge(edgeId, outVertex, inVertex, labelName, Graph, Graph.Context.EdgesTable);
                     }
                 }
             }
@@ -55,7 +55,18 @@ namespace Grave
             }
         }
 
-        static IEnumerable<string> FilterLabels(Direction direction, string[] labels, Direction directionFilter, IEnumerable<string> columns, string prefix)
+        public IEnumerable<IVertex> GetVertices(Direction direction, params string[] labels)
+        {
+            return new VerticesFromEdgesIterable(this, direction, labels);
+        }
+
+        public IVertexQuery Query()
+        {
+            throw new NotImplementedException();
+        }
+
+        private static IEnumerable<string> FilterLabels(Direction direction, string[] labels, Direction directionFilter,
+                                                        IEnumerable<string> columns, string prefix)
         {
             Contract.Requires(labels != null);
             Contract.Requires(columns != null);
@@ -70,16 +81,6 @@ namespace Grave
                 return columns.Where(labelsFilter.Contains);
             }
             return Enumerable.Empty<string>();
-        }
-
-        public IEnumerable<IVertex> GetVertices(Direction direction, params string[] labels)
-        {
-            return new VerticesFromEdgesIterable(this, direction, labels);
-        }
-
-        public IVertexQuery Query()
-        {
-            throw new NotImplementedException();
         }
 
         public override string ToString()

@@ -3,7 +3,7 @@ using System.Diagnostics.Contracts;
 
 namespace Frontenac.Blueprints.Contracts
 {
-    [ContractClassFor(typeof(IElement))]
+    [ContractClassFor(typeof (IElement))]
     public abstract class ElementContract : IElement
     {
         public object GetProperty(string key)
@@ -31,10 +31,9 @@ namespace Frontenac.Blueprints.Contracts
 
         public void Remove()
         {
-            
         }
 
-        public object Id 
+        public object Id
         {
             get
             {

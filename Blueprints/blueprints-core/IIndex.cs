@@ -1,26 +1,26 @@
-﻿using Frontenac.Blueprints.Contracts;
-using System;
+﻿using System;
 using System.Diagnostics.Contracts;
+using Frontenac.Blueprints.Contracts;
 
 namespace Frontenac.Blueprints
 {
-    [ContractClass(typeof(IndexContract))]
+    [ContractClass(typeof (IndexContract))]
     public interface IIndex
     {
         /// <summary>
-        /// Get the name of the index.
+        ///     Get the name of the index.
         /// </summary>
         /// <value>the name of the index</value>
         string Name { get; }
 
         /// <summary>
-        /// Get the class that this index is indexing.
+        ///     Get the class that this index is indexing.
         /// </summary>
         /// <value>the class this index is indexing</value>
         Type Type { get; }
 
         /// <summary>
-        /// Index an element by a key and a value.
+        ///     Index an element by a key and a value.
         /// </summary>
         /// <param name="key">the key to index the element by</param>
         /// <param name="value">the value to index the element by</param>
@@ -28,7 +28,7 @@ namespace Frontenac.Blueprints
         void Put(string key, object value, IElement element);
 
         /// <summary>
-        /// Get all elements that are indexed by the provided key/value.
+        ///     Get all elements that are indexed by the provided key/value.
         /// </summary>
         /// <param name="key">the key of the indexed elements</param>
         /// <param name="value">the value of the indexed elements</param>
@@ -36,9 +36,9 @@ namespace Frontenac.Blueprints
         ICloseableIterable<IElement> Get(string key, object value);
 
         /// <summary>
-        /// Get all the elements that are indexed by the provided key and specified query object.
-        /// This is useful for graph implementations that support complex query capabilities.
-        /// If querying is not supported, simply throw a NotSupportedException.
+        ///     Get all the elements that are indexed by the provided key and specified query object.
+        ///     This is useful for graph implementations that support complex query capabilities.
+        ///     If querying is not supported, simply throw a NotSupportedException.
         /// </summary>
         /// <param name="key">the key of the indexed elements</param>
         /// <param name="query">the query object for the indexed elements' keys</param>
@@ -46,8 +46,8 @@ namespace Frontenac.Blueprints
         ICloseableIterable<IElement> Query(string key, object query);
 
         /// <summary>
-        /// Get a count of elements with a particular key/value pair.
-        /// The semantics are the same as the get method.
+        ///     Get a count of elements with a particular key/value pair.
+        ///     The semantics are the same as the get method.
         /// </summary>
         /// <param name="key">denoting the sub-index to search</param>
         /// <param name="value">the value to search for</param>
@@ -55,7 +55,7 @@ namespace Frontenac.Blueprints
         long Count(string key, object value);
 
         /// <summary>
-        /// Remove an element indexed by a particular key/value.
+        ///     Remove an element indexed by a particular key/value.
         /// </summary>
         /// <param name="key">the key of the indexed element</param>
         /// <param name="value">the value of the indexed element</param>

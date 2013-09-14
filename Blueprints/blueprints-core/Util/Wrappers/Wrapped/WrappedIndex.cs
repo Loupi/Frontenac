@@ -46,16 +46,16 @@ namespace Frontenac.Blueprints.Util.Wrappers.Wrapped
 
         public ICloseableIterable<IElement> Get(string key, object value)
         {
-            if (typeof(IVertex).IsAssignableFrom(Type))
-                return new WrappedVertexIterable((IEnumerable<IVertex>)RawIndex.Get(key, value));
-            return new WrappedEdgeIterable((IEnumerable<IEdge>)RawIndex.Get(key, value));
+            if (typeof (IVertex).IsAssignableFrom(Type))
+                return new WrappedVertexIterable((IEnumerable<IVertex>) RawIndex.Get(key, value));
+            return new WrappedEdgeIterable((IEnumerable<IEdge>) RawIndex.Get(key, value));
         }
 
         public ICloseableIterable<IElement> Query(string key, object value)
         {
-            if (typeof(IVertex).IsAssignableFrom(Type))
-                return new WrappedVertexIterable((IEnumerable<IVertex>)RawIndex.Query(key, value));
-            return new WrappedEdgeIterable((IEnumerable<IEdge>)RawIndex.Query(key, value));
+            if (typeof (IVertex).IsAssignableFrom(Type))
+                return new WrappedVertexIterable((IEnumerable<IVertex>) RawIndex.Query(key, value));
+            return new WrappedEdgeIterable((IEnumerable<IEdge>) RawIndex.Query(key, value));
         }
 
         public override string ToString()

@@ -9,10 +9,10 @@ namespace Grave
 {
     public class GraveQuery : IQuery
     {
-        readonly GraveGraph _graph;
-        readonly IndexingService _indexingService;
-        readonly List<GraveQueryElement> _queryElements = new List<GraveQueryElement>();
-        long _limit = 1000;
+        private readonly GraveGraph _graph;
+        private readonly IndexingService _indexingService;
+        private readonly List<GraveQueryElement> _queryElements = new List<GraveQueryElement>();
+        private long _limit = 1000;
 
         public GraveQuery(GraveGraph graph, IndexingService indexingService)
         {
@@ -48,7 +48,7 @@ namespace Grave
 
         public IEnumerable<IEdge> Edges()
         {
-            var ids = _indexingService.Query(typeof(IEdge), _queryElements, (int)_limit);
+            var ids = _indexingService.Query(typeof (IEdge), _queryElements, (int) _limit);
             return ids.Select(id => _graph.GetEdge(id)).Where(edge => edge != null);
         }
 
@@ -83,8 +83,8 @@ namespace Grave
             }
         }
     }
-    
-    class GraveComparableQueryElement : GraveQueryElement
+
+    internal class GraveComparableQueryElement : GraveQueryElement
     {
         public GraveComparableQueryElement(string key, Compare comparison, object value) : base(key)
         {
@@ -98,10 +98,10 @@ namespace Grave
         public object Value { get; private set; }
     }
 
-    class GraveIntervalQueryElement : GraveQueryElement
+    internal class GraveIntervalQueryElement : GraveQueryElement
     {
-        private object _startValue;
         private object _endValue;
+        private object _startValue;
 
         public GraveIntervalQueryElement(string key, object startValue, object endValue) : base(key)
         {

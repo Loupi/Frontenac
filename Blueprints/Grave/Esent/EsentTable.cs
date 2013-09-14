@@ -13,10 +13,10 @@ namespace Grave.Esent
     {
         protected const string IdColumnName = "$id";
 
-        protected JET_TABLEID TableId;
-        protected IDictionary<string, JET_COLUMNID> Columns;
         protected readonly Session Session;
-        readonly IContentSerializer _contentSerializer;
+        private readonly IContentSerializer _contentSerializer;
+        protected IDictionary<string, JET_COLUMNID> Columns;
+        protected JET_TABLEID TableId;
         private string _tableName;
 
         protected EsentTable(Session session, string name, IContentSerializer contentSerializer)
@@ -28,43 +28,6 @@ namespace Grave.Esent
             Session = session;
             TableName = name;
             _contentSerializer = contentSerializer;
-        }
-
-        protected virtual JET_TABLECREATE GetTableDefinition()
-        {
-            Contract.Ensures(Contract.Result<JET_TABLECREATE>() != null);
-
-            var idIndexKey = string.Format("+{0}\0\0", IdColumnName);
-
-            return new JET_TABLECREATE
-            {
-                szTableName = TableName,
-                cColumns = 1,
-                rgcolumncreate = new[]
-                    {
-                        new JET_COLUMNCREATE
-                            {
-                                szColumnName = IdColumnName,
-                                coltyp = JET_coltyp.Long,
-                                grbit = ColumndefGrbit.ColumnAutoincrement | 
-                                        ColumndefGrbit.ColumnFixed |
-                                        ColumndefGrbit.ColumnNotNULL
-                            }
-                    },
-                cIndexes = 1,
-                rgindexcreate = new[]
-                    {
-                        new JET_INDEXCREATE
-                            {
-                                szIndexName = IdColumnName,
-                                szKey = idIndexKey,
-                                cbKey = idIndexKey.Length,
-                                grbit = CreateIndexGrbit.IndexDisallowNull | 
-                                        CreateIndexGrbit.IndexPrimary | 
-                                        CreateIndexGrbit.IndexUnique
-                            }
-                    }
-            };
         }
 
         public string TableName
@@ -79,6 +42,43 @@ namespace Grave.Esent
                 Contract.Requires(!string.IsNullOrWhiteSpace(value));
                 _tableName = value;
             }
+        }
+
+        protected virtual JET_TABLECREATE GetTableDefinition()
+        {
+            Contract.Ensures(Contract.Result<JET_TABLECREATE>() != null);
+
+            var idIndexKey = string.Format("+{0}\0\0", IdColumnName);
+
+            return new JET_TABLECREATE
+                {
+                    szTableName = TableName,
+                    cColumns = 1,
+                    rgcolumncreate = new[]
+                        {
+                            new JET_COLUMNCREATE
+                                {
+                                    szColumnName = IdColumnName,
+                                    coltyp = JET_coltyp.Long,
+                                    grbit = ColumndefGrbit.ColumnAutoincrement |
+                                            ColumndefGrbit.ColumnFixed |
+                                            ColumndefGrbit.ColumnNotNULL
+                                }
+                        },
+                    cIndexes = 1,
+                    rgindexcreate = new[]
+                        {
+                            new JET_INDEXCREATE
+                                {
+                                    szIndexName = IdColumnName,
+                                    szKey = idIndexKey,
+                                    cbKey = idIndexKey.Length,
+                                    grbit = CreateIndexGrbit.IndexDisallowNull |
+                                            CreateIndexGrbit.IndexPrimary |
+                                            CreateIndexGrbit.IndexUnique
+                                }
+                        }
+                };
         }
 
         public void Create(JET_DBID dbid)
@@ -104,7 +104,8 @@ namespace Grave.Esent
             int? result;
             using (var update = new Update(Session, TableId, JET_prep.Insert))
             {
-                result = Api.RetrieveColumnAsInt32(Session, TableId, Columns[IdColumnName], RetrieveColumnGrbit.RetrieveCopy);
+                result = Api.RetrieveColumnAsInt32(Session, TableId, Columns[IdColumnName],
+                                                   RetrieveColumnGrbit.RetrieveCopy);
                 update.Save();
             }
             return result ?? 0;
@@ -117,9 +118,15 @@ namespace Grave.Esent
             if (!SetCursor(id)) return Enumerable.Empty<string>();
             int nbColumns;
             JET_ENUMCOLUMN[] columnIds;
-            JET_PFNREALLOC allocator = (context, pv, cb) => IntPtr.Zero == pv ? Marshal.AllocHGlobal(new IntPtr(cb)) : Marshal.ReAllocHGlobal(pv, new IntPtr(cb));
-            Api.JetEnumerateColumns(Session, TableId, 0, null, out nbColumns, out columnIds, allocator, IntPtr.Zero, 0, EnumerateColumnsGrbit.EnumeratePresenceOnly);
-            var result = columnIds.Where(t => t.err == JET_wrn.ColumnPresent).Join(Columns, t => t.columnid, t => t.Value, (t, u) => u.Key).ToArray();
+            JET_PFNREALLOC allocator =
+                (context, pv, cb) =>
+                IntPtr.Zero == pv ? Marshal.AllocHGlobal(new IntPtr(cb)) : Marshal.ReAllocHGlobal(pv, new IntPtr(cb));
+            Api.JetEnumerateColumns(Session, TableId, 0, null, out nbColumns, out columnIds, allocator, IntPtr.Zero, 0,
+                                    EnumerateColumnsGrbit.EnumeratePresenceOnly);
+            var result =
+                columnIds.Where(t => t.err == JET_wrn.ColumnPresent)
+                         .Join(Columns, t => t.columnid, t => t.Value, (t, u) => u.Key)
+                         .ToArray();
             allocator(IntPtr.Zero, columnIds[0].pvData, 0);
             return result;
         }
@@ -183,7 +190,7 @@ namespace Grave.Esent
             return result;
         }
 
-        object ReadCellContent(JET_COLUMNID columnId)
+        private object ReadCellContent(JET_COLUMNID columnId)
         {
             object result = null;
             var raw = Api.RetrieveColumn(Session, TableId, columnId);
@@ -269,15 +276,17 @@ namespace Grave.Esent
             {
                 for (var i = 0; i < samples; ++i)
                 {
-                    var recpos = new JET_RECPOS { centriesTotal = samples, centriesLT = i };
+                    var recpos = new JET_RECPOS {centriesTotal = samples, centriesLT = i};
                     Api.JetGotoPosition(Session, TableId, recpos);
                     Api.JetGetRecordPosition(Session, TableId, out recpos);
                     total += recpos.centriesTotal;
                 }
             }
-            catch (EsentRecordNotFoundException) { }
+            catch (EsentRecordNotFoundException)
+            {
+            }
 
-            var result = total / samples;
+            var result = total/samples;
             return result;
         }
     }

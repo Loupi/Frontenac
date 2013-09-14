@@ -5,7 +5,7 @@ namespace Frontenac.Blueprints.Util.Wrappers.Event.Listener
 {
     public class EdgeAddedEvent : IEvent
     {
-        readonly IEdge _edge;
+        private readonly IEdge _edge;
 
         public EdgeAddedEvent(IEdge edge)
         {

@@ -5,16 +5,17 @@ using System.Diagnostics.Contracts;
 namespace Frontenac.Blueprints.Util.Wrappers
 {
     /// <summary>
-    /// A WrapperQuery is useful for wrapping the construction and results of a Vertex.query().
-    /// Any necessary Iterable wrapping must occur when Vertex.vertices() or Vertex.edges() is called.
+    ///     A WrapperQuery is useful for wrapping the construction and results of a Vertex.query().
+    ///     Any necessary Iterable wrapping must occur when Vertex.vertices() or Vertex.edges() is called.
     /// </summary>
     public class WrapperVertexQuery : IVertexQuery
     {
-        protected IVertexQuery Query;
         protected Func<IVertexQuery, IEnumerable<IEdge>> EdgesSelector;
+        protected IVertexQuery Query;
         protected Func<IVertexQuery, IEnumerable<IVertex>> VerticesSelector;
 
-        public WrapperVertexQuery(IVertexQuery query, Func<IVertexQuery, IEnumerable<IEdge>> edgesSelector, Func<IVertexQuery, IEnumerable<IVertex>> verticesSelector)
+        public WrapperVertexQuery(IVertexQuery query, Func<IVertexQuery, IEnumerable<IEdge>> edgesSelector,
+                                  Func<IVertexQuery, IEnumerable<IVertex>> verticesSelector)
         {
             Contract.Requires(query != null);
             Contract.Requires(edgesSelector != null);

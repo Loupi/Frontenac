@@ -2,7 +2,7 @@
 
 namespace Grave.Indexing.Indexers
 {
-    [ContractClass(typeof(IndexerContract))]
+    [ContractClass(typeof (IndexerContract))]
     public abstract class Indexer
     {
         protected readonly IDocument Document;

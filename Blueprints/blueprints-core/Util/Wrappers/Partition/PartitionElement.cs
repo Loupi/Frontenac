@@ -45,6 +45,14 @@ namespace Frontenac.Blueprints.Util.Wrappers.Partition
             get { return BaseElement.Id; }
         }
 
+        public void Remove()
+        {
+            if (this is IVertex)
+                Graph.RemoveVertex(this as IVertex);
+            else
+                Graph.RemoveEdge(this as IEdge);
+        }
+
         public override bool Equals(object obj)
         {
             return ElementHelper.AreEqual(this, obj);
@@ -64,21 +72,13 @@ namespace Frontenac.Blueprints.Util.Wrappers.Partition
         public string GetPartition()
         {
             Contract.Ensures(!string.IsNullOrWhiteSpace(Contract.Result<string>()));
-            return (string)BaseElement.GetProperty(Graph.PartitionKey);
+            return (string) BaseElement.GetProperty(Graph.PartitionKey);
         }
 
         public void SetPartition(string partition)
         {
             Contract.Requires(!string.IsNullOrWhiteSpace(partition));
             BaseElement.SetProperty(Graph.PartitionKey, partition);
-        }
-
-        public void Remove()
-        {
-            if (this is IVertex)
-                Graph.RemoveVertex(this as IVertex);
-            else
-                Graph.RemoveEdge(this as IEdge);
         }
 
         public override string ToString()

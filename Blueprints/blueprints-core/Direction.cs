@@ -10,10 +10,10 @@
     public static class Directions
     {
         public static readonly Direction[] Proper = new[]
-        {
-            Direction.Out,
-            Direction.In
-        };
+            {
+                Direction.Out,
+                Direction.In
+            };
 
         public static Direction Opposite(this Direction direction)
         {

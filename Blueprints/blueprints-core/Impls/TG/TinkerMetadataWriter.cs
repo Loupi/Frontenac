@@ -4,14 +4,14 @@ using System.IO;
 namespace Frontenac.Blueprints.Impls.TG
 {
     /// <summary>
-    /// Writes TinkerGraph metadata to an OutputStream.
+    ///     Writes TinkerGraph metadata to an OutputStream.
     /// </summary>
-    class TinkerMetadataWriter
+    internal class TinkerMetadataWriter
     {
-        readonly TinkerGraph _graph;
+        private readonly TinkerGraph _graph;
 
         /// <summary>
-        /// the TinkerGraph to pull the data from
+        ///     the TinkerGraph to pull the data from
         /// </summary>
         /// <param name="graph"></param>
         public TinkerMetadataWriter(TinkerGraph graph)
@@ -22,7 +22,7 @@ namespace Frontenac.Blueprints.Impls.TG
         }
 
         /// <summary>
-        /// Write TinkerGraph metadata to a file.
+        ///     Write TinkerGraph metadata to a file.
         /// </summary>
         /// <param name="filename">the name of the file to write the TinkerGraph metadata to</param>
         public void Save(string filename)
@@ -36,7 +36,7 @@ namespace Frontenac.Blueprints.Impls.TG
         }
 
         /// <summary>
-        /// Write TinkerGraph metadata to an OutputStream.
+        ///     Write TinkerGraph metadata to an OutputStream.
         /// </summary>
         /// <param name="outputStream">the OutputStream to write the TinkerGraph metadata to</param>
         public void Save(Stream outputStream)
@@ -53,7 +53,7 @@ namespace Frontenac.Blueprints.Impls.TG
         }
 
         /// <summary>
-        /// Write TinkerGraph metadata to an OutputStream.
+        ///     Write TinkerGraph metadata to an OutputStream.
         /// </summary>
         /// <param name="graph">the TinkerGraph to pull the metadata from</param>
         /// <param name="outputStream">the OutputStream to write the TinkerGraph metadata to</param>
@@ -67,7 +67,7 @@ namespace Frontenac.Blueprints.Impls.TG
         }
 
         /// <summary>
-        /// Write TinkerGraph metadata to a file.
+        ///     Write TinkerGraph metadata to a file.
         /// </summary>
         /// <param name="graph">the TinkerGraph to pull the data from</param>
         /// <param name="filename">the name of the file to write the TinkerGraph metadata to</param>
@@ -80,7 +80,7 @@ namespace Frontenac.Blueprints.Impls.TG
             writer.Save(filename);
         }
 
-        static void WriteIndices(BinaryWriter writer, TinkerGraph graph)
+        private static void WriteIndices(BinaryWriter writer, TinkerGraph graph)
         {
             Contract.Requires(writer != null);
             Contract.Requires(graph != null);
@@ -97,7 +97,7 @@ namespace Frontenac.Blueprints.Impls.TG
                 var indexClass = tinkerIndex.Type;
 
                 // Write the index type
-                writer.Write((byte)(indexClass == typeof(IVertex) ? 1 : 2));
+                writer.Write((byte) (indexClass == typeof (IVertex) ? 1 : 2));
 
                 // Write the number of items associated with this index name
                 writer.Write(tinkerIndex.Index.Count);
@@ -112,7 +112,7 @@ namespace Frontenac.Blueprints.Impls.TG
                     writer.Write(tinkerIndexItemSet.Count);
                     foreach (var items in tinkerIndexItemSet)
                     {
-                        if (indexClass == typeof(IVertex))
+                        if (indexClass == typeof (IVertex))
                         {
                             var vertices = items.Value;
 
@@ -124,7 +124,7 @@ namespace Frontenac.Blueprints.Impls.TG
                                 WriteTypedData(writer, v.Id);
                             }
                         }
-                        else if (indexClass == typeof(IEdge))
+                        else if (indexClass == typeof (IEdge))
                         {
                             var edges = items.Value;
 
@@ -141,7 +141,7 @@ namespace Frontenac.Blueprints.Impls.TG
             }
         }
 
-        static void WriteVertexKeyIndices(BinaryWriter writer, TinkerGraph graph)
+        private static void WriteVertexKeyIndices(BinaryWriter writer, TinkerGraph graph)
         {
             Contract.Requires(writer != null);
             Contract.Requires(graph != null);
@@ -172,7 +172,7 @@ namespace Frontenac.Blueprints.Impls.TG
             }
         }
 
-        static void WriteEdgeKeyIndices(BinaryWriter writer, TinkerGraph graph)
+        private static void WriteEdgeKeyIndices(BinaryWriter writer, TinkerGraph graph)
         {
             Contract.Requires(writer != null);
             Contract.Requires(graph != null);
@@ -203,7 +203,7 @@ namespace Frontenac.Blueprints.Impls.TG
             }
         }
 
-        static void WriteTypedData(BinaryWriter writer, object data)
+        private static void WriteTypedData(BinaryWriter writer, object data)
         {
             Contract.Requires(writer != null);
             Contract.Requires(data != null);
@@ -211,33 +211,33 @@ namespace Frontenac.Blueprints.Impls.TG
             var s = data as string;
             if (s != null)
             {
-                writer.Write((byte)1);
+                writer.Write((byte) 1);
                 writer.Write(s);
             }
             else if (data is int)
             {
-                writer.Write((byte)2);
-                writer.Write((int)data);
+                writer.Write((byte) 2);
+                writer.Write((int) data);
             }
             else if (data is long)
             {
-                writer.Write((byte)3);
-                writer.Write((long)data);
+                writer.Write((byte) 3);
+                writer.Write((long) data);
             }
             else if (data is short)
             {
-                writer.Write((byte)4);
-                writer.Write((short)data);
+                writer.Write((byte) 4);
+                writer.Write((short) data);
             }
             else if (data is float)
             {
-                writer.Write((byte)5);
-                writer.Write((float)data);
+                writer.Write((byte) 5);
+                writer.Write((float) data);
             }
             else if (data is double)
             {
-                writer.Write((byte)6);
-                writer.Write((double)data);
+                writer.Write((byte) 6);
+                writer.Write((double) data);
             }
             else
                 throw new IOException("unknown data type: use .NET serialization");

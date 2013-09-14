@@ -5,9 +5,9 @@ namespace Frontenac.Blueprints.Util.Wrappers.Batch.Cache
 {
     public class ObjectIdVertexCache : IVertexCache
     {
-        const int InitialCapacity = 1000;
+        private const int InitialCapacity = 1000;
 
-        Dictionary<object, object> _map;
+        private Dictionary<object, object> _map;
 
         public ObjectIdVertexCache()
         {

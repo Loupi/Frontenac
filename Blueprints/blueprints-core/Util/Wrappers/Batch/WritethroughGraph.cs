@@ -4,18 +4,18 @@ using System.Diagnostics.Contracts;
 namespace Frontenac.Blueprints.Util.Wrappers.Batch
 {
     /// <summary>
-    /// This is a naive wrapper to make a non-transactional graph transactional by simply writing all mutations
-    /// directly through to the wrapped graph and not supporting transactional failures.
-    /// <br />
-    /// Hence, this is not meant as a functional implementation of a TransactionalGraph but rather as a means
-    /// to using non-transactional graphs where transactional graphs are expected and transactional failure can be
-    /// excluded. BatchGraph is one such case.
-    /// <br />
-    /// Note, the constructor will throw an exception if the given graph already supports transactions.
+    ///     This is a naive wrapper to make a non-transactional graph transactional by simply writing all mutations
+    ///     directly through to the wrapped graph and not supporting transactional failures.
+    ///     <br />
+    ///     Hence, this is not meant as a functional implementation of a TransactionalGraph but rather as a means
+    ///     to using non-transactional graphs where transactional graphs are expected and transactional failure can be
+    ///     excluded. BatchGraph is one such case.
+    ///     <br />
+    ///     Note, the constructor will throw an exception if the given graph already supports transactions.
     /// </summary>
     public class WritethroughGraph : IWrapperGraph, ITransactionalGraph
     {
-        readonly IGraph _graph;
+        private readonly IGraph _graph;
 
         public WritethroughGraph(IGraph graph)
         {
@@ -32,11 +32,10 @@ namespace Frontenac.Blueprints.Util.Wrappers.Batch
 
         public void Commit()
         {
-
         }
 
         /// <summary>
-        /// Returns the features of the underlying graph but with transactions supported.
+        ///     Returns the features of the underlying graph but with transactions supported.
         /// </summary>
         /// <value>The features of the underlying graph but with transactions supported</value>
         public Features Features

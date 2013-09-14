@@ -5,12 +5,11 @@ namespace Frontenac.Blueprints.Impls.TG
 {
     public abstract class TinkerBenchmarkTestSuite : TestSuite
     {
-        const int TotalRuns = 10;
+        private const int TotalRuns = 10;
 
         protected TinkerBenchmarkTestSuite(GraphTest graphTest)
             : base("TinkerBenchmarkTestSuite", graphTest)
         {
-
         }
 
         [Test]
@@ -60,8 +59,8 @@ namespace Frontenac.Blueprints.Impls.TG
             {
                 graph.Shutdown();
             }
-            
-            PrintPerformance("TinkerGraph", 1, "TinkerGraph experiment average", (long)(totalTime / TotalRuns));
+
+            PrintPerformance("TinkerGraph", 1, "TinkerGraph experiment average", (long) (totalTime/TotalRuns));
         }
     }
 }

@@ -5,7 +5,7 @@ namespace Frontenac.Blueprints.Util.Wrappers.Wrapped
 {
     public class WrappedIndexableGraph : WrappedGraph, IIndexableGraph
     {
-        readonly IIndexableGraph _baseIndexableGraph;
+        private readonly IIndexableGraph _baseIndexableGraph;
 
         public WrappedIndexableGraph(IIndexableGraph baseIndexableGraph)
             : base(baseIndexableGraph)

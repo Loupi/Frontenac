@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Diagnostics.Contracts;
 using System.Linq;
@@ -6,13 +7,13 @@ using System.Linq;
 namespace Frontenac.Blueprints.Util.Wrappers.Event
 {
     /// <summary>
-    /// A sequence of vertices that applies the list of listeners into each vertex.
+    ///     A sequence of vertices that applies the list of listeners into each vertex.
     /// </summary>
     public class EventVertexIterable : ICloseableIterable<IVertex>
     {
-        readonly IEnumerable<IVertex> _iterable;
-        readonly EventGraph _eventGraph;
-        bool _disposed;
+        private readonly EventGraph _eventGraph;
+        private readonly IEnumerable<IVertex> _iterable;
+        private bool _disposed;
 
         public EventVertexIterable(IEnumerable<IVertex> iterable, EventGraph eventGraph)
         {
@@ -23,15 +24,25 @@ namespace Frontenac.Blueprints.Util.Wrappers.Event
             _eventGraph = eventGraph;
         }
 
-        ~EventVertexIterable()
-        {
-            Dispose(false);
-        }
-
         public void Dispose()
         {
             Dispose(true);
             GC.SuppressFinalize(this);
+        }
+
+        public IEnumerator<IVertex> GetEnumerator()
+        {
+            return _iterable.Select(v => new EventVertex(v, _eventGraph)).Cast<IVertex>().GetEnumerator();
+        }
+
+        IEnumerator IEnumerable.GetEnumerator()
+        {
+            return (this as IEnumerable<IVertex>).GetEnumerator();
+        }
+
+        ~EventVertexIterable()
+        {
+            Dispose(false);
         }
 
         protected virtual void Dispose(bool disposing)
@@ -46,16 +57,6 @@ namespace Frontenac.Blueprints.Util.Wrappers.Event
             }
 
             _disposed = true;
-        }
-
-        public IEnumerator<IVertex> GetEnumerator()
-        {
-            return _iterable.Select(v => new EventVertex(v, _eventGraph)).Cast<IVertex>().GetEnumerator();
-        }
-
-        System.Collections.IEnumerator System.Collections.IEnumerable.GetEnumerator()
-        {
-            return (this as IEnumerable<IVertex>).GetEnumerator();
         }
     }
 }

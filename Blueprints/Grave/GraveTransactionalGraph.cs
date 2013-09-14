@@ -9,26 +9,26 @@ namespace Grave
 {
     public class GraveTransactionalGraph : GraveGraph, ITransactionalGraph, IDisposable
     {
-        Transaction _transaction;
+        private Transaction _transaction;
 
         public GraveTransactionalGraph(IGraveGraphFactory factory, EsentContext context, IndexingService indexingService)
             : base(factory, indexingService, context)
         {
-
         }
 
         #region IDisposable
-        bool _disposed;
 
-        ~GraveTransactionalGraph()
-        {
-            Dispose(false);
-        }
+        private bool _disposed;
 
         public void Dispose()
         {
             Dispose(true);
             GC.SuppressFinalize(this);
+        }
+
+        ~GraveTransactionalGraph()
+        {
+            Dispose(false);
         }
 
         protected virtual void Dispose(bool disposing)
@@ -58,7 +58,7 @@ namespace Grave
 
         public void Commit()
         {
-            if(_transaction != null && _transaction.IsInTransaction)
+            if (_transaction != null && _transaction.IsInTransaction)
                 _transaction.Commit(CommitTransactionGrbit.None);
         }
 
@@ -66,14 +66,6 @@ namespace Grave
         {
             if (_transaction != null && _transaction.IsInTransaction)
                 _transaction.Rollback();
-        }
-
-        void BeginTransaction()
-        {
-            if (_transaction == null)
-                _transaction = new Transaction(Context.Session);
-            else if(!_transaction.IsInTransaction)
-                _transaction.Begin();
         }
 
         public override IEdge AddEdge(object unused, IVertex outVertex, IVertex inVertex, string label)
@@ -86,24 +78,6 @@ namespace Grave
         {
             BeginTransaction();
             return base.AddVertex(unused);
-        }
-
-        public override IIndex CreateIndex(string indexName, Type indexClass, params Parameter[] indexParameters)
-        {
-            BeginTransaction();
-            return base.CreateIndex(indexName, indexClass, indexParameters);
-        }
-
-        public override void CreateKeyIndex(string key, Type elementClass, params Parameter[] indexParameters)
-        {
-            BeginTransaction();
-            base.CreateKeyIndex(key, elementClass, indexParameters);
-        }
-
-        public override void DropIndex(string indexName)
-        {
-            BeginTransaction();
-            base.DropIndex(indexName);
         }
 
         public override IEdge GetEdge(object id)
@@ -122,24 +96,6 @@ namespace Grave
         {
             BeginTransaction();
             return base.GetEdges(key, value);
-        }
-
-        public override IIndex GetIndex(string indexName, Type indexClass)
-        {
-            BeginTransaction();
-            return base.GetIndex(indexName, indexClass);
-        }
-
-        public override IEnumerable<string> GetIndexedKeys(Type elementClass)
-        {
-            BeginTransaction();
-            return base.GetIndexedKeys(elementClass);
-        }
-
-        public override IEnumerable<IIndex> GetIndices()
-        {
-            BeginTransaction();
-            return base.GetIndices();
         }
 
         public override IVertex GetVertex(object id)
@@ -176,6 +132,50 @@ namespace Grave
         {
             BeginTransaction();
             base.RemoveVertex(vertex);
+        }
+
+        private void BeginTransaction()
+        {
+            if (_transaction == null)
+                _transaction = new Transaction(Context.Session);
+            else if (!_transaction.IsInTransaction)
+                _transaction.Begin();
+        }
+
+        public override IIndex CreateIndex(string indexName, Type indexClass, params Parameter[] indexParameters)
+        {
+            BeginTransaction();
+            return base.CreateIndex(indexName, indexClass, indexParameters);
+        }
+
+        public override void CreateKeyIndex(string key, Type elementClass, params Parameter[] indexParameters)
+        {
+            BeginTransaction();
+            base.CreateKeyIndex(key, elementClass, indexParameters);
+        }
+
+        public override void DropIndex(string indexName)
+        {
+            BeginTransaction();
+            base.DropIndex(indexName);
+        }
+
+        public override IIndex GetIndex(string indexName, Type indexClass)
+        {
+            BeginTransaction();
+            return base.GetIndex(indexName, indexClass);
+        }
+
+        public override IEnumerable<string> GetIndexedKeys(Type elementClass)
+        {
+            BeginTransaction();
+            return base.GetIndexedKeys(elementClass);
+        }
+
+        public override IEnumerable<IIndex> GetIndices()
+        {
+            BeginTransaction();
+            return base.GetIndices();
         }
     }
 }

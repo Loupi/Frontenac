@@ -5,7 +5,7 @@ namespace Frontenac.Blueprints.Util.IO
     [Serializable]
     public class MockSerializable
     {
-        readonly string _testField;
+        private readonly string _testField;
 
         public MockSerializable(string testField)
         {
@@ -22,7 +22,7 @@ namespace Frontenac.Blueprints.Util.IO
             if (this == obj) return true;
             if (obj == null) return false;
             if (!GetType().IsInstanceOfType(obj)) return false;
-            var m = (MockSerializable)obj;
+            var m = (MockSerializable) obj;
             if (_testField == null)
                 return (m._testField == null);
             return _testField == m._testField;

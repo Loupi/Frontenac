@@ -1,24 +1,23 @@
-﻿using System.Diagnostics.Contracts;
-using Newtonsoft.Json;
-using Newtonsoft.Json.Linq;
-using System;
+﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics.Contracts;
 using System.IO;
 using Frontenac.Blueprints.Util.Wrappers.Batch;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 
 namespace Frontenac.Blueprints.Util.IO.GraphSON
 {
     /// <summary>
-    /// GraphSONReader reads the data from a TinkerPop JSON stream to a graph.
+    ///     GraphSONReader reads the data from a TinkerPop JSON stream to a graph.
     /// </summary>
 // ReSharper disable InconsistentNaming
     public class GraphSONReader
 // ReSharper restore InconsistentNaming
     {
-        readonly IGraph _graph;
+        private readonly IGraph _graph;
 
         /// <summary>
-        /// 
         /// </summary>
         /// <param name="graph">the graph to populate with the JSON data</param>
         public GraphSONReader(IGraph graph)
@@ -29,8 +28,8 @@ namespace Frontenac.Blueprints.Util.IO.GraphSON
         }
 
         /// <summary>
-        /// Input the JSON stream data into the graph.
-        /// In practice, usually the provided graph is empty.
+        ///     Input the JSON stream data into the graph.
+        ///     In practice, usually the provided graph is empty.
         /// </summary>
         /// <param name="jsonInputStream">a Stream of JSON data</param>
         public void InputGraph(Stream jsonInputStream)
@@ -41,8 +40,8 @@ namespace Frontenac.Blueprints.Util.IO.GraphSON
         }
 
         /// <summary>
-        /// Input the JSON stream data into the graph.
-        /// In practice, usually the provided graph is empty.
+        ///     Input the JSON stream data into the graph.
+        ///     In practice, usually the provided graph is empty.
         /// </summary>
         /// <param name="filename">name of a file of JSON data</param>
         public void InputGraph(string filename)
@@ -53,8 +52,8 @@ namespace Frontenac.Blueprints.Util.IO.GraphSON
         }
 
         /// <summary>
-        /// Input the JSON stream data into the graph.
-        /// In practice, usually the provided graph is empty.
+        ///     Input the JSON stream data into the graph.
+        ///     In practice, usually the provided graph is empty.
         /// </summary>
         /// <param name="jsonInputStream">an Stream of JSON data</param>
         /// <param name="bufferSize">the amount of elements to hold in memory before committing a transactions (only valid for TransactionalGraphs)</param>
@@ -67,8 +66,8 @@ namespace Frontenac.Blueprints.Util.IO.GraphSON
         }
 
         /// <summary>
-        /// Input the JSON stream data into the graph.
-        /// In practice, usually the provided graph is empty.
+        ///     Input the JSON stream data into the graph.
+        ///     In practice, usually the provided graph is empty.
         /// </summary>
         /// <param name="filename">name of a file of JSON data</param>
         /// <param name="bufferSize">the amount of elements to hold in memory before committing a transactions (only valid for TransactionalGraphs)</param>
@@ -81,8 +80,8 @@ namespace Frontenac.Blueprints.Util.IO.GraphSON
         }
 
         /// <summary>
-        /// Input the JSON stream data into the graph.
-        /// In practice, usually the provided graph is empty.
+        ///     Input the JSON stream data into the graph.
+        ///     In practice, usually the provided graph is empty.
         /// </summary>
         /// <param name="graph">the graph to populate with the JSON data</param>
         /// <param name="jsonInputStream">a Stream of JSON data</param>
@@ -95,8 +94,8 @@ namespace Frontenac.Blueprints.Util.IO.GraphSON
         }
 
         /// <summary>
-        /// Input the JSON stream data into the graph.
-        /// In practice, usually the provided graph is empty.
+        ///     Input the JSON stream data into the graph.
+        ///     In practice, usually the provided graph is empty.
         /// </summary>
         /// <param name="graph">the graph to populate with the JSON data</param>
         /// <param name="filename">name of a file of JSON data</param>
@@ -127,8 +126,8 @@ namespace Frontenac.Blueprints.Util.IO.GraphSON
         }
 
         /// <summary>
-        /// Input the JSON stream data into the graph.
-        /// More control over how data is streamed is provided by this method.
+        ///     Input the JSON stream data into the graph.
+        ///     More control over how data is streamed is provided by this method.
         /// </summary>
         /// <param name="inputGraph">the graph to populate with the JSON data</param>
         /// <param name="filename">name of a file of JSON data</param>
@@ -136,7 +135,7 @@ namespace Frontenac.Blueprints.Util.IO.GraphSON
         /// <param name="edgePropertyKeys"></param>
         /// <param name="vertexPropertyKeys"></param>
         public static void InputGraph(IGraph inputGraph, string filename, int bufferSize,
-                                  IEnumerable<string> edgePropertyKeys, IEnumerable<string> vertexPropertyKeys)
+                                      IEnumerable<string> edgePropertyKeys, IEnumerable<string> vertexPropertyKeys)
         {
             Contract.Requires(inputGraph != null);
             Contract.Requires(!string.IsNullOrWhiteSpace(filename));
@@ -149,8 +148,8 @@ namespace Frontenac.Blueprints.Util.IO.GraphSON
         }
 
         /// <summary>
-        /// Input the JSON stream data into the graph.
-        /// More control over how data is streamed is provided by this method.
+        ///     Input the JSON stream data into the graph.
+        ///     More control over how data is streamed is provided by this method.
         /// </summary>
         /// <param name="inputGraph">the graph to populate with the JSON data</param>
         /// <param name="jsonInputStream">a Stream of JSON data</param>
@@ -158,7 +157,7 @@ namespace Frontenac.Blueprints.Util.IO.GraphSON
         /// <param name="edgePropertyKeys"></param>
         /// <param name="vertexPropertyKeys"></param>
         public static void InputGraph(IGraph inputGraph, Stream jsonInputStream, int bufferSize,
-                                  IEnumerable<string> edgePropertyKeys, IEnumerable<string> vertexPropertyKeys)
+                                      IEnumerable<string> edgePropertyKeys, IEnumerable<string> vertexPropertyKeys)
         {
             Contract.Requires(inputGraph != null);
             Contract.Requires(jsonInputStream != null);
@@ -193,7 +192,8 @@ namespace Frontenac.Blueprints.Util.IO.GraphSON
                                 {
                                     var mode = (GraphSONMode) Enum.Parse(typeof (GraphSONMode), jp.ReadAsString());
                                     // ReSharper disable PossibleMultipleEnumeration
-                                    graphson = new GraphSonUtility(mode, elementFactory, vertexPropertyKeys, edgePropertyKeys);
+                                    graphson = new GraphSonUtility(mode, elementFactory, vertexPropertyKeys,
+                                                                   edgePropertyKeys);
                                     // ReSharper restore PossibleMultipleEnumeration
                                 }
                                 break;
@@ -211,9 +211,11 @@ namespace Frontenac.Blueprints.Util.IO.GraphSON
                                 {
                                     var node = (JObject) serializer.Deserialize(jp);
                                     var inV =
-                                        graph.GetVertex(GraphSonUtility.GetTypedValueFromJsonNode(node[GraphSonTokens.InV]));
+                                        graph.GetVertex(
+                                            GraphSonUtility.GetTypedValueFromJsonNode(node[GraphSonTokens.InV]));
                                     var outV =
-                                        graph.GetVertex(GraphSonUtility.GetTypedValueFromJsonNode(node[GraphSonTokens.OutV]));
+                                        graph.GetVertex(
+                                            GraphSonUtility.GetTypedValueFromJsonNode(node[GraphSonTokens.OutV]));
                                     graphson.EdgeFromJson(node, outV, inV);
                                 }
                                 break;
@@ -225,7 +227,7 @@ namespace Frontenac.Blueprints.Util.IO.GraphSON
             }
             finally
             {
-                if(sr != null)
+                if (sr != null)
                     sr.Dispose();
             }
         }

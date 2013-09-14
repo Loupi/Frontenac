@@ -9,9 +9,9 @@ namespace Frontenac.Blueprints.Util
     public static class ElementHelper
     {
         /// <summary>
-        /// Determines whether the property key/value for the specified element can be legally set.
-        /// This is typically used as a pre-condition check prior to setting a property.
-        /// Throws ArgumentException whether the triple is legal and if not, a clear reason message is provided
+        ///     Determines whether the property key/value for the specified element can be legally set.
+        ///     This is typically used as a pre-condition check prior to setting a property.
+        ///     Throws ArgumentException whether the triple is legal and if not, a clear reason message is provided
         /// </summary>
         /// <param name="element">the element for the property to be set</param>
         /// <param name="key">the key of the property</param>
@@ -32,9 +32,9 @@ namespace Frontenac.Blueprints.Util
         }
 
         /// <summary>
-        /// Copy the properties (key and value) from one element to another.
-        /// The properties are preserved on the from element.
-        /// ElementPropertiesRule that share the same key on the to element are overwritten.
+        ///     Copy the properties (key and value) from one element to another.
+        ///     The properties are preserved on the from element.
+        ///     ElementPropertiesRule that share the same key on the to element are overwritten.
         /// </summary>
         /// <param name="from">the element to copy properties from</param>
         /// <param name="to">the element to copy properties to</param>
@@ -48,7 +48,7 @@ namespace Frontenac.Blueprints.Util
         }
 
         /// <summary>
-        /// Clear all the properties from an IEnumerable of elements.
+        ///     Clear all the properties from an IEnumerable of elements.
         /// </summary>
         /// <param name="elements">the elements to remove properties from</param>
         public static void RemoveProperties(IEnumerable<IElement> elements)
@@ -63,7 +63,7 @@ namespace Frontenac.Blueprints.Util
         }
 
         /// <summary>
-        /// Remove a property from all elements in the provided IEnumerable.
+        ///     Remove a property from all elements in the provided IEnumerable.
         /// </summary>
         /// <param name="key">the property to remove by key</param>
         /// <param name="elements">the elements to remove the property from</param>
@@ -77,8 +77,8 @@ namespace Frontenac.Blueprints.Util
         }
 
         /// <summary>
-        /// Renames a property by removing the old key and adding the stored value to the new key.
-        /// If property does not exist, nothing occurs.
+        ///     Renames a property by removing the old key and adding the stored value to the new key.
+        ///     If property does not exist, nothing occurs.
         /// </summary>
         /// <param name="oldKey">the key to rename</param>
         /// <param name="newKey">the key to rename to</param>
@@ -98,8 +98,8 @@ namespace Frontenac.Blueprints.Util
         }
 
         /// <summary>
-        /// Typecasts a property value. This only works for casting to a class that has a constructor of the for new X(string).
-        /// If no such constructor exists, an Exception is thrown and the original element property is left unchanged.
+        ///     Typecasts a property value. This only works for casting to a class that has a constructor of the for new X(string).
+        ///     If no such constructor exists, an Exception is thrown and the original element property is left unchanged.
         /// </summary>
         /// <param name="key">the key for the property value to typecast</param>
         /// <param name="classCast">the class to typecast to</param>
@@ -136,8 +136,8 @@ namespace Frontenac.Blueprints.Util
         }
 
         /// <summary>
-        /// Determines whether two elements have the same properties.
-        /// To be true, both must have the same property keys and respective values must be equals().
+        ///     Determines whether two elements have the same properties.
+        ///     To be true, both must have the same property keys and respective values must be equals().
         /// </summary>
         /// <param name="a">an element</param>
         /// <param name="b">an element</param>
@@ -151,7 +151,8 @@ namespace Frontenac.Blueprints.Util
             var bKeys = b.GetPropertyKeys().ToArray();
 
 // ReSharper disable PossibleMultipleEnumeration
-            if (aKeys.Intersect(bKeys).LongCount() == bKeys.LongCount() && bKeys.Intersect(aKeys).LongCount() == aKeys.LongCount())
+            if (aKeys.Intersect(bKeys).LongCount() == bKeys.LongCount() &&
+                bKeys.Intersect(aKeys).LongCount() == aKeys.LongCount())
 // ReSharper restore PossibleMultipleEnumeration
             {
                 return aKeys.All(key =>
@@ -173,8 +174,8 @@ namespace Frontenac.Blueprints.Util
         }
 
         /// <summary>
-        /// Get a clone of the properties of the provided element.
-        /// In other words, a HashMap is created and filled with the key/values of the element's properties.
+        ///     Get a clone of the properties of the provided element.
+        ///     In other words, a HashMap is created and filled with the key/values of the element's properties.
         /// </summary>
         /// <param name="element">the element to get the properties of</param>
         /// <returns>a clone of the properties of the element</returns>
@@ -187,7 +188,7 @@ namespace Frontenac.Blueprints.Util
         }
 
         /// <summary>
-        /// Set the properties of the provided element using the provided dictionary.
+        ///     Set the properties of the provided element using the provided dictionary.
         /// </summary>
         /// <param name="element">the element to set the properties of</param>
         /// <param name="properties">the properties to set as a IDictionary&lt;string, object></param>
@@ -201,8 +202,8 @@ namespace Frontenac.Blueprints.Util
         }
 
         /// <summary>
-        /// Set the properties of the provided element using the provided key value pairs.
-        /// The var args of Objects must be divisible by 2. All odd elements in the array must be a string key.
+        ///     Set the properties of the provided element using the provided key value pairs.
+        ///     The var args of Objects must be divisible by 2. All odd elements in the array must be a string key.
         /// </summary>
         /// <param name="element">the element to set the properties of</param>
         /// <param name="keysValues">the key value pairs of the properties</param>
@@ -210,15 +211,15 @@ namespace Frontenac.Blueprints.Util
         {
             Contract.Requires(element != null);
             Contract.Requires(keysValues != null);
-            Contract.Requires(keysValues.Length % 2 == 0);
+            Contract.Requires(keysValues.Length%2 == 0);
 
             for (var i = 0; i < keysValues.Length; i = i + 2)
-                element.SetProperty((string)keysValues[i], keysValues[i + 1]);
+                element.SetProperty((string) keysValues[i], keysValues[i + 1]);
         }
 
         /// <summary>
-        /// A standard method for determining if two elements are equal.
-        /// This method should be used by any Element.equals() implementation to ensure consistent behavior.
+        ///     A standard method for determining if two elements are equal.
+        ///     This method should be used by any Element.equals() implementation to ensure consistent behavior.
         /// </summary>
         /// <param name="a">The first element</param>
         /// <param name="b">The second element (as an object)</param>
@@ -231,11 +232,11 @@ namespace Frontenac.Blueprints.Util
                 return false;
             if (a != null && !(a.GetType() == b.GetType()))
                 return false;
-            return a != null && a.Id.Equals(((IElement)b).Id);
+            return a != null && a.Id.Equals(((IElement) b).Id);
         }
 
         /// <summary>
-        /// Simply tests if the element ids are equal().
+        ///     Simply tests if the element ids are equal().
         /// </summary>
         /// <param name="a">the first element</param>
         /// <param name="b">the second element</param>

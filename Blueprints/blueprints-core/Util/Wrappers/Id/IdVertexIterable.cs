@@ -1,15 +1,16 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Diagnostics.Contracts;
 using System.Linq;
 
 namespace Frontenac.Blueprints.Util.Wrappers.Id
 {
-    class IdVertexIterable : ICloseableIterable<IVertex>
+    internal class IdVertexIterable : ICloseableIterable<IVertex>
     {
-        readonly IEnumerable<IElement> _iterable;
-        readonly IdGraph _idGraph;
-        bool _disposed;
+        private readonly IdGraph _idGraph;
+        private readonly IEnumerable<IElement> _iterable;
+        private bool _disposed;
 
         public IdVertexIterable(IEnumerable<IElement> iterable, IdGraph idGraph)
         {
@@ -20,15 +21,25 @@ namespace Frontenac.Blueprints.Util.Wrappers.Id
             _idGraph = idGraph;
         }
 
-        ~IdVertexIterable()
-        {
-            Dispose(false);
-        }
-
         public void Dispose()
         {
             Dispose(true);
             GC.SuppressFinalize(this);
+        }
+
+        public IEnumerator<IVertex> GetEnumerator()
+        {
+            return (_iterable.OfType<IVertex>().Select(v => new IdVertex(v, _idGraph))).GetEnumerator();
+        }
+
+        IEnumerator IEnumerable.GetEnumerator()
+        {
+            return (this as IEnumerable<IVertex>).GetEnumerator();
+        }
+
+        ~IdVertexIterable()
+        {
+            Dispose(false);
         }
 
         protected virtual void Dispose(bool disposing)
@@ -43,16 +54,6 @@ namespace Frontenac.Blueprints.Util.Wrappers.Id
             }
 
             _disposed = true;
-        }
-
-        public IEnumerator<IVertex> GetEnumerator()
-        {
-            return (_iterable.OfType<IVertex>().Select(v => new IdVertex(v, _idGraph))).GetEnumerator();
-        }
-
-        System.Collections.IEnumerator System.Collections.IEnumerable.GetEnumerator()
-        {
-            return (this as IEnumerable<IVertex>).GetEnumerator();
         }
     }
 }

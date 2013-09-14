@@ -4,6 +4,6 @@ namespace Lucene.Net.Contrib.Management
 {
     public interface ISearcherWarmer
     {
-        void Warm(IndexSearcher s);        
+        void Warm(IndexSearcher s);
     }
 }

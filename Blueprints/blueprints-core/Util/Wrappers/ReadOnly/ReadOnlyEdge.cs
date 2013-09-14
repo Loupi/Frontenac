@@ -4,7 +4,7 @@ namespace Frontenac.Blueprints.Util.Wrappers.ReadOnly
 {
     public class ReadOnlyEdge : ReadOnlyElement, IEdge
     {
-        readonly IEdge _baseEdge;
+        private readonly IEdge _baseEdge;
 
         public ReadOnlyEdge(IEdge baseEdge)
             : base(baseEdge)

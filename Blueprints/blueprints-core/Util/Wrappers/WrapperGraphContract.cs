@@ -2,7 +2,7 @@
 
 namespace Frontenac.Blueprints.Util.Wrappers
 {
-    [ContractClassFor(typeof(IWrapperGraph))]
+    [ContractClassFor(typeof (IWrapperGraph))]
     public abstract class WrapperGraphContract : IWrapperGraph
     {
         public IGraph GetBaseGraph()

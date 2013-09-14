@@ -52,8 +52,8 @@
             const int prime = 31;
             var result = 1;
 // ReSharper disable NonReadonlyFieldInGetHashCode
-            result = prime * result + ((Key == null) ? 0 : Key.GetHashCode());
-            result = prime * result + ((Value == null) ? 0 : Value.GetHashCode());
+            result = prime*result + ((Key == null) ? 0 : Key.GetHashCode());
+            result = prime*result + ((Value == null) ? 0 : Value.GetHashCode());
 // ReSharper restore NonReadonlyFieldInGetHashCode
             return result;
         }
@@ -69,10 +69,12 @@
         public Parameter(TK key, TV value)
             : base(key, value)
         {
-
         }
 
-        public new TK Key { get { return (TK) base.Key; } }
+        public new TK Key
+        {
+            get { return (TK) base.Key; }
+        }
 
         public new TV Value
         {

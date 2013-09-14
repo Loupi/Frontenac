@@ -6,10 +6,10 @@ namespace Frontenac.Blueprints.Util.Wrappers.Batch.Cache
 {
     public class StringIdVertexCache : IVertexCache
     {
-        const int InitialCapacity = 1000;
+        private const int InitialCapacity = 1000;
 
-        Dictionary<string, object> _map;
-        readonly StringCompression _compression;
+        private readonly StringCompression _compression;
+        private Dictionary<string, object> _map;
 
         public StringIdVertexCache(StringCompression compression)
         {
@@ -22,7 +22,6 @@ namespace Frontenac.Blueprints.Util.Wrappers.Batch.Cache
         public StringIdVertexCache()
             : this(StringCompression.NoCompression)
         {
-
         }
 
         public object GetEntry(object externalId)

@@ -5,7 +5,7 @@ namespace Frontenac.Blueprints.Util.Wrappers.Wrapped
 {
     public class WrappedVertex : WrappedElement, IVertex
     {
-        readonly IVertex _baseVertex;
+        private readonly IVertex _baseVertex;
 
         public WrappedVertex(IVertex baseVertex)
             : base(baseVertex)

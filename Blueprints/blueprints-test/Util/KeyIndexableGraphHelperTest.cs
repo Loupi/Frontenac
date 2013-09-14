@@ -1,6 +1,6 @@
-﻿using NUnit.Framework;
-using System.Linq;
+﻿using System.Linq;
 using Frontenac.Blueprints.Impls.TG;
+using NUnit.Framework;
 
 namespace Frontenac.Blueprints.Util
 {
@@ -14,7 +14,7 @@ namespace Frontenac.Blueprints.Util
             Assert.True(graph.GetVertices("name", "marko") is PropertyFilteredIterable<IVertex>);
             Assert.AreEqual(Count(graph.GetVertices("name", "marko")), 1);
             Assert.AreEqual(graph.GetVertices("name", "marko").First(), graph.GetVertex(1));
-            graph.CreateKeyIndex("name", typeof(IVertex));
+            graph.CreateKeyIndex("name", typeof (IVertex));
             Assert.False(graph.GetVertices("name", "marko") is PropertyFilteredIterable<IVertex>);
             Assert.AreEqual(Count(graph.GetVertices("name", "marko")), 1);
             Assert.AreEqual(graph.GetVertices("name", "marko").First(), graph.GetVertex(1));

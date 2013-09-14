@@ -1,12 +1,33 @@
-﻿using Frontenac.Blueprints.Impls.TG;
+﻿using System.IO;
+using Frontenac.Blueprints.Impls.TG;
 using NUnit.Framework;
-using System.IO;
 
 namespace Frontenac.Blueprints.Util.IO.GraphML
 {
     [TestFixture(Category = "GraphMLWriterTest")]
     public class GraphMlWriterTest : BaseTest
     {
+        [Test]
+        public void TestEncoding()
+        {
+            var g = new TinkerGraph();
+            var v = g.AddVertex(1);
+            v.SetProperty("text", "\u00E9");
+
+            var g2 = new TinkerGraph();
+            using (var bos = new MemoryStream())
+            {
+                var w = new GraphMlWriter(g);
+                w.OutputGraph(bos);
+                bos.Position = 0;
+                var r = new GraphMlReader(g2);
+                r.InputGraph(bos);
+            }
+
+            var v2 = g2.GetVertex(1);
+            Assert.AreEqual("\u00E9", v2.GetProperty("text"));
+        }
+
         [Test]
         public void TestNormal()
         {
@@ -29,7 +50,7 @@ namespace Frontenac.Blueprints.Util.IO.GraphML
                     if (stream != null)
                     {
                         var expected = new StreamReader(stream).ReadToEnd();
-                        Assert.AreEqual(expected.Replace("\n", "").Replace("\r", "").Replace("\t", ""), 
+                        Assert.AreEqual(expected.Replace("\n", "").Replace("\r", "").Replace("\t", ""),
                                         outGraphMl.Replace("\n", "").Replace("\r", "").Replace("\t", ""));
                     }
                 }
@@ -60,7 +81,8 @@ namespace Frontenac.Blueprints.Util.IO.GraphML
                     if (stream != null)
                     {
                         var expected = new StreamReader(stream).ReadToEnd();
-                        Assert.AreEqual(expected.Replace("\n", "").Replace("\r", ""), outGraphMl.Replace("\n", "").Replace("\r", ""));
+                        Assert.AreEqual(expected.Replace("\n", "").Replace("\r", ""),
+                                        outGraphMl.Replace("\n", "").Replace("\r", ""));
                     }
                 }
             }
@@ -70,25 +92,5 @@ namespace Frontenac.Blueprints.Util.IO.GraphML
         // It is known that there are characters which, when written by GraphMLWriter,
         // cause parse errors for GraphMLReader.
         // However, this happens uncommonly enough that is not yet known which characters those are.
-        [Test]
-        public void TestEncoding()
-        {
-            var g = new TinkerGraph();
-            var v = g.AddVertex(1);
-            v.SetProperty("text", "\u00E9");
-
-            var g2 = new TinkerGraph();
-            using (var bos = new MemoryStream())
-            {
-                var w = new GraphMlWriter(g);
-                w.OutputGraph(bos);
-                bos.Position = 0;
-                var r = new GraphMlReader(g2);
-                r.InputGraph(bos);
-            }
-
-            var v2 = g2.GetVertex(1);
-            Assert.AreEqual("\u00E9", v2.GetProperty("text"));
-        }
     }
 }

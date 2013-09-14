@@ -1,16 +1,17 @@
-﻿using System.Collections.Generic;
+﻿using System.Collections;
+using System.Collections.Generic;
 using System.Diagnostics.Contracts;
 using System.Linq;
 
 namespace Frontenac.Blueprints.Util
 {
     /// <summary>
-    /// For those graph engines that do not support the low-level querying of the edges of a vertex, then DefaultVertexQuery can be used.
-    /// DefaultVertexQuery assumes, at minimum, that Vertex.getOutEdges() and Vertex.getInEdges() is implemented by the respective Vertex.
+    ///     For those graph engines that do not support the low-level querying of the edges of a vertex, then DefaultVertexQuery can be used.
+    ///     DefaultVertexQuery assumes, at minimum, that Vertex.getOutEdges() and Vertex.getInEdges() is implemented by the respective Vertex.
     /// </summary>
     public class DefaultVertexQuery : DefaultQuery, IVertexQuery
     {
-        readonly IVertex _vertex;
+        private readonly IVertex _vertex;
 
         public DefaultVertexQuery(IVertex vertex)
         {
@@ -51,13 +52,13 @@ namespace Frontenac.Blueprints.Util
             return Vertices().Select(vertex => vertex.Id);
         }
 
-        class DefaultVertexQueryIterable<T> : IEnumerable<T> where T : IElement
+        private class DefaultVertexQueryIterable<T> : IEnumerable<T> where T : IElement
         {
-            readonly DefaultVertexQuery _defaultVertexQuery;
-            readonly IEnumerator<IEdge> _itty;
-            readonly bool _forVertex;
-            IEdge _nextEdge;
-            long _count;
+            private readonly DefaultVertexQuery _defaultVertexQuery;
+            private readonly bool _forVertex;
+            private readonly IEnumerator<IEdge> _itty;
+            private long _count;
+            private IEdge _nextEdge;
 
             public DefaultVertexQueryIterable(DefaultVertexQuery defaultVertexQuery, bool forVertex)
             {
@@ -65,7 +66,9 @@ namespace Frontenac.Blueprints.Util
 
                 _defaultVertexQuery = defaultVertexQuery;
                 _forVertex = forVertex;
-                _itty = _defaultVertexQuery._vertex.GetEdges(((DefaultQuery) _defaultVertexQuery).Direction, ((DefaultQuery) _defaultVertexQuery).Labels).GetEnumerator();
+                _itty =
+                    _defaultVertexQuery._vertex.GetEdges(((DefaultQuery) _defaultVertexQuery).Direction,
+                                                         ((DefaultQuery) _defaultVertexQuery).Labels).GetEnumerator();
             }
 
             public IEnumerator<T> GetEnumerator()
@@ -93,11 +96,11 @@ namespace Frontenac.Blueprints.Util
                         }
                     }
                     else
-                        yield return (T)temp;
+                        yield return (T) temp;
                 }
             }
 
-            System.Collections.IEnumerator System.Collections.IEnumerable.GetEnumerator()
+            IEnumerator IEnumerable.GetEnumerator()
             {
                 return GetEnumerator();
             }

@@ -27,16 +27,16 @@ namespace Frontenac.Blueprints.Util.Wrappers.ReadOnly
 
         public ICloseableIterable<IElement> Get(string key, object value)
         {
-            if (typeof(IVertex).IsAssignableFrom(Type))
-                return new ReadOnlyVertexIterable((IEnumerable<IVertex>)RawIndex.Get(key, value));
-            return new ReadOnlyEdgeIterable((IEnumerable<IEdge>)RawIndex.Get(key, value));
+            if (typeof (IVertex).IsAssignableFrom(Type))
+                return new ReadOnlyVertexIterable((IEnumerable<IVertex>) RawIndex.Get(key, value));
+            return new ReadOnlyEdgeIterable((IEnumerable<IEdge>) RawIndex.Get(key, value));
         }
 
         public ICloseableIterable<IElement> Query(string key, object value)
         {
-            if (typeof(IVertex).IsAssignableFrom(Type))
-                return new ReadOnlyVertexIterable((IEnumerable<IVertex>)RawIndex.Query(key, value));
-            return new ReadOnlyEdgeIterable((IEnumerable<IEdge>)RawIndex.Query(key, value));
+            if (typeof (IVertex).IsAssignableFrom(Type))
+                return new ReadOnlyVertexIterable((IEnumerable<IVertex>) RawIndex.Query(key, value));
+            return new ReadOnlyEdgeIterable((IEnumerable<IEdge>) RawIndex.Query(key, value));
         }
 
         public long Count(string key, object value)

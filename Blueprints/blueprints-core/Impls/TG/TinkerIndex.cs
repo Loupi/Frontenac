@@ -7,16 +7,19 @@ using Frontenac.Blueprints.Util;
 namespace Frontenac.Blueprints.Impls.TG
 {
     [Serializable]
-    class TinkerIndex : IIndex
+    internal class TinkerIndex : IIndex
     {
-        internal Dictionary<string, Dictionary<object, HashSet<IElement>>> Index = new Dictionary<string, Dictionary<object, HashSet<IElement>>>();
-        protected readonly string IndexName;
         protected readonly Type IndexClass;
+        protected readonly string IndexName;
+
+        internal Dictionary<string, Dictionary<object, HashSet<IElement>>> Index =
+            new Dictionary<string, Dictionary<object, HashSet<IElement>>>();
 
         public TinkerIndex(string indexName, Type indexClass)
         {
             Contract.Requires(indexClass != null);
-            Contract.Requires(typeof(IVertex).IsAssignableFrom(indexClass) || typeof(IEdge).IsAssignableFrom(indexClass));
+            Contract.Requires(typeof (IVertex).IsAssignableFrom(indexClass) ||
+                              typeof (IEdge).IsAssignableFrom(indexClass));
 
             IndexName = indexName;
             IndexClass = indexClass;
@@ -56,8 +59,9 @@ namespace Frontenac.Blueprints.Impls.TG
                 return new WrappingCloseableIterable<IElement>(Enumerable.Empty<IElement>());
 
             var set = keyMap.Get(value);
-            return null == set ? new WrappingCloseableIterable<IElement>(Enumerable.Empty<IElement>()) : 
-                                 new WrappingCloseableIterable<IElement>(new List<IElement>(set));
+            return null == set
+                       ? new WrappingCloseableIterable<IElement>(Enumerable.Empty<IElement>())
+                       : new WrappingCloseableIterable<IElement>(new List<IElement>(set));
         }
 
         public ICloseableIterable<IElement> Query(string key, object query)

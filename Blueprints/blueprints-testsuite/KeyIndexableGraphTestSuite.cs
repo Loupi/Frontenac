@@ -1,6 +1,6 @@
-﻿using Frontenac.Blueprints.Impls;
+﻿using System.Linq;
+using Frontenac.Blueprints.Impls;
 using NUnit.Framework;
-using System.Linq;
 
 namespace Frontenac.Blueprints
 {
@@ -20,25 +20,25 @@ namespace Frontenac.Blueprints
             {
                 if (graph.Features.SupportsVertexKeyIndex)
                 {
-                    Assert.AreEqual(graph.GetIndexedKeys(typeof(IVertex)).Count(), 0);
+                    Assert.AreEqual(graph.GetIndexedKeys(typeof (IVertex)).Count(), 0);
                     StopWatch();
-                    graph.CreateKeyIndex("name", typeof(IVertex));
-                    graph.CreateKeyIndex("location", typeof(IVertex));
+                    graph.CreateKeyIndex("name", typeof (IVertex));
+                    graph.CreateKeyIndex("location", typeof (IVertex));
                     PrintPerformance(graph.ToString(), 2, "automatic index keys added", StopWatch());
-                    Assert.AreEqual(graph.GetIndexedKeys(typeof(IVertex)).Count(), 2);
-                    Assert.True(graph.GetIndexedKeys(typeof(IVertex)).Contains("name"));
-                    Assert.True(graph.GetIndexedKeys(typeof(IVertex)).Contains("location"));
+                    Assert.AreEqual(graph.GetIndexedKeys(typeof (IVertex)).Count(), 2);
+                    Assert.True(graph.GetIndexedKeys(typeof (IVertex)).Contains("name"));
+                    Assert.True(graph.GetIndexedKeys(typeof (IVertex)).Contains("location"));
                 }
                 if (graph.Features.SupportsEdgeKeyIndex)
                 {
-                    Assert.AreEqual(graph.GetIndexedKeys(typeof(IEdge)).Count(), 0);
+                    Assert.AreEqual(graph.GetIndexedKeys(typeof (IEdge)).Count(), 0);
                     StopWatch();
-                    graph.CreateKeyIndex("weight", typeof(IEdge));
-                    graph.CreateKeyIndex("since", typeof(IEdge));
+                    graph.CreateKeyIndex("weight", typeof (IEdge));
+                    graph.CreateKeyIndex("since", typeof (IEdge));
                     PrintPerformance(graph.ToString(), 2, "automatic index keys added", StopWatch());
-                    Assert.AreEqual(graph.GetIndexedKeys(typeof(IEdge)).Count(), 2);
-                    Assert.True(graph.GetIndexedKeys(typeof(IEdge)).Contains("weight"));
-                    Assert.True(graph.GetIndexedKeys(typeof(IEdge)).Contains("since"));
+                    Assert.AreEqual(graph.GetIndexedKeys(typeof (IEdge)).Count(), 2);
+                    Assert.True(graph.GetIndexedKeys(typeof (IEdge)).Contains("weight"));
+                    Assert.True(graph.GetIndexedKeys(typeof (IEdge)).Contains("since"));
                 }
 
                 isPersistent = graph.Features.IsPersistent;

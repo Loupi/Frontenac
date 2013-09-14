@@ -39,6 +39,11 @@ namespace Frontenac.Blueprints.Util.Wrappers.Wrapped
             get { return BaseElement.Id; }
         }
 
+        public void Remove()
+        {
+            BaseElement.Remove();
+        }
+
         public override bool Equals(object obj)
         {
             return ElementHelper.AreEqual(this, obj);
@@ -53,11 +58,6 @@ namespace Frontenac.Blueprints.Util.Wrappers.Wrapped
         {
             Contract.Ensures(Contract.Result<IElement>() != null);
             return BaseElement;
-        }
-
-        public void Remove()
-        {
-            BaseElement.Remove();
         }
 
         public override string ToString()

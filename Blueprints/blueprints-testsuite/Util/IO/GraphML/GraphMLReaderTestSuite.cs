@@ -1,9 +1,9 @@
-﻿using Frontenac.Blueprints.Impls;
-using Frontenac.Blueprints.Impls.TG;
-using NUnit.Framework;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using Frontenac.Blueprints.Impls;
+using Frontenac.Blueprints.Impls.TG;
+using NUnit.Framework;
 
 namespace Frontenac.Blueprints.Util.IO.GraphML
 {
@@ -12,7 +12,6 @@ namespace Frontenac.Blueprints.Util.IO.GraphML
         protected GraphMlReaderTestSuite(GraphTest graphTest)
             : base("GraphMLReaderTestSuite", graphTest)
         {
-
         }
 
         [Test]
@@ -377,7 +376,8 @@ namespace Frontenac.Blueprints.Util.IO.GraphML
             var graph = GraphTest.GenerateGraph();
             try
             {
-                if (graph.Features.IgnoresSuppliedIds || !graph.Features.SupportsEdgeIteration || !graph.Features.SupportsVertexIteration) 
+                if (graph.Features.IgnoresSuppliedIds || !graph.Features.SupportsEdgeIteration ||
+                    !graph.Features.SupportsVertexIteration)
                     return;
 
                 StopWatch();
@@ -481,7 +481,11 @@ namespace Frontenac.Blueprints.Util.IO.GraphML
                 Assert.AreEqual(peter.GetProperty("name"), "peter");
                 Assert.AreEqual(peter.GetProperty("age"), 35);
 
-                foreach (var e in graph.GetVertex("6").GetEdges(Direction.Out).Where(e => e.GetVertex(Direction.In).Id.Equals("3")))
+                foreach (
+                    var e in
+                        graph.GetVertex("6")
+                             .GetEdges(Direction.Out)
+                             .Where(e => e.GetVertex(Direction.In).Id.Equals("3")))
                 {
                     Assert.AreEqual(Math.Round(Convert.ToSingle(e.GetProperty("weight"))), 0);
                     Assert.AreEqual(e.GetProperty("_id"), null);
@@ -770,7 +774,8 @@ namespace Frontenac.Blueprints.Util.IO.GraphML
             var graph = GraphTest.GenerateGraph();
             try
             {
-                if (graph.Features.IgnoresSuppliedIds || !graph.Features.SupportsEdgeIteration || !graph.Features.SupportsVertexIteration) 
+                if (graph.Features.IgnoresSuppliedIds || !graph.Features.SupportsEdgeIteration ||
+                    !graph.Features.SupportsVertexIteration)
                     return;
 
                 StopWatch();

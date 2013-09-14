@@ -7,36 +7,35 @@ using Frontenac.Blueprints.Util.Wrappers.Batch;
 namespace Frontenac.Blueprints.Util.IO.GML
 {
     /// <summary>
-    /// A reader for the Graph Modelling Language (GML).
-    /// <p/>
-    /// (http://www.fim.uni-passau.de/fileadmin/files/lehrstuhl/brandenburg/projekte/gml/gml-documentation.tar.gz)
-    /// <p/>
-    /// It's not clear that all node have to have id's or that they have to be integers - we assume that this is the case. We
-    /// also assume that only one graph can be defined in a file.
+    ///     A reader for the Graph Modelling Language (GML).
+    ///     <p />
+    ///     (http://www.fim.uni-passau.de/fileadmin/files/lehrstuhl/brandenburg/projekte/gml/gml-documentation.tar.gz)
+    ///     <p />
+    ///     It's not clear that all node have to have id's or that they have to be integers - we assume that this is the case. We
+    ///     also assume that only one graph can be defined in a file.
     /// </summary>
     public class GmlReader
     {
         public const string DefaultLabel = "undefined";
-        const int DefaultBufferSize = 1000;
+        private const int DefaultBufferSize = 1000;
 
-        readonly IGraph _graph;
-        readonly string _defaultEdgeLabel;
-        string _edgeLabelKey = GmlTokens.Label;
+        private readonly string _defaultEdgeLabel;
+        private readonly IGraph _graph;
+        private string _edgeLabelKey = GmlTokens.Label;
 
         /// <summary>
-        /// Create a new GML reader
-        /// <p/>
-        /// (Uses default edge label DEFAULT_LABEL)
+        ///     Create a new GML reader
+        ///     <p />
+        ///     (Uses default edge label DEFAULT_LABEL)
         /// </summary>
         /// <param name="graph">the graph to load data into</param>
         public GmlReader(IGraph graph)
             : this(graph, DefaultLabel)
         {
-            
         }
 
         /// <summary>
-        /// Create a new GML reader
+        ///     Create a new GML reader
         /// </summary>
         /// <param name="graph">the graph to load data into</param>
         /// <param name="defaultEdgeLabel">the default edge label to be used if the GML edge does not define a label</param>
@@ -50,19 +49,19 @@ namespace Frontenac.Blueprints.Util.IO.GML
         }
 
         /// <summary>
-        /// gml property to use as id for vertices
+        ///     gml property to use as id for vertices
         /// </summary>
         /// <value></value>
         public string VertexIdKey { get; set; }
 
         /// <summary>
-        /// gml property to use as id for edges
+        ///     gml property to use as id for edges
         /// </summary>
         /// <value></value>
         public string EdgeIdKey { get; set; }
 
         /// <summary>
-        /// gml property to assign edge labels to
+        ///     gml property to assign edge labels to
         /// </summary>
         /// <value></value>
         public string EdgeLabelKey
@@ -80,9 +79,9 @@ namespace Frontenac.Blueprints.Util.IO.GML
         }
 
         /// <summary>
-        /// Read the GML from from the stream.
-        /// <p/>
-        /// If the file is malformed incomplete data can be loaded.
+        ///     Read the GML from from the stream.
+        ///     <p />
+        ///     If the file is malformed incomplete data can be loaded.
         /// </summary>
         /// <param name="inputStream"></param>
         public void InputGraph(Stream inputStream)
@@ -90,13 +89,13 @@ namespace Frontenac.Blueprints.Util.IO.GML
             Contract.Requires(inputStream != null);
 
             InputGraph(_graph, inputStream, DefaultBufferSize, _defaultEdgeLabel,
-                    VertexIdKey, EdgeIdKey, EdgeLabelKey);
+                       VertexIdKey, EdgeIdKey, EdgeLabelKey);
         }
 
         /// <summary>
-        /// Read the GML from from the stream.
-        /// <p/>
-        /// If the file is malformed incomplete data can be loaded.
+        ///     Read the GML from from the stream.
+        ///     <p />
+        ///     If the file is malformed incomplete data can be loaded.
         /// </summary>
         /// <param name="filename"></param>
         public void InputGraph(string filename)
@@ -104,13 +103,13 @@ namespace Frontenac.Blueprints.Util.IO.GML
             Contract.Requires(!string.IsNullOrWhiteSpace(filename));
 
             InputGraph(_graph, filename, DefaultBufferSize, _defaultEdgeLabel,
-                    VertexIdKey, EdgeIdKey, EdgeLabelKey);
+                       VertexIdKey, EdgeIdKey, EdgeLabelKey);
         }
 
         /// <summary>
-        /// Read the GML from from the stream.
-        /// <p/>
-        /// If the file is malformed incomplete data can be loaded.
+        ///     Read the GML from from the stream.
+        ///     <p />
+        ///     If the file is malformed incomplete data can be loaded.
         /// </summary>
         /// <param name="inputStream"></param>
         /// <param name="bufferSize"></param>
@@ -120,13 +119,13 @@ namespace Frontenac.Blueprints.Util.IO.GML
             Contract.Requires(bufferSize > 0);
 
             InputGraph(_graph, inputStream, bufferSize, _defaultEdgeLabel,
-                    VertexIdKey, EdgeIdKey, EdgeLabelKey);
+                       VertexIdKey, EdgeIdKey, EdgeLabelKey);
         }
 
         /// <summary>
-        /// Read the GML from from the stream.
-        /// <p/>
-        /// If the file is malformed incomplete data can be loaded.
+        ///     Read the GML from from the stream.
+        ///     <p />
+        ///     If the file is malformed incomplete data can be loaded.
         /// </summary>
         /// <param name="filename"></param>
         /// <param name="bufferSize"></param>
@@ -136,11 +135,11 @@ namespace Frontenac.Blueprints.Util.IO.GML
             Contract.Requires(bufferSize > 0);
 
             InputGraph(_graph, filename, bufferSize, _defaultEdgeLabel,
-                    VertexIdKey, EdgeIdKey, EdgeLabelKey);
+                       VertexIdKey, EdgeIdKey, EdgeLabelKey);
         }
 
         /// <summary>
-        /// Load the GML file into the Graph.
+        ///     Load the GML file into the Graph.
         /// </summary>
         /// <param name="graph">to receive the data</param>
         /// <param name="filename">GML file</param>
@@ -149,11 +148,12 @@ namespace Frontenac.Blueprints.Util.IO.GML
             Contract.Requires(graph != null);
             Contract.Requires(!string.IsNullOrWhiteSpace(filename));
 
-            InputGraph(graph, filename, DefaultBufferSize, DefaultLabel, GmlTokens.BlueprintsId, GmlTokens.BlueprintsId, null);
+            InputGraph(graph, filename, DefaultBufferSize, DefaultLabel, GmlTokens.BlueprintsId, GmlTokens.BlueprintsId,
+                       null);
         }
 
         /// <summary>
-        /// Load the GML file into the Graph.
+        ///     Load the GML file into the Graph.
         /// </summary>
         /// <param name="graph">to receive the data</param>
         /// <param name="inputStream">GML file</param>
@@ -162,11 +162,12 @@ namespace Frontenac.Blueprints.Util.IO.GML
             Contract.Requires(graph != null);
             Contract.Requires(inputStream != null);
 
-            InputGraph(graph, inputStream, DefaultBufferSize, DefaultLabel, GmlTokens.BlueprintsId, GmlTokens.BlueprintsId, null);
+            InputGraph(graph, inputStream, DefaultBufferSize, DefaultLabel, GmlTokens.BlueprintsId,
+                       GmlTokens.BlueprintsId, null);
         }
 
         /// <summary>
-        /// Load the GML file into the Graph.
+        ///     Load the GML file into the Graph.
         /// </summary>
         /// <param name="inputGraph">to receive the data</param>
         /// <param name="filename">GML file</param>
@@ -187,13 +188,13 @@ namespace Frontenac.Blueprints.Util.IO.GML
             using (var fis = File.OpenRead(filename))
             {
                 InputGraph(inputGraph, fis, bufferSize, defaultEdgeLabel,
-                        vertexIdKey, edgeIdKey, edgeLabelKey);
+                           vertexIdKey, edgeIdKey, edgeLabelKey);
             }
         }
 
         public static void InputGraph(IGraph inputGraph, Stream inputStream, int bufferSize,
-                                  string defaultEdgeLabel, string vertexIdKey, string edgeIdKey,
-                                  string edgeLabelKey)
+                                      string defaultEdgeLabel, string vertexIdKey, string edgeIdKey,
+                                      string edgeLabelKey)
         {
             Contract.Requires(inputGraph != null);
             Contract.Requires(inputStream != null);

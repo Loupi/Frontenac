@@ -1,16 +1,17 @@
-﻿using System.Collections.Generic;
+﻿using System.Collections;
+using System.Collections.Generic;
 using System.Diagnostics.Contracts;
 using System.Linq;
 
 namespace Frontenac.Blueprints.Util.Wrappers.Event
 {
     /// <summary>
-    /// A sequence of indices that applies the list of listeners into each element.
+    ///     A sequence of indices that applies the list of listeners into each element.
     /// </summary>
-    class EventIndexIterable : IEnumerable<IIndex>
+    internal class EventIndexIterable : IEnumerable<IIndex>
     {
-        readonly IEnumerable<IIndex> _iterable;
-        readonly EventGraph _eventGraph;
+        private readonly EventGraph _eventGraph;
+        private readonly IEnumerable<IIndex> _iterable;
 
         public EventIndexIterable(IEnumerable<IIndex> iterable, EventGraph eventGraph)
         {
@@ -26,7 +27,7 @@ namespace Frontenac.Blueprints.Util.Wrappers.Event
             return _iterable.Select(index => new EventIndex(index, _eventGraph)).GetEnumerator();
         }
 
-        System.Collections.IEnumerator System.Collections.IEnumerable.GetEnumerator()
+        IEnumerator IEnumerable.GetEnumerator()
         {
             return (this as IEnumerable<IIndex>).GetEnumerator();
         }

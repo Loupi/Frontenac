@@ -10,9 +10,9 @@ namespace Grave.Esent
 {
     public class EsentVertexTable : EsentTable
     {
-        public EsentVertexTable(Session session, IContentSerializer contentSerializer) : base(session, "Vertices", contentSerializer)
+        public EsentVertexTable(Session session, IContentSerializer contentSerializer)
+            : base(session, "Vertices", contentSerializer)
         {
-
         }
 
         public void AddEdge(int vertexId, Direction direction, string label, int edgeId, int targetId)
@@ -27,7 +27,7 @@ namespace Grave.Esent
             WriteEdgeContent(labelColumn, edgeId, targetId, 0);
         }
 
-        void WriteEdgeContent(string labelColumn, int? edgeId, int? targetId, int iTag)
+        private void WriteEdgeContent(string labelColumn, int? edgeId, int? targetId, int iTag)
         {
             Contract.Requires(!string.IsNullOrWhiteSpace(labelColumn));
 
@@ -39,12 +39,14 @@ namespace Grave.Esent
 
                     if (edgeId.HasValue && targetId.HasValue)
                     {
-                        var key = ((((ulong)edgeId.Value) << 32)) | (ulong)(long)targetId.Value;
+                        var key = ((((ulong) edgeId.Value) << 32)) | (ulong) (long) targetId.Value;
                         var data = BitConverter.GetBytes(key);
-                        Api.JetSetColumn(Session, TableId, Columns[labelColumn], data, data.Length, SetColumnGrbit.UniqueMultiValues, setInfo);
+                        Api.JetSetColumn(Session, TableId, Columns[labelColumn], data, data.Length,
+                                         SetColumnGrbit.UniqueMultiValues, setInfo);
                     }
                     else
-                        Api.JetSetColumn(Session, TableId, Columns[labelColumn], null, 0, SetColumnGrbit.UniqueMultiValues, setInfo);
+                        Api.JetSetColumn(Session, TableId, Columns[labelColumn], null, 0,
+                                         SetColumnGrbit.UniqueMultiValues, setInfo);
 
                     update.Save();
                 }
@@ -63,9 +65,13 @@ namespace Grave.Esent
 
             if (!SetEdgeCursor(labelColumn, edgeId, targetId)) return;
 
-            var retrievecolumn = new JET_RETRIEVECOLUMN { columnid = Columns[labelColumn], grbit = RetrieveColumnGrbit.RetrieveTag | 
-                                                                                                   RetrieveColumnGrbit.RetrieveFromIndex };
-            Api.JetRetrieveColumns(Session, TableId, new[] { retrievecolumn }, 1);
+            var retrievecolumn = new JET_RETRIEVECOLUMN
+                {
+                    columnid = Columns[labelColumn],
+                    grbit = RetrieveColumnGrbit.RetrieveTag |
+                            RetrieveColumnGrbit.RetrieveFromIndex
+                };
+            Api.JetRetrieveColumns(Session, TableId, new[] {retrievecolumn}, 1);
 
             WriteEdgeContent(labelColumn, null, null, retrievecolumn.itagSequence);
         }
@@ -82,29 +88,31 @@ namespace Grave.Esent
             return SetEdgeCursor(labelColumn, edgeId, targetId);
         }
 
-        bool SetEdgeCursor(string edgeLabel, int edgeId, int targetId)
+        private bool SetEdgeCursor(string edgeLabel, int edgeId, int targetId)
         {
             Contract.Requires(!string.IsNullOrWhiteSpace(edgeLabel));
 
-            var key = ((((ulong)edgeId) << 32)) | (ulong)(long)targetId;
+            var key = ((((ulong) edgeId) << 32)) | (ulong) (long) targetId;
             Api.JetSetCurrentIndex(Session, TableId, string.Concat(edgeLabel, "Index"));
             Api.MakeKey(Session, TableId, key, MakeKeyGrbit.NewKey);
             return Api.TrySeek(Session, TableId, SeekGrbit.SeekEQ);
         }
 
-        static string GetEdgeColumnName(Direction direction, string label)
+        private static string GetEdgeColumnName(Direction direction, string label)
         {
             return string.Format("$e_{0}_{1}", direction == Direction.In ? "i" : "o", label);
         }
 
-        void CreateEdgeColumn(string columnName)
+        private void CreateEdgeColumn(string columnName)
         {
             Contract.Requires(!string.IsNullOrWhiteSpace(columnName));
 
-            if (CreateColumn(columnName, VistaColtyp.LongLong, ColumndefGrbit.ColumnMultiValued | ColumndefGrbit.ColumnTagged))
+            if (CreateColumn(columnName, VistaColtyp.LongLong,
+                             ColumndefGrbit.ColumnMultiValued | ColumndefGrbit.ColumnTagged))
             {
                 var description = string.Format("+{0}\0\0", columnName);
-                Api.JetCreateIndex(Session, TableId, string.Concat(columnName, "Index"), CreateIndexGrbit.None, description, description.Length, 50);
+                Api.JetCreateIndex(Session, TableId, string.Concat(columnName, "Index"), CreateIndexGrbit.None,
+                                   description, description.Length, 50);
             }
         }
 
@@ -115,7 +123,7 @@ namespace Grave.Esent
 
             if (!SetCursor(vertexId)) return 0;
             var retrievecolumn = new JET_RETRIEVECOLUMN {columnid = Columns[labelName], itagSequence = 0};
-            Api.JetRetrieveColumns(Session, TableId, new[] { retrievecolumn }, 1);
+            Api.JetRetrieveColumns(Session, TableId, new[] {retrievecolumn}, 1);
             return retrievecolumn.itagSequence;
         }
 
@@ -128,7 +136,7 @@ namespace Grave.Esent
             var columnId = Columns[labelName];
             for (var itag = 1; itag <= nbEdges; itag++)
             {
-                var retinfo = new JET_RETINFO { itagSequence = itag };
+                var retinfo = new JET_RETINFO {itagSequence = itag};
                 var data = Api.RetrieveColumn(Session, TableId, columnId, RetrieveColumnGrbit.None, retinfo);
                 var key = BitConverter.ToInt64(data, 0);
                 yield return key;

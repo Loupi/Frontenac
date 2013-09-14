@@ -1,53 +1,54 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Diagnostics.Contracts;
 using Frontenac.Blueprints.Util.Wrappers.Batch.Cache;
 
 namespace Frontenac.Blueprints.Util.Wrappers.Batch
 {
     /// <summary>
-    /// BatchGraph is a wrapper that enables batch loading of a large number of edges and vertices by chunking the entire
-    /// load into smaller batches and maintaining a memory-efficient vertex cache so that the entire transactional state can
-    /// be flushed after each chunk is loaded.
-    /// <br />
-    /// BatchGraph is ONLY meant for loading data and does not support any retrieval or removal operations.
-    /// That is, BatchGraph only supports the following methods:
-    /// - addVertex for adding vertices
-    /// - addEdge for adding edges
-    /// - getVertex to be used when adding edges
-    /// - Property getter, setter and removal methods for vertices and edges.
-    /// <br />
-    /// An important limitation of BatchGraph is that edge properties can only be set immediately after the edge has been added.
-    /// If other vertices or edges have been created in the meantime, setting, getting or removing properties will throw
-    /// exceptions. This is done to avoid caching of edges which would require a great amount of memory.
-    /// <br />
-    /// BatchGraph wraps TransactionalGraph. To wrap arbitrary graphs, use wrap which will additionally wrap non-transactional.
-    /// <br />
-    /// BatchGraph can also automatically set the provided element ids as properties on the respective element. Use
-    /// setVertexIdKey and setEdgeIdKey to set the keys for the vertex and edge properties
-    /// respectively. This allows to make the loaded baseGraph compatible for later wrapping with IdGraph.
+    ///     BatchGraph is a wrapper that enables batch loading of a large number of edges and vertices by chunking the entire
+    ///     load into smaller batches and maintaining a memory-efficient vertex cache so that the entire transactional state can
+    ///     be flushed after each chunk is loaded.
+    ///     <br />
+    ///     BatchGraph is ONLY meant for loading data and does not support any retrieval or removal operations.
+    ///     That is, BatchGraph only supports the following methods:
+    ///     - addVertex for adding vertices
+    ///     - addEdge for adding edges
+    ///     - getVertex to be used when adding edges
+    ///     - Property getter, setter and removal methods for vertices and edges.
+    ///     <br />
+    ///     An important limitation of BatchGraph is that edge properties can only be set immediately after the edge has been added.
+    ///     If other vertices or edges have been created in the meantime, setting, getting or removing properties will throw
+    ///     exceptions. This is done to avoid caching of edges which would require a great amount of memory.
+    ///     <br />
+    ///     BatchGraph wraps TransactionalGraph. To wrap arbitrary graphs, use wrap which will additionally wrap non-transactional.
+    ///     <br />
+    ///     BatchGraph can also automatically set the provided element ids as properties on the respective element. Use
+    ///     setVertexIdKey and setEdgeIdKey to set the keys for the vertex and edge properties
+    ///     respectively. This allows to make the loaded baseGraph compatible for later wrapping with IdGraph.
     /// </summary>
     public class BatchGraph : ITransactionalGraph, IWrapperGraph
     {
         /// <summary>
-        /// Default buffer size
+        ///     Default buffer size
         /// </summary>
         public const long DefaultBufferSize = 100000;
 
-        readonly ITransactionalGraph _baseGraph;
-        string _vertexIdKey;
-        string _edgeIdKey;
-        bool _loadingFromScratch = true;
-        readonly IVertexCache _cache;
-        readonly long _bufferSize = DefaultBufferSize;
-        long _remainingBufferSize;
-        BatchEdge _currentEdge;
-        IEdge _currentEdgeCached;
-        object _previousOutVertexId;
+        private readonly ITransactionalGraph _baseGraph;
+        private readonly long _bufferSize = DefaultBufferSize;
+        private readonly IVertexCache _cache;
+        private BatchEdge _currentEdge;
+        private IEdge _currentEdgeCached;
+        private string _edgeIdKey;
+        private bool _loadingFromScratch = true;
+        private object _previousOutVertexId;
+        private long _remainingBufferSize;
+        private string _vertexIdKey;
 
         /// <summary>
-        /// Constructs a BatchGraph wrapping the provided baseGraph, using the specified buffer size and expecting vertex ids of
-        ///  the specified IdType. Supplying vertex ids which do not match this type will throw exceptions.
+        ///     Constructs a BatchGraph wrapping the provided baseGraph, using the specified buffer size and expecting vertex ids of
+        ///     the specified IdType. Supplying vertex ids which do not match this type will throw exceptions.
         /// </summary>
         /// <param name="graph">Graph to be wrapped</param>
         /// <param name="type"> Type of vertex id expected. This information is used to optimize the vertex cache memory footprint.</param>
@@ -66,146 +67,16 @@ namespace Frontenac.Blueprints.Util.Wrappers.Batch
         }
 
         /// <summary>
-        /// Constructs a BatchGraph wrapping the provided baseGraph.
+        ///     Constructs a BatchGraph wrapping the provided baseGraph.
         /// </summary>
         /// <param name="graph">Graph to be wrapped</param>
         public BatchGraph(ITransactionalGraph graph)
             : this(graph, VertexIdType.Object, DefaultBufferSize)
         {
-
         }
 
         /// <summary>
-        /// Constructs a BatchGraph wrapping the provided baseGraph. Immediately returns the baseGraph if its a BatchGraph
-        /// and wraps non-transactional graphs in an additional WritethroughGraph.
-        /// </summary>
-        /// <param name="graph">Graph to be wrapped</param>
-        /// <returns>a BatchGraph wrapping the provided baseGraph</returns>
-        public static BatchGraph Wrap(IGraph graph)
-        {
-            Contract.Requires(graph != null);
-            Contract.Ensures(Contract.Result<BatchGraph>() != null);
-
-            var wrap = graph as BatchGraph;
-            if (wrap != null) return wrap;
-            var transactionalGraph = graph as ITransactionalGraph;
-            return transactionalGraph != null ? new BatchGraph(transactionalGraph) : new BatchGraph(new WritethroughGraph(graph));
-        }
-
-        /// <summary>
-        /// Constructs a BatchGraph wrapping the provided baseGraph. Immediately returns the baseGraph if its a BatchGraph
-        /// and wraps non-transactional graphs in an additional WritethroughGraph.
-        /// </summary>
-        /// <param name="graph">Graph to be wrapped</param>
-        /// <param name="buffer">Size of the buffer</param>
-        /// <returns>a BatchGraph wrapping the provided baseGraph</returns>
-        public static BatchGraph Wrap(IGraph graph, long buffer)
-        {
-            Contract.Requires(graph != null);
-            Contract.Requires(buffer > 0);
-            Contract.Ensures(Contract.Result<BatchGraph>() != null);
-
-            var wrap = graph as BatchGraph;
-            if (wrap != null) return wrap;
-            return graph is ITransactionalGraph
-                       ? new BatchGraph((ITransactionalGraph) graph, VertexIdType.Object, buffer)
-                       : new BatchGraph(new WritethroughGraph(graph), VertexIdType.Object, buffer);
-        }
-
-        /// <summary>
-        /// Sets the key to be used when setting the vertex id as a property on the respective vertex.
-        /// If the key is null, then no property will be set.
-        /// If the loaded baseGraph should later be wrapped with IdGraph use IdGraph.ID.
-        /// </summary>
-        /// <param name="key">key Key to be used.</param>
-        public void SetVertexIdKey(string key)
-        {
-            bool? ignoresSuppliedIds = _baseGraph.Features.IgnoresSuppliedIds;
-            if (ignoresSuppliedIds != null && (!_loadingFromScratch && key == null && ignoresSuppliedIds.Value))
-                throw new InvalidOperationException("Cannot set vertex id key to null when not loading from scratch while ids are ignored.");
-            _vertexIdKey = key;
-        }
-
-        /// <summary>
-        /// Returns the key used to set the id on the vertices or null if such has not been set
-        /// via setVertexIdKey
-        /// </summary>
-        /// <returns>The key used to set the id on the vertices or null if such has not been set</returns>
-        public string GetVertexIdKey()
-        {
-            return _vertexIdKey;
-        }
-
-        /// <summary>
-        /// Sets the key to be used when setting the edge id as a property on the respective edge.
-        /// If the key is null, then no property will be set.
-        /// If the loaded baseGraph should later be wrapped with IdGraphuse IdGraph.ID.
-        /// </summary>
-        /// <param name="key">Key to be used.</param>
-        public void SetEdgeIdKey(string key)
-        {
-            _edgeIdKey = key;
-        }
-
-        /// <summary>
-        /// Returns the key used to set the id on the edges or null if such has not been set
-        /// via setEdgeIdKey
-        /// </summary>
-        /// <returns>The key used to set the id on the edges or null if such has not been set</returns>
-        public string GetEdgeIdKey()
-        {
-            return _edgeIdKey;
-        }
-
-        /// <summary>
-        /// Sets whether the graph loaded through this instance of BatchGraph is loaded from scratch
-        /// (i.e. the wrapped graph is initially empty) or whether graph is loaded incrementally into an
-        /// existing graph.
-        /// 
-        /// In the former case, BatchGraph does not need to check for the existence of vertices with the wrapped
-        /// graph but only needs to consult its own cache which can be significantly faster. In the latter case,
-        /// the cache is checked first but an additional check against the wrapped graph may be necessary if
-        /// the vertex does not exist.
-        /// 
-        /// By default, BatchGraph assumes that the data is loaded from scratch.
-        /// 
-        /// When setting loading from scratch to false, a vertex id key must be specified first using
-        /// setVertexIdKey - otherwise an exception is thrown.
-        /// </summary>
-        /// <param name="fromScratch">Sets whether the graph loaded through this instance of BatchGraph is loaded from scratch</param>
-        public void SetLoadingFromScratch(bool fromScratch)
-        {
-            if (_baseGraph.Features.IgnoresSuppliedIds && (fromScratch == false && _vertexIdKey == null))
-                throw new InvalidOperationException("Vertex id key is required to query existing vertices in wrapped graph.");
-            _loadingFromScratch = fromScratch;
-        }
-
-        /// <summary>
-        /// Whether this BatchGraph is loading data from scratch or incrementally into an existing graph.
-        /// By default, this returns true.
-        /// see setLoadingFromScratch
-        /// </summary>
-        /// <returns>Whether this BatchGraph is loading data from scratch or incrementally into an existing graph.</returns>
-        public bool IsLoadingFromScratch()
-        {
-            return _loadingFromScratch;
-        }
-
-        void NextElement()
-        {
-            _currentEdge = null;
-            _currentEdgeCached = null;
-            if (_remainingBufferSize <= 0)
-            {
-                _baseGraph.Commit();
-                _cache.NewTransaction();
-                _remainingBufferSize = _bufferSize;
-            }
-            _remainingBufferSize--;
-        }
-
-        /// <summary>
-        /// Should only be invoked after loading is complete. Committing the transaction before will cause the loading to fail.
+        ///     Should only be invoked after loading is complete. Committing the transaction before will cause the loading to fail.
         /// </summary>
         public void Commit()
         {
@@ -216,7 +87,7 @@ namespace Frontenac.Blueprints.Util.Wrappers.Batch
         }
 
         /// <summary>
-        /// ot supported for batch loading, since data may have already been partially persisted.
+        ///     ot supported for batch loading, since data may have already been partially persisted.
         /// </summary>
         public void Rollback()
         {
@@ -229,11 +100,6 @@ namespace Frontenac.Blueprints.Util.Wrappers.Batch
             _baseGraph.Shutdown();
             _currentEdge = null;
             _currentEdgeCached = null;
-        }
-
-        public IGraph GetBaseGraph()
-        {
-            return _baseGraph;
         }
 
         public Features Features
@@ -250,39 +116,11 @@ namespace Frontenac.Blueprints.Util.Wrappers.Batch
             }
         }
 
-        IVertex RetrieveFromCache(object externalId)
-        {
-            Contract.Requires(externalId != null);
-            
-            var internal_ = _cache.GetEntry(externalId);
-            var cache = internal_ as IVertex;
-            if (cache != null)
-                return cache;
-            if (internal_ != null)
-            {
-                //its an internal id
-                var v = _baseGraph.GetVertex(internal_);
-                _cache.Set(v, externalId);
-                return v;
-            }
-            return null;
-        }
-
-        IVertex GetCachedVertex(object externalId)
-        {
-            Contract.Requires(externalId != null);
-            Contract.Ensures(Contract.Result<IVertex>() != null);
-            
-            var v = RetrieveFromCache(externalId);
-            
-            return v;
-        }
-
         /// <note>
-        /// If the input data are sorted, then out vertex will be repeated for several edges in a row.
-        /// In this case, bypass cache and instead immediately return a new vertex using the known id.
-        /// This gives a modest performance boost, especially when the cache is large or there are 
-        /// on average many edges per vertex.
+        ///     If the input data are sorted, then out vertex will be repeated for several edges in a row.
+        ///     In this case, bypass cache and instead immediately return a new vertex using the known id.
+        ///     This gives a modest performance boost, especially when the cache is large or there are
+        ///     on average many edges per vertex.
         /// </note>
         public IVertex GetVertex(object id)
         {
@@ -294,11 +132,13 @@ namespace Frontenac.Blueprints.Util.Wrappers.Batch
                 if (_loadingFromScratch) return null;
                 if (_baseGraph.Features.IgnoresSuppliedIds)
                 {
-                    System.Diagnostics.Debug.Assert(_vertexIdKey != null);
+                    Debug.Assert(_vertexIdKey != null);
                     var iter = _baseGraph.GetVertices(_vertexIdKey, id).GetEnumerator();
                     if (!iter.MoveNext()) return null;
                     v = iter.Current;
-                    if (iter.MoveNext()) throw new ArgumentException(string.Concat("There are multiple vertices with the provided id in the database: ", id));
+                    if (iter.MoveNext())
+                        throw new ArgumentException(
+                            string.Concat("There are multiple vertices with the provided id in the database: ", id));
                 }
                 else
                 {
@@ -340,20 +180,6 @@ namespace Frontenac.Blueprints.Util.Wrappers.Batch
 
             _currentEdge = new BatchEdge(this);
             return _currentEdge;
-        }
-
-        protected IEdge AddEdgeSupport(IVertex outVertex, IVertex inVertex, string label)
-        {
-            Contract.Requires(outVertex != null);
-            Contract.Requires(inVertex != null);
-            Contract.Ensures(Contract.Result<IEdge>() != null);
-
-            return AddEdge(null, outVertex, inVertex, label);
-        }
-
-        public override string ToString()
-        {
-            return StringFactory.GraphString(this, _baseGraph.ToString());
         }
 
         // ################### Unsupported Graph Methods ####################
@@ -398,10 +224,257 @@ namespace Frontenac.Blueprints.Util.Wrappers.Batch
             throw RetrievalNotSupported();
         }
 
-        class BatchVertex : IVertex
+        public IGraph GetBaseGraph()
         {
-            readonly object _externalId;
-            readonly BatchGraph _batchGraph;
+            return _baseGraph;
+        }
+
+        /// <summary>
+        ///     Constructs a BatchGraph wrapping the provided baseGraph. Immediately returns the baseGraph if its a BatchGraph
+        ///     and wraps non-transactional graphs in an additional WritethroughGraph.
+        /// </summary>
+        /// <param name="graph">Graph to be wrapped</param>
+        /// <returns>a BatchGraph wrapping the provided baseGraph</returns>
+        public static BatchGraph Wrap(IGraph graph)
+        {
+            Contract.Requires(graph != null);
+            Contract.Ensures(Contract.Result<BatchGraph>() != null);
+
+            var wrap = graph as BatchGraph;
+            if (wrap != null) return wrap;
+            var transactionalGraph = graph as ITransactionalGraph;
+            return transactionalGraph != null
+                       ? new BatchGraph(transactionalGraph)
+                       : new BatchGraph(new WritethroughGraph(graph));
+        }
+
+        /// <summary>
+        ///     Constructs a BatchGraph wrapping the provided baseGraph. Immediately returns the baseGraph if its a BatchGraph
+        ///     and wraps non-transactional graphs in an additional WritethroughGraph.
+        /// </summary>
+        /// <param name="graph">Graph to be wrapped</param>
+        /// <param name="buffer">Size of the buffer</param>
+        /// <returns>a BatchGraph wrapping the provided baseGraph</returns>
+        public static BatchGraph Wrap(IGraph graph, long buffer)
+        {
+            Contract.Requires(graph != null);
+            Contract.Requires(buffer > 0);
+            Contract.Ensures(Contract.Result<BatchGraph>() != null);
+
+            var wrap = graph as BatchGraph;
+            if (wrap != null) return wrap;
+            return graph is ITransactionalGraph
+                       ? new BatchGraph((ITransactionalGraph) graph, VertexIdType.Object, buffer)
+                       : new BatchGraph(new WritethroughGraph(graph), VertexIdType.Object, buffer);
+        }
+
+        /// <summary>
+        ///     Sets the key to be used when setting the vertex id as a property on the respective vertex.
+        ///     If the key is null, then no property will be set.
+        ///     If the loaded baseGraph should later be wrapped with IdGraph use IdGraph.ID.
+        /// </summary>
+        /// <param name="key">key Key to be used.</param>
+        public void SetVertexIdKey(string key)
+        {
+            bool? ignoresSuppliedIds = _baseGraph.Features.IgnoresSuppliedIds;
+            if (ignoresSuppliedIds != null && (!_loadingFromScratch && key == null && ignoresSuppliedIds.Value))
+                throw new InvalidOperationException(
+                    "Cannot set vertex id key to null when not loading from scratch while ids are ignored.");
+            _vertexIdKey = key;
+        }
+
+        /// <summary>
+        ///     Returns the key used to set the id on the vertices or null if such has not been set
+        ///     via setVertexIdKey
+        /// </summary>
+        /// <returns>The key used to set the id on the vertices or null if such has not been set</returns>
+        public string GetVertexIdKey()
+        {
+            return _vertexIdKey;
+        }
+
+        /// <summary>
+        ///     Sets the key to be used when setting the edge id as a property on the respective edge.
+        ///     If the key is null, then no property will be set.
+        ///     If the loaded baseGraph should later be wrapped with IdGraphuse IdGraph.ID.
+        /// </summary>
+        /// <param name="key">Key to be used.</param>
+        public void SetEdgeIdKey(string key)
+        {
+            _edgeIdKey = key;
+        }
+
+        /// <summary>
+        ///     Returns the key used to set the id on the edges or null if such has not been set
+        ///     via setEdgeIdKey
+        /// </summary>
+        /// <returns>The key used to set the id on the edges or null if such has not been set</returns>
+        public string GetEdgeIdKey()
+        {
+            return _edgeIdKey;
+        }
+
+        /// <summary>
+        ///     Sets whether the graph loaded through this instance of BatchGraph is loaded from scratch
+        ///     (i.e. the wrapped graph is initially empty) or whether graph is loaded incrementally into an
+        ///     existing graph.
+        ///     In the former case, BatchGraph does not need to check for the existence of vertices with the wrapped
+        ///     graph but only needs to consult its own cache which can be significantly faster. In the latter case,
+        ///     the cache is checked first but an additional check against the wrapped graph may be necessary if
+        ///     the vertex does not exist.
+        ///     By default, BatchGraph assumes that the data is loaded from scratch.
+        ///     When setting loading from scratch to false, a vertex id key must be specified first using
+        ///     setVertexIdKey - otherwise an exception is thrown.
+        /// </summary>
+        /// <param name="fromScratch">Sets whether the graph loaded through this instance of BatchGraph is loaded from scratch</param>
+        public void SetLoadingFromScratch(bool fromScratch)
+        {
+            if (_baseGraph.Features.IgnoresSuppliedIds && (fromScratch == false && _vertexIdKey == null))
+                throw new InvalidOperationException(
+                    "Vertex id key is required to query existing vertices in wrapped graph.");
+            _loadingFromScratch = fromScratch;
+        }
+
+        /// <summary>
+        ///     Whether this BatchGraph is loading data from scratch or incrementally into an existing graph.
+        ///     By default, this returns true.
+        ///     see setLoadingFromScratch
+        /// </summary>
+        /// <returns>Whether this BatchGraph is loading data from scratch or incrementally into an existing graph.</returns>
+        public bool IsLoadingFromScratch()
+        {
+            return _loadingFromScratch;
+        }
+
+        private void NextElement()
+        {
+            _currentEdge = null;
+            _currentEdgeCached = null;
+            if (_remainingBufferSize <= 0)
+            {
+                _baseGraph.Commit();
+                _cache.NewTransaction();
+                _remainingBufferSize = _bufferSize;
+            }
+            _remainingBufferSize--;
+        }
+
+        private IVertex RetrieveFromCache(object externalId)
+        {
+            Contract.Requires(externalId != null);
+
+            var internal_ = _cache.GetEntry(externalId);
+            var cache = internal_ as IVertex;
+            if (cache != null)
+                return cache;
+            if (internal_ != null)
+            {
+                //its an internal id
+                var v = _baseGraph.GetVertex(internal_);
+                _cache.Set(v, externalId);
+                return v;
+            }
+            return null;
+        }
+
+        private IVertex GetCachedVertex(object externalId)
+        {
+            Contract.Requires(externalId != null);
+            Contract.Ensures(Contract.Result<IVertex>() != null);
+
+            var v = RetrieveFromCache(externalId);
+
+            return v;
+        }
+
+        protected IEdge AddEdgeSupport(IVertex outVertex, IVertex inVertex, string label)
+        {
+            Contract.Requires(outVertex != null);
+            Contract.Requires(inVertex != null);
+            Contract.Ensures(Contract.Result<IEdge>() != null);
+
+            return AddEdge(null, outVertex, inVertex, label);
+        }
+
+        public override string ToString()
+        {
+            return StringFactory.GraphString(this, _baseGraph.ToString());
+        }
+
+        private static InvalidOperationException RetrievalNotSupported()
+        {
+            return new InvalidOperationException("Retrieval operations are not supported during batch loading");
+        }
+
+        private class BatchEdge : IEdge
+        {
+            private readonly BatchGraph _batchGraph;
+
+            public BatchEdge(BatchGraph batchGraph)
+            {
+                Contract.Requires(batchGraph != null);
+
+                _batchGraph = batchGraph;
+            }
+
+            public IVertex GetVertex(Direction direction)
+            {
+                return GetWrappedEdge().GetVertex(direction);
+            }
+
+            public string Label
+            {
+                get { return GetWrappedEdge().Label; }
+            }
+
+            public void SetProperty(string key, object value)
+            {
+                GetWrappedEdge().SetProperty(key, value);
+            }
+
+            public object Id
+            {
+                get { return GetWrappedEdge().Id; }
+            }
+
+            public object GetProperty(string key)
+            {
+                return GetWrappedEdge().GetProperty(key);
+            }
+
+            public IEnumerable<string> GetPropertyKeys()
+            {
+                return GetWrappedEdge().GetPropertyKeys();
+            }
+
+            public object RemoveProperty(string key)
+            {
+                return GetWrappedEdge().RemoveProperty(key);
+            }
+
+            public void Remove()
+            {
+                _batchGraph.RemoveEdge(this);
+            }
+
+            private IEdge GetWrappedEdge()
+            {
+                Contract.Requires(this == _batchGraph._currentEdge);
+                Contract.Ensures(Contract.Result<IEdge>() != null);
+
+                return _batchGraph._currentEdgeCached;
+            }
+
+            public override string ToString()
+            {
+                return GetWrappedEdge().ToString();
+            }
+        }
+
+        private class BatchVertex : IVertex
+        {
+            private readonly BatchGraph _batchGraph;
+            private readonly object _externalId;
 
             public BatchVertex(object id, BatchGraph batchGraph)
             {
@@ -467,70 +540,6 @@ namespace Frontenac.Blueprints.Util.Wrappers.Batch
             {
                 return string.Concat("v[", _externalId, "]");
             }
-        }
-
-        class BatchEdge : IEdge
-        {
-            readonly BatchGraph _batchGraph;
-
-            public BatchEdge(BatchGraph batchGraph)
-            {
-                Contract.Requires(batchGraph != null);
-
-                _batchGraph = batchGraph;
-            }
-
-            public IVertex GetVertex(Direction direction)
-            {
-                return GetWrappedEdge().GetVertex(direction);
-            }
-
-            public string Label { get { return GetWrappedEdge().Label; } }
-
-            public void SetProperty(string key, object value)
-            {
-                GetWrappedEdge().SetProperty(key, value);
-            }
-
-            public object Id { get { return GetWrappedEdge().Id; } }
-
-            public object GetProperty(string key)
-            {
-                return GetWrappedEdge().GetProperty(key);
-            }
-
-            public IEnumerable<string> GetPropertyKeys()
-            {
-                return GetWrappedEdge().GetPropertyKeys();
-            }
-
-            public object RemoveProperty(string key)
-            {
-                return GetWrappedEdge().RemoveProperty(key);
-            }
-
-            IEdge GetWrappedEdge()
-            {
-                Contract.Requires(this == _batchGraph._currentEdge);
-                Contract.Ensures(Contract.Result<IEdge>() != null);
-
-                return _batchGraph._currentEdgeCached;
-            }
-
-            public override string ToString()
-            {
-                return GetWrappedEdge().ToString();
-            }
-
-            public void Remove()
-            {
-                _batchGraph.RemoveEdge(this);
-            }
-        }
-
-        static InvalidOperationException RetrievalNotSupported()
-        {
-            return new InvalidOperationException("Retrieval operations are not supported during batch loading");
         }
     }
 }

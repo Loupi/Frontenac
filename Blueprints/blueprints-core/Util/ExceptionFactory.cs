@@ -3,8 +3,8 @@
 namespace Frontenac.Blueprints.Util
 {
     /// <summary>
-    /// The ExceptionFactory provides standard exceptions that should be used by all Blueprints implementations.
-    /// This ensures that the look-and-feel of all implementations are the same in terms of terminology and punctuation.
+    ///     The ExceptionFactory provides standard exceptions that should be used by all Blueprints implementations.
+    ///     This ensures that the look-and-feel of all implementations are the same in terms of terminology and punctuation.
     /// </summary>
     public static class ExceptionFactory
     {

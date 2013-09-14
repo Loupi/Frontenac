@@ -4,14 +4,14 @@ using Grave.Entities;
 
 namespace Grave
 {
-    class Program
+    internal class Program
     {
-        static void Main()
+        private static void Main()
         {
             var graph = GraveFactory.CreateGraph();
             try
             {
-                graph.CreateKeyIndex("test", typeof(IVertex));
+                graph.CreateKeyIndex("test", typeof (IVertex));
                 var vv = graph.AddVertex(0);
                 vv.SetProperty("obj", new Test(4)
                     {

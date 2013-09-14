@@ -10,30 +10,30 @@ using System.Text.RegularExpressions;
 namespace Frontenac.Blueprints.Util.IO.GML
 {
     /// <summary>
-    /// GMLWriter writes a Graph to a GML OutputStream.
-    /// <p/>
-    /// GML definition taken from
-    /// (http://www.fim.uni-passau.de/fileadmin/files/lehrstuhl/brandenburg/projekte/gml/gml-documentation.tar.gz)
+    ///     GMLWriter writes a Graph to a GML OutputStream.
+    ///     <p />
+    ///     GML definition taken from
+    ///     (http://www.fim.uni-passau.de/fileadmin/files/lehrstuhl/brandenburg/projekte/gml/gml-documentation.tar.gz)
     /// </summary>
     public class GmlWriter
     {
-        const string Delimiter = " ";
-        const string Tab = "\t";
-        const string NewLine = "\r\n";
-        static readonly string OpenList = string.Concat(" [", NewLine);
-        static readonly string CloseList = string.Concat("]", NewLine);
-        readonly IGraph _graph;
-        string _vertexIdKey = GmlTokens.BlueprintsId;
-        string _edgeIdKey = GmlTokens.BlueprintsId;
+        private const string Delimiter = " ";
+        private const string Tab = "\t";
+        private const string NewLine = "\r\n";
 
         /// <note>
-        /// Property keys must be alphanumeric and not exceed 254 characters. They must start with an alpha character.
+        ///     Property keys must be alphanumeric and not exceed 254 characters. They must start with an alpha character.
         /// </note>
-        const string GmlPropertyKeyRegex = "[a-zA-Z][a-zA-Z0-9]{0,253}";
-        static readonly Regex Regex = new Regex(GmlPropertyKeyRegex, RegexOptions.Compiled);
+        private const string GmlPropertyKeyRegex = "[a-zA-Z][a-zA-Z0-9]{0,253}";
+
+        private static readonly string OpenList = string.Concat(" [", NewLine);
+        private static readonly string CloseList = string.Concat("]", NewLine);
+        private static readonly Regex Regex = new Regex(GmlPropertyKeyRegex, RegexOptions.Compiled);
+        private readonly IGraph _graph;
+        private string _edgeIdKey = GmlTokens.BlueprintsId;
+        private string _vertexIdKey = GmlTokens.BlueprintsId;
 
         /// <summary>
-        /// 
         /// </summary>
         /// <param name="graph">he Graph to pull the data from</param>
         public GmlWriter(IGraph graph)
@@ -44,29 +44,29 @@ namespace Frontenac.Blueprints.Util.IO.GML
         }
 
         /// <summary>
-        /// when set to true, property keys in the graph that do not meet the exact guidelines of the GML
-        /// specification are ignored.  By default this value is false.
+        ///     when set to true, property keys in the graph that do not meet the exact guidelines of the GML
+        ///     specification are ignored.  By default this value is false.
         /// </summary>
         /// <value></value>
         public bool Strict { get; set; }
 
         /// <summary>
-        /// whether to normalize the output. Normalized output is deterministic with respect to the order of
-        /// elements and properties in the resulting XML document, and is compatible with line diff-based tools
-        /// such as Git. Note: normalized output is memory-intensive and is not appropriate for very large graphs.
+        ///     whether to normalize the output. Normalized output is deterministic with respect to the order of
+        ///     elements and properties in the resulting XML document, and is compatible with line diff-based tools
+        ///     such as Git. Note: normalized output is memory-intensive and is not appropriate for very large graphs.
         /// </summary>
         /// <value></value>
         public bool Normalize { get; set; }
 
         /// <summary>
-        /// whether to use the blueprints id directly or substitute with a generated integer. To use this option
-        /// the blueprints ids must all be Integers of string representations of integers
+        ///     whether to use the blueprints id directly or substitute with a generated integer. To use this option
+        ///     the blueprints ids must all be Integers of string representations of integers
         /// </summary>
         /// <value></value>
         public bool UseId { get; set; }
 
         /// <summary>
-        /// gml property to use for the blueprints vertex id, defaults to GMLTokens.BLUEPRINTS_ID
+        ///     gml property to use for the blueprints vertex id, defaults to GMLTokens.BLUEPRINTS_ID
         /// </summary>
         /// <value></value>
         public string VertexIdKey
@@ -84,7 +84,7 @@ namespace Frontenac.Blueprints.Util.IO.GML
         }
 
         /// <summary>
-        /// gml property to use for the blueprints edges id, defaults to GMLTokens.BLUEPRINTS_ID
+        ///     gml property to use for the blueprints edges id, defaults to GMLTokens.BLUEPRINTS_ID
         /// </summary>
         /// <value></value>
         public string EdgeIdKey
@@ -102,7 +102,7 @@ namespace Frontenac.Blueprints.Util.IO.GML
         }
 
         /// <summary>
-        /// Write the data in a Graph to a GML OutputStream.
+        ///     Write the data in a Graph to a GML OutputStream.
         /// </summary>
         /// <param name="filename">the GML file to write the Graph data to</param>
         public void OutputGraph(string filename)
@@ -116,7 +116,7 @@ namespace Frontenac.Blueprints.Util.IO.GML
         }
 
         /// <summary>
-        /// Write the data in a Graph to a GML OutputStream.
+        ///     Write the data in a Graph to a GML OutputStream.
         /// </summary>
         /// <param name="gMlOutputStream">the GML OutputStream to write the Graph data to</param>
         public void OutputGraph(Stream gMlOutputStream)
@@ -141,7 +141,7 @@ namespace Frontenac.Blueprints.Util.IO.GML
             writer.Flush();
         }
 
-        void WriteGraph(StreamWriter writer, IEnumerable<IVertex> vertices, IEnumerable<IEdge> edges)
+        private void WriteGraph(StreamWriter writer, IEnumerable<IVertex> vertices, IEnumerable<IEdge> edges)
         {
             Contract.Requires(writer != null);
             Contract.Requires(vertices != null);
@@ -156,7 +156,7 @@ namespace Frontenac.Blueprints.Util.IO.GML
             writer.Write(CloseList);
         }
 
-        void WriteVertices(StreamWriter writer, IEnumerable<IVertex> vertices, Dictionary<IVertex, int> ids)
+        private void WriteVertices(StreamWriter writer, IEnumerable<IVertex> vertices, Dictionary<IVertex, int> ids)
         {
             Contract.Requires(writer != null);
             Contract.Requires(vertices != null);
@@ -179,7 +179,7 @@ namespace Frontenac.Blueprints.Util.IO.GML
             }
         }
 
-        void WriteVertex(StreamWriter writer, IVertex v, int id)
+        private void WriteVertex(StreamWriter writer, IVertex v, int id)
         {
             Contract.Requires(writer != null);
             Contract.Requires(v != null);
@@ -194,7 +194,7 @@ namespace Frontenac.Blueprints.Util.IO.GML
             writer.Write(CloseList);
         }
 
-        void WriteEdges(StreamWriter writer, IEnumerable<IEdge> edges, Dictionary<IVertex, int> ids)
+        private void WriteEdges(StreamWriter writer, IEnumerable<IEdge> edges, Dictionary<IVertex, int> ids)
         {
             Contract.Requires(writer != null);
             Contract.Requires(edges != null);
@@ -204,7 +204,7 @@ namespace Frontenac.Blueprints.Util.IO.GML
                 WriteEdgeProperties(writer, e, ids.Get(e.GetVertex(Direction.Out)), ids.Get(e.GetVertex(Direction.In)));
         }
 
-        void WriteEdgeProperties(StreamWriter writer, IEdge e, int source, int target)
+        private void WriteEdgeProperties(StreamWriter writer, IEdge e, int source, int target)
         {
             Contract.Requires(writer != null);
             Contract.Requires(e != null);
@@ -223,7 +223,7 @@ namespace Frontenac.Blueprints.Util.IO.GML
             writer.Write(CloseList);
         }
 
-        void WriteElementProperties(StreamWriter writer, IElement e)
+        private void WriteElementProperties(StreamWriter writer, IElement e)
         {
             Contract.Requires(writer != null);
             Contract.Requires(e != null);
@@ -240,7 +240,7 @@ namespace Frontenac.Blueprints.Util.IO.GML
             WriteProperties(writer, e);
         }
 
-        void WriteProperties(StreamWriter writer, IElement e)
+        private void WriteProperties(StreamWriter writer, IElement e)
         {
             Contract.Requires(writer != null);
             Contract.Requires(e != null);
@@ -257,7 +257,7 @@ namespace Frontenac.Blueprints.Util.IO.GML
             }
         }
 
-        void WriteProperty(StreamWriter writer, object property, int tab)
+        private void WriteProperty(StreamWriter writer, object property, int tab)
         {
             Contract.Requires(writer != null);
 
@@ -269,7 +269,7 @@ namespace Frontenac.Blueprints.Util.IO.GML
                 WriteStringProperty(writer, property.ToString());
         }
 
-        void WriteMapProperty(StreamWriter writer, IDictionary map, int tabs)
+        private void WriteMapProperty(StreamWriter writer, IDictionary map, int tabs)
         {
             Contract.Requires(writer != null);
             Contract.Requires(map != null);
@@ -286,7 +286,7 @@ namespace Frontenac.Blueprints.Util.IO.GML
             writer.Write(CloseList);
         }
 
-        static void WriteTabs(TextWriter writer, int tabs)
+        private static void WriteTabs(TextWriter writer, int tabs)
         {
             Contract.Requires(writer != null);
 
@@ -294,7 +294,7 @@ namespace Frontenac.Blueprints.Util.IO.GML
                 writer.Write(Tab);
         }
 
-        static void WriteNumberProperty(TextWriter writer, object number)
+        private static void WriteNumberProperty(TextWriter writer, object number)
         {
             Contract.Requires(writer != null);
             Contract.Requires(number != null);
@@ -303,7 +303,7 @@ namespace Frontenac.Blueprints.Util.IO.GML
             writer.Write(NewLine);
         }
 
-        static void WriteStringProperty(TextWriter writer, object string_)
+        private static void WriteStringProperty(TextWriter writer, object string_)
         {
             Contract.Requires(writer != null);
             Contract.Requires(string_ != null);
@@ -314,7 +314,7 @@ namespace Frontenac.Blueprints.Util.IO.GML
             writer.Write(NewLine);
         }
 
-        static void WriteKey(TextWriter writer, string command)
+        private static void WriteKey(TextWriter writer, string command)
         {
             Contract.Requires(writer != null);
             Contract.Requires(command != null);
@@ -325,7 +325,7 @@ namespace Frontenac.Blueprints.Util.IO.GML
             writer.Write(Delimiter);
         }
 
-        void PopulateLists(List<IVertex> vertices, List<IEdge> edges)
+        private void PopulateLists(List<IVertex> vertices, List<IEdge> edges)
         {
             Contract.Requires(vertices != null);
             Contract.Requires(edges != null);
@@ -335,7 +335,7 @@ namespace Frontenac.Blueprints.Util.IO.GML
         }
 
         /// <summary>
-        /// Write the data in a Graph to a GML OutputStream.
+        ///     Write the data in a Graph to a GML OutputStream.
         /// </summary>
         /// <param name="graph">the Graph to pull the data from</param>
         /// <param name="graphMlOutputStream">the GML OutputStream to write the Graph data to</param>
@@ -349,7 +349,7 @@ namespace Frontenac.Blueprints.Util.IO.GML
         }
 
         /// <summary>
-        /// Write the data in a Graph to a GML OutputStream.
+        ///     Write the data in a Graph to a GML OutputStream.
         /// </summary>
         /// <param name="graph">the Graph to pull the data from</param>
         /// <param name="filename">the GML file to write the Graph data to</param>

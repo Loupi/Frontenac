@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Diagnostics.Contracts;
 
@@ -6,8 +7,8 @@ namespace Frontenac.Blueprints.Util
 {
     public class WrappingCloseableIterable<T> : ICloseableIterable<T>
     {
-        readonly IEnumerable<T> _iterable;
-        bool _disposed;
+        private readonly IEnumerable<T> _iterable;
+        private bool _disposed;
 
         public WrappingCloseableIterable(IEnumerable<T> iterable)
         {
@@ -16,15 +17,25 @@ namespace Frontenac.Blueprints.Util
             _iterable = iterable;
         }
 
-        ~WrappingCloseableIterable()
-        {
-            Dispose(false);
-        }
-
         public void Dispose()
         {
             Dispose(true);
             GC.SuppressFinalize(this);
+        }
+
+        public IEnumerator<T> GetEnumerator()
+        {
+            return _iterable.GetEnumerator();
+        }
+
+        IEnumerator IEnumerable.GetEnumerator()
+        {
+            return (this as IEnumerable<T>).GetEnumerator();
+        }
+
+        ~WrappingCloseableIterable()
+        {
+            Dispose(false);
         }
 
         protected virtual void Dispose(bool disposing)
@@ -39,16 +50,6 @@ namespace Frontenac.Blueprints.Util
             }
 
             _disposed = true;
-        }
-
-        public IEnumerator<T> GetEnumerator()
-        {
-            return _iterable.GetEnumerator();
-        }
-
-        System.Collections.IEnumerator System.Collections.IEnumerable.GetEnumerator()
-        {
-            return (this as IEnumerable<T>).GetEnumerator();
         }
 
         public override string ToString()

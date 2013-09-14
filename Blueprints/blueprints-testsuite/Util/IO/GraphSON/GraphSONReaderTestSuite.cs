@@ -1,8 +1,8 @@
-﻿using Frontenac.Blueprints.Impls;
-using NUnit.Framework;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using Frontenac.Blueprints.Impls;
+using NUnit.Framework;
 
 namespace Frontenac.Blueprints.Util.IO.GraphSON
 {
@@ -304,7 +304,7 @@ namespace Frontenac.Blueprints.Util.IO.GraphSON
                 }
                 Assert.AreEqual(vertices.Count(), 1);
                 Assert.True(vertices.Contains(lop));
-  
+
                 // test josh
                 vertices = new HashSet<IVertex>();
                 Assert.AreEqual(josh.GetProperty("name"), "josh");

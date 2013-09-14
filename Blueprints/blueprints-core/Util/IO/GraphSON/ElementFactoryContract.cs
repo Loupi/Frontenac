@@ -2,7 +2,7 @@
 
 namespace Frontenac.Blueprints.Util.IO.GraphSON
 {
-    [ContractClassFor(typeof(IElementFactory))]
+    [ContractClassFor(typeof (IElementFactory))]
     public abstract class ElementFactoryContract : IElementFactory
     {
         public IEdge CreateEdge(object id, IVertex out_, IVertex in_, string label)

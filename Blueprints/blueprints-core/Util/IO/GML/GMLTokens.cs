@@ -1,10 +1,10 @@
 ﻿namespace Frontenac.Blueprints.Util.IO.GML
 {
     /// <summary>
-    /// A collection of tokens used for GML related data.
-    /// <p/>
-    /// Tokens defined from GML Tags
-    /// (http://www.fim.uni-passau.de/fileadmin/files/lehrstuhl/brandenburg/projekte/gml/gml-documentation.tar.gz)
+    ///     A collection of tokens used for GML related data.
+    ///     <p />
+    ///     Tokens defined from GML Tags
+    ///     (http://www.fim.uni-passau.de/fileadmin/files/lehrstuhl/brandenburg/projekte/gml/gml-documentation.tar.gz)
     /// </summary>
     public static class GmlTokens
     {
@@ -26,7 +26,7 @@
         public const char CommentChar = '#';
 
         /// <summary>
-        /// Special token used to store Blueprint ids as they may not be integers
+        ///     Special token used to store Blueprint ids as they may not be integers
         /// </summary>
         public const string BlueprintsId = "blueprintsId";
     }

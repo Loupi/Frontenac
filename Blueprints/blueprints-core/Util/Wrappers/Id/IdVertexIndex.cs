@@ -5,8 +5,8 @@ namespace Frontenac.Blueprints.Util.Wrappers.Id
 {
     public class IdVertexIndex : IIndex
     {
-        readonly IIndex _baseIndex;
-        readonly IdGraph _idGraph;
+        private readonly IIndex _baseIndex;
+        private readonly IdGraph _idGraph;
 
         public IdVertexIndex(IIndex baseIndex, IdGraph idGraph)
         {
@@ -52,11 +52,11 @@ namespace Frontenac.Blueprints.Util.Wrappers.Id
             _baseIndex.Remove(key, value, GetBaseElement(element));
         }
 
-        IVertex GetBaseElement(IElement e)
+        private IVertex GetBaseElement(IElement e)
         {
             Contract.Requires(e is IdVertex);
             Contract.Ensures(Contract.Result<IVertex>() != null);
-            return ((IdVertex)e).GetBaseVertex();
+            return ((IdVertex) e).GetBaseVertex();
         }
 
         public override string ToString()

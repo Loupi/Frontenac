@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Diagnostics.Contracts;
 using System.Linq;
@@ -6,13 +7,13 @@ using System.Linq;
 namespace Frontenac.Blueprints.Util.Wrappers.Event
 {
     /// <summary>
-    /// A sequence of edges that applies the list of listeners into each edge.
+    ///     A sequence of edges that applies the list of listeners into each edge.
     /// </summary>
     public class EventEdgeIterable : ICloseableIterable<IEdge>
     {
-        readonly IEnumerable<IEdge> _iterable;
-        readonly EventGraph _eventGraph;
-        bool _disposed;
+        private readonly EventGraph _eventGraph;
+        private readonly IEnumerable<IEdge> _iterable;
+        private bool _disposed;
 
         public EventEdgeIterable(IEnumerable<IEdge> iterable, EventGraph eventGraph)
         {
@@ -23,15 +24,25 @@ namespace Frontenac.Blueprints.Util.Wrappers.Event
             _eventGraph = eventGraph;
         }
 
-        ~EventEdgeIterable()
-        {
-            Dispose(false);
-        }
-
         public void Dispose()
         {
             Dispose(true);
             GC.SuppressFinalize(this);
+        }
+
+        public IEnumerator<IEdge> GetEnumerator()
+        {
+            return _iterable.Select(edge => new EventEdge(edge, _eventGraph)).GetEnumerator();
+        }
+
+        IEnumerator IEnumerable.GetEnumerator()
+        {
+            return (this as IEnumerable<IEdge>).GetEnumerator();
+        }
+
+        ~EventEdgeIterable()
+        {
+            Dispose(false);
         }
 
         protected virtual void Dispose(bool disposing)
@@ -46,16 +57,6 @@ namespace Frontenac.Blueprints.Util.Wrappers.Event
             }
 
             _disposed = true;
-        }
-
-        public IEnumerator<IEdge> GetEnumerator()
-        {
-            return _iterable.Select(edge => new EventEdge(edge, _eventGraph)).GetEnumerator();
-        }
-
-        System.Collections.IEnumerator System.Collections.IEnumerable.GetEnumerator()
-        {
-            return (this as IEnumerable<IEdge>).GetEnumerator();
         }
     }
 }

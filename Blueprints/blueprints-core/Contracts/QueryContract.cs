@@ -4,7 +4,7 @@ using System.Diagnostics.Contracts;
 
 namespace Frontenac.Blueprints.Contracts
 {
-    [ContractClassFor(typeof(IQuery))]
+    [ContractClassFor(typeof (IQuery))]
     public abstract class QueryContract : IQuery
     {
         public IQuery Has(string key, object value)

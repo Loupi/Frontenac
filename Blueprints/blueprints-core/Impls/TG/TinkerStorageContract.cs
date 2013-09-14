@@ -2,7 +2,7 @@
 
 namespace Frontenac.Blueprints.Impls.TG
 {
-    [ContractClassFor(typeof(ITinkerStorage))]
+    [ContractClassFor(typeof (ITinkerStorage))]
     public abstract class TinkerStorageContract : ITinkerStorage
     {
         public TinkerGraph Load(string directory)

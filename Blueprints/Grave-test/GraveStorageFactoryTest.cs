@@ -1,10 +1,10 @@
-﻿using Frontenac.Blueprints;
-using Grave;
-using NUnit.Framework;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using Frontenac.Blueprints;
+using Grave;
+using NUnit.Framework;
 
 namespace Grave_test
 {
@@ -30,6 +30,32 @@ namespace Grave_test
         {
             GraveFactory.Release();
             DeleteDirectory(GraveGraphTestImpl.GetGraveGraphDirectory());
+        }
+
+        private static void CreateDirectory(string dir)
+        {
+            if (Directory.Exists(dir))
+            {
+                DeleteDirectory(dir);
+            }
+
+            Directory.CreateDirectory(dir);
+        }
+
+        private string GetDirectory()
+        {
+            var directory = Environment.GetEnvironmentVariable("graveGraphDirectory") ?? GetWorkingDirectory();
+            return directory;
+        }
+
+        private string GetWorkingDirectory()
+        {
+            return ComputeTestDataRoot();
+        }
+
+        private static IEnumerable<string> FindFilesByExt(string path, string ext)
+        {
+            return Directory.EnumerateFiles(path, string.Concat("*.", ext), SearchOption.AllDirectories);
         }
 
         [Test]
@@ -88,7 +114,7 @@ namespace Grave_test
             var storage = GraveGraphStorageFactory.GetInstance().GetGraveStorage(FileType.Graphson);
             var graph = GraveFactory.CreateTinkerGraph();
             try
-            { 
+            {
                 storage.Save(graph, path);
             }
             finally
@@ -97,32 +123,6 @@ namespace Grave_test
             }
 
             Assert.AreEqual(1, FindFilesByExt(path, "json").Count());
-        }
-
-        static void CreateDirectory(string dir)
-        {
-            if (Directory.Exists(dir))
-            {
-                DeleteDirectory(dir);
-            }
-
-            Directory.CreateDirectory(dir);
-        }
-
-        string GetDirectory()
-        {
-            var directory = Environment.GetEnvironmentVariable("graveGraphDirectory") ?? GetWorkingDirectory();
-            return directory;
-        }
-
-        string GetWorkingDirectory()
-        {
-            return ComputeTestDataRoot();
-        }
-
-        static IEnumerable<string> FindFilesByExt(string path, string ext)
-        {
-            return Directory.EnumerateFiles(path, string.Concat("*.", ext), SearchOption.AllDirectories);
         }
     }
 }

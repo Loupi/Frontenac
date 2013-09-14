@@ -3,17 +3,16 @@
 namespace Frontenac.Blueprints.Impls.TG
 {
     /// <summary>
-    /// Mocking TinkerGraph as a transactional graph for testing purposes. This implementation does not actually
-    /// implement transactional behavior but only counts transaction starts, successes and failures so that
-    /// these can be compared to expected behavior.
-    /// This class is only meant for testing.
+    ///     Mocking TinkerGraph as a transactional graph for testing purposes. This implementation does not actually
+    ///     implement transactional behavior but only counts transaction starts, successes and failures so that
+    ///     these can be compared to expected behavior.
+    ///     This class is only meant for testing.
     /// </summary>
     public class MockTransactionalGraph : ITransactionalGraph
     {
-        int _numTransactionsCommitted;
-        int _numTransactionsAborted;
-
-        readonly IGraph _graph;
+        private readonly IGraph _graph;
+        private int _numTransactionsAborted;
+        private int _numTransactionsCommitted;
 
         public MockTransactionalGraph(IGraph graph)
         {
@@ -22,7 +21,7 @@ namespace Frontenac.Blueprints.Impls.TG
 
         public void Shutdown()
         {
-            if(_graph != null)
+            if (_graph != null)
                 _graph.Shutdown();
         }
 
@@ -34,21 +33,6 @@ namespace Frontenac.Blueprints.Impls.TG
         public void Commit()
         {
             _numTransactionsCommitted++;
-        }
-
-        public int GetNumTransactionsCommitted()
-        {
-            return _numTransactionsCommitted;
-        }
-
-        public int GetNumTransactionsAborted()
-        {
-            return _numTransactionsAborted;
-        }
-
-        public bool AllSuccessful()
-        {
-            return _numTransactionsAborted == 0;
         }
 
         public Features Features
@@ -114,6 +98,21 @@ namespace Frontenac.Blueprints.Impls.TG
         public IQuery Query()
         {
             return _graph.Query();
+        }
+
+        public int GetNumTransactionsCommitted()
+        {
+            return _numTransactionsCommitted;
+        }
+
+        public int GetNumTransactionsAborted()
+        {
+            return _numTransactionsAborted;
+        }
+
+        public bool AllSuccessful()
+        {
+            return _numTransactionsAborted == 0;
         }
     }
 }

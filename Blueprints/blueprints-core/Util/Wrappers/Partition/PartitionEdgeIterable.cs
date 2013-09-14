@@ -1,14 +1,15 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Diagnostics.Contracts;
 
 namespace Frontenac.Blueprints.Util.Wrappers.Partition
 {
-    class PartitionEdgeIterable : ICloseableIterable<IEdge>
+    internal class PartitionEdgeIterable : ICloseableIterable<IEdge>
     {
-        readonly IEnumerable<IEdge> _iterable;
-        readonly PartitionGraph _graph;
-        bool _disposed;
+        private readonly PartitionGraph _graph;
+        private readonly IEnumerable<IEdge> _iterable;
+        private bool _disposed;
 
         public PartitionEdgeIterable(IEnumerable<IEdge> iterable, PartitionGraph graph)
         {
@@ -19,15 +20,25 @@ namespace Frontenac.Blueprints.Util.Wrappers.Partition
             _graph = graph;
         }
 
-        ~PartitionEdgeIterable()
-        {
-            Dispose(false);
-        }
-
         public void Dispose()
         {
             Dispose(true);
             GC.SuppressFinalize(this);
+        }
+
+        public IEnumerator<IEdge> GetEnumerator()
+        {
+            return new InnerPartitionEdgeIterable(this).GetEnumerator();
+        }
+
+        IEnumerator IEnumerable.GetEnumerator()
+        {
+            return (this as IEnumerable<IEdge>).GetEnumerator();
+        }
+
+        ~PartitionEdgeIterable()
+        {
+            Dispose(false);
         }
 
         protected virtual void Dispose(bool disposing)
@@ -44,16 +55,11 @@ namespace Frontenac.Blueprints.Util.Wrappers.Partition
             _disposed = true;
         }
 
-        public IEnumerator<IEdge> GetEnumerator()
+        private class InnerPartitionEdgeIterable : IEnumerable<IEdge>
         {
-            return new InnerPartitionEdgeIterable(this).GetEnumerator();
-        }
-
-        class InnerPartitionEdgeIterable : IEnumerable<IEdge>
-        {
-            readonly PartitionEdgeIterable _partitionEdgeIterable;
-            readonly IEnumerator<IEdge> _itty;
-            PartitionEdge _nextEdge;
+            private readonly IEnumerator<IEdge> _itty;
+            private readonly PartitionEdgeIterable _partitionEdgeIterable;
+            private PartitionEdge _nextEdge;
 
             public InnerPartitionEdgeIterable(PartitionEdgeIterable partitionEdgeIterable)
             {
@@ -85,7 +91,12 @@ namespace Frontenac.Blueprints.Util.Wrappers.Partition
                 }
             }
 
-            bool HasNext()
+            IEnumerator IEnumerable.GetEnumerator()
+            {
+                return GetEnumerator();
+            }
+
+            private bool HasNext()
             {
                 if (null != _nextEdge)
                     return true;
@@ -101,16 +112,6 @@ namespace Frontenac.Blueprints.Util.Wrappers.Partition
                 }
                 return false;
             }
-
-            System.Collections.IEnumerator System.Collections.IEnumerable.GetEnumerator()
-            {
-                return GetEnumerator();
-            }
-        }
-
-        System.Collections.IEnumerator System.Collections.IEnumerable.GetEnumerator()
-        {
-            return (this as IEnumerable<IEdge>).GetEnumerator();
         }
     }
 }

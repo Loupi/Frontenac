@@ -2,7 +2,7 @@
 
 namespace Grave.Indexing
 {
-    [ContractClassFor(typeof(IDocumentFactory))]
+    [ContractClassFor(typeof (IDocumentFactory))]
     public abstract class DocumentFactoryContract : IDocumentFactory
     {
         public IDocument Create(object document)

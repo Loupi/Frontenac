@@ -1,8 +1,8 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Diagnostics.Contracts;
 using System.Linq;
 using Frontenac.Blueprints;
-using System.Collections.Generic;
 using Frontenac.Blueprints.Util;
 using Grave.Esent;
 
@@ -11,8 +11,8 @@ namespace Grave
     public abstract class GraveElement : IElement
     {
         protected readonly GraveGraph Graph;
-        protected readonly EsentTable Table;
         protected readonly int RawId;
+        protected readonly EsentTable Table;
 
         protected GraveElement(GraveGraph graph, EsentTable table, int id)
         {
@@ -26,7 +26,7 @@ namespace Grave
 
         public object GetProperty(string key)
         {
-            if(string.IsNullOrWhiteSpace(key))
+            if (string.IsNullOrWhiteSpace(key))
                 throw new ArgumentException("key");
 
             return Table.ReadCell(RawId, key);
@@ -39,7 +39,7 @@ namespace Grave
 
         public void SetProperty(string key, object value)
         {
-            if(string.IsNullOrWhiteSpace(key))
+            if (string.IsNullOrWhiteSpace(key))
                 throw new ArgumentException("key");
 
             Table.WriteCell(RawId, key, value);
@@ -53,31 +53,31 @@ namespace Grave
             return result;
         }
 
-        void SetIndexedKeyValue(string key, object value)
-        {
-            Contract.Requires(!string.IsNullOrWhiteSpace(key));
-
-            var type = this is IVertex ? typeof(IVertex) : typeof(IEdge);
-            var indices = Graph.GetIndices(type, false);
-            if (indices.HasIndex(key))
-            {
-                var generation = indices.Set(RawId, key, key, value);
-                Graph.UpdateGeneration(generation);
-            }
-        }
-
         public void Remove()
         {
             var vertex = this as IVertex;
             if (vertex != null)
                 Graph.RemoveVertex(vertex);
             else
-                Graph.RemoveEdge((IEdge)this);
+                Graph.RemoveEdge((IEdge) this);
         }
 
         public object Id
         {
             get { return RawId; }
+        }
+
+        private void SetIndexedKeyValue(string key, object value)
+        {
+            Contract.Requires(!string.IsNullOrWhiteSpace(key));
+
+            var type = this is IVertex ? typeof (IVertex) : typeof (IEdge);
+            var indices = Graph.GetIndices(type, false);
+            if (indices.HasIndex(key))
+            {
+                var generation = indices.Set(RawId, key, key, value);
+                Graph.UpdateGeneration(generation);
+            }
         }
 
         public override int GetHashCode()

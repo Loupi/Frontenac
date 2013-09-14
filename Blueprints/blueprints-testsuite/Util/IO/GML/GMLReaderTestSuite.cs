@@ -1,10 +1,10 @@
-﻿using Frontenac.Blueprints.Impls;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using Frontenac.Blueprints.Impls;
 using Frontenac.Blueprints.Impls.TG;
 using Frontenac.Blueprints.Util.IO.GraphML;
 using NUnit.Framework;
-using System;
-using System.Collections.Generic;
-using System.Linq;
 
 namespace Frontenac.Blueprints.Util.IO.GML
 {
@@ -13,7 +13,6 @@ namespace Frontenac.Blueprints.Util.IO.GML
         protected GmlReaderTestSuite(GraphTest graphTest)
             : base("GMLReaderTestSuite", graphTest)
         {
-
         }
 
         [Test]
@@ -30,7 +29,7 @@ namespace Frontenac.Blueprints.Util.IO.GML
 
                 StopWatch();
 
-                
+
                 using (var stream = GetResource<GmlReaderTestSuite>("graph-example-1.gml"))
                 {
                     var gmlReader = new GmlReader(graph);
@@ -500,7 +499,9 @@ namespace Frontenac.Blueprints.Util.IO.GML
                 Assert.AreEqual(peter.GetProperty("name"), "peter");
                 Assert.AreEqual(peter.GetProperty("age"), 35);
 
-                foreach (var e in graph.GetVertex(6).GetEdges(Direction.Out).Where(e => e.GetVertex(Direction.In).Id.Equals("3")))
+                foreach (
+                    var e in
+                        graph.GetVertex(6).GetEdges(Direction.Out).Where(e => e.GetVertex(Direction.In).Id.Equals("3")))
                 {
                     Assert.AreEqual(Math.Round(Convert.ToDouble(e.GetProperty("weight"))), 0);
                     Assert.AreEqual(e.GetProperty("id2"), null);
@@ -925,7 +926,11 @@ namespace Frontenac.Blueprints.Util.IO.GML
                 Assert.AreEqual(peter.GetProperty("name"), "peter");
                 Assert.AreEqual(peter.GetProperty("age"), 35);
 
-                foreach (var e in toGraph.GetVertex(6).GetEdges(Direction.Out).Where(e => e.GetVertex(Direction.In).Id.Equals("3")))
+                foreach (
+                    var e in
+                        toGraph.GetVertex(6)
+                               .GetEdges(Direction.Out)
+                               .Where(e => e.GetVertex(Direction.In).Id.Equals("3")))
                 {
                     Assert.AreEqual(Math.Round(Convert.ToDouble(e.GetProperty("weight"))), 0);
                     Assert.AreEqual(e.GetProperty("id2"), null);

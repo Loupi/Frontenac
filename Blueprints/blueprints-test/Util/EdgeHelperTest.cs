@@ -1,5 +1,5 @@
-﻿using NUnit.Framework;
-using Frontenac.Blueprints.Impls.TG;
+﻿using Frontenac.Blueprints.Impls.TG;
+using NUnit.Framework;
 
 namespace Frontenac.Blueprints.Util
 {
@@ -21,7 +21,7 @@ namespace Frontenac.Blueprints.Util
                 if (edge.Label == "use_to_know")
                 {
                     counter++;
-                    if(!graph.Features.IgnoresSuppliedIds)
+                    if (!graph.Features.IgnoresSuppliedIds)
                         Assert.AreEqual("1234", edge.Id);
                     Assert.AreEqual(0.5, edge.GetProperty("weight"));
                     temp = edge;
@@ -54,7 +54,7 @@ namespace Frontenac.Blueprints.Util
         public void TestRelabelEdges()
         {
             var graph = TinkerGraphFactory.CreateTinkerGraph();
-            EdgeHelper.RelabelEdges(graph, new[]{graph.GetEdge(7)}, "use_to_know");
+            EdgeHelper.RelabelEdges(graph, new[] {graph.GetEdge(7)}, "use_to_know");
             Assert.AreEqual(Count(graph.GetVertices()), 7);
             Assert.AreEqual(Count(graph.GetEdges()), 6);
             var counter = 0;

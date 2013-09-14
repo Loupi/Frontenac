@@ -9,20 +9,20 @@ using System.Xml;
 namespace Frontenac.Blueprints.Util.IO.GraphML
 {
     /// <summary>
-    /// GraphMLWriter writes a Graph to a GraphML OutputStream.
+    ///     GraphMLWriter writes a Graph to a GraphML OutputStream.
     /// </summary>
     public class GraphMlWriter
     {
-        readonly IGraph _graph;
-        bool _normalize;
-        Dictionary<string, string> _vertexKeyTypes;
-        Dictionary<string, string> _edgeKeyTypes;
+        private const string W3CXmlSchemaInstanceNsUri = "http://www.w3.org/2001/XMLSchema-instance";
+        private readonly IGraph _graph;
+        private Dictionary<string, string> _edgeKeyTypes;
+        private string _edgeLabelKey;
+        private bool _normalize;
+        private Dictionary<string, string> _vertexKeyTypes;
 
-        string _xmlSchemaLocation;
-        string _edgeLabelKey;
+        private string _xmlSchemaLocation;
 
         /// <summary>
-        /// 
         /// </summary>
         /// <param name="graph">the Graph to pull the data from</param>
         public GraphMlWriter(IGraph graph)
@@ -31,7 +31,7 @@ namespace Frontenac.Blueprints.Util.IO.GraphML
         }
 
         /// <summary>
-        /// the location of the GraphML XML Schema instance
+        ///     the location of the GraphML XML Schema instance
         /// </summary>
         /// <param name="xmlSchemaLocation"></param>
         public void SetXmlSchemaLocation(string xmlSchemaLocation)
@@ -40,10 +40,10 @@ namespace Frontenac.Blueprints.Util.IO.GraphML
         }
 
         /// <summary>
-        /// Set the name of the edge label in the GraphML. When this value is not set the value of the Edge.getLabel()
-        /// is written as a "label" attribute on the edge element.  This does not validate against the GraphML schema.
-        /// If this value is set then the the value of Edge.getLabel() is written as a data element on the edge and
-        /// the appropriate key element is added to define it in the GraphML
+        ///     Set the name of the edge label in the GraphML. When this value is not set the value of the Edge.getLabel()
+        ///     is written as a "label" attribute on the edge element.  This does not validate against the GraphML schema.
+        ///     If this value is set then the the value of Edge.getLabel() is written as a data element on the edge and
+        ///     the appropriate key element is added to define it in the GraphML
         /// </summary>
         /// <param name="edgeLabelKey">if the label of an edge will be handled by the data property.</param>
         public void SetEdgeLabelKey(string edgeLabelKey)
@@ -52,9 +52,9 @@ namespace Frontenac.Blueprints.Util.IO.GraphML
         }
 
         /// <summary>
-        /// whether to normalize the output. Normalized output is deterministic with respect to the order of
-        /// elements and properties in the resulting XML document, and is compatible with line diff-based tools
-        /// such as Git. Note: normalized output is memory-intensive and is not appropriate for very large graphs.
+        ///     whether to normalize the output. Normalized output is deterministic with respect to the order of
+        ///     elements and properties in the resulting XML document, and is compatible with line diff-based tools
+        ///     such as Git. Note: normalized output is memory-intensive and is not appropriate for very large graphs.
         /// </summary>
         /// <param name="normalize"></param>
         public void SetNormalize(bool normalize)
@@ -63,7 +63,7 @@ namespace Frontenac.Blueprints.Util.IO.GraphML
         }
 
         /// <summary>
-        /// a IDictionary&lt;string, string> of the data types of the vertex keys
+        ///     a IDictionary&lt;string, string> of the data types of the vertex keys
         /// </summary>
         /// <param name="vertexKeyTypes"></param>
         public void SetVertexKeyTypes(Dictionary<string, string> vertexKeyTypes)
@@ -72,7 +72,7 @@ namespace Frontenac.Blueprints.Util.IO.GraphML
         }
 
         /// <summary>
-        /// a IDictionary&lt;string, string> of the data types of the edge keys
+        ///     a IDictionary&lt;string, string> of the data types of the edge keys
         /// </summary>
         /// <param name="edgeKeyTypes"></param>
         public void SetEdgeKeyTypes(Dictionary<string, string> edgeKeyTypes)
@@ -81,7 +81,7 @@ namespace Frontenac.Blueprints.Util.IO.GraphML
         }
 
         /// <summary>
-        /// Write the data in a Graph to a GraphML file.
+        ///     Write the data in a Graph to a GraphML file.
         /// </summary>
         /// <param name="filename">the name of the file write the Graph data (as GraphML) to</param>
         public void OutputGraph(string filename)
@@ -92,10 +92,8 @@ namespace Frontenac.Blueprints.Util.IO.GraphML
             }
         }
 
-        const string W3CXmlSchemaInstanceNsUri = "http://www.w3.org/2001/XMLSchema-instance";
-
         /// <summary>
-        /// Write the data in a Graph to a GraphML OutputStream.
+        ///     Write the data in a Graph to a GraphML OutputStream.
         /// </summary>
         /// <param name="graphMlOutputStream">the GraphML OutputStream to write the Graph data to</param>
         public void OutputGraph(Stream graphMlOutputStream)
@@ -135,16 +133,17 @@ namespace Frontenac.Blueprints.Util.IO.GraphML
                 _edgeKeyTypes[_edgeLabelKey] = GraphMlTokens.String;
 
             var settings = new XmlWriterSettings
-            {
-                Indent = _normalize, 
-                IndentChars = "\t", 
-                Encoding = new UTF8Encoding(false),
-                OmitXmlDeclaration = true
-            };
-            
+                {
+                    Indent = _normalize,
+                    IndentChars = "\t",
+                    Encoding = new UTF8Encoding(false),
+                    OmitXmlDeclaration = true
+                };
+
             using (var writer = XmlWriter.Create(graphMlOutputStream, settings))
             {
-                var xmlDeclaration = string.Concat("<?xml version=\"1.0\"?>", _normalize? Environment.NewLine : string.Empty);
+                var xmlDeclaration = string.Concat("<?xml version=\"1.0\"?>",
+                                                   _normalize ? Environment.NewLine : string.Empty);
                 var xmlDeclarationData = settings.Encoding.GetBytes(xmlDeclaration);
                 graphMlOutputStream.Write(xmlDeclarationData, 0, xmlDeclarationData.Length);
                 writer.WriteStartDocument();
@@ -152,11 +151,15 @@ namespace Frontenac.Blueprints.Util.IO.GraphML
                 writer.WriteAttributeString(GraphMlTokens.Xmlns, string.Empty, GraphMlTokens.GraphmlXmlns);
 
                 //XML Schema instance namespace definition (xsi)
-                writer.WriteAttributeString(GraphMlTokens.Xmlns, GraphMlTokens.XmlSchemaNamespaceTag, string.Empty, W3CXmlSchemaInstanceNsUri);
+                writer.WriteAttributeString(GraphMlTokens.Xmlns, GraphMlTokens.XmlSchemaNamespaceTag, string.Empty,
+                                            W3CXmlSchemaInstanceNsUri);
 
                 //XML Schema location
-                writer.WriteAttributeString(GraphMlTokens.XmlSchemaNamespaceTag, GraphMlTokens.XmlSchemaLocationAttribute, null,
-                                            string.Concat(GraphMlTokens.GraphmlXmlns, " ", _xmlSchemaLocation ?? GraphMlTokens.DefaultGraphmlSchemaLocation));
+                writer.WriteAttributeString(GraphMlTokens.XmlSchemaNamespaceTag,
+                                            GraphMlTokens.XmlSchemaLocationAttribute, null,
+                                            string.Concat(GraphMlTokens.GraphmlXmlns, " ",
+                                                          _xmlSchemaLocation ??
+                                                          GraphMlTokens.DefaultGraphmlSchemaLocation));
 
                 // <key id="weight" for="edge" attr.name="weight" attr.type="float"/>
                 IEnumerable<string> keyset;
@@ -320,7 +323,7 @@ namespace Frontenac.Blueprints.Util.IO.GraphML
         }
 
         /// <summary>
-        /// Write the data in a Graph to a GraphML OutputStream.
+        ///     Write the data in a Graph to a GraphML OutputStream.
         /// </summary>
         /// <param name="graph">the Graph to pull the data from</param>
         /// <param name="graphMlOutputStream">the GraphML OutputStream to write the Graph data to</param>
@@ -331,7 +334,7 @@ namespace Frontenac.Blueprints.Util.IO.GraphML
         }
 
         /// <summary>
-        /// Write the data in a Graph to a GraphML file.
+        ///     Write the data in a Graph to a GraphML file.
         /// </summary>
         /// <param name="graph">the Graph to pull the data from</param>
         /// <param name="filename">the name of the file write the Graph data (as GraphML) to</param>
@@ -342,13 +345,14 @@ namespace Frontenac.Blueprints.Util.IO.GraphML
         }
 
         /// <summary>
-        /// Write the data in a Graph to a GraphML file.
+        ///     Write the data in a Graph to a GraphML file.
         /// </summary>
         /// <param name="graph">the Graph to pull the data from</param>
         /// <param name="filename">the name of the file write the Graph data (as GraphML) to</param>
         /// <param name="vertexKeyTypes">a IDictionary&lt;string, string> of the data types of the vertex keys</param>
         /// <param name="edgeKeyTypes">a IDictionary&lt;string, string> of the data types of the edge keys</param>
-        public static void OutputGraph(IGraph graph, string filename, Dictionary<string, string> vertexKeyTypes, Dictionary<string, string> edgeKeyTypes)
+        public static void OutputGraph(IGraph graph, string filename, Dictionary<string, string> vertexKeyTypes,
+                                       Dictionary<string, string> edgeKeyTypes)
         {
             var writer = new GraphMlWriter(graph);
             writer.SetVertexKeyTypes(vertexKeyTypes);
@@ -357,13 +361,15 @@ namespace Frontenac.Blueprints.Util.IO.GraphML
         }
 
         /// <summary>
-        /// Write the data in a Graph to a GraphML OutputStream.
+        ///     Write the data in a Graph to a GraphML OutputStream.
         /// </summary>
         /// <param name="graph">the Graph to pull the data from</param>
         /// <param name="graphMlOutputStream">the GraphML OutputStream to write the Graph data to</param>
         /// <param name="vertexKeyTypes">a IDictionary&lt;string, string> of the data types of the vertex keys</param>
         /// <param name="edgeKeyTypes">a IDictionary&lt;string, string> of the data types of the edge keys</param>
-        public static void OutputGraph(IGraph graph, Stream graphMlOutputStream, Dictionary<string, string> vertexKeyTypes, Dictionary<string, string> edgeKeyTypes)
+        public static void OutputGraph(IGraph graph, Stream graphMlOutputStream,
+                                       Dictionary<string, string> vertexKeyTypes,
+                                       Dictionary<string, string> edgeKeyTypes)
         {
             var writer = new GraphMlWriter(graph);
             writer.SetVertexKeyTypes(vertexKeyTypes);
@@ -371,7 +377,7 @@ namespace Frontenac.Blueprints.Util.IO.GraphML
             writer.OutputGraph(graphMlOutputStream);
         }
 
-        static string GetStringType(object object_)
+        private static string GetStringType(object object_)
         {
             if (object_ is string)
                 return GraphMlTokens.String;

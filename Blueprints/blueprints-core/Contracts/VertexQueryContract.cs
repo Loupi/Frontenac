@@ -4,7 +4,7 @@ using System.Diagnostics.Contracts;
 
 namespace Frontenac.Blueprints.Contracts
 {
-    [ContractClassFor(typeof(IVertexQuery))]
+    [ContractClassFor(typeof (IVertexQuery))]
     public abstract class VertexQueryContract : IVertexQuery
     {
         public IVertexQuery Direction(Direction direction)

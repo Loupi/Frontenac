@@ -6,39 +6,20 @@ using System.Threading;
 namespace Frontenac.Blueprints.Util.Wrappers.Event.Listener
 {
     /// <summary>
-    /// An event listener that acts as a counter for changes to the graph. 
+    ///     An event listener that acts as a counter for changes to the graph.
     /// </summary>
     public class StubGraphChangedListener : IGraphChangedListener
     {
-        long _addEdgeEvent;
-        long _addVertexEvent;
-        long _vertexPropertyChangedEvent;
-        long _vertexPropertyRemovedEvent;
-        long _vertexRemovedEvent;
-        long _edgePropertyChangedEvent;
-        long _edgePropertyRemovedEvent;
-        long _edgeRemovedEvent;
+        private long _addEdgeEvent;
+        private long _addVertexEvent;
+        private long _edgePropertyChangedEvent;
+        private long _edgePropertyRemovedEvent;
+        private long _edgeRemovedEvent;
 
-        ConcurrentQueue<string> _order = new ConcurrentQueue<string>();
-
-        public void Reset()
-        {
-            Interlocked.Exchange(ref _addEdgeEvent, 0);
-            Interlocked.Exchange(ref _addVertexEvent, 0);
-            Interlocked.Exchange(ref _vertexPropertyChangedEvent, 0);
-            Interlocked.Exchange(ref _vertexPropertyRemovedEvent, 0);
-            Interlocked.Exchange(ref _vertexRemovedEvent, 0);
-            Interlocked.Exchange(ref _edgePropertyChangedEvent, 0);
-            Interlocked.Exchange(ref _edgePropertyRemovedEvent, 0);
-            Interlocked.Exchange(ref _edgeRemovedEvent, 0);
-
-            _order = new ConcurrentQueue<string>();
-        }
-
-        public List<string> GetOrder()
-        {
-            return _order.ToList();
-        }
+        private ConcurrentQueue<string> _order = new ConcurrentQueue<string>();
+        private long _vertexPropertyChangedEvent;
+        private long _vertexPropertyRemovedEvent;
+        private long _vertexRemovedEvent;
 
         public void VertexAdded(IVertex vertex)
         {
@@ -86,6 +67,25 @@ namespace Frontenac.Blueprints.Util.Wrappers.Event.Listener
         {
             Interlocked.Increment(ref _edgeRemovedEvent);
             _order.Enqueue(string.Concat("e-removed-", edge.Id));
+        }
+
+        public void Reset()
+        {
+            Interlocked.Exchange(ref _addEdgeEvent, 0);
+            Interlocked.Exchange(ref _addVertexEvent, 0);
+            Interlocked.Exchange(ref _vertexPropertyChangedEvent, 0);
+            Interlocked.Exchange(ref _vertexPropertyRemovedEvent, 0);
+            Interlocked.Exchange(ref _vertexRemovedEvent, 0);
+            Interlocked.Exchange(ref _edgePropertyChangedEvent, 0);
+            Interlocked.Exchange(ref _edgePropertyRemovedEvent, 0);
+            Interlocked.Exchange(ref _edgeRemovedEvent, 0);
+
+            _order = new ConcurrentQueue<string>();
+        }
+
+        public List<string> GetOrder()
+        {
+            return _order.ToList();
         }
 
         public long AddEdgeEventRecorded()

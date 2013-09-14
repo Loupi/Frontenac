@@ -5,29 +5,29 @@ namespace Grave.Indexing.Lucene
     public class LuceneIndexingServiceParameters
     {
         private static LuceneIndexingServiceParameters _default;
-        private string _vertexIdColumnName;
-        private string _vertexKeyColumnName;
-        private string _vertexIndexColumnName;
         private string _edgeIdColumnName;
-        private string _edgeKeyColumnName;
         private string _edgeIndexColumnName;
+        private string _edgeKeyColumnName;
         private string _nullColumnName;
+        private string _vertexIdColumnName;
+        private string _vertexIndexColumnName;
+        private string _vertexKeyColumnName;
 
         static LuceneIndexingServiceParameters()
         {
             Default = new LuceneIndexingServiceParameters
-            {
-                VertexIdColumnName = "$vi",
-                VertexKeyColumnName = "$vk",
-                VertexIndexColumnName = "$vx",
-                EdgeIdColumnName = "$ei",
-                EdgeKeyColumnName = "$ek",
-                EdgeIndexColumnName = "$ex",
-                NullColumnName = "$nv",
-                CloseTimeoutSeconds = 10,
-                MaxStaleSeconds = 5,
-                MinStaleMilliseconds = 25
-            };
+                {
+                    VertexIdColumnName = "$vi",
+                    VertexKeyColumnName = "$vk",
+                    VertexIndexColumnName = "$vx",
+                    EdgeIdColumnName = "$ei",
+                    EdgeKeyColumnName = "$ek",
+                    EdgeIndexColumnName = "$ex",
+                    NullColumnName = "$nv",
+                    CloseTimeoutSeconds = 10,
+                    MaxStaleSeconds = 5,
+                    MinStaleMilliseconds = 25
+                };
         }
 
         public static LuceneIndexingServiceParameters Default

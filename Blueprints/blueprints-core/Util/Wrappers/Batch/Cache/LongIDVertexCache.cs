@@ -7,20 +7,13 @@ namespace Frontenac.Blueprints.Util.Wrappers.Batch.Cache
 {
     public class LongIdVertexCache : IVertexCache
     {
-        const int InitialCapacity = 1000;
+        private const int InitialCapacity = 1000;
 
-        IDictionary<long, object> _map;
+        private IDictionary<long, object> _map;
 
         public LongIdVertexCache()
         {
             _map = new Dictionary<long, object>(InitialCapacity);
-        }
-        
-        static long GetId(object externalId)
-        {
-            Contract.Requires(Portability.IsNumber(externalId));
-
-            return Convert.ToInt64(externalId);
         }
 
         public object GetEntry(object externalId)
@@ -48,6 +41,13 @@ namespace Frontenac.Blueprints.Util.Wrappers.Batch.Cache
         public void NewTransaction()
         {
             _map = _map.ToDictionary(t => t.Key, t => t.Value is IVertex ? (t.Value as IVertex).Id : t.Value);
+        }
+
+        private static long GetId(object externalId)
+        {
+            Contract.Requires(Portability.IsNumber(externalId));
+
+            return Convert.ToInt64(externalId);
         }
     }
 }

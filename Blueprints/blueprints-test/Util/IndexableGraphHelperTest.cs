@@ -1,5 +1,5 @@
-﻿using NUnit.Framework;
-using Frontenac.Blueprints.Impls.TG;
+﻿using Frontenac.Blueprints.Impls.TG;
+using NUnit.Framework;
 
 namespace Frontenac.Blueprints.Util
 {
@@ -12,7 +12,7 @@ namespace Frontenac.Blueprints.Util
             var graph = new TinkerGraph();
             var marko = graph.AddVertex(0);
             marko.SetProperty("name", "marko");
-            var index = graph.CreateIndex("txIdx", typeof(IVertex));
+            var index = graph.CreateIndex("txIdx", typeof (IVertex));
             index.Put("name", "marko", marko);
             var vertex = IndexableGraphHelper.AddUniqueVertex(graph, null, index, "name", "marko");
             Assert.AreEqual(vertex.GetProperty("name"), "marko");

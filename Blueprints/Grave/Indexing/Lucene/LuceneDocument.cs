@@ -7,10 +7,10 @@ namespace Grave.Indexing.Lucene
 {
     public class LuceneDocument : IDocument
     {
-        const string NullColumnName = "$gn";
+        private const string NullColumnName = "$gn";
 
-        readonly Document _document;
-        readonly ObjectIDGenerator _idGenerator = new ObjectIDGenerator();
+        private readonly Document _document;
+        private readonly ObjectIDGenerator _idGenerator = new ObjectIDGenerator();
 
         public LuceneDocument(Document document)
         {
@@ -22,7 +22,7 @@ namespace Grave.Indexing.Lucene
         public bool Write(string key, object value)
         {
             var result = true;
-            
+
             if (value == null)
             {
                 _document.Add(new Field(NullColumnName, key, Field.Store.NO, Field.Index.NOT_ANALYZED));
@@ -32,7 +32,8 @@ namespace Grave.Indexing.Lucene
                 var val = value.ToString();
                 _document.Add(new Field(key, val, Field.Store.NO, Field.Index.ANALYZED));
             }
-            else if (value is sbyte || value is byte || value is short || value is ushort || value is int || value is uint)
+            else if (value is sbyte || value is byte || value is short || value is ushort || value is int ||
+                     value is uint)
             {
                 var val = Convert.ToInt32(value);
                 _document.Add(new NumericField(key).SetIntValue(val));

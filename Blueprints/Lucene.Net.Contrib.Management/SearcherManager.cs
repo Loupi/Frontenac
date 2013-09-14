@@ -8,8 +8,8 @@ namespace Lucene.Net.Contrib.Management
 {
     public class SearcherManager : IDisposable
     {
-        private readonly ISearcherWarmer _warmer;
         private readonly object _reopenLock = new object();
+        private readonly ISearcherWarmer _warmer;
         private volatile IndexSearcher _currentSearcher;
 
         public SearcherManager(IndexWriter writer, ISearcherWarmer warmer = null)
@@ -18,22 +18,23 @@ namespace Lucene.Net.Contrib.Management
             _currentSearcher = new IndexSearcher(writer.GetReader());
             if (_warmer != null)
             {
-                writer.MergedSegmentWarmer = new WarmerWrapper(_warmer);                
+                writer.MergedSegmentWarmer = new WarmerWrapper(_warmer);
             }
         }
 
         #region IDisposable
-        bool _disposed;
 
-        ~SearcherManager()
-        {
-            Dispose(false);
-        }
+        private bool _disposed;
 
         public void Dispose()
         {
             Dispose(true);
             GC.SuppressFinalize(this);
+        }
+
+        ~SearcherManager()
+        {
+            Dispose(false);
         }
 
         protected virtual void Dispose(bool disposing)
@@ -52,6 +53,22 @@ namespace Lucene.Net.Contrib.Management
         }
 
         #endregion
+
+        public bool IsSearcherCurrent
+        {
+            get
+            {
+                var searcher = AcquireSearcher();
+                try
+                {
+                    return searcher.IndexReader.IsCurrent();
+                }
+                finally
+                {
+                    ReleaseSearcher(searcher);
+                }
+            }
+        }
 
         public bool MaybeReopen()
         {
@@ -87,22 +104,6 @@ namespace Lucene.Net.Contrib.Management
             return false;
         }
 
-        public bool IsSearcherCurrent
-        {
-            get
-            {
-                var searcher = AcquireSearcher();
-                try
-                {
-                    return searcher.IndexReader.IsCurrent();
-                }
-                finally
-                {
-                    ReleaseSearcher(searcher);
-                }
-            }
-        }
-
         public IndexSearcherToken Acquire()
         {
             return new IndexSearcherToken(AcquireSearcher());
@@ -114,13 +115,13 @@ namespace Lucene.Net.Contrib.Management
 
             if ((searcher = _currentSearcher) == null)
                 throw new AlreadyClosedException("this SearcherManager is closed");
-            
+
             searcher.IndexReader.IncRef();
             return searcher;
         }
 
         private static void ReleaseSearcher(IndexSearcher searcher)
-        {            
+        {
             searcher.IndexReader.DecRef();
         }
 
@@ -137,30 +138,29 @@ namespace Lucene.Net.Contrib.Management
             EnsureOpen();
             var oldSearcher = _currentSearcher;
             _currentSearcher = newSearcher;
-            ReleaseSearcher(oldSearcher);            
+            ReleaseSearcher(oldSearcher);
         }
 
         public class IndexSearcherToken : IDisposable
         {
-            public IndexSearcher Searcher { get; private set; }
-
             public IndexSearcherToken(IndexSearcher searcher)
             {
                 Searcher = searcher;
             }
 
             #region IDisposable
-            bool _disposed;
 
-            ~IndexSearcherToken()
-            {
-                Dispose(false);
-            }
+            private bool _disposed;
 
             public void Dispose()
             {
                 Dispose(true);
                 GC.SuppressFinalize(this);
+            }
+
+            ~IndexSearcherToken()
+            {
+                Dispose(false);
             }
 
             protected virtual void Dispose(bool disposing)
@@ -177,9 +177,11 @@ namespace Lucene.Net.Contrib.Management
             }
 
             #endregion
+
+            public IndexSearcher Searcher { get; private set; }
         }
 
-        class WarmerWrapper : IndexWriter.IndexReaderWarmer
+        private class WarmerWrapper : IndexWriter.IndexReaderWarmer
         {
             private readonly ISearcherWarmer _searcher;
 

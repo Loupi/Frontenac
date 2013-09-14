@@ -4,27 +4,30 @@ using System.Diagnostics.Contracts;
 
 namespace Frontenac.Blueprints.Contracts
 {
-    [ContractClassFor(typeof(IKeyIndexableGraph))]
+    [ContractClassFor(typeof (IKeyIndexableGraph))]
     public abstract class KeyIndexableGraphContract : IKeyIndexableGraph
     {
         public void DropKeyIndex(string key, Type elementClass)
         {
             Contract.Requires(!string.IsNullOrWhiteSpace(key));
             Contract.Requires(elementClass != null);
-            Contract.Requires(elementClass.IsAssignableFrom(typeof(IVertex)) || elementClass.IsAssignableFrom(typeof(IEdge)));
+            Contract.Requires(elementClass.IsAssignableFrom(typeof (IVertex)) ||
+                              elementClass.IsAssignableFrom(typeof (IEdge)));
         }
 
         public void CreateKeyIndex(string key, Type elementClass, params Parameter[] indexParameters)
         {
             Contract.Requires(!string.IsNullOrWhiteSpace(key));
             Contract.Requires(elementClass != null);
-            Contract.Requires(elementClass.IsAssignableFrom(typeof(IVertex)) || elementClass.IsAssignableFrom(typeof(IEdge)));
+            Contract.Requires(elementClass.IsAssignableFrom(typeof (IVertex)) ||
+                              elementClass.IsAssignableFrom(typeof (IEdge)));
         }
 
         public IEnumerable<string> GetIndexedKeys(Type elementClass)
         {
             Contract.Requires(elementClass != null);
-            Contract.Requires(elementClass.IsAssignableFrom(typeof(IVertex)) || elementClass.IsAssignableFrom(typeof(IEdge)));
+            Contract.Requires(elementClass.IsAssignableFrom(typeof (IVertex)) ||
+                              elementClass.IsAssignableFrom(typeof (IEdge)));
             Contract.Ensures(Contract.Result<IEnumerable<string>>() != null);
             return null;
         }

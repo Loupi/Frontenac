@@ -4,13 +4,13 @@ using System.Diagnostics.Contracts;
 namespace Frontenac.Blueprints.Util.Wrappers.Wrapped
 {
     /// <summary>
-    /// WrappedGraph serves as a template for writing a wrapper graph.
-    /// The intention is that the code in this template is copied and adjusted accordingly.
+    ///     WrappedGraph serves as a template for writing a wrapper graph.
+    ///     The intention is that the code in this template is copied and adjusted accordingly.
     /// </summary>
     public class WrappedGraph : IGraph, IWrapperGraph
     {
+        private readonly Features _features;
         protected IGraph BaseGraph;
-        readonly Features _features;
 
         public WrappedGraph(IGraph baseGraph)
         {
@@ -44,7 +44,9 @@ namespace Frontenac.Blueprints.Util.Wrappers.Wrapped
 
         public IEdge AddEdge(object id, IVertex outVertex, IVertex inVertex, string label)
         {
-            return new WrappedEdge(BaseGraph.AddEdge(id, ((WrappedVertex)outVertex).GetBaseVertex(), ((WrappedVertex)inVertex).GetBaseVertex(), label));
+            return
+                new WrappedEdge(BaseGraph.AddEdge(id, ((WrappedVertex) outVertex).GetBaseVertex(),
+                                                  ((WrappedVertex) inVertex).GetBaseVertex(), label));
         }
 
         public IEdge GetEdge(object id)
@@ -65,29 +67,19 @@ namespace Frontenac.Blueprints.Util.Wrappers.Wrapped
 
         public void RemoveEdge(IEdge edge)
         {
-            BaseGraph.RemoveEdge(((WrappedEdge)edge).GetBaseEdge());
+            BaseGraph.RemoveEdge(((WrappedEdge) edge).GetBaseEdge());
         }
 
         public void RemoveVertex(IVertex vertex)
         {
-            BaseGraph.RemoveVertex(((WrappedVertex)vertex).GetBaseVertex());
-        }
-
-        public IGraph GetBaseGraph()
-        {
-            return BaseGraph;
+            BaseGraph.RemoveVertex(((WrappedVertex) vertex).GetBaseVertex());
         }
 
         public IQuery Query()
         {
             return new WrappedQuery(BaseGraph.Query(),
-                t => new WrappedEdgeIterable(t.Edges()),
-                t => new WrappedVertexIterable(t.Vertices()));
-        }
-
-        public override string ToString()
-        {
-            return StringFactory.GraphString(this, BaseGraph.ToString());
+                                    t => new WrappedEdgeIterable(t.Edges()),
+                                    t => new WrappedVertexIterable(t.Vertices()));
         }
 
         public Features Features
@@ -98,6 +90,16 @@ namespace Frontenac.Blueprints.Util.Wrappers.Wrapped
         public void Shutdown()
         {
             BaseGraph.Shutdown();
+        }
+
+        public IGraph GetBaseGraph()
+        {
+            return BaseGraph;
+        }
+
+        public override string ToString()
+        {
+            return StringFactory.GraphString(this, BaseGraph.ToString());
         }
     }
 }

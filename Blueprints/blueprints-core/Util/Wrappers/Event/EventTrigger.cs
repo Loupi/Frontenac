@@ -2,25 +2,26 @@
 using System.Collections.Concurrent;
 using System.Diagnostics.Contracts;
 using System.Threading;
+using Frontenac.Blueprints.Util.Wrappers.Event.Listener;
 
 namespace Frontenac.Blueprints.Util.Wrappers.Event
 {
     public class EventTrigger : IDisposable
     {
         /// <summary>
-        /// A queue of events that are triggered by change to the graph.  The queue builds
-        /// up until the EventTrigger fires them in the order they were received.
+        ///     When set to true, events in the event queue will only be fired when a transaction
+        ///     is committed.
         /// </summary>
-        readonly ThreadLocal<ConcurrentQueue<Listener.IEvent>> _eventQueue =
-            new ThreadLocal<ConcurrentQueue<Listener.IEvent>>(() => new ConcurrentQueue<Listener.IEvent>());
+        private readonly bool _enqueEvents;
 
         /// <summary>
-        /// When set to true, events in the event queue will only be fired when a transaction
-        /// is committed.
+        ///     A queue of events that are triggered by change to the graph.  The queue builds
+        ///     up until the EventTrigger fires them in the order they were received.
         /// </summary>
-        readonly bool _enqueEvents;
+        private readonly ThreadLocal<ConcurrentQueue<IEvent>> _eventQueue =
+            new ThreadLocal<ConcurrentQueue<IEvent>>(() => new ConcurrentQueue<IEvent>());
 
-        readonly EventGraph _graph;
+        private readonly EventGraph _graph;
 
         public EventTrigger(EventGraph graph, bool enqueEvents)
         {
@@ -31,17 +32,18 @@ namespace Frontenac.Blueprints.Util.Wrappers.Event
         }
 
         #region IDisposable
-        bool _disposed;
 
-        ~EventTrigger()
-        {
-            Dispose(false);
-        }
+        private bool _disposed;
 
         public void Dispose()
         {
             Dispose(true);
             GC.SuppressFinalize(this);
+        }
+
+        ~EventTrigger()
+        {
+            Dispose(false);
         }
 
         protected virtual void Dispose(bool disposing)
@@ -60,11 +62,11 @@ namespace Frontenac.Blueprints.Util.Wrappers.Event
         #endregion
 
         /// <summary>
-        /// Add an event to the event queue.
-        /// If the enqueEvents is false, then the queue fires and resets after each event
+        ///     Add an event to the event queue.
+        ///     If the enqueEvents is false, then the queue fires and resets after each event
         /// </summary>
         /// <param name="evt">The event to add to the event queue</param>
-        public void AddEvent(Listener.IEvent evt)
+        public void AddEvent(IEvent evt)
         {
             Contract.Requires(evt != null);
 
@@ -79,13 +81,13 @@ namespace Frontenac.Blueprints.Util.Wrappers.Event
 
         public void ResetEventQueue()
         {
-            _eventQueue.Value = new ConcurrentQueue<Listener.IEvent>();
+            _eventQueue.Value = new ConcurrentQueue<IEvent>();
         }
 
         public void FireEventQueue()
         {
             var concurrentQueue = _eventQueue.Value;
-            Listener.IEvent event_;
+            IEvent event_;
             while (concurrentQueue.TryDequeue(out event_))
             {
                 event_.FireEvent(_graph.GetListenerIterator());

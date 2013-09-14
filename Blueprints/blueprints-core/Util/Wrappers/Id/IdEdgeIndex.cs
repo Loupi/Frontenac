@@ -61,12 +61,12 @@ namespace Frontenac.Blueprints.Util.Wrappers.Id
             return StringFactory.IndexString(this);
         }
 
-        static IEdge GetBaseElement(IElement e)
+        private static IEdge GetBaseElement(IElement e)
         {
             Contract.Requires(e is IdEdge);
             Contract.Ensures(Contract.Result<IEdge>() != null);
 
-            return ((IdEdge)e).GetBaseEdge();
+            return ((IdEdge) e).GetBaseEdge();
         }
     }
 }

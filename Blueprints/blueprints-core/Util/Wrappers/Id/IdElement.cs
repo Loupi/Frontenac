@@ -67,6 +67,15 @@ namespace Frontenac.Blueprints.Util.Wrappers.Id
             }
         }
 
+        public void Remove()
+        {
+            var vertex = this as IVertex;
+            if (vertex != null)
+                IdGraph.RemoveVertex(vertex);
+            else
+                IdGraph.RemoveEdge((IEdge) this);
+        }
+
         public override int GetHashCode()
         {
             return BaseElement.GetHashCode();
@@ -75,15 +84,6 @@ namespace Frontenac.Blueprints.Util.Wrappers.Id
         public override bool Equals(object obj)
         {
             return ElementHelper.AreEqual(this, obj);
-        }
-
-        public void Remove()
-        {
-            var vertex = this as IVertex;
-            if (vertex != null)
-                IdGraph.RemoveVertex(vertex);
-            else
-                IdGraph.RemoveEdge((IEdge)this);
         }
 
         public override string ToString()

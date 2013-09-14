@@ -7,13 +7,8 @@ namespace Grave.Esent
 {
     public class EsentContextBase
     {
-        protected JET_DBID Dbid;
         protected readonly IContentSerializer ContentSerializer;
-
-        public string DatabaseName { get; protected set; }
-        public EsentVertexTable VertexTable { get; private set; }
-        public EsentEdgesTable EdgesTable { get; private set; }
-        public Session Session { get; private set; }
+        protected JET_DBID Dbid;
 
         public EsentContextBase(Session session, string databaseName, IContentSerializer contentSerializer)
         {
@@ -30,7 +25,8 @@ namespace Grave.Esent
         }
 
         #region IDisposable
-        bool _disposed;
+
+        private bool _disposed;
 
         ~EsentContextBase()
         {
@@ -58,7 +54,12 @@ namespace Grave.Esent
 
         #endregion
 
-        static string CleanDatabaseName(string databaseName)
+        public string DatabaseName { get; protected set; }
+        public EsentVertexTable VertexTable { get; private set; }
+        public EsentEdgesTable EdgesTable { get; private set; }
+        public Session Session { get; private set; }
+
+        private static string CleanDatabaseName(string databaseName)
         {
             Contract.Requires(!string.IsNullOrWhiteSpace(databaseName));
             Contract.Ensures(!string.IsNullOrWhiteSpace(Contract.Result<string>()));
@@ -75,18 +76,19 @@ namespace Grave.Esent
             return databaseName;
         }
 
-        public static Instance CreateInstance(string instanceName, string logsDirectory, string tempDirectory, string systemDirectory)
+        public static Instance CreateInstance(string instanceName, string logsDirectory, string tempDirectory,
+                                              string systemDirectory)
         {
             var instance = new Instance(instanceName);
             instance.Parameters.CircularLog = true;
             instance.Parameters.Recovery = true;
-            instance.Parameters.LogBuffers = 8 * 1024;
-            instance.Parameters.LogFileSize = 16 * 1024;
+            instance.Parameters.LogBuffers = 8*1024;
+            instance.Parameters.LogFileSize = 16*1024;
             instance.Parameters.SystemDirectory = systemDirectory;
             instance.Parameters.TempDirectory = tempDirectory;
             instance.Parameters.LogFileDirectory = logsDirectory;
             instance.Parameters.CreatePathIfNotExist = true;
-            SystemParameters.CacheSizeMin = 16 * 1024;
+            SystemParameters.CacheSizeMin = 16*1024;
             instance.Init();
             return instance;
         }
@@ -116,7 +118,7 @@ namespace Grave.Esent
             VertexTable.Open(Dbid);
             EdgesTable.Open(Dbid);
         }
-        
+
         protected virtual void CloseDatabase()
         {
             VertexTable.Close();

@@ -5,18 +5,12 @@ namespace Frontenac.Blueprints.Util.Wrappers.Id
 {
     public class IdVertex : IdElement, IVertex
     {
-        readonly IVertex _baseVertex;
+        private readonly IVertex _baseVertex;
 
         public IdVertex(IVertex baseVertex, IdGraph idGraph)
             : base(baseVertex, idGraph, idGraph.GetSupportVertexIds())
         {
             _baseVertex = baseVertex;
-        }
-
-        public IVertex GetBaseVertex()
-        {
-            Contract.Ensures(Contract.Result<IVertex>() != null);
-            return _baseVertex;
         }
 
         public IEnumerable<IEdge> GetEdges(Direction direction, params string[] labels)
@@ -32,13 +26,19 @@ namespace Frontenac.Blueprints.Util.Wrappers.Id
         public IVertexQuery Query()
         {
             return new WrapperVertexQuery(_baseVertex.Query(),
-                t => new IdEdgeIterable(t.Edges(), IdGraph),
-                t => new IdVertexIterable(t.Vertices(), IdGraph));
+                                          t => new IdEdgeIterable(t.Edges(), IdGraph),
+                                          t => new IdVertexIterable(t.Vertices(), IdGraph));
         }
 
         public IEdge AddEdge(string label, IVertex vertex)
         {
             return IdGraph.AddEdge(null, this, vertex, label);
+        }
+
+        public IVertex GetBaseVertex()
+        {
+            Contract.Ensures(Contract.Result<IVertex>() != null);
+            return _baseVertex;
         }
 
         public override string ToString()

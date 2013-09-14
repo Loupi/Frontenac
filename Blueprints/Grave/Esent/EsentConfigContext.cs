@@ -6,9 +6,7 @@ namespace Grave.Esent
 {
     public class EsentConfigContext : EsentContextBase
     {
-        public EsentConfigTable ConfigTable { get; private set; }
-
-        public EsentConfigContext(Session session, string databaseName, IContentSerializer contentSerializer) : 
+        public EsentConfigContext(Session session, string databaseName, IContentSerializer contentSerializer) :
             base(session, databaseName, contentSerializer)
         {
             ConfigTable = new EsentConfigTable(Session, ContentSerializer);
@@ -17,13 +15,15 @@ namespace Grave.Esent
             ConfigTable.Open(Dbid);
         }
 
+        public EsentConfigTable ConfigTable { get; private set; }
+
         protected override void CloseDatabase()
         {
             base.CloseDatabase();
             ConfigTable.Close();
         }
 
-        void CreateDatabase()
+        private void CreateDatabase()
         {
             if (File.Exists(DatabaseName)) return;
 

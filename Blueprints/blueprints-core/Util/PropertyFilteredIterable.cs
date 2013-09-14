@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Diagnostics.Contracts;
 using System.Linq;
@@ -6,16 +7,16 @@ using System.Linq;
 namespace Frontenac.Blueprints.Util
 {
     /// <summary>
-    /// This is a helper class for filtering an IEnumerable of elements by their key/value.
-    /// Useful for graph implementations that do no support automatic key indices and need to filter on Graph.getVertices/Edges(key,value).
+    ///     This is a helper class for filtering an IEnumerable of elements by their key/value.
+    ///     Useful for graph implementations that do no support automatic key indices and need to filter on Graph.getVertices/Edges(key,value).
     /// </summary>
     /// <typeparam name="T"></typeparam>
     public class PropertyFilteredIterable<T> : ICloseableIterable<T> where T : class, IElement
     {
-        readonly string _key;
-        readonly object _value;
-        readonly IEnumerable<T> _iterable;
-        bool _disposed;
+        private readonly IEnumerable<T> _iterable;
+        private readonly string _key;
+        private readonly object _value;
+        private bool _disposed;
 
         public PropertyFilteredIterable(string key, object value, IEnumerable<T> iterable)
         {
@@ -27,15 +28,25 @@ namespace Frontenac.Blueprints.Util
             _iterable = iterable;
         }
 
-        ~PropertyFilteredIterable()
-        {
-            Dispose(false);
-        }
-
         public void Dispose()
         {
             Dispose(true);
             GC.SuppressFinalize(this);
+        }
+
+        public IEnumerator<T> GetEnumerator()
+        {
+            return new PropertyFilteredIterableIterable<T>(this).GetEnumerator();
+        }
+
+        IEnumerator IEnumerable.GetEnumerator()
+        {
+            return (this as IEnumerable<T>).GetEnumerator();
+        }
+
+        ~PropertyFilteredIterable()
+        {
+            Dispose(false);
         }
 
         protected virtual void Dispose(bool disposing)
@@ -52,21 +63,11 @@ namespace Frontenac.Blueprints.Util
             _disposed = true;
         }
 
-        public IEnumerator<T> GetEnumerator()
+        private class PropertyFilteredIterableIterable<TU> : IEnumerable<TU> where TU : class, IElement
         {
-            return new PropertyFilteredIterableIterable<T>(this).GetEnumerator();
-        }
-
-        System.Collections.IEnumerator System.Collections.IEnumerable.GetEnumerator()
-        {
-            return (this as IEnumerable<T>).GetEnumerator();
-        }
-
-        class PropertyFilteredIterableIterable<TU> : IEnumerable<TU> where TU : class, IElement
-        {
-            readonly PropertyFilteredIterable<TU> _propertyFilteredIterable;
-            readonly IEnumerator<TU> _itty;
-            TU _nextElement;
+            private readonly IEnumerator<TU> _itty;
+            private readonly PropertyFilteredIterable<TU> _propertyFilteredIterable;
+            private TU _nextElement;
 
             public PropertyFilteredIterableIterable(PropertyFilteredIterable<TU> propertyFilteredIterable)
             {
@@ -92,14 +93,20 @@ namespace Frontenac.Blueprints.Util
                         {
                             var element = _itty.Current;
                             if (element.GetPropertyKeys().Contains(_propertyFilteredIterable._key) &&
-                                AreEqual(element.GetProperty(_propertyFilteredIterable._key), _propertyFilteredIterable._value))
+                                AreEqual(element.GetProperty(_propertyFilteredIterable._key),
+                                         _propertyFilteredIterable._value))
                                 yield return element;
                         }
                     }
                 }
             }
 
-            bool HasNext()
+            IEnumerator IEnumerable.GetEnumerator()
+            {
+                return GetEnumerator();
+            }
+
+            private bool HasNext()
             {
                 if (_nextElement != null)
                     return true;
@@ -129,12 +136,7 @@ namespace Frontenac.Blueprints.Util
                 return false;
             }
 
-            System.Collections.IEnumerator System.Collections.IEnumerable.GetEnumerator()
-            {
-                return GetEnumerator();
-            }
-
-            static bool AreEqual(object aVal, object bVal)
+            private static bool AreEqual(object aVal, object bVal)
             {
                 if (aVal == null && bVal == null)
                     return true;

@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Diagnostics.Contracts;
 using System.Linq;
@@ -6,13 +7,13 @@ using System.Linq;
 namespace Frontenac.Blueprints.Util
 {
     /// <summary>
-    /// A helper class that is used to combine multiple iterables into a single closeable IEnumerable.
+    ///     A helper class that is used to combine multiple iterables into a single closeable IEnumerable.
     /// </summary>
     /// <typeparam name="TS"></typeparam>
     public class MultiIterable<TS> : ICloseableIterable<TS>
     {
-        readonly IEnumerable<IEnumerable<TS>> _iterables;
-        bool _disposed;
+        private readonly IEnumerable<IEnumerable<TS>> _iterables;
+        private bool _disposed;
 
         public MultiIterable(IEnumerable<IEnumerable<TS>> iterables)
         {
@@ -21,15 +22,25 @@ namespace Frontenac.Blueprints.Util
             _iterables = iterables;
         }
 
-        ~MultiIterable()
-        {
-            Dispose(false);
-        }
-
         public void Dispose()
         {
             Dispose(true);
             GC.SuppressFinalize(this);
+        }
+
+        public IEnumerator<TS> GetEnumerator()
+        {
+            return _iterables.SelectMany(current => current).GetEnumerator();
+        }
+
+        IEnumerator IEnumerable.GetEnumerator()
+        {
+            return (this as IEnumerable<TS>).GetEnumerator();
+        }
+
+        ~MultiIterable()
+        {
+            Dispose(false);
         }
 
         protected virtual void Dispose(bool disposing)
@@ -46,16 +57,6 @@ namespace Frontenac.Blueprints.Util
             }
 
             _disposed = true;
-        }
-
-        public IEnumerator<TS> GetEnumerator()
-        {
-            return _iterables.SelectMany(current => current).GetEnumerator();
-        }
-
-        System.Collections.IEnumerator System.Collections.IEnumerable.GetEnumerator()
-        {
-            return (this as IEnumerable<TS>).GetEnumerator();
         }
     }
 }

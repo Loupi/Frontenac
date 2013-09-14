@@ -1,16 +1,17 @@
-﻿using System.Collections.Generic;
+﻿using System.Collections;
+using System.Collections.Generic;
 using System.Diagnostics.Contracts;
 
 namespace Frontenac.Blueprints.Util
 {
     /// <summary>
-    /// VerticesFromEdgesIterable is a helper class that returns vertices that meet the direction/label criteria of the incident edges.
+    ///     VerticesFromEdgesIterable is a helper class that returns vertices that meet the direction/label criteria of the incident edges.
     /// </summary>
     public class VerticesFromEdgesIterable : IEnumerable<IVertex>
     {
-        readonly IEnumerable<IEdge> _iterable;
-        readonly Direction _direction;
-        readonly IVertex _vertex;
+        private readonly Direction _direction;
+        private readonly IEnumerable<IEdge> _iterable;
+        private readonly IVertex _vertex;
 
         public VerticesFromEdgesIterable(IVertex vertex, Direction direction, params string[] labels)
         {
@@ -41,7 +42,7 @@ namespace Frontenac.Blueprints.Util
             }
         }
 
-        System.Collections.IEnumerator System.Collections.IEnumerable.GetEnumerator()
+        IEnumerator IEnumerable.GetEnumerator()
         {
             return (this as IEnumerable<IVertex>).GetEnumerator();
         }

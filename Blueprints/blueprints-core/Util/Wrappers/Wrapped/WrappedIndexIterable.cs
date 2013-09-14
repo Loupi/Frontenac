@@ -1,12 +1,13 @@
-﻿using System.Collections.Generic;
+﻿using System.Collections;
+using System.Collections.Generic;
 using System.Diagnostics.Contracts;
 using System.Linq;
 
 namespace Frontenac.Blueprints.Util.Wrappers.Wrapped
 {
-    class WrappedIndexIterable : IEnumerable<IIndex>
+    internal class WrappedIndexIterable : IEnumerable<IIndex>
     {
-        readonly IEnumerable<IIndex> _iterable;
+        private readonly IEnumerable<IIndex> _iterable;
 
         public WrappedIndexIterable(IEnumerable<IIndex> iterable)
         {
@@ -20,7 +21,7 @@ namespace Frontenac.Blueprints.Util.Wrappers.Wrapped
             return _iterable.Select(index => new WrappedIndex(index)).Cast<IIndex>().GetEnumerator();
         }
 
-        System.Collections.IEnumerator System.Collections.IEnumerable.GetEnumerator()
+        IEnumerator IEnumerable.GetEnumerator()
         {
             return (this as IEnumerable<IIndex>).GetEnumerator();
         }

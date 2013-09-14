@@ -1,10 +1,10 @@
-﻿using NUnit.Framework;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using Frontenac.Blueprints.Impls;
 using Frontenac.Blueprints.Impls.Sail;
 using Frontenac.Blueprints.Util;
+using NUnit.Framework;
 
 namespace Frontenac.Blueprints
 {
@@ -13,7 +13,6 @@ namespace Frontenac.Blueprints
         protected VertexTestSuite(GraphTest graphTest)
             : base("VertexTestSuite", graphTest)
         {
-
         }
 
         [Test]
@@ -408,10 +407,10 @@ namespace Frontenac.Blueprints
                     {
                         Assert.AreEqual(3, vertex.GetPropertyKeys().Count());
                         Assert.True(vertex.GetPropertyKeys().Contains(SailTokens.Datatype));
-                        Assert.AreEqual("http://www.w3.org/2001/XMLSchema#anyURI", vertex.GetProperty(SailTokens.Datatype));
+                        Assert.AreEqual("http://www.w3.org/2001/XMLSchema#anyURI",
+                                        vertex.GetProperty(SailTokens.Datatype));
                         Assert.True(vertex.GetPropertyKeys().Contains(SailTokens.Value));
                         Assert.AreEqual("literal", vertex.GetProperty(SailTokens.Kind));
-
                     }
                 }
             }

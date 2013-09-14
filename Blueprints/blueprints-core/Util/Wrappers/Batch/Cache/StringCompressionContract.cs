@@ -2,7 +2,7 @@
 
 namespace Frontenac.Blueprints.Util.Wrappers.Batch.Cache
 {
-    [ContractClassFor(typeof(StringCompression))]
+    [ContractClassFor(typeof (StringCompression))]
     public abstract class StringCompressionContract : StringCompression
     {
         public override string Compress(string input)

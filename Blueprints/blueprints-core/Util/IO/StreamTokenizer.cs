@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Diagnostics.Contracts;
 using System.Globalization;
@@ -35,65 +36,21 @@ using System.IO;
    * it returns the value <code>TT_EOF</code>.
    *
    */
+
 namespace Frontenac.Blueprints.Util.IO
 {
     public class StreamTokenizer : IEnumerable<int>
     {
-
         /* Only one of these will be non-null */
-        private readonly StreamReader _reader;
-
-
-        /**
-         * The next character to be considered by the nextToken method.  May also
-         * be NEED_CHAR to indicate that a new character should be Read, or SKIP_LF
-         * to indicate that a new character should be Read and, if it is a '\n'
-         * character, it should be discarded and a second new character should be
-         * Read.
-         */
-        private int _peekc = NeedChar;
 
         private const int NeedChar = Int32.MaxValue;
         private const int SkipLf = Int32.MaxValue - 1;
 
-        private bool _pushedBack;
-        private bool _forceLower;
-        /** The line number of the last token Read */
-
-        private bool _eolIsSignificantP;
-        private bool _slashSlashCommentsP;
-        private bool _slashStarCommentsP;
-
-        private readonly byte[] _characterType = new byte[256];
         private const byte CtWhitespace = 1;
         private const byte CtDigit = 2;
         private const byte CtAlpha = 4;
         private const byte CtQuote = 8;
         private const byte CtComment = 16;
-
-        public int LineNumber { get; private set; }
-
-        /**
-         * After a call to the <code>nextToken</code> method, this field
-         * contains the type of the token just Read. For a single character
-         * token, its value is the single character, converted to an integer.
-         * For a quoted string token, its value is the quote character.
-         * Otherwise, its value is one of the following:
-         * <ul>
-         * <li><code>TT_WORD</code> indicates that the token is a word.
-         * <li><code>TT_NUMBER</code> indicates that the token is a number.
-         * <li><code>TT_EOL</code> indicates that the end of line has been Read.
-         *     The field can only have this value if the
-         *     <code>eolIsSignificant</code> method has been called with the
-         *     argument <code>true</code>.
-         * <li><code>TT_EOF</code> indicates that the end of the input stream
-         *     has been reached.
-         * </ul>
-         * <p>
-         * The initial value of this field is -4.
-         *
-         */
-        public int Ttype = TtNothing;
 
         /**
          * A constant indicating that the end of the stream has been Read.
@@ -120,6 +77,15 @@ namespace Frontenac.Blueprints.Util.IO
          * made available as the part of the API in a future release.
          */
         private const int TtNothing = -4;
+        private readonly byte[] _characterType = new byte[256];
+        private readonly StreamReader _reader;
+        public int Ttype = TtNothing;
+        private bool _eolIsSignificantP;
+        private bool _forceLower;
+        private int _peekc = NeedChar;
+        private bool _pushedBack;
+        private bool _slashSlashCommentsP;
+        private bool _slashStarCommentsP;
 
         /**
          * If the current token is a word token, this field contains a
@@ -138,18 +104,9 @@ namespace Frontenac.Blueprints.Util.IO
          * @see     java.io.StreamTokenizer#TT_WORD
          * @see     java.io.StreamTokenizer#ttype
          */
-        public string StringValue { get; private set; }
-
-        /**
-         * If the current token is a number, this field contains the value
-         * of that number. The current token is a number when the value of
-         * the <code>ttype</code> field is <code>TT_NUMBER</code>.
-         * <p>
-         * The initial value of this field is 0.0.
-         */
-        public double NumberValue { get; private set; }
 
         /** Private constructor that initializes everything except the streams. */
+
         private StreamTokenizer()
         {
             WordChars('a', 'z');
@@ -168,6 +125,7 @@ namespace Frontenac.Blueprints.Util.IO
          *
          * @param r  a Reader object providing the input stream.
          */
+
         public StreamTokenizer(StreamReader r)
             : this()
         {
@@ -176,11 +134,89 @@ namespace Frontenac.Blueprints.Util.IO
             _reader = r;
         }
 
+        public int LineNumber { get; private set; }
+        public string StringValue { get; private set; }
+
+        /**
+         * If the current token is a number, this field contains the value
+         * of that number. The current token is a number when the value of
+         * the <code>ttype</code> field is <code>TT_NUMBER</code>.
+         * <p>
+         * The initial value of this field is 0.0.
+         */
+        public double NumberValue { get; private set; }
+
+        public bool SlashStarComments
+        {
+            get { return _slashStarCommentsP; }
+            set { _slashStarCommentsP = value; }
+        }
+
+        /**
+         * Determines whether or not the tokenizer recognizes C++-style comments.
+         * If the flag argument is <code>true</code>, this stream tokenizer
+         * recognizes C++-style comments. Any occurrence of two consecutive
+         * slash characters (<code>'/'</code>) is treated as the beginning of
+         * a comment that extends to the end of the line.
+         * <p>
+         * If the flag argument is <code>false</code>, then C++-style
+         * comments are not treated specially.
+         *
+         * @param   flag   <code>true</code> indicates to recognize and ignore
+         *                 C++-style comments.
+         */
+
+        public bool SlashSlashComments
+        {
+            get { return _slashSlashCommentsP; }
+            set { _slashSlashCommentsP = value; }
+        }
+
+        /**
+         * Determines whether or not word token are automatically lowercased.
+         * If the flag argument is <code>true</code>, then the value in the
+         * <code>sval</code> field is lowercased whenever a word token is
+         * returned (the <code>ttype</code> field has the
+         * value <code>TT_WORD</code> by the <code>nextToken</code> method
+         * of this tokenizer.
+         * <p>
+         * If the flag argument is <code>false</code>, then the
+         * <code>sval</code> field is not modified.
+         *
+         * @param   fl   <code>true</code> indicates that all word tokens should
+         *               be lowercased.
+         */
+
+        public bool LowerCaseMode
+        {
+            set { _forceLower = value; }
+        }
+
+        public IEnumerator<int> GetEnumerator()
+        {
+            ResetSyntax();
+            while (true)
+            {
+                int token = NextToken();
+                if (token == TtEof)
+                {
+                    yield break;
+                }
+                yield return token;
+            }
+        }
+
+        IEnumerator IEnumerable.GetEnumerator()
+        {
+            return GetEnumerator();
+        }
+
         /**
          * Resets this tokenizer's syntax table so that all characters are
          * "ordinary." See the <code>ordinaryChar</code> method
          * for more information on a character being ordinary.
          */
+
         public void ResetSyntax()
         {
             Array.Clear(_characterType, 0, _characterType.Length);
@@ -195,6 +231,7 @@ namespace Frontenac.Blueprints.Util.IO
          * @param   low   the low end of the range.
          * @param   hi    the high end of the range.
          */
+
         public void WordChars(int low, int hi)
         {
             if (low < 0)
@@ -223,6 +260,7 @@ namespace Frontenac.Blueprints.Util.IO
          * @param   low   the low end of the range.
          * @param   hi    the high end of the range.
          */
+
         public void WhitespaceChars(int low, int hi)
         {
             if (low < 0)
@@ -250,6 +288,7 @@ namespace Frontenac.Blueprints.Util.IO
          * @param   hi    the high end of the range.
          * @see     java.io.StreamTokenizer#ordinaryChar(int)
          */
+
         public void OrdinaryChars(int low, int hi)
         {
             if (low < 0)
@@ -265,6 +304,7 @@ namespace Frontenac.Blueprints.Util.IO
                 _characterType[low++] = 0;
             }
         }
+
         /**
          * Specifies that the character argument is "ordinary"
          * in this tokenizer. It removes any special significance the
@@ -281,6 +321,7 @@ namespace Frontenac.Blueprints.Util.IO
          *
          * @param   ch   the character.
          */
+
         public void OrdinaryChar(int ch)
         {
             if (ch >= 0 && ch < _characterType.Length)
@@ -296,6 +337,7 @@ namespace Frontenac.Blueprints.Util.IO
          *
          * @param   ch   the character.
          */
+
         public void CommentChar(int ch)
         {
             if (ch >= 0 && ch < _characterType.Length)
@@ -325,6 +367,7 @@ namespace Frontenac.Blueprints.Util.IO
          *
          * @param   ch   the character.
          */
+
         public void QuoteChar(int ch)
         {
             if (ch >= 0 && ch < _characterType.Length)
@@ -347,6 +390,7 @@ namespace Frontenac.Blueprints.Util.IO
          * field to the value <code>TT_NUMBER</code> and putting the numeric
          * value of the token into the <code>nval</code> field.
          */
+
         public void ParseNumbers()
         {
             for (int i = '0'; i <= '9'; i++)
@@ -377,6 +421,7 @@ namespace Frontenac.Blueprints.Util.IO
          *                 are separate tokens; <code>false</code> indicates that
          *                 end-of-line characters are white space.
          */
+
         public void EolIsSignificant(bool flag)
         {
             _eolIsSignificantP = flag;
@@ -394,51 +439,9 @@ namespace Frontenac.Blueprints.Util.IO
          * @param   flag   <code>true</code> indicates to recognize and ignore
          *                 C-style comments.
          */
-        public bool SlashStarComments
-        {
-            get { return _slashStarCommentsP; }
-            set { _slashStarCommentsP = value; }
-        }
-
-        /**
-         * Determines whether or not the tokenizer recognizes C++-style comments.
-         * If the flag argument is <code>true</code>, this stream tokenizer
-         * recognizes C++-style comments. Any occurrence of two consecutive
-         * slash characters (<code>'/'</code>) is treated as the beginning of
-         * a comment that extends to the end of the line.
-         * <p>
-         * If the flag argument is <code>false</code>, then C++-style
-         * comments are not treated specially.
-         *
-         * @param   flag   <code>true</code> indicates to recognize and ignore
-         *                 C++-style comments.
-         */
-        public bool SlashSlashComments
-        {
-            get { return _slashSlashCommentsP; }
-            set { _slashSlashCommentsP = value; }
-        }
-
-        /**
-         * Determines whether or not word token are automatically lowercased.
-         * If the flag argument is <code>true</code>, then the value in the
-         * <code>sval</code> field is lowercased whenever a word token is
-         * returned (the <code>ttype</code> field has the
-         * value <code>TT_WORD</code> by the <code>nextToken</code> method
-         * of this tokenizer.
-         * <p>
-         * If the flag argument is <code>false</code>, then the
-         * <code>sval</code> field is not modified.
-         *
-         * @param   fl   <code>true</code> indicates that all word tokens should
-         *               be lowercased.
-         */
-        public bool LowerCaseMode
-        {
-            set { _forceLower = value; }
-        }
 
         /** Read the next character */
+
         private int Read()
         {
             if (_reader != null)
@@ -462,6 +465,7 @@ namespace Frontenac.Blueprints.Util.IO
          *
          * @return     the value of the <code>ttype</code> field.
          */
+
         public int NextToken()
         {
             if (_pushedBack)
@@ -489,7 +493,7 @@ namespace Frontenac.Blueprints.Util.IO
                 if (c < 0)
                     return Ttype = TtEof;
             }
-            Ttype = c;      /* Just to be safe */
+            Ttype = c; /* Just to be safe */
 
             /* Set peekc so that the next invocation of nextToken will Read
              * another character unless peekc is reset in this invocation
@@ -550,7 +554,7 @@ namespace Frontenac.Blueprints.Util.IO
                         seendot = 1;
                     else if ('0' <= c && c <= '9')
                     {
-                        v = v * 10 + (c - '0');
+                        v = v*10 + (c - '0');
                         decexp += seendot;
                     }
                     else
@@ -568,7 +572,7 @@ namespace Frontenac.Blueprints.Util.IO
                         decexp--;
                     }
                     /* Do one division of a likely-to-be-more-accurate number */
-                    v = v / denom;
+                    v = v/denom;
                 }
                 NumberValue = neg ? -v : v;
                 StringValue = NumberValue.ToString(CultureInfo.InvariantCulture);
@@ -584,7 +588,7 @@ namespace Frontenac.Blueprints.Util.IO
                 do
                 {
                     //buf[i++] = (char)c;
-                    buf.Add((char)c);
+                    buf.Add((char) c);
                     i++;
                     c = Read();
                     ctype = c < 0 ? CtWhitespace : c < 256 ? ct[c] : CtAlpha;
@@ -612,7 +616,7 @@ namespace Frontenac.Blueprints.Util.IO
                     if (d == '\\')
                     {
                         c = Read();
-                        int first = c;   /* To allow \377, but not \477 */
+                        int first = c; /* To allow \377, but not \477 */
                         if (c >= '0' && c <= '7')
                         {
                             c = c - '0';
@@ -667,7 +671,7 @@ namespace Frontenac.Blueprints.Util.IO
                         d = Read();
                     }
                     //buf[i++] = (char)c;
-                    buf.Add((char)c);
+                    buf.Add((char) c);
                     i++;
                 }
 
@@ -751,9 +755,10 @@ namespace Frontenac.Blueprints.Util.IO
          * field, and not to modify the value in the <code>nval</code> or
          * <code>sval</code> field.
          */
+
         public void PushBack()
         {
-            if (Ttype != TtNothing)   /* No-op if nextToken() not called */
+            if (Ttype != TtNothing) /* No-op if nextToken() not called */
             {
                 _pushedBack = true;
             }
@@ -770,6 +775,7 @@ namespace Frontenac.Blueprints.Util.IO
          *
          * @return  a string representation of the token
          */
+
         public override string ToString()
         {
             string ret;
@@ -807,32 +813,12 @@ namespace Frontenac.Blueprints.Util.IO
 
                         var s = new char[3];
                         s[0] = s[2] = '\'';
-                        s[1] = (char)Ttype;
+                        s[1] = (char) Ttype;
                         ret = new string(s);
                         break;
                     }
             }
             return "Token[" + ret + "], line " + LineNumber;
-        }
-
-
-        public IEnumerator<int> GetEnumerator()
-        {
-            ResetSyntax();
-            while (true)
-            {
-                int token = NextToken();
-                if (token == TtEof)
-                {
-                    yield break;
-                }
-                yield return token;
-            }
-        }
-
-        System.Collections.IEnumerator System.Collections.IEnumerable.GetEnumerator()
-        {
-            return GetEnumerator();
         }
     }
 }

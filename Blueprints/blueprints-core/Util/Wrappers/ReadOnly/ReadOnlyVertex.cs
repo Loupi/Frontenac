@@ -5,7 +5,7 @@ namespace Frontenac.Blueprints.Util.Wrappers.ReadOnly
 {
     public class ReadOnlyVertex : ReadOnlyElement, IVertex
     {
-        readonly IVertex _baseVertex;
+        private readonly IVertex _baseVertex;
 
         public ReadOnlyVertex(IVertex baseVertex)
             : base(baseVertex)
@@ -31,8 +31,8 @@ namespace Frontenac.Blueprints.Util.Wrappers.ReadOnly
         public IVertexQuery Query()
         {
             return new WrapperVertexQuery(_baseVertex.Query(),
-                t => new ReadOnlyEdgeIterable(t.Edges()),
-                t => new ReadOnlyVertexIterable(t.Vertices()));
+                                          t => new ReadOnlyEdgeIterable(t.Edges()),
+                                          t => new ReadOnlyVertexIterable(t.Vertices()));
         }
     }
 }

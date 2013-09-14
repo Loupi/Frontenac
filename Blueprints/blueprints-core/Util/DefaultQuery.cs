@@ -6,12 +6,12 @@ namespace Frontenac.Blueprints.Util
 {
     public abstract class DefaultQuery : IQuery
     {
-        static readonly string[] EmptyLabels = new string[] { };
+        private static readonly string[] EmptyLabels = new string[] {};
+        protected readonly List<HasContainer> HasContainers = new List<HasContainer>();
 
         public Direction Direction = Direction.Both;
-        public string[] Labels = EmptyLabels;
         internal long Innerlimit = long.MaxValue;
-        protected readonly List<HasContainer> HasContainers = new List<HasContainer>();
+        public string[] Labels = EmptyLabels;
 
         public virtual IQuery Has(string key, object value)
         {
@@ -34,7 +34,7 @@ namespace Frontenac.Blueprints.Util
 
         public abstract IEnumerable<IEdge> Edges();
         public abstract IEnumerable<IVertex> Vertices();
-        
+
         public virtual IQuery Limit(long max)
         {
             Innerlimit = max;
@@ -43,9 +43,9 @@ namespace Frontenac.Blueprints.Util
 
         public class HasContainer
         {
+            public Compare Compare;
             public string Key;
             public object Value;
-            public Compare Compare;
 
             public HasContainer(string key, object value, Compare compare)
             {
@@ -74,19 +74,19 @@ namespace Frontenac.Blueprints.Util
                     case Compare.GreaterThan:
                         if (null == elementValue || Value == null)
                             return false;
-                        return ((IComparable)elementValue).CompareTo(Value) >= 1;
+                        return ((IComparable) elementValue).CompareTo(Value) >= 1;
                     case Compare.LessThan:
                         if (null == elementValue || Value == null)
                             return false;
-                        return ((IComparable)elementValue).CompareTo(Value) <= -1;
+                        return ((IComparable) elementValue).CompareTo(Value) <= -1;
                     case Compare.GreaterThanEqual:
                         if (null == elementValue || Value == null)
                             return false;
-                        return ((IComparable)elementValue).CompareTo(Value) >= 0;
+                        return ((IComparable) elementValue).CompareTo(Value) >= 0;
                     case Compare.LessThanEqual:
                         if (null == elementValue || Value == null)
                             return false;
-                        return ((IComparable)elementValue).CompareTo(Value) <= 0;
+                        return ((IComparable) elementValue).CompareTo(Value) <= 0;
                     default:
                         throw new ArgumentException("Invalid state as no valid filter was provided");
                 }

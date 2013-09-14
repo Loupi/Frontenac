@@ -4,7 +4,7 @@ namespace Frontenac.Blueprints.Util.Wrappers.Wrapped
 {
     public class WrappedEdge : WrappedElement, IEdge
     {
-        readonly IEdge _baseEdge;
+        private readonly IEdge _baseEdge;
 
         public WrappedEdge(IEdge baseEdge)
             : base(baseEdge)

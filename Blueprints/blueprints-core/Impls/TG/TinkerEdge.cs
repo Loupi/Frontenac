@@ -5,10 +5,10 @@ using Frontenac.Blueprints.Util;
 namespace Frontenac.Blueprints.Impls.TG
 {
     [Serializable]
-    class TinkerEdge : TinkerElement, IEdge
+    internal class TinkerEdge : TinkerElement, IEdge
     {
-        readonly IVertex _inVertex;
-        readonly IVertex _outVertex;
+        private readonly IVertex _inVertex;
+        private readonly IVertex _outVertex;
 
         public TinkerEdge(string id, IVertex outVertex, IVertex inVertex, string label, TinkerGraph graph)
             : base(id, graph)

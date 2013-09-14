@@ -9,11 +9,11 @@ namespace Frontenac.Blueprints
 {
     public abstract class BaseTest
     {
-        Stopwatch _timer;
+        private Stopwatch _timer;
 
         public static Stream GetResource<T>(string resourceName)
         {
-            return typeof(T).Assembly.GetManifestResourceStream(typeof(T), resourceName);
+            return typeof (T).Assembly.GetManifestResourceStream(typeof (T), resourceName);
         }
 
         public static T GetOnlyElement<T>(IEnumerator<T> iterator)
@@ -34,7 +34,7 @@ namespace Frontenac.Blueprints
             var counter = 0;
             while (iterator.MoveNext())
                 counter++;
-            
+
             return counter;
         }
 
@@ -66,7 +66,8 @@ namespace Frontenac.Blueprints
         public static void PrintPerformance(string name, object events, string eventName, long timeInMilliseconds)
         {
             Console.WriteLine(null != events
-                                  ? string.Concat("\t", name, ": ", (int) events, " ", eventName, " in ", timeInMilliseconds, "ms")
+                                  ? string.Concat("\t", name, ": ", (int) events, " ", eventName, " in ",
+                                                  timeInMilliseconds, "ms")
                                   : string.Concat("\t", name, ": ", eventName, " in ", timeInMilliseconds, "ms"));
         }
 

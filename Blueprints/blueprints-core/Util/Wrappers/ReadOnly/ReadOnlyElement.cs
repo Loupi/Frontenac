@@ -40,6 +40,11 @@ namespace Frontenac.Blueprints.Util.Wrappers.ReadOnly
             throw new InvalidOperationException(ReadOnlyTokens.MutateErrorMessage);
         }
 
+        public void Remove()
+        {
+            throw new InvalidOperationException(ReadOnlyTokens.MutateErrorMessage);
+        }
+
         public override string ToString()
         {
             return BaseElement.ToString();
@@ -48,11 +53,6 @@ namespace Frontenac.Blueprints.Util.Wrappers.ReadOnly
         public override int GetHashCode()
         {
             return BaseElement.GetHashCode();
-        }
-
-        public void Remove()
-        {
-            throw new InvalidOperationException(ReadOnlyTokens.MutateErrorMessage);
         }
 
         public override bool Equals(object obj)

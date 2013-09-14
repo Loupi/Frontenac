@@ -1,7 +1,7 @@
 ﻿namespace Frontenac.Blueprints.Util.IO.GraphML
 {
     /// <summary>
-    /// A collection of tokens used for GraphML related data.
+    ///     A collection of tokens used for GraphML related data.
     /// </summary>
     public static class GraphMlTokens
     {

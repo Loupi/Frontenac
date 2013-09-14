@@ -4,14 +4,15 @@ using System.Diagnostics.Contracts;
 
 namespace Frontenac.Blueprints.Contracts
 {
-    [ContractClassFor(typeof(IIndexableGraph))]
+    [ContractClassFor(typeof (IIndexableGraph))]
     public abstract class IndexableGraphContract : IIndexableGraph
     {
         public IIndex CreateIndex(string indexName, Type indexClass, params Parameter[] indexParameters)
         {
             Contract.Requires(!string.IsNullOrWhiteSpace(indexName));
             Contract.Requires(indexClass != null);
-            Contract.Requires(indexClass.IsAssignableFrom(typeof(IVertex)) || indexClass.IsAssignableFrom(typeof(IEdge)));
+            Contract.Requires(indexClass.IsAssignableFrom(typeof (IVertex)) ||
+                              indexClass.IsAssignableFrom(typeof (IEdge)));
             return null;
         }
 
@@ -19,7 +20,8 @@ namespace Frontenac.Blueprints.Contracts
         {
             Contract.Requires(!string.IsNullOrWhiteSpace(indexName));
             Contract.Requires(indexClass != null);
-            Contract.Requires(indexClass.IsAssignableFrom(typeof(IVertex)) || indexClass.IsAssignableFrom(typeof(IEdge)));
+            Contract.Requires(indexClass.IsAssignableFrom(typeof (IVertex)) ||
+                              indexClass.IsAssignableFrom(typeof (IEdge)));
             return null;
         }
 

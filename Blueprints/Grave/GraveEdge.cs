@@ -7,11 +7,11 @@ namespace Grave
 {
     public class GraveEdge : GraveElement, IEdge
     {
-        readonly string _label;
-        readonly IVertex _inVertex;
-        readonly IVertex _outVertex;
+        private readonly IVertex _inVertex;
+        private readonly string _label;
+        private readonly IVertex _outVertex;
 
-        public GraveEdge(int id, IVertex outVertex, IVertex inVertex, string label,  GraveGraph graph, EsentTable table)
+        public GraveEdge(int id, IVertex outVertex, IVertex inVertex, string label, GraveGraph graph, EsentTable table)
             : base(graph, table, id)
         {
             Contract.Requires(outVertex != null);

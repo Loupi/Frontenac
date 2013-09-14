@@ -2,7 +2,7 @@
 
 namespace Frontenac.Blueprints.Util.Wrappers.Batch.Cache
 {
-    [ContractClass(typeof(VertexCacheContract))]
+    [ContractClass(typeof (VertexCacheContract))]
     public interface IVertexCache
     {
         object GetEntry(object externalId);

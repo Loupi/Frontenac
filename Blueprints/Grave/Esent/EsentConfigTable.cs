@@ -5,7 +5,8 @@ namespace Grave.Esent
 {
     public class EsentConfigTable : EsentVertexTable
     {
-        public EsentConfigTable(Session session, IContentSerializer contentSerializer) : base(session, contentSerializer)
+        public EsentConfigTable(Session session, IContentSerializer contentSerializer)
+            : base(session, contentSerializer)
         {
             TableName = "Config";
         }

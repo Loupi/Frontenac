@@ -1,5 +1,5 @@
-﻿using NUnit.Framework;
-using Frontenac.Blueprints.Impls.TG;
+﻿using Frontenac.Blueprints.Impls.TG;
+using NUnit.Framework;
 
 namespace Frontenac.Blueprints.Util
 {
@@ -43,7 +43,7 @@ namespace Frontenac.Blueprints.Util
                         Assert.True(VertexHelper.HaveEqualNeighborhood(v, u, true));
                         Assert.True(VertexHelper.HaveEqualNeighborhood(v, u, false));
                     }
-                    else 
+                    else
                     {
                         Assert.False(VertexHelper.HaveEqualNeighborhood(v, u, true));
                         Assert.False(VertexHelper.HaveEqualNeighborhood(v, u, false));

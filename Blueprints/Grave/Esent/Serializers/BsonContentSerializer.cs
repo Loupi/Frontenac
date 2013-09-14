@@ -6,7 +6,7 @@ namespace Grave.Esent.Serializers
 {
     public class BsonContentSerializer : IContentSerializer
     {
-        readonly JsonSerializer _serializer;
+        private readonly JsonSerializer _serializer;
 
         public BsonContentSerializer()
         {
@@ -23,7 +23,7 @@ namespace Grave.Esent.Serializers
             var ms = new MemoryStream();
             using (var writer = new BsonWriter(ms))
             {
-                _serializer.Serialize(writer, new BsonWrapper { Data = value });
+                _serializer.Serialize(writer, new BsonWrapper {Data = value});
                 return ms.ToArray();
             }
         }
@@ -32,7 +32,7 @@ namespace Grave.Esent.Serializers
         {
             using (var reader = new BsonReader(new MemoryStream(raw)))
             {
-                return ((BsonWrapper)_serializer.Deserialize(reader)).Data;
+                return ((BsonWrapper) _serializer.Deserialize(reader)).Data;
             }
         }
 

@@ -1,13 +1,19 @@
-﻿using NUnit.Framework;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using Frontenac.Blueprints.Impls;
+using NUnit.Framework;
 
 namespace Frontenac.Blueprints
 {
     public class TestSuite : BaseTest
     {
-        readonly string _name;
+        private readonly string _name;
         protected GraphTest GraphTest;
+
+        public TestSuite(string name, GraphTest graphTest)
+        {
+            _name = name;
+            GraphTest = graphTest;
+        }
 
         [TestFixtureSetUp]
         public virtual void FixtureSetUp()
@@ -19,12 +25,6 @@ namespace Frontenac.Blueprints
         public virtual void FixtureTearDown()
         {
             PrintTestPerformance(_name, StopWatch());
-        }
-
-        public TestSuite(string name, GraphTest graphTest)
-        {
-            _name = name;
-            GraphTest = graphTest;
         }
 
         protected string ConvertId(IGraph graph, string id)

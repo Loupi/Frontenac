@@ -14,8 +14,8 @@ namespace Frontenac.Blueprints.Util.Wrappers.Event
         }
 
         /// <summary>
-        /// A commit only fires the event queue on successful operation.  If the commit operation to the underlying
-        /// graph fails, the event queue will not fire and the queue will not be reset.
+        ///     A commit only fires the event queue on successful operation.  If the commit operation to the underlying
+        ///     graph fails, the event queue will not fire and the queue will not be reset.
         /// </summary>
         public void Commit()
         {
@@ -40,8 +40,8 @@ namespace Frontenac.Blueprints.Util.Wrappers.Event
         }
 
         /// <summary>
-        /// A rollback only resets the event queue on successful operation.  If the rollback operation to the underlying
-        /// graph fails, the event queue will not be reset.
+        ///     A rollback only resets the event queue on successful operation.  If the rollback operation to the underlying
+        ///     graph fails, the event queue will not be reset.
         /// </summary>
         public void Rollback()
         {

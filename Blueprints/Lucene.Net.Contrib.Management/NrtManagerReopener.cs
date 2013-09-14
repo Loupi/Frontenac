@@ -7,22 +7,22 @@ namespace Lucene.Net.Contrib.Management
 {
     public class NrtManagerReopener : NrtManager.IWaitingListener, IDisposable
     {
+        private readonly int _closeTimeout;
         private readonly NrtManager _manager;
+        private readonly Task _reopenerTask;
         private readonly TimeSpan _targetMaxStale;
         private readonly TimeSpan _targetMinStale;
+        private readonly AutoResetEvent _waitHandle = new AutoResetEvent(false);
         private bool _finish;
         private long _waitingGen;
         private bool _waitingNeedsDeletes;
-        private readonly Task _reopenerTask;
-        private readonly int _closeTimeout;
-
-        private readonly AutoResetEvent _waitHandle = new AutoResetEvent(false);
 
         public NrtManagerReopener(NrtManager manager, TimeSpan targetMaxStale, TimeSpan targetMinStale, int closeTimeout)
         {
             if (targetMaxStale < targetMinStale)
             {
-                throw new ArgumentException("targetMaxScaleSec (= " + targetMaxStale + ") < targetMinStaleSec (=" + targetMinStale + ")");
+                throw new ArgumentException("targetMaxScaleSec (= " + targetMaxStale + ") < targetMinStaleSec (=" +
+                                            targetMinStale + ")");
             }
 
             _manager = manager;
@@ -34,17 +34,18 @@ namespace Lucene.Net.Contrib.Management
         }
 
         #region IDisposable
-        bool _disposed;
 
-        ~NrtManagerReopener()
-        {
-            Dispose(false);
-        }
+        private bool _disposed;
 
         public void Dispose()
         {
             Dispose(true);
             GC.SuppressFinalize(this);
+        }
+
+        ~NrtManagerReopener()
+        {
+            Dispose(false);
         }
 
         protected virtual void Dispose(bool disposing)
@@ -115,7 +116,7 @@ namespace Lucene.Net.Contrib.Management
                     {
                         break;
                     }
-                }                
+                }
 
                 if (_finish)
                 {

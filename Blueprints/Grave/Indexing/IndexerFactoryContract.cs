@@ -3,7 +3,7 @@ using Grave.Indexing.Indexers;
 
 namespace Grave.Indexing
 {
-    [ContractClassFor(typeof(IIndexerFactory))]
+    [ContractClassFor(typeof (IIndexerFactory))]
     public abstract class IndexerFactoryContract : IIndexerFactory
     {
         public Indexer Create(object content, IDocument document)

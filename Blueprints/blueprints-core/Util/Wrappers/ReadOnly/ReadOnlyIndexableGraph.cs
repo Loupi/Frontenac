@@ -5,7 +5,7 @@ namespace Frontenac.Blueprints.Util.Wrappers.ReadOnly
 {
     public class ReadOnlyIndexableGraph : ReadOnlyGraph, IIndexableGraph
     {
-        readonly IIndexableGraph _baseIndexableGraph;
+        private readonly IIndexableGraph _baseIndexableGraph;
 
         public ReadOnlyIndexableGraph(IIndexableGraph baseIndexableGraph)
             : base(baseIndexableGraph)
