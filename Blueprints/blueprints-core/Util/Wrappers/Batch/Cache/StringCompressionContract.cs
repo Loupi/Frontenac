@@ -1,5 +1,4 @@
-﻿using System;
-using System.Diagnostics.Contracts;
+﻿using System.Diagnostics.Contracts;
 
 namespace Frontenac.Blueprints.Util.Wrappers.Batch.Cache
 {

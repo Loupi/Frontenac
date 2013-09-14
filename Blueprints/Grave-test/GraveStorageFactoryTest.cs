@@ -16,7 +16,7 @@ namespace Grave_test
 
     public enum FileType
     {
-        Java,
+        DotNet,
         Gml,
         Graphml,
         Graphson

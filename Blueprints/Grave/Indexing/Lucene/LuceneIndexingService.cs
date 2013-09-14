@@ -1,8 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics.Contracts;
 using System.IO;
 using System.Linq;
-using System.Threading.Tasks;
 using Frontenac.Blueprints;
 using Grave.Esent;
 using Lucene.Net.Analysis.Standard;
@@ -29,14 +29,14 @@ namespace Grave.Indexing.Lucene
 
         public Dictionary<Type, object> ClassMaps = new Dictionary<Type, object>();
 
-        public LuceneIndexingService(EsentConfigContext configContext, LuceneIndexingServiceParameters parameters, FSDirectory directory, IIndexerFactory indexerFactory)
+        public LuceneIndexingService(EsentConfigContext configContext, LuceneIndexingServiceParameters parameters, 
+                                     FSDirectory directory, IIndexerFactory indexerFactory)
             : base(configContext)
         {
-            if (parameters == null)
-                throw new ArgumentNullException("parameters");
-
-            if (directory == null)
-                throw new ArgumentNullException("directory");
+            Contract.Requires(configContext != null);
+            Contract.Requires(parameters != null);
+            Contract.Requires(directory != null);
+            Contract.Requires(indexerFactory != null);
 
             _parameters = parameters;
             _directory = directory;
@@ -49,7 +49,6 @@ namespace Grave.Indexing.Lucene
             _reopener = new NrtManagerReopener(_nrtManager, TimeSpan.FromSeconds(_parameters.MaxStaleSeconds),
                                                             TimeSpan.FromMilliseconds(_parameters.MinStaleMilliseconds),
                                                             _parameters.CloseTimeoutSeconds);
-            
         }
 
         #region IDisposable
@@ -71,6 +70,9 @@ namespace Grave.Indexing.Lucene
 
         public static FSDirectory CreateMMapDirectory(string path)
         {
+            Contract.Requires(!string.IsNullOrWhiteSpace(path));
+            Contract.Ensures(Contract.Result<FSDirectory>() != null);
+
             System.IO.Directory.CreateDirectory(path);
             var directory = new MMapDirectory(new DirectoryInfo(path), new SingleInstanceLockFactory());
             if (IndexWriter.IsLocked(directory)) IndexWriter.Unlock(directory);
@@ -81,6 +83,10 @@ namespace Grave.Indexing.Lucene
 
         static Query ParseQuery(string searchQuery, QueryParser parser)
         {
+            Contract.Requires(!string.IsNullOrWhiteSpace(searchQuery));
+            Contract.Requires(parser != null);
+            Contract.Ensures(Contract.Result<Query>() != null);
+
             Query query;
             try
             {
@@ -95,6 +101,11 @@ namespace Grave.Indexing.Lucene
 
         static Document CreateDocument(string idColumnName, string keyColumnName, int id, string propertyName)
         {
+            Contract.Requires(!string.IsNullOrWhiteSpace(idColumnName));
+            Contract.Requires(!string.IsNullOrWhiteSpace(keyColumnName));
+            Contract.Requires(!string.IsNullOrWhiteSpace(propertyName));
+            Contract.Ensures(Contract.Result<Document>() != null);
+
             var document = new Document();
             document.Add(new NumericField(idColumnName, Field.Store.YES, true).SetIntValue(id));
             document.Add(new Field(keyColumnName, propertyName, Field.Store.YES, Field.Index.NOT_ANALYZED));
@@ -103,6 +114,11 @@ namespace Grave.Indexing.Lucene
 
         static Query CreateKeyQuery(string idColumnName, string keyColumnName, int id, string propertyName)
         {
+            Contract.Requires(!string.IsNullOrWhiteSpace(idColumnName));
+            Contract.Requires(!string.IsNullOrWhiteSpace(keyColumnName));
+            Contract.Requires(!string.IsNullOrWhiteSpace(propertyName));
+            Contract.Ensures(Contract.Result<Query>() != null);
+
             return new BooleanQuery
                 {
                     new BooleanClause(NumericRangeQuery.NewIntRange(idColumnName, id, id, true, true), Occur.MUST),
@@ -112,26 +128,39 @@ namespace Grave.Indexing.Lucene
 
         string GetIdColumn(Type indexType)
         {
+            Contract.Requires(indexType != null);
+            Contract.Ensures(!string.IsNullOrWhiteSpace(Contract.Result<string>()));
+
             return indexType == typeof(IVertex) ? _parameters.VertexIdColumnName : _parameters.EdgeIdColumnName;
         }
 
         string GetKeyColumn(Type indexType)
         {
+            Contract.Requires(indexType != null);
+            Contract.Ensures(!string.IsNullOrWhiteSpace(Contract.Result<string>()));
+
             return indexType == typeof(IVertex) ? _parameters.VertexKeyColumnName : _parameters.EdgeKeyColumnName;
         }
 
         string GetIndexColumn(Type indexType)
         {
+            Contract.Requires(indexType != null);
+            Contract.Ensures(!string.IsNullOrWhiteSpace(Contract.Result<string>()));
+
             return indexType == typeof(IVertex) ? _parameters.VertexIndexColumnName : _parameters.EdgeIndexColumnName;
         }
 
         public override long DeleteIndex(Type indexType, string indexName, bool isUserIndex)
         {
-            return _nrtManager.DeleteDocuments(new TermQuery(new Term(isUserIndex ? GetIndexColumn(indexType) : GetKeyColumn(indexType), indexName)));
+            return _nrtManager.DeleteDocuments(new TermQuery(new Term(isUserIndex ? GetIndexColumn(indexType) : 
+                                                                                    GetKeyColumn(indexType), indexName)));
         }
 
         static object GetMinValue(object value)
         {
+            Contract.Requires(value != null);
+            Contract.Ensures(Contract.Result<object>() != null);
+
             if (value is double || value is float)
                 return double.MinValue;
 
@@ -140,6 +169,9 @@ namespace Grave.Indexing.Lucene
 
         static object GetMaxValue(object value)
         {
+            Contract.Requires(value != null);
+            Contract.Ensures(Contract.Result<object>() != null);
+
             if (value is double || value is float)
                 return double.MaxValue;
 
@@ -148,9 +180,6 @@ namespace Grave.Indexing.Lucene
 
         public override IEnumerable<int> Query(Type indexType, IEnumerable<GraveQueryElement> query, int hitsLimit = 1000)
         {
-            if(query == null)
-                throw new ArgumentNullException("query");
-
             var graveQueryElements = query as GraveQueryElement[] ?? query.ToArray();
             if (!graveQueryElements.Any())
                 return Enumerable.Empty<int>();
@@ -161,7 +190,8 @@ namespace Grave.Indexing.Lucene
                 if (graveQueryElement is GraveIntervalQueryElement)
                 {
                     var interval = graveQueryElement as GraveIntervalQueryElement;
-                    luceneQueries.Add(CreateQuery(indexType, interval.Key, interval.StartValue, interval.StartValue, interval.EndValue, true, true, interval.Key, false));
+                    luceneQueries.Add(CreateQuery(indexType, interval.Key, interval.StartValue, interval.StartValue, 
+                                                  interval.EndValue, true, true, interval.Key, false));
                 }
                 else if (graveQueryElement is GraveComparableQueryElement)
                 {
@@ -223,7 +253,8 @@ namespace Grave.Indexing.Lucene
                         }
                     }
 
-                    var luceneQuery = CreateQuery(indexType, comparable.Key, comparable.Value, min, max, minInclusive, maxInclusive, comparable.Key, false);
+                    var luceneQuery = CreateQuery(indexType, comparable.Key, comparable.Value, min, max, 
+                                                  minInclusive, maxInclusive, comparable.Key, false);
                     if (comparable.Comparison == Compare.NotEqual)
                     {
                         var booleanQuery = new BooleanQuery
@@ -289,21 +320,21 @@ namespace Grave.Indexing.Lucene
             _nrtManager.WaitForGeneration(generation);
         }
 
-        Query CreateQuery(Type indexType, string key, object value, object minValue, object maxValue, bool minInclusive, bool maxInclusive, string indexName, bool isUserIndex)
+        Query CreateQuery(Type indexType, string key, object value, object minValue, object maxValue, 
+                          bool minInclusive, bool maxInclusive, string indexName, bool isUserIndex)
         {
-            Query query;
+            Contract.Requires(IsValidIndexType(indexType));
+            Contract.Ensures(Contract.Result<Query>() != null);
 
-            if (Portability.IsNumber(value))
-                query = CreateRangeQuery(key, value, minValue, maxValue, minInclusive, maxInclusive);
-            else
-                query = new TermQuery(new Term(key, value as string));
-                //query = ParseQuery(value as string, new QueryParser(Version.LUCENE_30, key, _analyzer));
+            var query = Portability.IsNumber(value) ? CreateRangeQuery(key, value, minValue, maxValue, minInclusive, maxInclusive) : 
+                                                      new TermQuery(new Term(key, value as string));
 
             if (!string.IsNullOrWhiteSpace(indexName))
             {
                 query = new BooleanQuery
                 {
-                    new BooleanClause(new TermQuery(new Term(isUserIndex ? GetIndexColumn(indexType) : GetKeyColumn(indexType), indexName)), Occur.MUST),
+                    new BooleanClause(new TermQuery(new Term(isUserIndex ? GetIndexColumn(indexType) : 
+                                                                           GetKeyColumn(indexType), indexName)), Occur.MUST),
                     new BooleanClause(query, Occur.MUST)
                 };
             }
@@ -319,6 +350,9 @@ namespace Grave.Indexing.Lucene
 
         IEnumerable<int> Fetch(Type indexType, Query query, int hitsLimit)
         {
+            Contract.Requires(IsValidIndexType(indexType));
+            Contract.Ensures(Contract.Result<IEnumerable<int>>() != null);
+
             using (var searcherToken = _searcherManager.Acquire())
             {
                 var hits = searcherToken.Searcher.Search(query, hitsLimit).ScoreDocs;
@@ -332,6 +366,10 @@ namespace Grave.Indexing.Lucene
 
         static Query CreateRangeQuery(string term, object value, object min, object max, bool minInclusive, bool maxInclusive)
         {
+            Contract.Requires(!string.IsNullOrWhiteSpace(term));
+            Contract.Requires(value != null);
+            Contract.Ensures(Contract.Result<Query>() != null);
+
             Query query;
 
             if (value is sbyte || value is byte || value is short || value is ushort || 

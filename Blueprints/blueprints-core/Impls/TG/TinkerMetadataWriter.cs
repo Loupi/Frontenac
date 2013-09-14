@@ -1,5 +1,4 @@
-﻿using System;
-using System.Diagnostics.Contracts;
+﻿using System.Diagnostics.Contracts;
 using System.IO;
 
 namespace Frontenac.Blueprints.Impls.TG
@@ -241,7 +240,7 @@ namespace Frontenac.Blueprints.Impls.TG
                 writer.Write((double)data);
             }
             else
-                throw new IOException("unknown data type: use java serialization");
+                throw new IOException("unknown data type: use .NET serialization");
         }
     }
 }

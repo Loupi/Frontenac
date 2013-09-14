@@ -34,8 +34,8 @@ namespace Grave_test
                     return new GraphMlGraveStorage();
                 case FileType.Graphson:
                     return new GraphSonGraveStorage();
-                case FileType.Java:
-                    return new JavaGraveStorage();
+                case FileType.DotNet:
+                    return new DotNetGraveStorage();
             }
 
             throw new Exception(string.Format("File Type {0} is not configurable by the factory", fileType));
@@ -159,13 +159,13 @@ namespace Grave_test
         /// <summary>
         /// Reads and writes a GraveGraph using .NET object serialization.
         /// </summary>
-        class JavaGraveStorage : AbstractGraveStorage
+        class DotNetGraveStorage : AbstractGraveStorage
         {
-            const string GraphFileJava = "/tinkergraph.dat";
+            const string GraphFileDotNet = "/tinkergraph.dat";
 
             public override GraveGraph Load(string directory)
             {
-                using (var stream = File.OpenRead(string.Concat(directory, GraphFileJava)))
+                using (var stream = File.OpenRead(string.Concat(directory, GraphFileDotNet)))
                 {
                     var formatter = new BinaryFormatter();
                     return (GraveGraph)formatter.Deserialize(stream);
@@ -174,9 +174,9 @@ namespace Grave_test
 
             public override void Save(GraveGraph graph, string directory)
             {
-                string filePath = string.Concat(directory, GraphFileJava);
+                string filePath = string.Concat(directory, GraphFileDotNet);
                 DeleteFile(filePath);
-                using (var stream = File.Create(string.Concat(directory, GraphFileJava)))
+                using (var stream = File.Create(string.Concat(directory, GraphFileDotNet)))
                 {
                     var formatter = new BinaryFormatter();
                     formatter.Serialize(stream, graph);

@@ -18,51 +18,50 @@ namespace Frontenac.Blueprints
             var graph = (IIndexableGraph) GraphTest.GenerateGraph();
             try
             {
-                if (graph.Features.SupportsVertexIndex)
-                {
-                    StopWatch();
-                    var index = graph.CreateIndex("basic", typeof (IVertex));
-                    PrintPerformance(graph.ToString(), 1, "manual index created", StopWatch());
-                    var v1 = graph.AddVertex(null);
-                    var v2 = graph.AddVertex(null);
+                if (!graph.Features.SupportsVertexIndex) return;
 
-                    if (graph.Features.SupportsVertexIteration)
-                        Assert.AreEqual(Count(graph.GetVertices()), 2);
+                StopWatch();
+                var index = graph.CreateIndex("basic", typeof (IVertex));
+                PrintPerformance(graph.ToString(), 1, "manual index created", StopWatch());
+                var v1 = graph.AddVertex(null);
+                var v2 = graph.AddVertex(null);
 
-                    StopWatch();
-                    index.Put("dog", "puppy", v1);
-                    index.Put("dog", "mama", v2);
-                    PrintPerformance(graph.ToString(), 2, "vertices manually index", StopWatch());
-                    Assert.AreEqual(v1, index.Get("dog", "puppy").First());
-                    Assert.AreEqual(v2, index.Get("dog", "mama").First());
-                    Assert.AreEqual(1, index.Count("dog", "puppy"));
+                if (graph.Features.SupportsVertexIteration)
+                    Assert.AreEqual(Count(graph.GetVertices()), 2);
 
-                    v1.RemoveProperty("dog");
-                    Assert.AreEqual(v1, index.Get("dog", "puppy").First());
-                    Assert.AreEqual(v2, index.Get("dog", "mama").First());
+                StopWatch();
+                index.Put("dog", "puppy", v1);
+                index.Put("dog", "mama", v2);
+                PrintPerformance(graph.ToString(), 2, "vertices manually index", StopWatch());
+                Assert.AreEqual(v1, index.Get("dog", "puppy").First());
+                Assert.AreEqual(v2, index.Get("dog", "mama").First());
+                Assert.AreEqual(1, index.Count("dog", "puppy"));
 
-                    StopWatch();
-                    graph.RemoveVertex(v1);
-                    PrintPerformance(graph.ToString(), 1, "vertex removed and automatically removed from index",
-                                     StopWatch());
-                    Assert.AreEqual(Count(index.Get("dog", "puppy")), 0);
-                    Assert.AreEqual(v2, index.Get("dog", "mama").First());
+                v1.RemoveProperty("dog");
+                Assert.AreEqual(v1, index.Get("dog", "puppy").First());
+                Assert.AreEqual(v2, index.Get("dog", "mama").First());
 
-                    if (graph.Features.SupportsVertexIteration)
-                        Assert.AreEqual(Count(graph.GetVertices()), 1);
+                StopWatch();
+                graph.RemoveVertex(v1);
+                PrintPerformance(graph.ToString(), 1, "vertex removed and automatically removed from index",
+                                 StopWatch());
+                Assert.AreEqual(Count(index.Get("dog", "puppy")), 0);
+                Assert.AreEqual(v2, index.Get("dog", "mama").First());
 
-                    v2.SetProperty("dog", "mama2");
-                    Assert.AreEqual(v2, index.Get("dog", "mama").First());
-                    StopWatch();
-                    graph.RemoveVertex(v2);
-                    PrintPerformance(graph.ToString(), 1, "vertex removed and automatically removed from index",
-                                     StopWatch());
-                    Assert.AreEqual(Count(index.Get("dog", "puppy")), 0);
-                    Assert.AreEqual(Count(index.Get("dog", "mama")), 0);
+                if (graph.Features.SupportsVertexIteration)
+                    Assert.AreEqual(Count(graph.GetVertices()), 1);
 
-                    if (graph.Features.SupportsVertexIteration)
-                        Assert.AreEqual(Count(graph.GetVertices()), 0);
-                }
+                v2.SetProperty("dog", "mama2");
+                Assert.AreEqual(v2, index.Get("dog", "mama").First());
+                StopWatch();
+                graph.RemoveVertex(v2);
+                PrintPerformance(graph.ToString(), 1, "vertex removed and automatically removed from index",
+                                 StopWatch());
+                Assert.AreEqual(Count(index.Get("dog", "puppy")), 0);
+                Assert.AreEqual(Count(index.Get("dog", "mama")), 0);
+
+                if (graph.Features.SupportsVertexIteration)
+                    Assert.AreEqual(Count(graph.GetVertices()), 0);
             }
             finally
             {
@@ -76,21 +75,19 @@ namespace Frontenac.Blueprints
             var graph = (IIndexableGraph) GraphTest.GenerateGraph();
             try
             {
-                if (graph.Features.SupportsVertexIndex)
-                {
-                    IIndex index = graph.CreateIndex("basic", typeof (IVertex));
-                    for (int i = 0; i < 10; i++)
-                    {
-                        IVertex v1 = graph.AddVertex(null);
-                        index.Put("dog", "puppy", v1);
-                    }
-                    Assert.AreEqual(10, index.Count("dog", "puppy"));
-                    var v = (IVertex) index.Get("dog", "puppy").First();
-                    graph.RemoveVertex(v);
-                    index.Remove("dog", "puppy", v);
-                    Assert.AreEqual(9, index.Count("dog", "puppy"));
+                if (!graph.Features.SupportsVertexIndex) return;
 
+                var index = graph.CreateIndex("basic", typeof (IVertex));
+                for (var i = 0; i < 10; i++)
+                {
+                    var v1 = graph.AddVertex(null);
+                    index.Put("dog", "puppy", v1);
                 }
+                Assert.AreEqual(10, index.Count("dog", "puppy"));
+                var v = (IVertex) index.Get("dog", "puppy").First();
+                graph.RemoveVertex(v);
+                index.Remove("dog", "puppy", v);
+                Assert.AreEqual(9, index.Count("dog", "puppy"));
             }
             finally
             {
@@ -104,52 +101,51 @@ namespace Frontenac.Blueprints
             var graph = (IIndexableGraph) GraphTest.GenerateGraph();
             try
             {
-                if (graph.Features.SupportsEdgeIndex)
-                {
-                    StopWatch();
-                    IIndex index = graph.CreateIndex("basic", typeof (IEdge));
-                    PrintPerformance(graph.ToString(), 1, "manual index created", StopWatch());
-                    IVertex v1 = graph.AddVertex(null);
-                    IVertex v2 = graph.AddVertex(null);
-                    IEdge e1 = graph.AddEdge(null, v1, v2, "test1");
-                    IEdge e2 = graph.AddEdge(null, v1, v2, "test2");
+                if (!graph.Features.SupportsEdgeIndex) return;
 
-                    if (graph.Features.SupportsEdgeIteration)
-                        Assert.AreEqual(Count(graph.GetEdges()), 2);
+                StopWatch();
+                var index = graph.CreateIndex("basic", typeof (IEdge));
+                PrintPerformance(graph.ToString(), 1, "manual index created", StopWatch());
+                var v1 = graph.AddVertex(null);
+                var v2 = graph.AddVertex(null);
+                var e1 = graph.AddEdge(null, v1, v2, "test1");
+                var e2 = graph.AddEdge(null, v1, v2, "test2");
 
-                    StopWatch();
-                    index.Put("dog", "puppy", e1);
-                    index.Put("dog", "mama", e2);
-                    PrintPerformance(graph.ToString(), 2, "edges manually index", StopWatch());
-                    Assert.AreEqual(e1, index.Get("dog", "puppy").First());
-                    Assert.AreEqual(e2, index.Get("dog", "mama").First());
+                if (graph.Features.SupportsEdgeIteration)
+                    Assert.AreEqual(Count(graph.GetEdges()), 2);
 
-                    v1.RemoveProperty("dog");
-                    Assert.AreEqual(e1, index.Get("dog", "puppy").First());
-                    Assert.AreEqual(e2, index.Get("dog", "mama").First());
+                StopWatch();
+                index.Put("dog", "puppy", e1);
+                index.Put("dog", "mama", e2);
+                PrintPerformance(graph.ToString(), 2, "edges manually index", StopWatch());
+                Assert.AreEqual(e1, index.Get("dog", "puppy").First());
+                Assert.AreEqual(e2, index.Get("dog", "mama").First());
 
-                    StopWatch();
-                    graph.RemoveEdge(e1);
-                    PrintPerformance(graph.ToString(), 1, "edge removed and automatically removed from index",
-                                     StopWatch());
-                    Assert.AreEqual(Count(index.Get("dog", "puppy")), 0);
-                    Assert.AreEqual(e2, index.Get("dog", "mama").First());
+                v1.RemoveProperty("dog");
+                Assert.AreEqual(e1, index.Get("dog", "puppy").First());
+                Assert.AreEqual(e2, index.Get("dog", "mama").First());
 
-                    if (graph.Features.SupportsEdgeIteration)
-                        Assert.AreEqual(Count(graph.GetEdges()), 1);
+                StopWatch();
+                graph.RemoveEdge(e1);
+                PrintPerformance(graph.ToString(), 1, "edge removed and automatically removed from index",
+                                 StopWatch());
+                Assert.AreEqual(Count(index.Get("dog", "puppy")), 0);
+                Assert.AreEqual(e2, index.Get("dog", "mama").First());
 
-                    v2.SetProperty("dog", "mama2");
-                    Assert.AreEqual(e2, index.Get("dog", "mama").First());
-                    StopWatch();
-                    graph.RemoveEdge(e2);
-                    PrintPerformance(graph.ToString(), 1, "edge removed and automatically removed from index",
-                                     StopWatch());
-                    Assert.AreEqual(Count(index.Get("dog", "puppy")), 0);
-                    Assert.AreEqual(Count(index.Get("dog", "mama")), 0);
+                if (graph.Features.SupportsEdgeIteration)
+                    Assert.AreEqual(Count(graph.GetEdges()), 1);
 
-                    if (graph.Features.SupportsEdgeIteration)
-                        Assert.AreEqual(Count(graph.GetEdges()), 0);
-                }
+                v2.SetProperty("dog", "mama2");
+                Assert.AreEqual(e2, index.Get("dog", "mama").First());
+                StopWatch();
+                graph.RemoveEdge(e2);
+                PrintPerformance(graph.ToString(), 1, "edge removed and automatically removed from index",
+                                 StopWatch());
+                Assert.AreEqual(Count(index.Get("dog", "puppy")), 0);
+                Assert.AreEqual(Count(index.Get("dog", "mama")), 0);
+
+                if (graph.Features.SupportsEdgeIteration)
+                    Assert.AreEqual(Count(graph.GetEdges()), 0);
             }
             finally
             {
@@ -163,19 +159,18 @@ namespace Frontenac.Blueprints
             var graph = (IIndexableGraph) GraphTest.GenerateGraph();
             try
             {
-                if (graph.Features.SupportsVertexIndex)
+                if (!graph.Features.SupportsVertexIndex) return;
+
+                var index = graph.CreateIndex("basic", typeof (IVertex));
+                for (int i = 0; i < 10; i++)
                 {
-                    IIndex index = graph.CreateIndex("basic", typeof (IVertex));
-                    for (int i = 0; i < 10; i++)
-                    {
-                        IVertex v = graph.AddVertex(null);
-                        index.Put("dog", "puppy", v);
-                    }
-                    ICloseableIterable<IElement> hits = index.Get("dog", "puppy");
-                    int counter = hits.Cast<IVertex>().Count();
-                    Assert.AreEqual(counter, 10);
-                    hits.Dispose(); // no exception should be thrown
+                    var v = graph.AddVertex(null);
+                    index.Put("dog", "puppy", v);
                 }
+                var hits = index.Get("dog", "puppy");
+                var counter = hits.Cast<IVertex>().Count();
+                Assert.AreEqual(counter, 10);
+                hits.Dispose();
             }
             finally
             {

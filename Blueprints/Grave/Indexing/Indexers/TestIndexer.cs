@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Diagnostics.Contracts;
 using Grave.Entities;
 
 namespace Grave.Indexing.Indexers
@@ -9,8 +10,7 @@ namespace Grave.Indexing.Indexers
 
         public TestIndexer(IDocument document, Test content) : base(document)
         {
-            if(content == null)
-                throw new ArgumentNullException("content");
+            Contract.Requires(content != null);
 
             _content = content;
         }

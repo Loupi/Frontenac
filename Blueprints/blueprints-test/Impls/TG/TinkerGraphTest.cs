@@ -1,6 +1,5 @@
 ﻿using NUnit.Framework;
 using System;
-using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using Frontenac.Blueprints.Util;
@@ -314,7 +313,7 @@ namespace Frontenac.Blueprints.Impls.TG
         [Test]
         public void TestGraphFileTypeJava()
         {
-            TestGraphFileType("graph-test-java", TinkerGraph.FileType.Java);
+            TestGraphFileType("graph-test-java", TinkerGraph.FileType.DotNet);
         }
 
         [Test]
@@ -353,7 +352,7 @@ namespace Frontenac.Blueprints.Impls.TG
                     CreateManualIndices(targetGraph);
 
                     StopWatch();
-                    PrintTestPerformance("save graph: " + fileType.ToString(), StopWatch());
+                    PrintTestPerformance("save graph: " + fileType, StopWatch());
                     StopWatch();
                 }
                 finally
@@ -364,7 +363,7 @@ namespace Frontenac.Blueprints.Impls.TG
                 var compareGraph = new TinkerGraph(path, fileType);
                 try
                 {
-                    PrintTestPerformance("load graph: " + fileType.ToString(), StopWatch());
+                    PrintTestPerformance("load graph: " + fileType, StopWatch());
 
                     CompareGraphs(targetGraph, compareGraph, fileType);
                 }

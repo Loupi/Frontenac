@@ -33,6 +33,13 @@ namespace Grave.Indexing
             LoadConfig();
         }
 
+        [Pure]
+        public static bool IsValidIndexType(Type indexType)
+        {
+            Contract.Requires(indexType != null);
+            return indexType.IsAssignableFrom(typeof(GraveVertex)) || indexType.IsAssignableFrom(typeof(GraveEdge));
+        }
+
         void LoadConfig()
         {
             if (!_context.ConfigTable.SetCursor(ConfigVertexId))
@@ -76,8 +83,8 @@ namespace Grave.Indexing
 
         public void CreateIndexOfType(string indexName, string indexColumn, List<string> indices)
         {
-            Contract.Requires(!string.IsNullOrWhiteSpace(indexName));
-            Contract.Requires(!string.IsNullOrWhiteSpace(indexColumn));
+            Contract.Requires(!String.IsNullOrWhiteSpace(indexName));
+            Contract.Requires(!String.IsNullOrWhiteSpace(indexColumn));
             Contract.Requires(indices != null);
 
             IndicesLock.EnterWriteLock();
@@ -97,17 +104,16 @@ namespace Grave.Indexing
 
         public List<string> GetIndicesOfType(string indexType)
         {
-            Contract.Requires(!string.IsNullOrWhiteSpace(indexType));
+            Contract.Requires(!String.IsNullOrWhiteSpace(indexType));
 
             return _context.ConfigTable.ReadCell(ConfigVertexId, indexType) as List<string> ?? new List<string>();
         }
 
         public long DropIndexOfType(string indexName, string indexColumn, Type indexType, List<string> indices, bool isUserIndex)
         {
-            Contract.Requires(!string.IsNullOrWhiteSpace(indexName));
-            Contract.Requires(!string.IsNullOrWhiteSpace(indexColumn));
-            Contract.Requires(indexType != null);
-            Contract.Requires(indexType.IsAssignableFrom(typeof(GraveVertex)) || indexType.IsAssignableFrom(typeof(GraveEdge)));
+            Contract.Requires(!String.IsNullOrWhiteSpace(indexName));
+            Contract.Requires(!String.IsNullOrWhiteSpace(indexColumn));
+            Contract.Requires(IsValidIndexType(indexType));
             Contract.Requires(indices != null);
 
             long result;

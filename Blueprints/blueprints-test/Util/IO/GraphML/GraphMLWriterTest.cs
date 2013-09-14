@@ -5,14 +5,13 @@ using System.IO;
 namespace Frontenac.Blueprints.Util.IO.GraphML
 {
     [TestFixture(Category = "GraphMLWriterTest")]
-    public class GraphMlWriterTest
+    public class GraphMlWriterTest : BaseTest
     {
         [Test]
         public void TestNormal()
         {
             var g = new TinkerGraph();
-
-            using (var stream = typeof(GraphMlReader).Assembly.GetManifestResourceStream(typeof(GraphMlReader), "graph-example-1.xml"))
+            using (var stream = GetResource<GraphMlReader>("graph-example-1.xml"))
             {
                 GraphMlReader.InputGraph(g, stream);
             }
@@ -25,12 +24,13 @@ namespace Frontenac.Blueprints.Util.IO.GraphML
                 bos.Position = 0;
                 var outGraphMl = new StreamReader(bos).ReadToEnd();
 
-                using (var stream = typeof (GraphMlWriterTest).Assembly.GetManifestResourceStream(typeof (GraphMlWriterTest), "graph-example-1-normalized.xml"))
+                using (var stream = GetResource<GraphMlWriterTest>("graph-example-1-normalized.xml"))
                 {
                     if (stream != null)
                     {
                         var expected = new StreamReader(stream).ReadToEnd();
-                        Assert.AreEqual(expected.Replace("\n", "").Replace("\r", "").Replace("\t", ""), outGraphMl.Replace("\n", "").Replace("\r", "").Replace("\t", ""));
+                        Assert.AreEqual(expected.Replace("\n", "").Replace("\r", "").Replace("\t", ""), 
+                                        outGraphMl.Replace("\n", "").Replace("\r", "").Replace("\t", ""));
                     }
                 }
             }
@@ -40,8 +40,8 @@ namespace Frontenac.Blueprints.Util.IO.GraphML
         public void TestWithEdgeLabel()
         {
             var g = new TinkerGraph();
-            
-            using (var stream = typeof(GraphMlReader).Assembly.GetManifestResourceStream(typeof(GraphMlReader), "graph-example-1.xml"))
+
+            using (var stream = GetResource<GraphMlReader>("graph-example-1.xml"))
             {
                 GraphMlReader.InputGraph(g, stream);
             }
@@ -55,7 +55,7 @@ namespace Frontenac.Blueprints.Util.IO.GraphML
                 bos.Position = 0;
                 var outGraphMl = new StreamReader(bos).ReadToEnd();
 
-                using (var stream = typeof (GraphMlWriterTest).Assembly.GetManifestResourceStream(typeof (GraphMlWriterTest), "graph-example-1-schema-valid.xml"))
+                using (var stream = GetResource<GraphMlWriterTest>("graph-example-1-schema-valid.xml"))
                 {
                     if (stream != null)
                     {

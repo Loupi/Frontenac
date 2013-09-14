@@ -11,8 +11,8 @@ namespace Frontenac.Blueprints.Util
         [Test]
         public void TestAddVertex()
         {
-            IGraph graph = new TinkerGraph();
-            IVertex vertex = GraphHelper.AddVertex(graph, null, "name", "marko", "age", 31);
+            var graph = new TinkerGraph();
+            var vertex = GraphHelper.AddVertex(graph, null, "name", "marko", "age", 31);
             Assert.AreEqual(vertex.GetProperty("name"), "marko");
             Assert.AreEqual(vertex.GetProperty("age"), 31);
             Assert.AreEqual(vertex.GetPropertyKeys().Count(), 2);
@@ -57,19 +57,19 @@ namespace Frontenac.Blueprints.Util
         [Test]
         public void TestCopyGraph()
         {
-            IGraph g = TinkerGraphFactory.CreateTinkerGraph();
-            IGraph h = new TinkerGraph();
+            var g = TinkerGraphFactory.CreateTinkerGraph();
+            var h = new TinkerGraph();
 
             GraphHelper.CopyGraph(g, h);
             Assert.AreEqual(Count(h.GetVertices()), 7);
             Assert.AreEqual(Count(h.GetEdges()), 6);
             Assert.AreEqual(Count(h.GetVertex("1").GetEdges(Direction.Out)), 3);
             Assert.AreEqual(Count(h.GetVertex("1").GetEdges(Direction.In)), 0);
-            IVertex marko = h.GetVertex("1");
+            var marko = h.GetVertex("1");
             Assert.AreEqual(marko.GetProperty("name"), "marko");
             Assert.AreEqual(marko.GetProperty("age"), 29);
-            int counter = 0;
-            foreach (IEdge e in h.GetVertex("1").GetEdges(Direction.Out))
+            var counter = 0;
+            foreach (var e in h.GetVertex("1").GetEdges(Direction.Out))
             {
                 if (e.GetVertex(Direction.In).Id.Equals("2"))
                 {
@@ -96,10 +96,10 @@ namespace Frontenac.Blueprints.Util
 
             Assert.AreEqual(Count(h.GetVertex("4").GetEdges(Direction.Out)), 2);
             Assert.AreEqual(Count(h.GetVertex("4").GetEdges(Direction.In)), 1);
-            IVertex josh = h.GetVertex("4");
+            var josh = h.GetVertex("4");
             Assert.AreEqual(josh.GetProperty("name"), "josh");
             Assert.AreEqual(josh.GetProperty("age"), 32);
-            foreach (IEdge e in h.GetVertex("4").GetEdges(Direction.Out))
+            foreach (var e in h.GetVertex("4").GetEdges(Direction.Out))
             {
                 if (e.GetVertex(Direction.In).Id.Equals("3"))
                 {

@@ -18,8 +18,7 @@ namespace Grave
         public GraveIndex(string indexName, Type indexType, GraveGraph graph, IndexingService indexingService)
         {
             Contract.Requires(!string.IsNullOrWhiteSpace(indexName));
-            Contract.Requires(indexType != null);
-            Contract.Requires(indexType.IsAssignableFrom(typeof(GraveVertex)) || indexType.IsAssignableFrom(typeof(GraveEdge)));
+            Contract.Requires(IndexingService.IsValidIndexType(indexType));
             Contract.Requires(graph != null);
             Contract.Requires(indexingService != null);
             
@@ -73,12 +72,8 @@ namespace Grave
         public void Put(string key, object value, IElement element)
         {
             var id = (int)element.Id;
-            long generation;
-            if (_indexType == typeof (IVertex))
-                generation = _indexingService.UserVertexIndices.Set(id, Name, key, value);
-            else
-                generation = _indexingService.UserEdgeIndices.Set(id, Name, key, value);
-
+            var generation = _indexType == typeof (IVertex) ? _indexingService.UserVertexIndices.Set(id, Name, key, value) : 
+                                                              _indexingService.UserEdgeIndices.Set(id, Name, key, value);
             _graph.UpdateGeneration(generation);
         }
 

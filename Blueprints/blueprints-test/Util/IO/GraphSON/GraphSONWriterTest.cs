@@ -15,7 +15,7 @@ namespace Frontenac.Blueprints.Util.IO.GraphSON
         [Test]
         public void OutputGraphNoEmbeddedTypes()
         {
-            IGraph g = TinkerGraphFactory.CreateTinkerGraph();
+            var g = TinkerGraphFactory.CreateTinkerGraph();
             IDictionary<string, JToken> rootNode;
 
             using (var stream = new MemoryStream())
@@ -23,7 +23,7 @@ namespace Frontenac.Blueprints.Util.IO.GraphSON
                 var writer = new GraphSonWriter(g);
                 writer.OutputGraph(stream, null, null, GraphSONMode.NORMAL);
                 stream.Position = 0;
-                string jsonString = Encoding.Default.GetString(stream.ToArray());
+                var jsonString = Encoding.Default.GetString(stream.ToArray());
                 rootNode = (JObject)JsonConvert.DeserializeObject(jsonString);
             }
 
@@ -48,7 +48,7 @@ namespace Frontenac.Blueprints.Util.IO.GraphSON
         [Test]
         public void OutputGraphWithEmbeddedTypes()
         {
-            IGraph g = TinkerGraphFactory.CreateTinkerGraph();
+            var g = TinkerGraphFactory.CreateTinkerGraph();
             IDictionary<string, JToken> rootNode;
 
             using (var stream = new MemoryStream())
@@ -56,7 +56,7 @@ namespace Frontenac.Blueprints.Util.IO.GraphSON
                 var writer = new GraphSonWriter(g);
                 writer.OutputGraph(stream, null, null, GraphSONMode.EXTENDED);
                 stream.Position = 0;
-                string jsonString = Encoding.Default.GetString(stream.ToArray());
+                var jsonString = Encoding.Default.GetString(stream.ToArray());
                 rootNode = (JObject)JsonConvert.DeserializeObject(jsonString);
             }
 
@@ -80,7 +80,7 @@ namespace Frontenac.Blueprints.Util.IO.GraphSON
         [Test]
         public void OutputGraphWithCompact()
         {
-            IGraph g = TinkerGraphFactory.CreateTinkerGraph();
+            var g = TinkerGraphFactory.CreateTinkerGraph();
             IDictionary<string, JToken> rootNode;
 
             using (var stream = new MemoryStream())
@@ -88,7 +88,7 @@ namespace Frontenac.Blueprints.Util.IO.GraphSON
                 var writer = new GraphSonWriter(g);
                 writer.OutputGraph(stream, null, null, GraphSONMode.COMPACT);
                 stream.Position = 0;
-                string jsonString = Encoding.Default.GetString(stream.ToArray());
+                var jsonString = Encoding.Default.GetString(stream.ToArray());
                 rootNode = (JObject)JsonConvert.DeserializeObject(jsonString);
             }
 

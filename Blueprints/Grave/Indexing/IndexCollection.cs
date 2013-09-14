@@ -15,8 +15,7 @@ namespace Grave.Indexing
         public IndexCollection(string indicesColumnName, Type indexType, bool isUserIndex, IndexingService indexingService)
         {
             Contract.Requires(!string.IsNullOrWhiteSpace(indicesColumnName));
-            Contract.Requires(indexType != null);
-            Contract.Requires(indexType.IsAssignableFrom(typeof(GraveVertex)) || indexType.IsAssignableFrom(typeof(GraveEdge)));
+            Contract.Requires(IndexingService.IsValidIndexType(indexType));
             Contract.Requires(indexingService != null);
 
             _indicesColumnName = indicesColumnName;

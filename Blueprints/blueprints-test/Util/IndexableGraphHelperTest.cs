@@ -9,12 +9,12 @@ namespace Frontenac.Blueprints.Util
         [Test]
         public void TestAddUniqueVertex()
         {
-            IIndexableGraph graph = new TinkerGraph();
-            IVertex marko = graph.AddVertex(0);
+            var graph = new TinkerGraph();
+            var marko = graph.AddVertex(0);
             marko.SetProperty("name", "marko");
-            IIndex index = graph.CreateIndex("txIdx", typeof(IVertex));
+            var index = graph.CreateIndex("txIdx", typeof(IVertex));
             index.Put("name", "marko", marko);
-            IVertex vertex = IndexableGraphHelper.AddUniqueVertex(graph, null, index, "name", "marko");
+            var vertex = IndexableGraphHelper.AddUniqueVertex(graph, null, index, "name", "marko");
             Assert.AreEqual(vertex.GetProperty("name"), "marko");
             Assert.AreEqual(vertex, graph.GetVertex(0));
             Assert.AreEqual(Count(graph.GetVertices()), 1);

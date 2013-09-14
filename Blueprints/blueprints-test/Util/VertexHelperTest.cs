@@ -9,11 +9,11 @@ namespace Frontenac.Blueprints.Util
         [Test]
         public void TestEdgeSetEquality()
         {
-            IGraph graph = TinkerGraphFactory.CreateTinkerGraph();
+            var graph = TinkerGraphFactory.CreateTinkerGraph();
 
-            foreach (IVertex v in graph.GetVertices())
+            foreach (var v in graph.GetVertices())
             {
-                foreach (IVertex u in graph.GetVertices())
+                foreach (var u in graph.GetVertices())
                 {
                     if (ElementHelper.AreEqual(v, u))
                     {
@@ -25,7 +25,6 @@ namespace Frontenac.Blueprints.Util
                         Assert.False(VertexHelper.HaveEqualEdges(v, u, true));
                         Assert.False(VertexHelper.HaveEqualEdges(v, u, false));
                     }
-
                 }
             }
         }
@@ -33,17 +32,19 @@ namespace Frontenac.Blueprints.Util
         [Test]
         public void TestNeighborhoodEquality()
         {
-            IGraph graph = TinkerGraphFactory.CreateTinkerGraph();
+            var graph = TinkerGraphFactory.CreateTinkerGraph();
 
-            foreach (IVertex v in graph.GetVertices())
+            foreach (var v in graph.GetVertices())
             {
-                foreach (IVertex u in graph.GetVertices())
+                foreach (var u in graph.GetVertices())
                 {
                     if (ElementHelper.AreEqual(v, u))
                     {
                         Assert.True(VertexHelper.HaveEqualNeighborhood(v, u, true));
                         Assert.True(VertexHelper.HaveEqualNeighborhood(v, u, false));
-                    } else {
+                    }
+                    else 
+                    {
                         Assert.False(VertexHelper.HaveEqualNeighborhood(v, u, true));
                         Assert.False(VertexHelper.HaveEqualNeighborhood(v, u, false));
                     }

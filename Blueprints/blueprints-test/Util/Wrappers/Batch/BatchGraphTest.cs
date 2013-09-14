@@ -63,7 +63,7 @@ namespace Frontenac.Blueprints.Util.Wrappers.Batch
             try
             {
                 var bgraph = new BatchGraph(new WritethroughGraph(graph), VertexIdType.String, 1000);
-                foreach (string[] quad in quads)
+                foreach (var quad in quads)
                 {
                     var vertices = new IVertex[2];
                     for (var i = 0; i < 2; i++)
@@ -194,9 +194,8 @@ namespace Frontenac.Blueprints.Util.Wrappers.Batch
         {
             var counter = new VertexEdgeCounter();
 
-            var tgraph = _ignoreIDs
-                             ? new MockTransactionalGraph(new IgnoreIdTinkerGraph())
-                             : new MockTransactionalGraph(new TinkerGraph());
+            var tgraph = _ignoreIDs ? new MockTransactionalGraph(new IgnoreIdTinkerGraph()) : 
+                                      new MockTransactionalGraph(new TinkerGraph());
             try
             {
                 var graph = new BlGraph(this, tgraph, counter, ids);
@@ -299,7 +298,6 @@ namespace Frontenac.Blueprints.Util.Wrappers.Batch
 
             void VerifyCounts() 
             {
-                //System.out.println("Committed (vertices/edges): " + counter.numVertices + " / " + counter.numEdges);
                 Assert.AreEqual(_counter.NumVertices, BaseTest.Count(_graph.GetVertices()) - (_first ? 0 : KeepLast));
                 Assert.AreEqual(_counter.NumEdges, BaseTest.Count(_graph.GetEdges()));
                 foreach (var e in GetEdges())
@@ -336,7 +334,6 @@ namespace Frontenac.Blueprints.Util.Wrappers.Batch
                 _counter.NumVertices = 0;
                 _counter.NumEdges = 0;
                 _first = false;
-                //System.out.println("------");
             }
 
             public Features Features

@@ -7,27 +7,26 @@ using Frontenac.Blueprints.Impls.TG;
 namespace Frontenac.Blueprints.Util.IO.GML
 {
     [TestFixture(Category = "GMLWriterTest")]
-    public class GmlWriterTest
+    public class GmlWriterTest : BaseTest
     {
         [Test]
         public void TestNormal()
         {
             var g = new TinkerGraph();
-            using(var stream = typeof(GmlReaderTest).Assembly.GetManifestResourceStream(typeof(GmlReaderTest), "example.gml"))
+            using (var stream = GetResource<GmlReaderTest>("example.gml"))
             {
                 GmlReader.InputGraph(g, stream);
             }
 
             using(var bos = new MemoryStream())
             {
-                var w = new GmlWriter(g);
-                w.Normalize = true;
+                var w = new GmlWriter(g) {Normalize = true};
                 w.OutputGraph(bos);
 
-                string actual = Encoding.GetEncoding("ISO-8859-1").GetString(bos.ToArray());
-                using(var stream = typeof(GmlWriterTest).Assembly.GetManifestResourceStream(typeof(GmlReaderTest), "writer.gml"))
+                var actual = Encoding.GetEncoding("ISO-8859-1").GetString(bos.ToArray());
+                using (var stream = GetResource<GmlWriterTest>("writer.gml"))
                 {
-                    string expected = StreamToByteArray(stream);
+                    var expected = StreamToByteArray(stream);
                     // ignore carriage return character...not really relevant to the test
                     Assert.AreEqual(expected.Replace("\r", ""), actual.Replace("\r", ""));
                 }   
@@ -38,23 +37,21 @@ namespace Frontenac.Blueprints.Util.IO.GML
         public void TestUseIds()
         {
             var g = new TinkerGraph();
-            using(var stream = typeof(GmlReaderTest).Assembly.GetManifestResourceStream(typeof(GmlReaderTest), "example.gml"))
+            using (var stream = GetResource<GmlReaderTest>("example.gml"))
             {
                 GmlReader.InputGraph(g, stream);
             }
 
-            using(var stream = typeof(GmlReaderTest).Assembly.GetManifestResourceStream(typeof(GmlWriterTest), "writer2.gml"))
+            using (var stream = GetResource<GmlWriterTest>("writer2.gml"))
             {
                 using (var bos = new MemoryStream())
                 {
-                    var w = new GmlWriter(g);
-                    w.Normalize = true;
-                    w.UseId = true;
+                    var w = new GmlWriter(g) {Normalize = true, UseId = true};
                     w.OutputGraph(bos);
 
                     bos.Position = 0;
-                    string actual = new StreamReader(bos).ReadToEnd();
-                    string expected = StreamToByteArray(stream);
+                    var actual = new StreamReader(bos).ReadToEnd();
+                    var expected = StreamToByteArray(stream);
 
                     // ignore carriage return character...not really relevant to the test
                     Assert.AreEqual(expected.Replace("\r", ""), actual.Replace("\r", ""));
@@ -65,12 +62,11 @@ namespace Frontenac.Blueprints.Util.IO.GML
         [Test]
         public void TestRoundTrip()
         {
-            TinkerGraph g1 = TinkerGraphFactory.CreateTinkerGraph();
-            IGraph g2 = new TinkerGraph();
+            var g1 = TinkerGraphFactory.CreateTinkerGraph();
+            var g2 = new TinkerGraph();
             using (var bos = new MemoryStream())
             {
-                var w = new GmlWriter(g1);
-                w.UseId = true;
+                var w = new GmlWriter(g1) {UseId = true};
                 w.OutputGraph(bos);
                 bos.Position = 0;
                 GmlReader.InputGraph(g2, bos);
@@ -83,8 +79,8 @@ namespace Frontenac.Blueprints.Util.IO.GML
         [Test]
         public void TestRoundTripIgnoreBadProperties()
         {
-            TinkerGraph g1 = TinkerGraphFactory.CreateTinkerGraph();
-            IVertex v = g1.GetVertex(1);
+            var g1 = TinkerGraphFactory.CreateTinkerGraph();
+            var v = g1.GetVertex(1);
             v.SetProperty("bad_property", "underscore");
             v.SetProperty("bad property", "space");
             v.SetProperty("bad-property", "dash");
@@ -97,14 +93,11 @@ namespace Frontenac.Blueprints.Util.IO.GML
             v.SetProperty("good5property", "numbers are cool");
             v.SetProperty("goodproperty5", "numbers are cool");
             v.SetProperty("a", "one letter is ok");
-
             
-            IGraph g2 = new TinkerGraph();
+            var g2 = new TinkerGraph();
             using (var bos = new MemoryStream())
             {
-                var w = new GmlWriter(g1);
-                w.Strict = true;
-                w.UseId = true;
+                var w = new GmlWriter(g1) {Strict = true, UseId = true};
                 w.OutputGraph(bos);
                 bos.Position = 0;
                 GmlReader.InputGraph(g2, bos);
@@ -113,7 +106,7 @@ namespace Frontenac.Blueprints.Util.IO.GML
             Assert.AreEqual(g1.GetVertices().Count(), g2.GetVertices().Count());
             Assert.AreEqual(g1.GetEdges().Count(), g2.GetEdges().Count());
 
-            IVertex v1 = g2.GetVertex(1);
+            var v1 = g2.GetVertex(1);
             Assert.Null(v1.GetProperty("bad_property"));
             Assert.Null(v1.GetProperty("bad property"));
             Assert.Null(v1.GetProperty("bad-property"));
@@ -135,23 +128,21 @@ namespace Frontenac.Blueprints.Util.IO.GML
         [Test]
         public void TestEncoding(){
 
-            IGraph g = new TinkerGraph();
-            IVertex v = g.AddVertex(1);
+            var g = new TinkerGraph();
+            var v = g.AddVertex(1);
             v.SetProperty("text", "\u00E9");
 
-            IGraph g2 = new TinkerGraph();
+            var g2 = new TinkerGraph();
             using (var bos = new MemoryStream())
             {
-                var w = new GmlWriter(g);
-                w.Strict = true;
-                w.UseId = true;
+                var w = new GmlWriter(g) {Strict = true, UseId = true};
                 w.OutputGraph(bos);
                 bos.Position = 0;
                 var r = new GmlReader(g2);
                 r.InputGraph(bos);
             }
 
-            IVertex v2 = g2.GetVertex(1);
+            var v2 = g2.GetVertex(1);
             Assert.AreEqual("\u00E9", v2.GetProperty("text"));
         }
 

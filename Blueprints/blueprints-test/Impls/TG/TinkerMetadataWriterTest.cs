@@ -4,7 +4,7 @@ using System.IO;
 namespace Frontenac.Blueprints.Impls.TG
 {
     [TestFixture(Category = "TinkerMetadataWriterTest")]
-    public class TinkerMetadataWriterTest
+    public class TinkerMetadataWriterTest : BaseTest
     {
         [Test]
         public void TestNormal()
@@ -16,8 +16,7 @@ namespace Frontenac.Blueprints.Impls.TG
             using (var bos = new MemoryStream())
             {
                 TinkerMetadataWriter.Save(g, bos);
-
-                using (var stream = typeof(TinkerMetadataWriterTest).Assembly.GetManifestResourceStream(typeof(TinkerMetadataWriterTest), "example-tinkergraph-metadata.dat"))
+                using (var stream = GetResource<TinkerMetadataWriterTest>("example-tinkergraph-metadata.dat"))
                 {
                     if (stream == null) return;
 

@@ -149,10 +149,10 @@ namespace Frontenac.Blueprints.Util.IO.GraphML
                 graphMlOutputStream.Write(xmlDeclarationData, 0, xmlDeclarationData.Length);
                 writer.WriteStartDocument();
                 writer.WriteStartElement(GraphMlTokens.Graphml, GraphMlTokens.GraphmlXmlns);
-                writer.WriteAttributeString(GraphMlTokens.Xmlns, null, GraphMlTokens.GraphmlXmlns);
+                writer.WriteAttributeString(GraphMlTokens.Xmlns, string.Empty, GraphMlTokens.GraphmlXmlns);
 
                 //XML Schema instance namespace definition (xsi)
-                writer.WriteAttributeString(GraphMlTokens.Xmlns, GraphMlTokens.XmlSchemaNamespaceTag, null, W3CXmlSchemaInstanceNsUri);
+                writer.WriteAttributeString(GraphMlTokens.Xmlns, GraphMlTokens.XmlSchemaNamespaceTag, string.Empty, W3CXmlSchemaInstanceNsUri);
 
                 //XML Schema location
                 writer.WriteAttributeString(GraphMlTokens.XmlSchemaNamespaceTag, GraphMlTokens.XmlSchemaLocationAttribute, null,

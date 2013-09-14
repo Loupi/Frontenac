@@ -41,10 +41,8 @@ namespace Grave.Installers
         {
             container.Register(
                 Component.For<Instance>()
-                         .UsingFactoryMethod(t => EsentContext.CreateInstance(Settings.Default.InstanceName, 
-                                                                              Settings.Default.LogsPath, 
-                                                                              Settings.Default.TempPath,
-                                                                              Settings.Default.SystemPath)),
+                         .UsingFactoryMethod(t => EsentContextBase.CreateInstance(Settings.Default.InstanceName, 
+                                                    Settings.Default.LogsPath, Settings.Default.TempPath, Settings.Default.SystemPath)),
 
                 Component.For<InstanceStarter>()
                          .StartUsingMethod(t => t.Start)

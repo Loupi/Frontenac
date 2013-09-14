@@ -156,10 +156,10 @@ namespace Frontenac.Blueprints
                     graph.CreateKeyIndex("name", typeof (IVertex));
                     Assert.AreEqual(graph.GetIndexedKeys(typeof (IVertex)).Count(), 1);
                     Assert.True(graph.GetIndexedKeys(typeof (IVertex)).Contains("name"));
-                    IVertex v1 = graph.AddVertex(null);
+                    var v1 = graph.AddVertex(null);
                     v1.SetProperty("name", "marko");
                     v1.SetProperty("location", "everywhere");
-                    IVertex v2 = graph.AddVertex(null);
+                    var v2 = graph.AddVertex(null);
                     v2.SetProperty("name", "stephen");
                     v2.SetProperty("location", "everywhere");
 
@@ -176,10 +176,10 @@ namespace Frontenac.Blueprints
                     Assert.AreEqual(graph.GetIndexedKeys(typeof (IEdge)).Count(), 1);
                     Assert.True(graph.GetIndexedKeys(typeof (IEdge)).Contains("place"));
 
-                    IEdge e1 = graph.AddEdge(null, graph.AddVertex(null), graph.AddVertex(null), "knows");
+                    var e1 = graph.AddEdge(null, graph.AddVertex(null), graph.AddVertex(null), "knows");
                     e1.SetProperty("name", "marko");
                     e1.SetProperty("place", "everywhere");
-                    IEdge e2 = graph.AddEdge(null, graph.AddVertex(null), graph.AddVertex(null), "knows");
+                    var e2 = graph.AddEdge(null, graph.AddVertex(null), graph.AddVertex(null), "knows");
                     e2.SetProperty("name", "stephen");
                     e2.SetProperty("place", "everywhere");
 
@@ -204,7 +204,7 @@ namespace Frontenac.Blueprints
             {
                 if (graph.Features.SupportsVertexKeyIndex)
                 {
-                    IVertex vertex = graph.AddVertex(null);
+                    var vertex = graph.AddVertex(null);
                     vertex.SetProperty("name", "marko");
                     Assert.AreEqual(Count(graph.GetVertices("name", "marko")), 1);
                     Assert.AreEqual(graph.GetVertices("name", "marko").First(), vertex);
@@ -215,7 +215,7 @@ namespace Frontenac.Blueprints
 
                 if (graph.Features.SupportsEdgeKeyIndex)
                 {
-                    IEdge edge = graph.AddEdge(null, graph.AddVertex(null), graph.AddVertex(null), "knows");
+                    var edge = graph.AddEdge(null, graph.AddVertex(null), graph.AddVertex(null), "knows");
                     edge.SetProperty("date", 2012);
                     Assert.AreEqual(Count(graph.GetEdges("date", 2012)), 1);
                     Assert.AreEqual(graph.GetEdges("date", 2012).First(), edge);
@@ -236,28 +236,26 @@ namespace Frontenac.Blueprints
             var graph = (IKeyIndexableGraph) GraphTest.GenerateGraph();
             try
             {
-                if (graph.Features.SupportsEdgeKeyIndex)
+                if (!graph.Features.SupportsEdgeKeyIndex) return;
+
+                graph.CreateKeyIndex("key", typeof (IEdge));
+                for (var i = 0; i < 25; i++)
                 {
-                    graph.CreateKeyIndex("key", typeof (IEdge));
-                    for (int i = 0; i < 25; i++)
-                    {
-                        graph.AddEdge(null, graph.AddVertex(null), graph.AddVertex(null), "test")
-                             .SetProperty("key", "value");
-                    }
-
-                    if (graph.Features.SupportsVertexIteration) Assert.AreEqual(Count(graph.GetVertices()), 50);
-                    if (graph.Features.SupportsEdgeIteration) Assert.AreEqual(Count(graph.GetEdges()), 25);
-                    int counter = 0;
-                    foreach (var edge in graph.GetEdges("key", "value"))
-                    {
-                        graph.RemoveEdge(edge);
-                        counter++;
-                    }
-                    Assert.AreEqual(counter, 25);
-                    if (graph.Features.SupportsVertexIteration) Assert.AreEqual(Count(graph.GetVertices()), 50);
-                    if (graph.Features.SupportsEdgeIteration) Assert.AreEqual(Count(graph.GetEdges()), 0);
-
+                    graph.AddEdge(null, graph.AddVertex(null), graph.AddVertex(null), "test")
+                         .SetProperty("key", "value");
                 }
+
+                if (graph.Features.SupportsVertexIteration) Assert.AreEqual(Count(graph.GetVertices()), 50);
+                if (graph.Features.SupportsEdgeIteration) Assert.AreEqual(Count(graph.GetEdges()), 25);
+                var counter = 0;
+                foreach (var edge in graph.GetEdges("key", "value"))
+                {
+                    graph.RemoveEdge(edge);
+                    counter++;
+                }
+                Assert.AreEqual(counter, 25);
+                if (graph.Features.SupportsVertexIteration) Assert.AreEqual(Count(graph.GetVertices()), 50);
+                if (graph.Features.SupportsEdgeIteration) Assert.AreEqual(Count(graph.GetEdges()), 0);
             }
             finally
             {
@@ -273,7 +271,7 @@ namespace Frontenac.Blueprints
             {
                 graph.CreateKeyIndex("foo", typeof (IVertex));
 
-                IVertex v1 = graph.AddVertex(null);
+                var v1 = graph.AddVertex(null);
                 v1.SetProperty("foo", 42);
                 VertexCount(graph, 1);
 

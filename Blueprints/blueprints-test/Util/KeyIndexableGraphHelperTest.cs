@@ -10,12 +10,11 @@ namespace Frontenac.Blueprints.Util
         [Test]
         public void TestReIndexElements()
         {
-            TinkerGraph graph = TinkerGraphFactory.CreateTinkerGraph();
+            var graph = TinkerGraphFactory.CreateTinkerGraph();
             Assert.True(graph.GetVertices("name", "marko") is PropertyFilteredIterable<IVertex>);
             Assert.AreEqual(Count(graph.GetVertices("name", "marko")), 1);
             Assert.AreEqual(graph.GetVertices("name", "marko").First(), graph.GetVertex(1));
             graph.CreateKeyIndex("name", typeof(IVertex));
-            //KeyIndexableGraphHelper.reIndexElements(graph, graph.getVertices(), new HashSet<string>(Arrays.asList("name")));
             Assert.False(graph.GetVertices("name", "marko") is PropertyFilteredIterable<IVertex>);
             Assert.AreEqual(Count(graph.GetVertices("name", "marko")), 1);
             Assert.AreEqual(graph.GetVertices("name", "marko").First(), graph.GetVertex(1));

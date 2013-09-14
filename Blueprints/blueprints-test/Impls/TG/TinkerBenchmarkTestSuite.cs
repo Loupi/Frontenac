@@ -16,11 +16,11 @@ namespace Frontenac.Blueprints.Impls.TG
         [Test]
         public void TestTinkerGraph()
         {
-            double totalTime = 0.0d;
+            var totalTime = 0.0d;
             var graph = GraphTest.GenerateGraph();
             try
             {
-                using (var stream = typeof(GraphMlReader).Assembly.GetManifestResourceStream(typeof(GraphMlReader), "graph-example-2.xml"))
+                using (var stream = GetResource<GraphMlReader>("graph-example-2.xml"))
                 {
                     GraphMlReader.InputGraph(graph, stream);
                 }

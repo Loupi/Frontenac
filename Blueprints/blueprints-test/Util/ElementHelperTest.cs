@@ -63,7 +63,8 @@ namespace Frontenac.Blueprints.Util
                 Assert.IsNull(v.GetProperty("name"));
                 Assert.IsNotNull(v.GetProperty("name2"));
                 var name2 = (string) v.GetProperty("name2");
-                Assert.True(name2 == "marko" || name2 == "josh" || name2 == "vadas" || name2 == "ripple" || name2 == "lop" || name2 == "peter" || name2 == "loupi");
+                Assert.True(name2 == "marko" || name2 == "josh" || name2 == "vadas" || name2 == "ripple" || 
+                            name2 == "lop" || name2 == "peter" || name2 == "loupi");
             }
         }
 

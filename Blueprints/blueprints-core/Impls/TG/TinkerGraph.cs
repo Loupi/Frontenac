@@ -30,7 +30,7 @@ namespace Frontenac.Blueprints.Impls.TG
 
         public enum FileType
         {
-            Java,
+            DotNet,
             Gml,
             Graphml,
             Graphson
@@ -104,7 +104,7 @@ namespace Frontenac.Blueprints.Impls.TG
         }
 
         public TinkerGraph(string directory)
-            : this(directory, FileType.Java)
+            : this(directory, FileType.DotNet)
         {
 
         }
@@ -114,14 +114,13 @@ namespace Frontenac.Blueprints.Impls.TG
             VertexKeyIndex = new TinkerKeyIndex(typeof(TinkerVertex), this);
             EdgeKeyIndex = new TinkerKeyIndex(typeof(TinkerEdge), this);
             _directory = null;
-            _fileType = FileType.Java;
+            _fileType = FileType.DotNet;
         }
 
         public virtual IEnumerable<IVertex> GetVertices(string key, object value)
         {
-            if (VertexKeyIndex.GetIndexedKeys().Contains(key))
-                return VertexKeyIndex.Get(key, value).Cast<IVertex>();
-            return new PropertyFilteredIterable<IVertex>(key, value, GetVertices());
+            return VertexKeyIndex.GetIndexedKeys().Contains(key) ? VertexKeyIndex.Get(key, value).Cast<IVertex>() : 
+                                                                   new PropertyFilteredIterable<IVertex>(key, value, GetVertices());
         }
 
         public virtual IEnumerable<IEdge> GetEdges(string key, object value)
@@ -135,29 +134,21 @@ namespace Frontenac.Blueprints.Impls.TG
         {
             if (typeof(IVertex).IsAssignableFrom(elementClass))
                 VertexKeyIndex.CreateKeyIndex(key);
-            else if (typeof(IEdge).IsAssignableFrom(elementClass))
-                EdgeKeyIndex.CreateKeyIndex(key);
             else
-                throw ExceptionFactory.ClassIsNotIndexable(elementClass);
+                EdgeKeyIndex.CreateKeyIndex(key);
         }
 
         public virtual void DropKeyIndex(string key, Type elementClass)
         {
             if (typeof(IVertex).IsAssignableFrom(elementClass))
                 VertexKeyIndex.DropKeyIndex(key);
-            else if (typeof(IEdge).IsAssignableFrom(elementClass))
-                EdgeKeyIndex.DropKeyIndex(key);
             else
-                throw ExceptionFactory.ClassIsNotIndexable(elementClass);
+                EdgeKeyIndex.DropKeyIndex(key);
         }
 
         public virtual IEnumerable<string> GetIndexedKeys(Type elementClass)
         {
-            if (typeof(IVertex).IsAssignableFrom(elementClass))
-                return VertexKeyIndex.GetIndexedKeys();
-            if (typeof(IEdge).IsAssignableFrom(elementClass))
-                return EdgeKeyIndex.GetIndexedKeys();
-            throw ExceptionFactory.ClassIsNotIndexable(elementClass);
+            return typeof(IVertex).IsAssignableFrom(elementClass) ? VertexKeyIndex.GetIndexedKeys() : EdgeKeyIndex.GetIndexedKeys();
         }
 
         public virtual IIndex CreateIndex(string indexName, Type indexClass, params Parameter[] indexParameters)
@@ -220,18 +211,12 @@ namespace Frontenac.Blueprints.Impls.TG
 
         public virtual IVertex GetVertex(object id)
         {
-            if (null == id)
-                throw ExceptionFactory.VertexIdCanNotBeNull();
-
             var idString = id.ToString();
             return InnerVertices.Get(idString);
         }
 
         public virtual IEdge GetEdge(object id)
         {
-            if (null == id)
-                throw ExceptionFactory.EdgeIdCanNotBeNull();
-
             var idString = id.ToString();
             return Edges.Get(idString);
         }

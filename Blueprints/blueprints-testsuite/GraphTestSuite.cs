@@ -53,17 +53,14 @@ namespace Frontenac.Blueprints
             var graph = GraphTest.GenerateGraph();
             try
             {
-                try
-                {
-                    StopWatch();
-                    Assert.NotNull(graph.ToString());
-                    Assert.True(graph.ToString().StartsWith(graph.GetType().Name.ToLower()));
-                    PrintPerformance(graph.ToString(), 1, "graph string representation generated", StopWatch());
-                }
-                catch (Exception)
-                {
-                    Assert.False(true);
-                }
+                StopWatch();
+                Assert.NotNull(graph.ToString());
+                Assert.True(graph.ToString().StartsWith(graph.GetType().Name.ToLower()));
+                PrintPerformance(graph.ToString(), 1, "graph string representation generated", StopWatch());
+            }
+            catch (Exception)
+            {
+                Assert.False(true);
             }
             finally
             {
@@ -204,7 +201,6 @@ namespace Frontenac.Blueprints
                 try
                 {
                     graph.RemoveEdge(edge);
-                    //TODO: doesn't work with wrapper graphs Assert.True(false);
                 }
                 catch (Exception)
                 {
@@ -383,8 +379,6 @@ namespace Frontenac.Blueprints
                 Assert.AreEqual(v.GetEdges(Direction.Out).First(), e);
                 Assert.AreEqual(u.GetEdges(Direction.In).First(), e);
                 graph.RemoveVertex(v);
-                //TODO: DEX
-                //assertFalse(v.getEdges(direction.OUT).iterator().hasNext());
 
                 if (graph.Features.SupportsVertexIteration)
                     Assert.AreEqual(Count(graph.GetVertices()), 1);
@@ -603,7 +597,7 @@ namespace Frontenac.Blueprints
                 var cHateA = graph.AddEdge(null, c, a, ConvertId(graph, "hate"));
                 var cHateB = graph.AddEdge(null, c, b, ConvertId(graph, "hate"));
 
-                IEnumerable<IEdge> results = a.GetEdges(Direction.Out).ToArray();
+                var results = a.GetEdges(Direction.Out).ToArray();
                 Assert.AreEqual(results.Count(), 3);
                 Assert.True(results.Contains(aFriendB));
                 Assert.True(results.Contains(aFriendC));

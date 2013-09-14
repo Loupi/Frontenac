@@ -153,8 +153,12 @@
     <Compile Include="GraveQuery.cs" />
     <Compile Include="GraveTransactionalGraph.cs" />
     <Compile Include="IGraveGraphFactory.cs" />
+    <Compile Include="Indexing\DocumentContract.cs" />
+    <Compile Include="Indexing\DocumentFactoryContract.cs" />
     <Compile Include="Indexing\IDocumentFactory.cs" />
     <Compile Include="Indexing\IndexCollection.cs" />
+    <Compile Include="Indexing\IndexerFactoryContract.cs" />
+    <Compile Include="Indexing\Indexers\IndexerContract.cs" />
     <Compile Include="Indexing\IndexingService.cs" />
     <Compile Include="Indexing\IndexingServiceContract.cs" />
     <Compile Include="Installers\GraveInstaller.cs" />

@@ -12,23 +12,23 @@ namespace Frontenac.Blueprints.Util
         public void TestBasicFunctionality()
         {
             var graph = new TinkerGraph();
-            IVertex a = graph.AddVertex("a");
+            var a = graph.AddVertex("a");
             a.SetProperty("age", 29);
-            IVertex b = graph.AddVertex("b");
+            var b = graph.AddVertex("b");
             b.SetProperty("age", 29);
-            IVertex c = graph.AddVertex("c");
+            var c = graph.AddVertex("c");
             c.SetProperty("age", 30);
-            IVertex d = graph.AddVertex("d");
+            var d = graph.AddVertex("d");
             d.SetProperty("age", 31);
 
             // throw a vertex without the expected key in the mix
-            IVertex e = graph.AddVertex("e");
+            var e = graph.AddVertex("e");
             var list = new List<IVertex>{a, b, c, d, e};
 
             var iterable = new PropertyFilteredIterable<IVertex>("age", 29, list);
             Assert.AreEqual(Count(iterable), 2);
             Assert.AreEqual(Count(iterable), 2);
-            foreach (IVertex vertex in iterable)
+            foreach (var vertex in iterable)
                 Assert.True(vertex.Equals(a) || vertex.Equals(b));
             
             iterable = new PropertyFilteredIterable<IVertex>("age", 30, list);

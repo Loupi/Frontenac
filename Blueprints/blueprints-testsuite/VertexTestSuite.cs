@@ -55,25 +55,24 @@ namespace Frontenac.Blueprints
             var graph = GraphTest.GenerateGraph();
             try
             {
-                if (!graph.Features.IgnoresSuppliedIds)
-                {
-                    var v = graph.AddVertex(ConvertId(graph, "1"));
-                    var u = graph.GetVertex(ConvertId(graph, "1"));
-                    var set = new HashSet<IVertex>
-                        {
-                            v,
-                            v,
-                            u,
-                            u,
-                            graph.GetVertex(ConvertId(graph, "1")),
-                            graph.GetVertex(ConvertId(graph, "1"))
-                        };
+                if (graph.Features.IgnoresSuppliedIds) return;
 
-                    if (graph.Features.SupportsVertexIndex)
-                        set.Add(graph.GetVertices().First());
-                    Assert.AreEqual(1, set.Count());
-                    Assert.AreEqual(v.GetHashCode(), u.GetHashCode());
-                }
+                var v = graph.AddVertex(ConvertId(graph, "1"));
+                var u = graph.GetVertex(ConvertId(graph, "1"));
+                var set = new HashSet<IVertex>
+                    {
+                        v,
+                        v,
+                        u,
+                        u,
+                        graph.GetVertex(ConvertId(graph, "1")),
+                        graph.GetVertex(ConvertId(graph, "1"))
+                    };
+
+                if (graph.Features.SupportsVertexIndex)
+                    set.Add(graph.GetVertices().First());
+                Assert.AreEqual(1, set.Count());
+                Assert.AreEqual(v.GetHashCode(), u.GetHashCode());
             }
             finally
             {
@@ -272,21 +271,20 @@ namespace Frontenac.Blueprints
             var graph = GraphTest.GenerateGraph();
             try
             {
-                if (graph.Features.SupportsVertexIteration)
-                {
-                    StopWatch();
-                    const int vertexCount = 1000;
-                    var ids = new HashSet<object>();
-                    for (var i = 0; i < vertexCount; i++)
-                        ids.Add(graph.AddVertex(null).Id);
+                if (!graph.Features.SupportsVertexIteration) return;
 
-                    PrintPerformance(graph.ToString(), vertexCount, "vertices added", StopWatch());
-                    StopWatch();
-                    Assert.AreEqual(vertexCount, Count(graph.GetVertices()));
-                    PrintPerformance(graph.ToString(), vertexCount, "vertices Counted", StopWatch());
-                    // must create unique ids
-                    Assert.AreEqual(vertexCount, ids.Count());
-                }
+                StopWatch();
+                const int vertexCount = 1000;
+                var ids = new HashSet<object>();
+                for (var i = 0; i < vertexCount; i++)
+                    ids.Add(graph.AddVertex(null).Id);
+
+                PrintPerformance(graph.ToString(), vertexCount, "vertices added", StopWatch());
+                StopWatch();
+                Assert.AreEqual(vertexCount, Count(graph.GetVertices()));
+                PrintPerformance(graph.ToString(), vertexCount, "vertices Counted", StopWatch());
+                // must create unique ids
+                Assert.AreEqual(vertexCount, ids.Count());
             }
             finally
             {
@@ -396,7 +394,7 @@ namespace Frontenac.Blueprints
                     for (var i = 0; i < 50; i++)
                     {
                         var vertex = graph.AddVertex(string.Concat("\"", Guid.NewGuid().ToString(), "\""));
-                        for (int j = 0; j < 15; j++)
+                        for (var j = 0; j < 15; j++)
                             vertex.SetProperty(SailTokens.Datatype, "http://www.w3.org/2001/XMLSchema#anyURI");
 
                         vertices.Add(vertex);
@@ -534,18 +532,17 @@ namespace Frontenac.Blueprints
             var graph = GraphTest.GenerateGraph();
             try
             {
-                if (graph.Features.SupportsVertexProperties && !graph.Features.SupportsIdProperty)
+                if (!graph.Features.SupportsVertexProperties || graph.Features.SupportsIdProperty) return;
+
+                var vertex = graph.AddVertex(null);
+                try
                 {
-                    var vertex = graph.AddVertex(null);
-                    try
-                    {
-                        vertex.SetProperty("id", "123");
-                        Assert.True(false);
-                    }
-                    catch (ArgumentException)
-                    {
-                        Assert.True(true);
-                    }
+                    vertex.SetProperty("id", "123");
+                    Assert.True(false);
+                }
+                catch (ArgumentException)
+                {
+                    Assert.True(true);
                 }
             }
             finally
@@ -560,17 +557,16 @@ namespace Frontenac.Blueprints
             var graph = GraphTest.GenerateGraph();
             try
             {
-                if (graph.Features.SupportsVertexIteration)
-                {
-                    for (var i = 0; i < 25; i++)
-                        graph.AddVertex(null);
+                if (!graph.Features.SupportsVertexIteration) return;
 
-                    Assert.AreEqual(Count(graph.GetVertices()), 25);
-                    foreach (var vertex in graph.GetVertices())
-                        graph.RemoveVertex(vertex);
+                for (var i = 0; i < 25; i++)
+                    graph.AddVertex(null);
 
-                    Assert.AreEqual(Count(graph.GetVertices()), 0);
-                }
+                Assert.AreEqual(Count(graph.GetVertices()), 25);
+                foreach (var vertex in graph.GetVertices())
+                    graph.RemoveVertex(vertex);
+
+                Assert.AreEqual(Count(graph.GetVertices()), 0);
             }
             finally
             {
@@ -755,16 +751,15 @@ namespace Frontenac.Blueprints
             var graph = GraphTest.GenerateGraph();
             try
             {
-                if (graph.Features.SupportsVertexProperties)
-                {
-                    var a = graph.AddVertex(null);
-                    a.SetProperty("test1", 1);
-                    a.SetProperty("test2", 2);
-                    a.SetProperty("test3", 3);
-                    a.SetProperty("test4", 4);
-                    foreach (var key in a.GetPropertyKeys())
-                        a.RemoveProperty(key);
-                }
+                if (!graph.Features.SupportsVertexProperties) return;
+
+                var a = graph.AddVertex(null);
+                a.SetProperty("test1", 1);
+                a.SetProperty("test2", 2);
+                a.SetProperty("test3", 3);
+                a.SetProperty("test4", 4);
+                foreach (var key in a.GetPropertyKeys())
+                    a.RemoveProperty(key);
             }
             finally
             {

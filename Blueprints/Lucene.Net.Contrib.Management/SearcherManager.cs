@@ -9,13 +9,10 @@ namespace Lucene.Net.Contrib.Management
     public class SearcherManager : IDisposable
     {
         private readonly ISearcherWarmer _warmer;
-
         private readonly object _reopenLock = new object();
-
-
         private volatile IndexSearcher _currentSearcher;
 
-        public SearcherManager(IndexWriter writer, bool applyAllDeletes = true, ISearcherWarmer warmer = null)
+        public SearcherManager(IndexWriter writer, ISearcherWarmer warmer = null)
         {
             _warmer = warmer;
             _currentSearcher = new IndexSearcher(writer.GetReader());
@@ -108,7 +105,7 @@ namespace Lucene.Net.Contrib.Management
 
         public IndexSearcherToken Acquire()
         {
-            return new IndexSearcherToken(AcquireSearcher(), this);
+            return new IndexSearcherToken(AcquireSearcher());
         }
 
         private IndexSearcher AcquireSearcher()
@@ -145,12 +142,10 @@ namespace Lucene.Net.Contrib.Management
 
         public class IndexSearcherToken : IDisposable
         {
-            private readonly SearcherManager _manager;
             public IndexSearcher Searcher { get; private set; }
 
-            public IndexSearcherToken(IndexSearcher searcher, SearcherManager manager)
+            public IndexSearcherToken(IndexSearcher searcher)
             {
-                _manager = manager;
                 Searcher = searcher;
             }
 

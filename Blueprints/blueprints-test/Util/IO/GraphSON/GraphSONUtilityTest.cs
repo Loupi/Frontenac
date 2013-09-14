@@ -739,7 +739,7 @@ namespace Frontenac.Blueprints.Util.IO.GraphSON
         [Test]
         public void JsonFromElementVertexLongListPropertiesNoKeysWithTypes()
         {
-            IVertex v = _graph.AddVertex(1);
+            var v = _graph.AddVertex(1);
             var list = new List<long> {1000L, 1000L, 1000L};
 
             v.SetProperty("keyList", list);
@@ -760,7 +760,7 @@ namespace Frontenac.Blueprints.Util.IO.GraphSON
             Assert.NotNull(listAsJson);
             Assert.AreEqual(3, listAsJson.Count());
 
-            for (int ix = 0; ix < listAsJson.Count(); ix++)
+            for (var ix = 0; ix < listAsJson.Count(); ix++)
             {
                 IDictionary<string, JToken> valueAsJson = (JObject)listAsJson[ix];
                 Assert.NotNull(valueAsJson);
@@ -774,7 +774,7 @@ namespace Frontenac.Blueprints.Util.IO.GraphSON
         [Test]
         public void JsonFromElementVertexIntListPropertiesNoKeysWithTypes()
         {
-            IVertex v = _graph.AddVertex(1);
+            var v = _graph.AddVertex(1);
             var list = new List<int> {1, 1, 1};
 
             v.SetProperty("keyList", list);
@@ -795,7 +795,7 @@ namespace Frontenac.Blueprints.Util.IO.GraphSON
             Assert.NotNull(listAsJson);
             Assert.AreEqual(3, listAsJson.Count());
 
-            for (int ix = 0; ix < listAsJson.Count(); ix++)
+            for (var ix = 0; ix < listAsJson.Count(); ix++)
             {
                 IDictionary<string, JToken> valueAsJson = (JObject)listAsJson[ix];
                 Assert.NotNull(valueAsJson);
@@ -810,7 +810,7 @@ namespace Frontenac.Blueprints.Util.IO.GraphSON
         [Test]
         public void JsonFromElementVertexListOfListPropertiesNoKeysWithTypes()
         {
-            IVertex v = _graph.AddVertex(1);
+            var v = _graph.AddVertex(1);
             var list = new List<int> {1, 1, 1};
 
             var listList = new List<List<int>> {list};
@@ -833,12 +833,11 @@ namespace Frontenac.Blueprints.Util.IO.GraphSON
             Assert.NotNull(listAsJson);
             Assert.AreEqual(3, listAsJson.Count());
 
-            for (int ix = 0; ix < listAsJson.Count(); ix++)
+            for (var ix = 0; ix < listAsJson.Count(); ix++)
             {
                 IDictionary<string, JToken> valueAsJson = (JObject)listAsJson[ix];
                 Assert.NotNull(valueAsJson);
                 Assert.True(valueAsJson.ContainsKey(GraphSonTokens.Type));
-                //Porting Note: JSON.NET parse integers as longs
                 Assert.AreEqual(GraphSonTokens.TypeLong, valueAsJson[GraphSonTokens.Type].Value<string>());
                 Assert.True(valueAsJson.ContainsKey(GraphSonTokens.Value));
                 Assert.AreEqual(1, valueAsJson[GraphSonTokens.Value].Value<long>());
@@ -891,7 +890,6 @@ namespace Frontenac.Blueprints.Util.IO.GraphSON
         {
             var g = new TinkerGraph();
             var v = g.AddVertex(1);
-            //v.setProperty("key", null);
 
             var map = new Dictionary<string, object>();
             map.Put("innerkey", null);
@@ -929,7 +927,6 @@ namespace Frontenac.Blueprints.Util.IO.GraphSON
         {
             var g = new TinkerGraph();
             var v = g.AddVertex(1);
-            // v.setProperty("key", null);
 
             var map = new Dictionary<string, object>();
             map.Put("innerkey", null);
@@ -945,8 +942,6 @@ namespace Frontenac.Blueprints.Util.IO.GraphSON
             var json = GraphSonUtility.JsonFromElement(v, null, GraphSONMode.EXTENDED);
 
             Assert.NotNull(json);
-            // Assert.assertTrue(jsonObjectKey.isNull(GraphSONTokens.VALUE));
-            // Assert.assertEquals(GraphSONTokens.TYPE_UNKNOWN, jsonObjectKey.optString(GraphSONTokens.Type));
 
             var jsonMap = (JObject)json["keyMap"][GraphSonTokens.Value];
             Assert.NotNull(jsonMap);

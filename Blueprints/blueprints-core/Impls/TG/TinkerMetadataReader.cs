@@ -242,7 +242,7 @@ namespace Frontenac.Blueprints.Impls.TG
             if (type == 6)
                 return reader.ReadDouble();
 
-            throw new IOException("unknown data type: use java serialization");
+            throw new IOException("unknown data type: use .NET serialization");
         }
     }
 }

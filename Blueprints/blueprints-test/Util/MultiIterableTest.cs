@@ -10,8 +10,8 @@ namespace Frontenac.Blueprints.Util
         public void TestBasicFunctionality()
         {
             var itty = new MultiIterable<int>(new List<IEnumerable<int>>{new[]{1, 2, 3}, new[]{4, 5}, new[]{6, 7, 8}});
-            int counter = 0;
-            foreach (int i in itty)
+            var counter = 0;
+            foreach (var i in itty)
             {
                 counter++;
                 Assert.AreEqual(counter, i);

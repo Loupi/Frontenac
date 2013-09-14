@@ -11,6 +11,11 @@ namespace Frontenac.Blueprints
     {
         Stopwatch _timer;
 
+        public static Stream GetResource<T>(string resourceName)
+        {
+            return typeof(T).Assembly.GetManifestResourceStream(typeof(T), resourceName);
+        }
+
         public static T GetOnlyElement<T>(IEnumerator<T> iterator)
         {
             if (!iterator.MoveNext()) return default(T);
@@ -26,7 +31,7 @@ namespace Frontenac.Blueprints
 
         public static int Count(IEnumerator iterator)
         {
-            int counter = 0;
+            var counter = 0;
             while (iterator.MoveNext())
                 counter++;
             

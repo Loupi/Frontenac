@@ -36,8 +36,8 @@ namespace Frontenac.Blueprints.Impls.TG
                     return new GraphMlTinkerStorage();
                 case TinkerGraph.FileType.Graphson:
                     return new GraphSonTinkerStorage();
-                case TinkerGraph.FileType.Java:
-                    return new JavaTinkerStorage();
+                case TinkerGraph.FileType.DotNet:
+                    return new DotNetTinkerStorage();
             }
 
             throw new Exception(string.Format("File Type {0} is not configurable by the factory", fileType));
@@ -187,15 +187,15 @@ namespace Frontenac.Blueprints.Impls.TG
         }
 
         /// <summary>
-        /// Reads and writes a TinkerGraph using java object serialization.
+        /// Reads and writes a TinkerGraph using .NET serialization.
         /// </summary>
-        class JavaTinkerStorage : AbstractTinkerStorage
+        class DotNetTinkerStorage : AbstractTinkerStorage
         {
-            const string GraphFileJava = "/tinkergraph.dat";
+            const string GraphFileDotNet = "/tinkergraph.dat";
 
             public override TinkerGraph Load(string directory)
             {
-                using (var stream = File.OpenRead(string.Concat(directory, GraphFileJava)))
+                using (var stream = File.OpenRead(string.Concat(directory, GraphFileDotNet)))
                 {
                     var formatter = new BinaryFormatter();
                     return (TinkerGraph)formatter.Deserialize(stream);
@@ -204,9 +204,9 @@ namespace Frontenac.Blueprints.Impls.TG
 
             public override void Save(TinkerGraph graph, string directory)
             {
-                var filePath = string.Concat(directory, GraphFileJava);
+                var filePath = string.Concat(directory, GraphFileDotNet);
                 DeleteFile(filePath);
-                using (var stream = File.Create(string.Concat(directory, GraphFileJava)))
+                using (var stream = File.Create(string.Concat(directory, GraphFileDotNet)))
                 {
                     var formatter = new BinaryFormatter();
                     formatter.Serialize(stream, graph);

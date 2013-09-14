@@ -426,53 +426,71 @@ namespace Frontenac.Blueprints.Util.IO.GraphSON
             {
                 var type = node[GraphSonTokens.Type].Value<string>();
 
-                if (type == GraphSonTokens.TypeUnknown)
-// ReSharper disable RedundantAssignment
-                    propertyValue = null;
-// ReSharper restore RedundantAssignment
-                else if (type == GraphSonTokens.TypeBoolean)
-                    propertyValue = node[GraphSonTokens.Value].Value<bool>();
-                else if (type == GraphSonTokens.TypeFloat)
-                    propertyValue = float.Parse(node[GraphSonTokens.Value].Value<string>(), CultureInfo.InvariantCulture);
-                else if (type == GraphSonTokens.TypeDouble)
-                    propertyValue = node[GraphSonTokens.Value].Value<double>();
-                else if (type == GraphSonTokens.TypeInteger)
-                    propertyValue = node[GraphSonTokens.Value].Value<int>();
-                else if (type == GraphSonTokens.TypeLong)
-                    propertyValue = node[GraphSonTokens.Value].Value<long>();
-                else if (type == GraphSonTokens.TypeString)
-                    propertyValue = node[GraphSonTokens.Value].Value<string>();
-                else if (type == GraphSonTokens.TypeList)
-                    propertyValue = ReadProperties(node[GraphSonTokens.Value], true);
-                else if (type == GraphSonTokens.TypeMap)
-                    propertyValue = ReadProperties(node[GraphSonTokens.Value] as JObject, false, true);
-                else
+                switch (type)
                 {
-                    var jValue = node[GraphSonTokens.Value] as JValue;
-                    if (jValue != null)
-                        propertyValue = jValue.Value;
+                    case GraphSonTokens.TypeUnknown:
+                        break;
+                    case GraphSonTokens.TypeBoolean:
+                        propertyValue = node[GraphSonTokens.Value].Value<bool>();
+                        break;
+                    case GraphSonTokens.TypeFloat:
+                        propertyValue = float.Parse(node[GraphSonTokens.Value].Value<string>(), CultureInfo.InvariantCulture);
+                        break;
+                    case GraphSonTokens.TypeDouble:
+                        propertyValue = node[GraphSonTokens.Value].Value<double>();
+                        break;
+                    case GraphSonTokens.TypeInteger:
+                        propertyValue = node[GraphSonTokens.Value].Value<int>();
+                        break;
+                    case GraphSonTokens.TypeLong:
+                        propertyValue = node[GraphSonTokens.Value].Value<long>();
+                        break;
+                    case GraphSonTokens.TypeString:
+                        propertyValue = node[GraphSonTokens.Value].Value<string>();
+                        break;
+                    case GraphSonTokens.TypeList:
+                        propertyValue = ReadProperties(node[GraphSonTokens.Value], true);
+                        break;
+                    case GraphSonTokens.TypeMap:
+                        propertyValue = ReadProperties(node[GraphSonTokens.Value] as JObject, false, true);
+                        break;
+                    default:
+                        {
+                            var jValue = node[GraphSonTokens.Value] as JValue;
+                            if (jValue != null)
+                                propertyValue = jValue.Value;
+                        }
+                        break;
                 }
             }
             else
             {
-                if (node.Type == JTokenType.Null)
-// ReSharper disable RedundantAssignment
-                    propertyValue = null;
-// ReSharper restore RedundantAssignment
-                else if (node.Type == JTokenType.Boolean)
-                    propertyValue = node.Value<bool>();
-                else if (node.Type == JTokenType.Float)
-                    propertyValue = node.Value<double>();
-                else if (node.Type == JTokenType.Integer)
-                    propertyValue = node.Value<long>();
-                else if (node.Type == JTokenType.String)
-                    propertyValue = node.Value<string>();
-                else if (node.Type == JTokenType.Array)
-                    propertyValue = ReadProperties(node.Values(), false);
-                else if (node.Type == JTokenType.Object)
-                    propertyValue = ReadProperties(node as JObject, false, false);
-                else
-                    propertyValue = node.Value<string>();
+                switch (node.Type)
+                {
+                    case JTokenType.Null:
+                        break;
+                    case JTokenType.Boolean:
+                        propertyValue = node.Value<bool>();
+                        break;
+                    case JTokenType.Float:
+                        propertyValue = node.Value<double>();
+                        break;
+                    case JTokenType.Integer:
+                        propertyValue = node.Value<long>();
+                        break;
+                    case JTokenType.String:
+                        propertyValue = node.Value<string>();
+                        break;
+                    case JTokenType.Array:
+                        propertyValue = ReadProperties(node.Values(), false);
+                        break;
+                    case JTokenType.Object:
+                        propertyValue = ReadProperties(node as JObject, false, false);
+                        break;
+                    default:
+                        propertyValue = node.Value<string>();
+                        break;
+                }
             }
 
             return propertyValue;
@@ -524,8 +542,7 @@ namespace Frontenac.Blueprints.Util.IO.GraphSON
                     if (value is IDictionary)
                         value = CreateJsonMap(value as IDictionary, propertyKeys, showTypes);
                     else if (value is IElement)
-                        value = JsonFromElement((IElement)value, propertyKeys,
-                                showTypes ? GraphSONMode.EXTENDED : GraphSONMode.NORMAL);
+                        value = JsonFromElement((IElement)value, propertyKeys, showTypes ? GraphSONMode.EXTENDED : GraphSONMode.NORMAL);
                     else if (!(value is string) && value is IEnumerable)
                         value = CreateJsonList(value as IEnumerable, propertyKeys, showTypes);
 // ReSharper restore PossibleMultipleEnumeration

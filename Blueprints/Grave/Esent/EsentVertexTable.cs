@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics.Contracts;
 using Frontenac.Blueprints;
 using Grave.Esent.Serializers;
 using Microsoft.Isam.Esent.Interop;
@@ -16,11 +17,8 @@ namespace Grave.Esent
 
         public void AddEdge(int vertexId, Direction direction, string label, int edgeId, int targetId)
         {
-            if(direction == Direction.Both)
-                throw new ArgumentException("direction");
-
-            if(string.IsNullOrWhiteSpace(label))
-                throw new ArgumentException("label");
+            Contract.Requires(direction != Direction.Both);
+            Contract.Requires(!string.IsNullOrWhiteSpace(label));
 
             if (!SetCursor(vertexId)) return;
 
@@ -31,6 +29,8 @@ namespace Grave.Esent
 
         void WriteEdgeContent(string labelColumn, int? edgeId, int? targetId, int iTag)
         {
+            Contract.Requires(!string.IsNullOrWhiteSpace(labelColumn));
+
             using (var transaction = new Transaction(Session))
             {
                 using (var update = new Update(Session, TableId, JET_prep.Replace))
@@ -54,11 +54,8 @@ namespace Grave.Esent
 
         public void DeleteEdge(int vertexId, Direction direction, string label, int edgeId, int targetId)
         {
-            if (direction == Direction.Both)
-                throw new ArgumentException("direction");
-
-            if (string.IsNullOrWhiteSpace(label))
-                throw new ArgumentException("label");
+            Contract.Requires(direction != Direction.Both);
+            Contract.Requires(!string.IsNullOrWhiteSpace(label));
 
             if (!SetCursor(vertexId)) return;
 
@@ -66,7 +63,8 @@ namespace Grave.Esent
 
             if (!SetEdgeCursor(labelColumn, edgeId, targetId)) return;
 
-            var retrievecolumn = new JET_RETRIEVECOLUMN { columnid = Columns[labelColumn], grbit = RetrieveColumnGrbit.RetrieveTag | RetrieveColumnGrbit.RetrieveFromIndex };
+            var retrievecolumn = new JET_RETRIEVECOLUMN { columnid = Columns[labelColumn], grbit = RetrieveColumnGrbit.RetrieveTag | 
+                                                                                                   RetrieveColumnGrbit.RetrieveFromIndex };
             Api.JetRetrieveColumns(Session, TableId, new[] { retrievecolumn }, 1);
 
             WriteEdgeContent(labelColumn, null, null, retrievecolumn.itagSequence);
@@ -74,11 +72,8 @@ namespace Grave.Esent
 
         public bool SetEdgeCursor(int vertexId, string label, Direction direction, int edgeId, int targetId)
         {
-            if (direction == Direction.Both)
-                throw new ArgumentException("direction");
-
-            if (string.IsNullOrWhiteSpace(label))
-                throw new ArgumentException("label");
+            Contract.Requires(direction != Direction.Both);
+            Contract.Requires(!string.IsNullOrWhiteSpace(label));
 
             if (!SetCursor(vertexId)) return false;
 
@@ -89,6 +84,8 @@ namespace Grave.Esent
 
         bool SetEdgeCursor(string edgeLabel, int edgeId, int targetId)
         {
+            Contract.Requires(!string.IsNullOrWhiteSpace(edgeLabel));
+
             var key = ((((ulong)edgeId) << 32)) | (ulong)(long)targetId;
             Api.JetSetCurrentIndex(Session, TableId, string.Concat(edgeLabel, "Index"));
             Api.MakeKey(Session, TableId, key, MakeKeyGrbit.NewKey);
@@ -102,6 +99,8 @@ namespace Grave.Esent
 
         void CreateEdgeColumn(string columnName)
         {
+            Contract.Requires(!string.IsNullOrWhiteSpace(columnName));
+
             if (CreateColumn(columnName, VistaColtyp.LongLong, ColumndefGrbit.ColumnMultiValued | ColumndefGrbit.ColumnTagged))
             {
                 var description = string.Format("+{0}\0\0", columnName);
@@ -111,6 +110,9 @@ namespace Grave.Esent
 
         public int CountEdges(int vertexId, string labelName)
         {
+            Contract.Requires(!string.IsNullOrWhiteSpace(labelName));
+            Contract.Ensures(Contract.Result<int>() >= 0);
+
             if (!SetCursor(vertexId)) return 0;
             var retrievecolumn = new JET_RETRIEVECOLUMN {columnid = Columns[labelName], itagSequence = 0};
             Api.JetRetrieveColumns(Session, TableId, new[] { retrievecolumn }, 1);
@@ -119,6 +121,9 @@ namespace Grave.Esent
 
         public IEnumerable<long> GetEdges(int vertexId, string labelName)
         {
+            Contract.Requires(!string.IsNullOrWhiteSpace(labelName));
+            Contract.Ensures(Contract.Result<IEnumerable<long>>() != null);
+
             var nbEdges = CountEdges(vertexId, labelName);
             var columnId = Columns[labelName];
             for (var itag = 1; itag <= nbEdges; itag++)

@@ -34,15 +34,13 @@ namespace Frontenac.Blueprints.Util.IO.GML
             while (HasNext(st))
             {
                 var type = st.Ttype;
-                if (NotLineBreak(type))
+                if (!NotLineBreak(type)) continue;
+                var value = st.StringValue;
+                if (GmlTokens.Graph == value)
                 {
-                    var value = st.StringValue;
-                    if (GmlTokens.Graph == value)
-                    {
-                        ParseGraph(st);
-                        if (!HasNext(st))
-                            return;
-                    }
+                    ParseGraph(st);
+                    if (!HasNext(st))
+                        return;
                 }
             }
             throw new IOException("Graph not complete");
@@ -57,26 +55,24 @@ namespace Frontenac.Blueprints.Util.IO.GML
             {
                 // st.nextToken();
                 var type = st.Ttype;
-                if (NotLineBreak(type))
+                if (!NotLineBreak(type)) continue;
+                if (type == ']')
+                    return;
+                var key = st.StringValue;
+                switch (key)
                 {
-                    if (type == ']')
-                        return;
-                    var key = st.StringValue;
-                    switch (key)
-                    {
-                        case GmlTokens.Node:
-                            AddNode(ParseNode(st));
-                            break;
-                        case GmlTokens.Edge:
-                            AddEdge(ParseEdge(st));
-                            break;
-                        case GmlTokens.Directed:
-                            _directed = ParseBoolean(st);
-                            break;
-                        default:
-                            ParseValue("ignore", st);
-                            break;
-                    }
+                    case GmlTokens.Node:
+                        AddNode(ParseNode(st));
+                        break;
+                    case GmlTokens.Edge:
+                        AddEdge(ParseEdge(st));
+                        break;
+                    case GmlTokens.Directed:
+                        _directed = ParseBoolean(st);
+                        break;
+                    default:
+                        ParseValue("ignore", st);
+                        break;
                 }
             }
             throw new IOException("Graph not complete");
@@ -193,21 +189,21 @@ namespace Frontenac.Blueprints.Util.IO.GML
             while (HasNext(st))
             {
                 var type = st.Ttype;
-                if (NotLineBreak(type))
+                if (!NotLineBreak(type)) continue;
+                if (type == StreamTokenizer.TtNumber)
                 {
-                    if (type == StreamTokenizer.TtNumber)
                     {
                         int intVal;
                         if (int.TryParse(st.StringValue, out intVal))
                             return intVal;
-                        else
-                            return st.NumberValue;
                     }
-                    if (type == '[')
-                        return ParseMap(key, st);
-                    if (type == '"')
-                        return st.StringValue;
+                    
+                    return st.NumberValue;
                 }
+                if (type == '[')
+                    return ParseMap(key, st);
+                if (type == '"')
+                    return st.StringValue;
             }
             throw new IOException("value not found");
         }

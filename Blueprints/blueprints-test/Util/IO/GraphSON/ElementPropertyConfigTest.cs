@@ -8,7 +8,7 @@ namespace Frontenac.Blueprints.Util.IO.GraphSON
         [Test]
         public void ShouldExcludeBoth()
         {
-            ElementPropertyConfig config = ElementPropertyConfig.ExcludeProperties(null, null);
+            var config = ElementPropertyConfig.ExcludeProperties(null, null);
             Assert.AreEqual(ElementPropertyConfig.ElementPropertiesRule.Exclude, config.VertexPropertiesRule);
             Assert.AreEqual(ElementPropertyConfig.ElementPropertiesRule.Exclude, config.EdgePropertiesRule);
         }
@@ -16,7 +16,7 @@ namespace Frontenac.Blueprints.Util.IO.GraphSON
         [Test]
         public void ShouldIncludeBoth()
         {
-            ElementPropertyConfig config = ElementPropertyConfig.IncludeProperties(null, null);
+            var config = ElementPropertyConfig.IncludeProperties(null, null);
             Assert.AreEqual(ElementPropertyConfig.ElementPropertiesRule.Include, config.VertexPropertiesRule);
             Assert.AreEqual(ElementPropertyConfig.ElementPropertiesRule.Include, config.EdgePropertiesRule);
         }

@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Diagnostics.Contracts;
 using System.Runtime.Serialization;
 using Lucene.Net.Documents;
 
@@ -13,6 +14,8 @@ namespace Grave.Indexing.Lucene
 
         public LuceneDocument(Document document)
         {
+            Contract.Requires(document != null);
+
             _document = document;
         }
 

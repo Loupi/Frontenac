@@ -59,12 +59,12 @@ namespace Frontenac.Blueprints.Impls.TG
         }
 
         [Test]
-        public void TestJavaStorageFactory()
+        public void TestDotNetStorageFactory()
         {
-            string path = GetDirectory() + "/" + "storage-test-java";
+            string path = GetDirectory() + "/" + "storage-test-dotnet";
             CreateDirectory(path);
 
-            ITinkerStorage storage = TinkerStorageFactory.GetInstance().GetTinkerStorage(TinkerGraph.FileType.Java);
+            ITinkerStorage storage = TinkerStorageFactory.GetInstance().GetTinkerStorage(TinkerGraph.FileType.DotNet);
             TinkerGraph graph = TinkerGraphFactory.CreateTinkerGraph();
             storage.Save(graph, path);
 

@@ -42,9 +42,9 @@ namespace Frontenac.Blueprints
 
         protected void ContainsVertices(IGraph graph, IEnumerable<IVertex> vertices)
         {
-            foreach (IVertex v in vertices)
+            foreach (var v in vertices)
             {
-                IVertex vp = graph.GetVertex(v.Id);
+                var vp = graph.GetVertex(v.Id);
                 if (vp == null || !vp.Id.Equals(v.Id)) Assert.Fail();
             }
         }

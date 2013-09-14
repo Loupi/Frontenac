@@ -241,26 +241,21 @@ namespace Frontenac.Blueprints.Util.Wrappers.Id
 
         public void DropKeyIndex(string key, Type elementClass)
         {
-            VerifyElementIndex(key, elementClass);
+            Contract.Ensures(key == Id);
+            Contract.Ensures(IsVertex(elementClass) && _supportVertexIds || IsEdge(elementClass) && _supportEdgeIds);
             _baseGraph.DropKeyIndex(key, elementClass);
         }
 
         public void CreateKeyIndex(string key, Type elementClass, params Parameter[] indexParameters)
         {
-            VerifyElementIndex(key, elementClass);
+            Contract.Ensures(key == Id);
+            Contract.Ensures(IsVertex(elementClass) && _supportVertexIds || IsEdge(elementClass) && _supportEdgeIds);
             _baseGraph.CreateKeyIndex(key, elementClass, indexParameters);
-        }
-
-        void VerifyElementIndex(string key, Type elementClass)
-        {
-            var v = IsVertexClass(elementClass);
-            var supported = ((v && _supportVertexIds) || (!v && _supportEdgeIds));
-            Contract.Ensures(!supported && key == Id);
         }
 
         public IEnumerable<string> GetIndexedKeys(Type elementClass)
         {
-            var v = IsVertexClass(elementClass);
+            var v = IsVertex(elementClass);
             var supported = ((v && _supportVertexIds) || (!v && _supportEdgeIds));
 
             if (supported)
@@ -286,7 +281,7 @@ namespace Frontenac.Blueprints.Util.Wrappers.Id
         {
             VerifyBaseGraphIsIndexableGraph();
 
-            if (IsVertexClass(indexClass))
+            if (IsVertex(indexClass))
                 return new IdVertexIndex(((IIndexableGraph)_baseGraph).CreateIndex(indexName, indexClass, indexParameters), this);
             return new IdEdgeIndex(((IIndexableGraph)_baseGraph).CreateIndex(indexName, indexClass, indexParameters), this);
         }
@@ -361,9 +356,15 @@ namespace Frontenac.Blueprints.Util.Wrappers.Id
         }
 
         [Pure]
-        static bool IsVertexClass(Type c)
+        static bool IsVertex(Type c)
         {
             return typeof(IVertex).IsAssignableFrom(c);
+        }
+
+        [Pure]
+        static bool IsEdge(Type c)
+        {
+            return typeof(IEdge).IsAssignableFrom(c);
         }
 
         void CreateIndices()

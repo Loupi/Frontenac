@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Diagnostics.Contracts;
 using Grave.Esent.Serializers;
 using Microsoft.Isam.Esent.Interop;
 
@@ -16,14 +17,9 @@ namespace Grave.Esent
 
         public EsentContextBase(Session session, string databaseName, IContentSerializer contentSerializer)
         {
-            if (session == null)
-                throw new ArgumentNullException("session");
-
-            if(contentSerializer == null)
-                throw new ArgumentNullException("contentSerializer");
-
-            if (string.IsNullOrWhiteSpace(databaseName))
-                throw new ArgumentException("databaseName");
+            Contract.Requires(session != null);
+            Contract.Requires(contentSerializer != null);
+            Contract.Requires(!string.IsNullOrWhiteSpace(databaseName));
 
             Session = session;
             DatabaseName = CleanDatabaseName(databaseName);
@@ -64,8 +60,9 @@ namespace Grave.Esent
 
         static string CleanDatabaseName(string databaseName)
         {
-            if (string.IsNullOrWhiteSpace(databaseName))
-                throw new ArgumentException("databaseName");
+            Contract.Requires(!string.IsNullOrWhiteSpace(databaseName));
+            Contract.Ensures(!string.IsNullOrWhiteSpace(Contract.Result<string>()));
+            Contract.Ensures(databaseName != ".db");
 
             databaseName = databaseName.Trim();
 
@@ -74,12 +71,6 @@ namespace Grave.Esent
 
             if (!databaseName.ToLower().EndsWith(".db"))
                 databaseName = string.Concat(databaseName, ".db");
-
-            if (string.IsNullOrWhiteSpace(databaseName))
-                throw new ArgumentException("databaseName");
-
-            if (databaseName == ".db")
-                throw new ArgumentException("databaseName");
 
             return databaseName;
         }
@@ -102,6 +93,8 @@ namespace Grave.Esent
 
         public EsentVertexTable GetVerticesCursor()
         {
+            Contract.Ensures(Contract.Result<EsentVertexTable>() != null);
+
             var cursor = new EsentVertexTable(Session, ContentSerializer);
             cursor.Open(Dbid);
             return cursor;
@@ -109,6 +102,8 @@ namespace Grave.Esent
 
         public EsentEdgesTable GetEdgesCursor()
         {
+            Contract.Ensures(Contract.Result<EsentEdgesTable>() != null);
+
             var cursor = new EsentEdgesTable(Session, ContentSerializer);
             cursor.Open(Dbid);
             return cursor;

@@ -35,23 +35,9 @@ namespace Frontenac.Blueprints.Util.IO.GraphSON
             Assert.NotNull(map);
             Assert.AreEqual(10000000000, long.Parse(map.Get("big").ToString()));
             Assert.AreEqual(0.4954959595959, double.Parse(map.Get("small").ToString()), 0);
-            //Assert.assertNull(map.get("nullKey"));
 
             var list = (IList<object>)v1.GetProperty("testlist");
             Assert.AreEqual(3, list.Count);
-
-            //Porting Note: looking at the JSON input, there is no null value in that list. Just disable this test for now.
-            /*bool foundNull = false;
-            for (int ix = 0; ix < list.Count; ix++)
-            {
-                if (list.get(ix) == null)
-                {
-                    foundNull = true;
-                    break;
-                }
-            }
-
-            Assert.True(foundNull);*/
 
             var v2 = graph.GetVertex(2);
             Assert.NotNull(v2);
@@ -63,7 +49,6 @@ namespace Frontenac.Blueprints.Util.IO.GraphSON
             Assert.AreEqual(v1, e.GetVertex(Direction.Out));
             Assert.AreEqual(v2, e.GetVertex(Direction.In));
             Assert.AreEqual("please worke", e.GetProperty("teste"));
-            //Assert.assertNull(e.getProperty("keyNull"));
         }
 
         [Test]
@@ -144,7 +129,6 @@ namespace Frontenac.Blueprints.Util.IO.GraphSON
             Assert.NotNull(map);
             Assert.AreEqual(10000000000, long.Parse(map.Get("big").ToString()));
             Assert.AreEqual(0.4954959595959, double.Parse(map.Get("small").ToString()), 0);
-            // Assert.assertNull(map.get("nullKey"));
 
             var list = (IList<object>)v1.GetProperty("testlist");
             Assert.AreEqual(4, list.Count);

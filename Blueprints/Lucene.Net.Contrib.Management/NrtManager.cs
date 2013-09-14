@@ -12,25 +12,20 @@ namespace Lucene.Net.Contrib.Management
 
     public class NrtManager : IDisposable
     {
-        private const long MaxSearcherGen = long.MaxValue;
-
-        private readonly IndexWriter _writer;
-
-        private long _indexingGen = 1;
-
-        private readonly List<IWaitingListener> _waitingListeners = new List<IWaitingListener>();
-
-        private readonly object _reopenLock = new object();
-
         //The Java condition _newGeneration is not used in this port. Monitor.Wait and PulseAll suffice.
 
+        private const long MaxSearcherGen = long.MaxValue;
+        private readonly IndexWriter _writer;
+        private long _indexingGen = 1;
+        private readonly List<IWaitingListener> _waitingListeners = new List<IWaitingListener>();
+        private readonly object _reopenLock = new object();
         private readonly SearcherManagerRef _withDeletes;
         private readonly SearcherManagerRef _withoutDeletes;
 
         public NrtManager(IndexWriter writer, ISearcherWarmer warmer = null)
         {
             _writer = writer;
-            _withDeletes = _withoutDeletes = new SearcherManagerRef(true, 0, new SearcherManager(writer, true, warmer));
+            _withDeletes = _withoutDeletes = new SearcherManagerRef(0, new SearcherManager(writer, warmer));
         }
 
         #region IDisposable
@@ -104,7 +99,6 @@ namespace Lucene.Net.Contrib.Management
             }
         }
 
-
         public long UpdateDocument(Term term, Document doc)
         {
             _writer.UpdateDocument(term, doc);
@@ -168,8 +162,6 @@ namespace Lucene.Net.Contrib.Management
 
             return _indexingGen;
         }
-
-
 
         public SearcherManager WaitForGeneration(long targetGen, bool requireDeletes = true)
         {
@@ -270,13 +262,11 @@ namespace Lucene.Net.Contrib.Management
 
         private class SearcherManagerRef : IDisposable
         {
-            private bool ApplyDeletes { get; set; }
             public long Generation { get; set; }
             public SearcherManager Manager { get; private set; }
 
-            public SearcherManagerRef(bool applyDeletes, long generation, SearcherManager manager)
+            public SearcherManagerRef(long generation, SearcherManager manager)
             {
-                ApplyDeletes = applyDeletes;
                 Generation = generation;
                 Manager = manager;
             }
@@ -287,6 +277,5 @@ namespace Lucene.Net.Contrib.Management
                 Manager.Dispose();
             }
         }
-
     }
 }

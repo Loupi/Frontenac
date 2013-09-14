@@ -1,5 +1,5 @@
-﻿using System;
-using System.Collections;
+﻿using System.Collections;
+using System.Diagnostics.Contracts;
 using System.Text;
 using Fasterflect;
 
@@ -15,6 +15,10 @@ namespace Grave.Indexing.Indexers
         public ObjectIndexer(object content, IDocument document, IIndexerFactory indexerFactory, uint maxDepth)
             : base(document)
         {
+            Contract.Requires(content != null);
+            Contract.Requires(indexerFactory != null);
+            Contract.Requires(maxDepth > 0);
+
             _content = content;
             _indexerFactory = indexerFactory;
             _maxDepth = maxDepth;
@@ -22,9 +26,6 @@ namespace Grave.Indexing.Indexers
 
         public override void Index(string name)
         {
-            if (String.IsNullOrWhiteSpace(name))
-                throw new ArgumentNullException("name");
-
             _nameBuilder.Append(name);
             Recurse(0, _content);
         }
