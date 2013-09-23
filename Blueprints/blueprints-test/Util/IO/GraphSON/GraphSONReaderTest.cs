@@ -30,11 +30,11 @@ namespace Frontenac.Blueprints.Util.IO.GraphSON
             using (var stream = new MemoryStream())
             {
                 var writer = new GraphSonWriter(graph);
-                writer.OutputGraph(stream, vertexKeys, edgeKeys, GraphSONMode.COMPACT);
+                writer.OutputGraph(stream, vertexKeys, edgeKeys, GraphSonMode.COMPACT);
 
                 stream.Position = 0;
 
-                GraphSONReader.InputGraph(emptyGraph, stream);
+                GraphSonReader.InputGraph(emptyGraph, stream);
             }
 
             Assert.AreEqual(7, emptyGraph.GetVertices().Count());
@@ -84,11 +84,11 @@ namespace Frontenac.Blueprints.Util.IO.GraphSON
                 using (var stream = new MemoryStream())
                 {
                     var writer = new GraphSonWriter(graph);
-                    writer.OutputGraph(stream, vertexKeys, edgeKeys, GraphSONMode.COMPACT);
+                    writer.OutputGraph(stream, vertexKeys, edgeKeys, GraphSonMode.COMPACT);
 
                     stream.Position = 0;
 
-                    GraphSONReader.InputGraph(emptyGraph, stream);
+                    GraphSonReader.InputGraph(emptyGraph, stream);
                 }
 
                 Assert.Fail();
@@ -108,11 +108,11 @@ namespace Frontenac.Blueprints.Util.IO.GraphSON
             using (var stream = new MemoryStream())
             {
                 var writer = new GraphSonWriter(graph);
-                writer.OutputGraph(stream, null, null, GraphSONMode.EXTENDED);
+                writer.OutputGraph(stream, null, null, GraphSonMode.EXTENDED);
 
                 stream.Position = 0;
 
-                GraphSONReader.InputGraph(emptyGraph, stream);
+                GraphSonReader.InputGraph(emptyGraph, stream);
             }
 
             Assert.AreEqual(7, emptyGraph.GetVertices().Count());
@@ -154,7 +154,7 @@ namespace Frontenac.Blueprints.Util.IO.GraphSON
             var bytes = Encoding.Default.GetBytes(json);
             using (var inputStream = new MemoryStream(bytes))
             {
-                GraphSONReader.InputGraph(graph, inputStream);
+                GraphSonReader.InputGraph(graph, inputStream);
             }
 
             Assert.AreEqual(2, graph.GetVertices().Count());
@@ -208,7 +208,7 @@ namespace Frontenac.Blueprints.Util.IO.GraphSON
             var bytes = Encoding.Default.GetBytes(json);
             using (var inputStream = new MemoryStream(bytes))
             {
-                GraphSONReader.InputGraph(graph, inputStream);
+                GraphSonReader.InputGraph(graph, inputStream);
             }
 
             Assert.AreEqual(2, graph.GetVertices().Count());
@@ -249,7 +249,7 @@ namespace Frontenac.Blueprints.Util.IO.GraphSON
             var bytes = Encoding.Default.GetBytes(json);
             using (var inputStream = new MemoryStream(bytes))
             {
-                GraphSONReader.InputGraph(graph, inputStream);
+                GraphSonReader.InputGraph(graph, inputStream);
             }
 
             Assert.AreEqual(2, graph.GetVertices().Count());

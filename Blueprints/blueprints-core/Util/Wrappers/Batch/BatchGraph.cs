@@ -406,7 +406,7 @@ namespace Frontenac.Blueprints.Util.Wrappers.Batch
             return new InvalidOperationException("Retrieval operations are not supported during batch loading");
         }
 
-        private class BatchEdge : IEdge
+        private class BatchEdge : DictionaryElement, IEdge
         {
             private readonly BatchGraph _batchGraph;
 
@@ -427,32 +427,32 @@ namespace Frontenac.Blueprints.Util.Wrappers.Batch
                 get { return GetWrappedEdge().Label; }
             }
 
-            public void SetProperty(string key, object value)
+            public override void SetProperty(string key, object value)
             {
                 GetWrappedEdge().SetProperty(key, value);
             }
 
-            public object Id
+            public override object Id
             {
                 get { return GetWrappedEdge().Id; }
             }
 
-            public object GetProperty(string key)
+            public override object GetProperty(string key)
             {
                 return GetWrappedEdge().GetProperty(key);
             }
 
-            public IEnumerable<string> GetPropertyKeys()
+            public override IEnumerable<string> GetPropertyKeys()
             {
                 return GetWrappedEdge().GetPropertyKeys();
             }
 
-            public object RemoveProperty(string key)
+            public override object RemoveProperty(string key)
             {
                 return GetWrappedEdge().RemoveProperty(key);
             }
 
-            public void Remove()
+            public override void Remove()
             {
                 _batchGraph.RemoveEdge(this);
             }
@@ -471,7 +471,7 @@ namespace Frontenac.Blueprints.Util.Wrappers.Batch
             }
         }
 
-        private class BatchVertex : IVertex
+        private class BatchVertex : DictionaryElement, IVertex
         {
             private readonly BatchGraph _batchGraph;
             private readonly object _externalId;
@@ -506,32 +506,32 @@ namespace Frontenac.Blueprints.Util.Wrappers.Batch
                 return _batchGraph.AddEdgeSupport(this, inVertex, label);
             }
 
-            public void SetProperty(string key, object value)
+            public override void SetProperty(string key, object value)
             {
                 _batchGraph.GetCachedVertex(_externalId).SetProperty(key, value);
             }
 
-            public object Id
+            public override object Id
             {
                 get { return _externalId; }
             }
 
-            public object GetProperty(string key)
+            public override object GetProperty(string key)
             {
                 return _batchGraph.GetCachedVertex(_externalId).GetProperty(key);
             }
 
-            public IEnumerable<string> GetPropertyKeys()
+            public override IEnumerable<string> GetPropertyKeys()
             {
                 return _batchGraph.GetCachedVertex(_externalId).GetPropertyKeys();
             }
 
-            public object RemoveProperty(string key)
+            public override object RemoveProperty(string key)
             {
                 return _batchGraph.GetCachedVertex(_externalId).RemoveProperty(key);
             }
 
-            public void Remove()
+            public override void Remove()
             {
                 _batchGraph.RemoveVertex(this);
             }

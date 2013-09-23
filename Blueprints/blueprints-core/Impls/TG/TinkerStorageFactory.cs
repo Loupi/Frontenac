@@ -203,14 +203,14 @@ namespace Frontenac.Blueprints.Impls.TG
 
             public override void LoadGraphData(TinkerGraph graph, string directory)
             {
-                GraphSONReader.InputGraph(graph, string.Concat(directory, GraphFileGraphson));
+                GraphSonReader.InputGraph(graph, string.Concat(directory, GraphFileGraphson));
             }
 
             public override void SaveGraphData(TinkerGraph graph, string directory)
             {
                 var filePath = string.Concat(directory, GraphFileGraphson);
                 DeleteFile(filePath);
-                GraphSonWriter.OutputGraph(graph, filePath, GraphSONMode.EXTENDED);
+                GraphSonWriter.OutputGraph(graph, filePath, GraphSonMode.EXTENDED);
             }
         }
     }

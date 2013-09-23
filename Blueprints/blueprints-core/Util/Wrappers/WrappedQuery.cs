@@ -28,13 +28,13 @@ namespace Frontenac.Blueprints.Util.Wrappers
             return this;
         }
 
-        public IQuery Has<T>(string key, Compare compare, T value) where T : IComparable<T>
+        public IQuery Has<T>(string key, Compare compare, T value)
         {
             Query = Query.Has(key, compare, value);
             return this;
         }
 
-        public IQuery Interval<T>(string key, T startValue, T endValue) where T : IComparable<T>
+        public IQuery Interval<T>(string key, T startValue, T endValue)
         {
             Query = Query.Interval(key, startValue, endValue);
             return this;

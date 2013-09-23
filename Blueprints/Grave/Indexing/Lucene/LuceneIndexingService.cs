@@ -5,13 +5,20 @@ using System.IO;
 using System.Linq;
 using Frontenac.Blueprints;
 using Grave.Esent;
+using Grave.Geo;
 using Lucene.Net.Analysis.Standard;
 using Lucene.Net.Contrib.Management;
 using Lucene.Net.Documents;
 using Lucene.Net.Index;
 using Lucene.Net.QueryParsers;
 using Lucene.Net.Search;
+using Lucene.Net.Spatial.Prefix;
+using Lucene.Net.Spatial.Prefix.Tree;
+using Lucene.Net.Spatial.Queries;
 using Lucene.Net.Store;
+using Spatial4n.Core.Context;
+using Spatial4n.Core.Distance;
+using Spatial4n.Core.Shapes;
 using Directory = System.IO.Directory;
 using Version = Lucene.Net.Util.Version;
 
@@ -59,8 +66,8 @@ namespace Grave.Indexing.Lucene
             base.Dispose(disposing);
 
             if (!disposing) return;
-            _reopener.Dispose();
 
+            _reopener.Dispose();
             _searcherManager.Dispose();
             _nrtManager.Dispose();
             _writer.Dispose();
@@ -153,9 +160,8 @@ namespace Grave.Indexing.Lucene
 
         public override long DeleteIndex(Type indexType, string indexName, bool isUserIndex)
         {
-            return _nrtManager.DeleteDocuments(new TermQuery(new Term(isUserIndex
-                                                                          ? GetIndexColumn(indexType)
-                                                                          : GetKeyColumn(indexType), indexName)));
+            return _nrtManager.DeleteDocuments(new TermQuery(new Term(isUserIndex ? GetIndexColumn(indexType)
+                                                                                  : GetKeyColumn(indexType), indexName)));
         }
 
         private static object GetMinValue(object value)
@@ -180,8 +186,7 @@ namespace Grave.Indexing.Lucene
             return long.MaxValue;
         }
 
-        public override IEnumerable<int> Query(Type indexType, IEnumerable<GraveQueryElement> query,
-                                               int hitsLimit = 1000)
+        public override IEnumerable<int> Query(Type indexType, IEnumerable<GraveQueryElement> query, int hitsLimit = 1000)
         {
             var graveQueryElements = query as GraveQueryElement[] ?? query.ToArray();
             if (!graveQueryElements.Any())
@@ -190,85 +195,25 @@ namespace Grave.Indexing.Lucene
             var luceneQueries = new List<Query>();
             foreach (var graveQueryElement in graveQueryElements)
             {
+                Query luceneQuery = null;
                 if (graveQueryElement is GraveIntervalQueryElement)
                 {
                     var interval = graveQueryElement as GraveIntervalQueryElement;
-                    luceneQueries.Add(CreateQuery(indexType, interval.Key, interval.StartValue, interval.StartValue,
-                                                  interval.EndValue, true, true, interval.Key, false));
+                    luceneQuery = WrapQuery(indexType,
+                                            CreateQuery(interval.Key, interval.StartValue, interval.StartValue,
+                                                        interval.EndValue, true, true), interval.Key, false);
                 }
                 else if (graveQueryElement is GraveComparableQueryElement)
                 {
                     var comparable = graveQueryElement as GraveComparableQueryElement;
-                    object min;
-                    object max;
-                    bool minInclusive;
-                    bool maxInclusive;
 
-                    if (comparable.Value == null || !Portability.IsNumber(comparable.Value))
-                    {
-                        min = comparable.Value;
-                        max = comparable.Value;
-                        minInclusive = true;
-                        maxInclusive = true;
-                    }
+                    if (comparable.Value is IGeoShape)
+                        luceneQuery = CreateGeoQuery(indexType, comparable.Key, comparable.Value as IGeoShape);
                     else
-                    {
-                        switch (comparable.Comparison)
-                        {
-                            case Compare.Equal:
-                            case Compare.NotEqual:
-                                min = comparable.Value;
-                                max = comparable.Value;
-                                minInclusive = true;
-                                maxInclusive = true;
-                                break;
-
-                            case Compare.GreaterThan:
-                                min = comparable.Value;
-                                max = GetMaxValue(comparable.Value);
-                                minInclusive = false;
-                                maxInclusive = true;
-                                break;
-
-                            case Compare.GreaterThanEqual:
-                                min = comparable.Value;
-                                max = GetMaxValue(comparable.Value);
-                                minInclusive = true;
-                                maxInclusive = true;
-                                break;
-
-                            case Compare.LessThan:
-                                min = GetMinValue(comparable.Value);
-                                max = comparable.Value;
-                                minInclusive = true;
-                                maxInclusive = false;
-                                break;
-
-                            case Compare.LessThanEqual:
-                                min = GetMinValue(comparable.Value);
-                                max = comparable.Value;
-                                minInclusive = true;
-                                maxInclusive = true;
-                                break;
-
-                            default:
-                                throw new NotSupportedException();
-                        }
-                    }
-
-                    var luceneQuery = CreateQuery(indexType, comparable.Key, comparable.Value, min, max,
-                                                  minInclusive, maxInclusive, comparable.Key, false);
-                    if (comparable.Comparison == Compare.NotEqual)
-                    {
-                        var booleanQuery = new BooleanQuery
-                            {
-                                new BooleanClause(luceneQuery, Occur.MUST_NOT)
-                            };
-                        luceneQuery = booleanQuery;
-                    }
-
-                    luceneQueries.Add(luceneQuery);
+                        luceneQuery = CreateComparableQuery(indexType, comparable);
                 }
+
+                luceneQueries.Add(luceneQuery);
             }
 
             Query queryToRun;
@@ -287,6 +232,111 @@ namespace Grave.Indexing.Lucene
             return Fetch(indexType, queryToRun, hitsLimit);
         }
 
+        Query CreateGeoQuery(Type indexType, string key, IGeoShape geoShape)
+        {
+            Shape shape;
+            if (geoShape is GeoCircle)
+            {
+                var circle = geoShape as GeoCircle;
+                shape = SpatialContext.GEO.MakeCircle(circle.Center.Latitude, circle.Center.Longitude,
+                                                      DistanceUtils.Dist2Degrees(circle.Radius, DistanceUtils.EARTH_MEAN_RADIUS_KM));
+            }
+            else if (geoShape is GeoPoint)
+            {
+                var point = geoShape as GeoPoint;
+                shape = SpatialContext.GEO.MakePoint(point.Latitude, point.Longitude);
+            }
+            else if (geoShape is GeoRectangle)
+            {
+                var rect = geoShape as GeoRectangle;
+                shape = SpatialContext.GEO.MakeRectangle(rect.TopLeft.Latitude, rect.TopLeft.Longitude,
+                                                         rect.BottomRight.Latitude,
+                                                         rect.BottomRight.Longitude);
+            }
+            else
+            {
+                throw new InvalidOperationException("Unknown GeoShape type");
+            }
+
+            var grid = new GeohashPrefixTree(SpatialContext.GEO, 11);
+            var strategy = new RecursivePrefixTreeStrategy(grid, key);
+            Query query = strategy.MakeQuery(new SpatialArgs(SpatialOperation.Intersects, shape));
+            query = WrapQuery(indexType, query, key, false);
+
+            return query;
+        }
+
+        Query CreateComparableQuery(Type indexType, GraveComparableQueryElement comparable)
+        {
+            object min;
+            object max;
+            bool minInclusive;
+            bool maxInclusive;
+
+            if (comparable.Value == null || !Portability.IsNumber(comparable.Value))
+            {
+                min = comparable.Value;
+                max = comparable.Value;
+                minInclusive = true;
+                maxInclusive = true;
+            }
+            else
+            {
+                switch (comparable.Comparison)
+                {
+                    case Compare.Equal:
+                    case Compare.NotEqual:
+                        min = comparable.Value;
+                        max = comparable.Value;
+                        minInclusive = true;
+                        maxInclusive = true;
+                        break;
+
+                    case Compare.GreaterThan:
+                        min = comparable.Value;
+                        max = GetMaxValue(comparable.Value);
+                        minInclusive = false;
+                        maxInclusive = true;
+                        break;
+
+                    case Compare.GreaterThanEqual:
+                        min = comparable.Value;
+                        max = GetMaxValue(comparable.Value);
+                        minInclusive = true;
+                        maxInclusive = true;
+                        break;
+
+                    case Compare.LessThan:
+                        min = GetMinValue(comparable.Value);
+                        max = comparable.Value;
+                        minInclusive = true;
+                        maxInclusive = false;
+                        break;
+
+                    case Compare.LessThanEqual:
+                        min = GetMinValue(comparable.Value);
+                        max = comparable.Value;
+                        minInclusive = true;
+                        maxInclusive = true;
+                        break;
+
+                    default:
+                        throw new NotSupportedException();
+                }
+            }
+
+            var query = CreateQuery(comparable.Key, comparable.Value, min, max, minInclusive, maxInclusive);
+            query = WrapQuery(indexType, query, comparable.Key, false);
+
+            if (comparable.Comparison == Compare.NotEqual)
+            {
+                var booleanQuery = new BooleanQuery { new BooleanClause(query, Occur.MUST_NOT) };
+                query = booleanQuery;
+            }
+
+            return query;
+        }
+
         public override long DeleteDocuments(Type indexType, int id)
         {
             return _nrtManager.DeleteDocuments(NumericRangeQuery.NewIntRange(GetIdColumn(indexType), id, id, true, true));
@@ -296,11 +346,9 @@ namespace Grave.Indexing.Lucene
         {
             var query = new BooleanQuery
                 {
-                    new BooleanClause(NumericRangeQuery.NewIntRange(GetIdColumn(indexType), id, id, true, true),
-                                      Occur.MUST),
-                    new BooleanClause(
-                        CreateQuery(indexType, key, value, value, value, true, true, GetIndexColumn(indexType), true),
-                        Occur.MUST)
+                    new BooleanClause(NumericRangeQuery.NewIntRange(GetIdColumn(indexType), id, id, true, true), Occur.MUST),
+                    new BooleanClause(WrapQuery(indexType, CreateQuery(key, value, value, value, true, true), 
+                        GetIndexColumn(indexType), true), Occur.MUST)
                 };
             return _nrtManager.DeleteDocuments(query);
         }
@@ -327,23 +375,29 @@ namespace Grave.Indexing.Lucene
             _nrtManager.WaitForGeneration(generation);
         }
 
-        private Query CreateQuery(Type indexType, string key, object value, object minValue, object maxValue,
-                                  bool minInclusive, bool maxInclusive, string indexName, bool isUserIndex)
+        private static Query CreateQuery(string key, object value, object minValue, object maxValue,
+                                         bool minInclusive, bool maxInclusive)
         {
-            Contract.Requires(IsValidIndexType(indexType));
             Contract.Ensures(Contract.Result<Query>() != null);
 
             var query = Portability.IsNumber(value)
                             ? CreateRangeQuery(key, value, minValue, maxValue, minInclusive, maxInclusive)
                             : new TermQuery(new Term(key, value as string));
 
+            return query;
+        }
+
+        private Query WrapQuery(Type indexType, Query query, string indexName, bool isUserIndex)
+        {
+            Contract.Requires(IsValidIndexType(indexType));
+            Contract.Ensures(Contract.Result<Query>() != null);
+
             if (!string.IsNullOrWhiteSpace(indexName))
             {
                 query = new BooleanQuery
                     {
-                        new BooleanClause(new TermQuery(new Term(isUserIndex
-                                                                     ? GetIndexColumn(indexType)
-                                                                     : GetKeyColumn(indexType), indexName)), Occur.MUST),
+                        new BooleanClause(new TermQuery(new Term(isUserIndex ? GetIndexColumn(indexType)
+                                                                             : GetKeyColumn(indexType), indexName)), Occur.MUST),
                         new BooleanClause(query, Occur.MUST)
                     };
             }
@@ -354,7 +408,7 @@ namespace Grave.Indexing.Lucene
         public override IEnumerable<int> Get(Type indexType, string indexName, string key, object value,
                                              bool isUserIndex, int hitsLimit = 1000)
         {
-            var query = CreateQuery(indexType, key, value, value, value, true, true, indexName, isUserIndex);
+            var query = WrapQuery(indexType, CreateQuery(key, value, value, value, true, true), indexName, isUserIndex);
             return Fetch(indexType, query, hitsLimit);
         }
 

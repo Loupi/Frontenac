@@ -5,12 +5,12 @@ using Microsoft.Isam.Esent.Interop;
 
 namespace Grave.Esent
 {
-    public class EsentContextBase
+    public abstract class EsentContextBase
     {
         protected readonly IContentSerializer ContentSerializer;
         protected JET_DBID Dbid;
 
-        public EsentContextBase(Session session, string databaseName, IContentSerializer contentSerializer)
+        protected EsentContextBase(Session session, string databaseName, IContentSerializer contentSerializer)
         {
             Contract.Requires(session != null);
             Contract.Requires(contentSerializer != null);

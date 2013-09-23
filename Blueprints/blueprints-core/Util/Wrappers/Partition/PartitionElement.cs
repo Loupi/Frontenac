@@ -3,7 +3,7 @@ using System.Diagnostics.Contracts;
 
 namespace Frontenac.Blueprints.Util.Wrappers.Partition
 {
-    public abstract class PartitionElement : IElement
+    public abstract class PartitionElement : DictionaryElement
     {
         protected readonly IElement BaseElement;
         protected PartitionGraph Graph;
@@ -17,35 +17,35 @@ namespace Frontenac.Blueprints.Util.Wrappers.Partition
             Graph = partitionGraph;
         }
 
-        public void SetProperty(string key, object value)
+        public override void SetProperty(string key, object value)
         {
             if (!key.Equals(Graph.PartitionKey))
                 BaseElement.SetProperty(key, value);
         }
 
-        public object GetProperty(string key)
+        public override object GetProperty(string key)
         {
             return key.Equals(Graph.PartitionKey) ? null : BaseElement.GetProperty(key);
         }
 
-        public object RemoveProperty(string key)
+        public override object RemoveProperty(string key)
         {
             return key.Equals(Graph.PartitionKey) ? null : BaseElement.RemoveProperty(key);
         }
 
-        public IEnumerable<string> GetPropertyKeys()
+        public override IEnumerable<string> GetPropertyKeys()
         {
             var keys = new HashSet<string>(BaseElement.GetPropertyKeys());
             keys.Remove(Graph.PartitionKey);
             return keys;
         }
 
-        public object Id
+        public override object Id
         {
             get { return BaseElement.Id; }
         }
 
-        public void Remove()
+        public override void Remove()
         {
             if (this is IVertex)
                 Graph.RemoveVertex(this as IVertex);

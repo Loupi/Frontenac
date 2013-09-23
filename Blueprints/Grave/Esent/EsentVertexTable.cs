@@ -71,6 +71,7 @@ namespace Grave.Esent
                     grbit = RetrieveColumnGrbit.RetrieveTag |
                             RetrieveColumnGrbit.RetrieveFromIndex
                 };
+
             Api.JetRetrieveColumns(Session, TableId, new[] {retrievecolumn}, 1);
 
             WriteEdgeContent(labelColumn, null, null, retrievecolumn.itagSequence);

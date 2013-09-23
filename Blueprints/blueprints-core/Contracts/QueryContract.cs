@@ -14,14 +14,14 @@ namespace Frontenac.Blueprints.Contracts
             return null;
         }
 
-        public IQuery Has<T>(string key, Compare compare, T value) where T : IComparable<T>
+        public IQuery Has<T>(string key, Compare compare, T value)
         {
             Contract.Requires(!string.IsNullOrWhiteSpace(key));
             Contract.Ensures(Contract.Result<IQuery>() != null);
             return null;
         }
 
-        public IQuery Interval<T>(string key, T startValue, T endValue) where T : IComparable<T>
+        public IQuery Interval<T>(string key, T startValue, T endValue)
         {
             Contract.Requires(!string.IsNullOrWhiteSpace(key));
             Contract.Ensures(Contract.Result<IQuery>() != null);

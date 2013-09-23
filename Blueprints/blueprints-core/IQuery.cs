@@ -25,7 +25,7 @@ namespace Frontenac.Blueprints
         /// <param name="compare">the comparator to use for comparison</param>
         /// <param name="value">the value to check against</param>
         /// <returns>the modified query object</returns>
-        IQuery Has<T>(string key, Compare compare, T value) where T : IComparable<T>;
+        IQuery Has<T>(string key, Compare compare, T value);
 
         /// <summary>
         ///     Filter out the edge of its property value is not within the provided interval.
@@ -35,7 +35,7 @@ namespace Frontenac.Blueprints
         /// <param name="startValue">the inclusive start value of the interval</param>
         /// <param name="endValue">the exclusive end value of the interval</param>
         /// <returns>the modified query object</returns>
-        IQuery Interval<T>(string key, T startValue, T endValue) where T : IComparable<T>;
+        IQuery Interval<T>(string key, T startValue, T endValue);
 
         /// <summary>
         ///     Execute the query and return the matching edges.
@@ -64,24 +64,31 @@ namespace Frontenac.Blueprints
         GreaterThan,
         GreaterThanEqual,
         LessThan,
-        LessThanEqual
+        LessThanEqual,
+        Within
     }
 
     public static class CompareHelpers
     {
         public static Compare Opposite(this Compare compare)
         {
-            if (compare == Compare.Equal)
-                return Compare.NotEqual;
-            if (compare == Compare.NotEqual)
-                return Compare.Equal;
-            if (compare == Compare.GreaterThan)
-                return Compare.LessThanEqual;
-            if (compare == Compare.GreaterThanEqual)
-                return Compare.LessThan;
-            if (compare == Compare.LessThan)
-                return Compare.GreaterThanEqual;
-            return Compare.GreaterThan;
+            switch (compare)
+            {
+                case Compare.Equal:
+                    return Compare.NotEqual;
+                case Compare.NotEqual:
+                    return Compare.Equal;
+                case Compare.GreaterThan:
+                    return Compare.LessThanEqual;
+                case Compare.GreaterThanEqual:
+                    return Compare.LessThan;
+                case Compare.LessThan:
+                    return Compare.GreaterThanEqual;
+                case Compare.LessThanEqual:
+                    return Compare.GreaterThanEqual;
+                default:
+                    throw new NotSupportedException();
+            }
         }
     }
 }

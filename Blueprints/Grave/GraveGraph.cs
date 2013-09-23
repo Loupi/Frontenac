@@ -181,8 +181,8 @@ namespace Grave
             var edgeId = TryToInt32(id);
             if (!edgeId.HasValue) return null;
 
-            var data = Context.EdgesTable.TryGetEdge(edgeId.Value);
-            return data != null
+            Tuple<string, int, int> data;
+            return Context.EdgesTable.TryGetEdge(edgeId.Value, out data)
                        ? new GraveEdge(edgeId.Value, GetVertex(data.Item3), GetVertex(data.Item2), data.Item1, this,
                                        Context.EdgesTable)
                        : null;
@@ -261,7 +261,7 @@ namespace Grave
         public virtual IQuery Query()
         {
             WaitForGeneration();
-            throw new NotImplementedException();
+            return new GraveQuery(this, IndexingService);
         }
 
         public virtual void Shutdown()
@@ -277,11 +277,9 @@ namespace Grave
 
         internal void WaitForGeneration()
         {
-            if (_refreshRequired)
-            {
-                IndexingService.WaitForGeneration(_generation);
-                _refreshRequired = false;
-            }
+            if (!_refreshRequired) return;
+            IndexingService.WaitForGeneration(_generation);
+            _refreshRequired = false;
         }
 
         private static int? TryToInt32(object value)
@@ -325,13 +323,11 @@ namespace Grave
                 var edgeIds = IndexingService.EdgeIndices.Get(key, key, value);
                 foreach (var edgeId in edgeIds)
                 {
-                    var data = cursor.TryGetEdge(edgeId);
-                    if (data != null)
-                    {
-                        var vertexOut = new GraveVertex(this, Context.VertexTable, data.Item3);
-                        var vertexIn = new GraveVertex(this, Context.VertexTable, data.Item2);
-                        yield return new GraveEdge(edgeId, vertexOut, vertexIn, data.Item1, this, Context.EdgesTable);
-                    }
+                    Tuple<string, int, int> data;
+                    if (!cursor.TryGetEdge(edgeId, out data)) continue;
+                    var vertexOut = new GraveVertex(this, Context.VertexTable, data.Item3);
+                    var vertexIn = new GraveVertex(this, Context.VertexTable, data.Item2);
+                    yield return new GraveEdge(edgeId, vertexOut, vertexIn, data.Item1, this, Context.EdgesTable);
                 }
             }
             finally

@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Diagnostics.Contracts;
 using System.Linq;
 using Frontenac.Blueprints;
@@ -8,7 +7,7 @@ using Grave.Esent;
 
 namespace Grave
 {
-    public abstract class GraveElement : IElement
+    public abstract class GraveElement : DictionaryElement
     {
         protected readonly GraveGraph Graph;
         protected readonly int RawId;
@@ -24,36 +23,30 @@ namespace Grave
             RawId = id;
         }
 
-        public object GetProperty(string key)
+        public override object GetProperty(string key)
         {
-            if (string.IsNullOrWhiteSpace(key))
-                throw new ArgumentException("key");
-
             return Table.ReadCell(RawId, key);
         }
 
-        public IEnumerable<string> GetPropertyKeys()
+        public override IEnumerable<string> GetPropertyKeys()
         {
             return Table.GetColumnsForRow(RawId).Where(t => !t.StartsWith("$"));
         }
 
-        public void SetProperty(string key, object value)
+        public override void SetProperty(string key, object value)
         {
-            if (string.IsNullOrWhiteSpace(key))
-                throw new ArgumentException("key");
-
             Table.WriteCell(RawId, key, value);
             SetIndexedKeyValue(key, value);
         }
 
-        public object RemoveProperty(string key)
+        public override object RemoveProperty(string key)
         {
             var result = Table.DeleteCell(RawId, key);
             SetIndexedKeyValue(key, null);
             return result;
         }
 
-        public void Remove()
+        public override void Remove()
         {
             var vertex = this as IVertex;
             if (vertex != null)
@@ -62,7 +55,7 @@ namespace Grave
                 Graph.RemoveEdge((IEdge) this);
         }
 
-        public object Id
+        public override object Id
         {
             get { return RawId; }
         }

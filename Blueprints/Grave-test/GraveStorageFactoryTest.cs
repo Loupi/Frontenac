@@ -61,7 +61,7 @@ namespace Grave_test
         [Test]
         public void StorageFactoryIsSingleton()
         {
-            GraveGraphStorageFactory factory = GraveGraphStorageFactory.GetInstance();
+            var factory = GraveGraphStorageFactory.GetInstance();
             Assert.AreSame(factory, GraveGraphStorageFactory.GetInstance());
         }
 
@@ -108,7 +108,7 @@ namespace Grave_test
         [Test]
         public void TestGraphSonStorageFactory()
         {
-            string path = GetDirectory() + "/" + "storage-test-graphson";
+            var path = GetDirectory() + "/" + "storage-test-graphson";
             CreateDirectory(path);
 
             var storage = GraveGraphStorageFactory.GetInstance().GetGraveStorage(FileType.Graphson);

@@ -6,7 +6,7 @@ using Frontenac.Blueprints.Util;
 namespace Frontenac.Blueprints.Impls.TG
 {
     [Serializable]
-    internal abstract class TinkerElement : IElement
+    internal abstract class TinkerElement : DictionaryElement
     {
         protected readonly TinkerGraph Graph;
         protected readonly string RawId;
@@ -21,17 +21,17 @@ namespace Frontenac.Blueprints.Impls.TG
             RawId = id;
         }
 
-        public IEnumerable<string> GetPropertyKeys()
+        public override IEnumerable<string> GetPropertyKeys()
         {
             return new HashSet<string>(Properties.Keys);
         }
 
-        public object GetProperty(string key)
+        public override object GetProperty(string key)
         {
             return Properties.Get(key);
         }
 
-        public void SetProperty(string key, object value)
+        public override void SetProperty(string key, object value)
         {
             ElementHelper.ValidateProperty(this, key, value);
             var oldValue = Properties.Put(key, value);
@@ -41,7 +41,7 @@ namespace Frontenac.Blueprints.Impls.TG
                 Graph.EdgeKeyIndex.AutoUpdate(key, value, oldValue, this);
         }
 
-        public object RemoveProperty(string key)
+        public override object RemoveProperty(string key)
         {
             var oldValue = Properties.JavaRemove(key);
             if (this is TinkerVertex)
@@ -52,12 +52,12 @@ namespace Frontenac.Blueprints.Impls.TG
             return oldValue;
         }
 
-        public object Id
+        public override object Id
         {
             get { return RawId; }
         }
 
-        public void Remove()
+        public override void Remove()
         {
             var vertex = this as IVertex;
             if (vertex != null)

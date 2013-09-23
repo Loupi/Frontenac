@@ -229,20 +229,23 @@ namespace Frontenac.Blueprints.Impls.TG
 
             var type = reader.ReadByte();
 
-            if (type == 1)
-                return reader.ReadString();
-            if (type == 2)
-                return reader.ReadInt32();
-            if (type == 3)
-                return reader.ReadInt64();
-            if (type == 4)
-                return reader.ReadInt16();
-            if (type == 5)
-                return reader.ReadSingle();
-            if (type == 6)
-                return reader.ReadDouble();
-
-            throw new IOException("unknown data type: use .NET serialization");
+            switch (type)
+            {
+                case 1:
+                    return reader.ReadString();
+                case 2:
+                    return reader.ReadInt32();
+                case 3:
+                    return reader.ReadInt64();
+                case 4:
+                    return reader.ReadInt16();
+                case 5:
+                    return reader.ReadSingle();
+                case 6:
+                    return reader.ReadDouble();
+                default:
+                    throw new IOException("unknown data type: use .NET serialization");
+            }
         }
     }
 }

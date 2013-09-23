@@ -115,13 +115,13 @@ namespace Frontenac.Blueprints.Util.IO.GraphSON
             var factory = new GraphElementFactory(g);
 
             var v1 = GraphSonUtility.VertexFromJson((JObject) JsonConvert.DeserializeObject(VertexJson1), factory,
-                                                    GraphSONMode.NORMAL, null);
+                                                    GraphSonMode.NORMAL, null);
             var v2 = GraphSonUtility.VertexFromJson((JObject) JsonConvert.DeserializeObject(VertexJson2), factory,
-                                                    GraphSONMode.NORMAL, null);
+                                                    GraphSonMode.NORMAL, null);
 
             var ignoreWeight = new HashSet<string> {"weight"};
             var config = ElementPropertyConfig.ExcludeProperties(null, ignoreWeight);
-            var utility = new GraphSonUtility(GraphSONMode.NORMAL, factory, config);
+            var utility = new GraphSonUtility(GraphSonMode.NORMAL, factory, config);
             var e = utility.EdgeFromJson((JObject) JsonConvert.DeserializeObject(EdgeJson), v1, v2);
 
             Assert.AreSame(v1, g.GetVertex(1));
@@ -143,10 +143,10 @@ namespace Frontenac.Blueprints.Util.IO.GraphSON
             var factory = new GraphElementFactory(g);
 
             var v1 = GraphSonUtility.VertexFromJson((JObject) JsonConvert.DeserializeObject(VertexJson1), factory,
-                                                    GraphSONMode.COMPACT, null);
+                                                    GraphSonMode.COMPACT, null);
             var v2 = GraphSonUtility.VertexFromJson((JObject) JsonConvert.DeserializeObject(VertexJson2), factory,
-                                                    GraphSONMode.COMPACT, null);
-            var e = GraphSonUtility.EdgeFromJson(_inputStreamEdgeJsonLight, v1, v2, factory, GraphSONMode.COMPACT, null);
+                                                    GraphSonMode.COMPACT, null);
+            var e = GraphSonUtility.EdgeFromJson(_inputStreamEdgeJsonLight, v1, v2, factory, GraphSonMode.COMPACT, null);
 
             Assert.AreSame(v1, g.GetVertex(1));
             Assert.AreSame(v2, g.GetVertex(2));
@@ -162,7 +162,7 @@ namespace Frontenac.Blueprints.Util.IO.GraphSON
             var vertexKeys = new HashSet<string> {GraphSonTokens.Id};
             var edgeKeys = new HashSet<string> {GraphSonTokens.InV};
 
-            var graphson = new GraphSonUtility(GraphSONMode.COMPACT, factory, vertexKeys, edgeKeys);
+            var graphson = new GraphSonUtility(GraphSonMode.COMPACT, factory, vertexKeys, edgeKeys);
 
             var v1 = graphson.VertexFromJson((JObject) JsonConvert.DeserializeObject(VertexJson1));
             var v2 = graphson.VertexFromJson((JObject) JsonConvert.DeserializeObject(VertexJson2));
@@ -180,11 +180,11 @@ namespace Frontenac.Blueprints.Util.IO.GraphSON
             var factory = new GraphElementFactory(g);
 
             var v1 = GraphSonUtility.VertexFromJson((JObject) JsonConvert.DeserializeObject(VertexJson1), factory,
-                                                    GraphSONMode.NORMAL, null);
+                                                    GraphSonMode.NORMAL, null);
             var v2 = GraphSonUtility.VertexFromJson((JObject) JsonConvert.DeserializeObject(VertexJson2), factory,
-                                                    GraphSONMode.NORMAL, null);
+                                                    GraphSonMode.NORMAL, null);
             var e = GraphSonUtility.EdgeFromJson((JObject) JsonConvert.DeserializeObject(EdgeJsonLight), v1, v2, factory,
-                                                 GraphSONMode.NORMAL, null);
+                                                 GraphSonMode.NORMAL, null);
 
             Assert.AreSame(v1, g.GetVertex(1));
             Assert.AreSame(v2, g.GetVertex(2));
@@ -197,9 +197,9 @@ namespace Frontenac.Blueprints.Util.IO.GraphSON
             var g = new TinkerGraph();
             var factory = new GraphElementFactory(g);
 
-            var v1 = GraphSonUtility.VertexFromJson(VertexJson1, factory, GraphSONMode.NORMAL, null);
-            var v2 = GraphSonUtility.VertexFromJson(VertexJson2, factory, GraphSONMode.NORMAL, null);
-            var e = GraphSonUtility.EdgeFromJson(EdgeJson, v1, v2, factory, GraphSONMode.NORMAL, null);
+            var v1 = GraphSonUtility.VertexFromJson(VertexJson1, factory, GraphSonMode.NORMAL, null);
+            var v2 = GraphSonUtility.VertexFromJson(VertexJson2, factory, GraphSonMode.NORMAL, null);
+            var e = GraphSonUtility.EdgeFromJson(EdgeJson, v1, v2, factory, GraphSonMode.NORMAL, null);
 
             Assert.AreSame(v1, g.GetVertex(1));
             Assert.AreSame(v2, g.GetVertex(2));
@@ -220,11 +220,11 @@ namespace Frontenac.Blueprints.Util.IO.GraphSON
             var factory = new GraphElementFactory(g);
 
             var v1 = GraphSonUtility.VertexFromJson((JObject) JsonConvert.DeserializeObject(VertexJson1), factory,
-                                                    GraphSONMode.NORMAL, null);
+                                                    GraphSonMode.NORMAL, null);
             var v2 = GraphSonUtility.VertexFromJson((JObject) JsonConvert.DeserializeObject(VertexJson2), factory,
-                                                    GraphSONMode.NORMAL, null);
+                                                    GraphSonMode.NORMAL, null);
             var e = GraphSonUtility.EdgeFromJson((JObject) JsonConvert.DeserializeObject(EdgeJson), v1, v2, factory,
-                                                 GraphSONMode.NORMAL, null);
+                                                 GraphSonMode.NORMAL, null);
 
             Assert.AreSame(v1, g.GetVertex(1));
             Assert.AreSame(v2, g.GetVertex(2));
@@ -246,7 +246,7 @@ namespace Frontenac.Blueprints.Util.IO.GraphSON
 
             v.SetProperty("keyBooleanArray", booleanArray);
 
-            IDictionary<string, JToken> json = GraphSonUtility.JsonFromElement(v, null, GraphSONMode.NORMAL);
+            IDictionary<string, JToken> json = GraphSonUtility.JsonFromElement(v, null, GraphSonMode.NORMAL);
 
             Assert.NotNull(json);
             Assert.True(json.ContainsKey(GraphSonTokens.Id));
@@ -282,7 +282,7 @@ namespace Frontenac.Blueprints.Util.IO.GraphSON
 
             v.SetProperty("crazy-map", map);
 
-            IDictionary<string, JToken> json = GraphSonUtility.JsonFromElement(v, null, GraphSONMode.NORMAL);
+            IDictionary<string, JToken> json = GraphSonUtility.JsonFromElement(v, null, GraphSonMode.NORMAL);
 
             Assert.NotNull(json);
             Assert.True(json.ContainsKey(GraphSonTokens.Id));
@@ -319,7 +319,7 @@ namespace Frontenac.Blueprints.Util.IO.GraphSON
             var e = _graph.AddEdge(3, v1, v2, "test");
             e.SetProperty("weight", 0.5);
 
-            IDictionary<string, JToken> json = GraphSonUtility.JsonFromElement(e, null, GraphSONMode.COMPACT);
+            IDictionary<string, JToken> json = GraphSonUtility.JsonFromElement(e, null, GraphSonMode.COMPACT);
 
             Assert.NotNull(json);
             Assert.True(json.ContainsKey(GraphSonTokens.Id));
@@ -353,7 +353,7 @@ namespace Frontenac.Blueprints.Util.IO.GraphSON
             var config = new ElementPropertyConfig(null, propertiesToExclude,
                                                    ElementPropertyConfig.ElementPropertiesRule.Include,
                                                    ElementPropertyConfig.ElementPropertiesRule.Exclude);
-            var utility = new GraphSonUtility(GraphSONMode.COMPACT, factory, config);
+            var utility = new GraphSonUtility(GraphSonMode.COMPACT, factory, config);
             var json = utility.JsonFromElement(e) as IDictionary<string, JToken>;
 
             Assert.NotNull(json);
@@ -379,7 +379,7 @@ namespace Frontenac.Blueprints.Util.IO.GraphSON
             var propertiesToInclude = new HashSet<String> {GraphSonTokens.Id};
 
             IDictionary<string, JToken> json = GraphSonUtility.JsonFromElement(e, propertiesToInclude,
-                                                                               GraphSONMode.COMPACT);
+                                                                               GraphSonMode.COMPACT);
 
             Assert.NotNull(json);
             Assert.False(json.ContainsKey(GraphSonTokens.UnderscoreType));
@@ -399,7 +399,7 @@ namespace Frontenac.Blueprints.Util.IO.GraphSON
             var e = _graph.AddEdge(3, v1, v2, "test");
             e.SetProperty("weight", 0.5);
 
-            IDictionary<string, JToken> json = GraphSonUtility.JsonFromElement(e, null, GraphSONMode.NORMAL);
+            IDictionary<string, JToken> json = GraphSonUtility.JsonFromElement(e, null, GraphSonMode.NORMAL);
 
             Assert.NotNull(json);
             Assert.True(json.ContainsKey(GraphSonTokens.Id));
@@ -424,7 +424,7 @@ namespace Frontenac.Blueprints.Util.IO.GraphSON
 
             v.SetProperty("keyFloatArray", floatArray);
 
-            IDictionary<string, JToken> json = GraphSonUtility.JsonFromElement(v, null, GraphSONMode.NORMAL);
+            IDictionary<string, JToken> json = GraphSonUtility.JsonFromElement(v, null, GraphSonMode.NORMAL);
 
             Assert.NotNull(json);
             Assert.True(json.ContainsKey(GraphSonTokens.Id));
@@ -453,7 +453,7 @@ namespace Frontenac.Blueprints.Util.IO.GraphSON
             var list = new List<string> {null, "string"};
             v.SetProperty("keyList", list);
 
-            var json = GraphSonUtility.JsonFromElement(v, null, GraphSONMode.NORMAL);
+            var json = GraphSonUtility.JsonFromElement(v, null, GraphSonMode.NORMAL);
 
             Assert.NotNull(json);
             Assert.True(json["key"] == null);
@@ -490,7 +490,7 @@ namespace Frontenac.Blueprints.Util.IO.GraphSON
             var list = new List<string> {null, "string"};
             v.SetProperty("keyList", list);
 
-            var json = GraphSonUtility.JsonFromElement(v, null, GraphSONMode.EXTENDED);
+            var json = GraphSonUtility.JsonFromElement(v, null, GraphSonMode.EXTENDED);
 
             Assert.NotNull(json);
 
@@ -521,7 +521,7 @@ namespace Frontenac.Blueprints.Util.IO.GraphSON
 
             v.SetProperty("keyList", list);
 
-            IDictionary<string, JToken> json = GraphSonUtility.JsonFromElement(v, null, GraphSONMode.EXTENDED);
+            IDictionary<string, JToken> json = GraphSonUtility.JsonFromElement(v, null, GraphSonMode.EXTENDED);
 
             Assert.NotNull(json);
             Assert.True(json.ContainsKey(GraphSonTokens.Id));
@@ -556,7 +556,7 @@ namespace Frontenac.Blueprints.Util.IO.GraphSON
 
             v.SetProperty("cats", cats);
 
-            IDictionary<string, JToken> json = GraphSonUtility.JsonFromElement(v, null, GraphSONMode.NORMAL);
+            IDictionary<string, JToken> json = GraphSonUtility.JsonFromElement(v, null, GraphSonMode.NORMAL);
 
             Assert.NotNull(json);
             Assert.True(json.ContainsKey(GraphSonTokens.Id));
@@ -574,7 +574,7 @@ namespace Frontenac.Blueprints.Util.IO.GraphSON
             var v = _graph.AddVertex(1);
             v.SetProperty("mycat", new Cat("smithers"));
 
-            IDictionary<string, JToken> json = GraphSonUtility.JsonFromElement(v, null, GraphSONMode.NORMAL);
+            IDictionary<string, JToken> json = GraphSonUtility.JsonFromElement(v, null, GraphSonMode.NORMAL);
 
             Assert.NotNull(json);
             Assert.True(json.ContainsKey(GraphSonTokens.Id));
@@ -589,7 +589,7 @@ namespace Frontenac.Blueprints.Util.IO.GraphSON
             var v = _graph.AddVertex(1);
             v.SetProperty("mycat", new Cat("smithers"));
 
-            IDictionary<string, JToken> json = GraphSonUtility.JsonFromElement(v, null, GraphSONMode.EXTENDED);
+            IDictionary<string, JToken> json = GraphSonUtility.JsonFromElement(v, null, GraphSonMode.EXTENDED);
 
             Assert.NotNull(json);
             Assert.True(json.ContainsKey(GraphSonTokens.Id));
@@ -606,7 +606,7 @@ namespace Frontenac.Blueprints.Util.IO.GraphSON
             var v = _graph.AddVertex(1);
             v.SetProperty("name", "marko");
 
-            IDictionary<string, JToken> json = GraphSonUtility.JsonFromElement(v, null, GraphSONMode.COMPACT);
+            IDictionary<string, JToken> json = GraphSonUtility.JsonFromElement(v, null, GraphSonMode.COMPACT);
 
             Assert.NotNull(json);
             Assert.True(json.ContainsKey(GraphSonTokens.UnderscoreType));
@@ -627,7 +627,7 @@ namespace Frontenac.Blueprints.Util.IO.GraphSON
                                                    ElementPropertyConfig.ElementPropertiesRule.Exclude,
                                                    ElementPropertyConfig.ElementPropertiesRule.Exclude);
 
-            var utility = new GraphSonUtility(GraphSONMode.COMPACT, factory, config);
+            var utility = new GraphSonUtility(GraphSonMode.COMPACT, factory, config);
             IDictionary<string, JToken> json = utility.JsonFromElement(v);
 
             Assert.NotNull(json);
@@ -648,7 +648,7 @@ namespace Frontenac.Blueprints.Util.IO.GraphSON
                 };
 
             IDictionary<string, JToken> json = GraphSonUtility.JsonFromElement(v, propertiesToInclude,
-                                                                               GraphSONMode.COMPACT);
+                                                                               GraphSonMode.COMPACT);
 
             Assert.NotNull(json);
             Assert.False(json.ContainsKey(GraphSonTokens.UnderscoreType));
@@ -664,7 +664,7 @@ namespace Frontenac.Blueprints.Util.IO.GraphSON
 
             v.SetProperty("keyDoubleArray", doubleArray);
 
-            IDictionary<string, JToken> json = GraphSonUtility.JsonFromElement(v, null, GraphSONMode.NORMAL);
+            IDictionary<string, JToken> json = GraphSonUtility.JsonFromElement(v, null, GraphSonMode.NORMAL);
 
             Assert.NotNull(json);
             Assert.True(json.ContainsKey(GraphSonTokens.Id));
@@ -684,7 +684,7 @@ namespace Frontenac.Blueprints.Util.IO.GraphSON
 
             v.SetProperty("keyIntArray", intArray);
 
-            IDictionary<string, JToken> json = GraphSonUtility.JsonFromElement(v, null, GraphSONMode.NORMAL);
+            IDictionary<string, JToken> json = GraphSonUtility.JsonFromElement(v, null, GraphSonMode.NORMAL);
 
             Assert.NotNull(json);
             Assert.True(json.ContainsKey(GraphSonTokens.Id));
@@ -704,7 +704,7 @@ namespace Frontenac.Blueprints.Util.IO.GraphSON
 
             v.SetProperty("keyList", list);
 
-            IDictionary<string, JToken> json = GraphSonUtility.JsonFromElement(v, null, GraphSONMode.EXTENDED);
+            IDictionary<string, JToken> json = GraphSonUtility.JsonFromElement(v, null, GraphSonMode.EXTENDED);
 
             Assert.NotNull(json);
             Assert.True(json.ContainsKey(GraphSonTokens.Id));
@@ -742,7 +742,7 @@ namespace Frontenac.Blueprints.Util.IO.GraphSON
 
             v.SetProperty("keyList", listList);
 
-            IDictionary<string, JToken> json = GraphSonUtility.JsonFromElement(v, null, GraphSONMode.EXTENDED);
+            IDictionary<string, JToken> json = GraphSonUtility.JsonFromElement(v, null, GraphSonMode.EXTENDED);
 
             Assert.NotNull(json);
             Assert.True(json.ContainsKey(GraphSonTokens.Id));
@@ -777,7 +777,7 @@ namespace Frontenac.Blueprints.Util.IO.GraphSON
 
             v.SetProperty("keyList", list);
 
-            IDictionary<string, JToken> json = GraphSonUtility.JsonFromElement(v, null, GraphSONMode.EXTENDED);
+            IDictionary<string, JToken> json = GraphSonUtility.JsonFromElement(v, null, GraphSonMode.EXTENDED);
 
             Assert.NotNull(json);
             Assert.True(json.ContainsKey(GraphSonTokens.Id));
@@ -812,7 +812,7 @@ namespace Frontenac.Blueprints.Util.IO.GraphSON
 
             v.SetProperty("keyList", list);
 
-            IDictionary<string, JToken> json = GraphSonUtility.JsonFromElement(v, null, GraphSONMode.NORMAL);
+            IDictionary<string, JToken> json = GraphSonUtility.JsonFromElement(v, null, GraphSonMode.NORMAL);
 
             Assert.NotNull(json);
             Assert.True(json.ContainsKey(GraphSonTokens.Id));
@@ -832,7 +832,7 @@ namespace Frontenac.Blueprints.Util.IO.GraphSON
 
             v.SetProperty("keyLongArray", longArray);
 
-            IDictionary<string, JToken> json = GraphSonUtility.JsonFromElement(v, null, GraphSONMode.NORMAL);
+            IDictionary<string, JToken> json = GraphSonUtility.JsonFromElement(v, null, GraphSonMode.NORMAL);
 
             Assert.NotNull(json);
             Assert.True(json.ContainsKey(GraphSonTokens.Id));
@@ -852,7 +852,7 @@ namespace Frontenac.Blueprints.Util.IO.GraphSON
 
             v.SetProperty("keyList", list);
 
-            IDictionary<string, JToken> json = GraphSonUtility.JsonFromElement(v, null, GraphSONMode.EXTENDED);
+            IDictionary<string, JToken> json = GraphSonUtility.JsonFromElement(v, null, GraphSonMode.EXTENDED);
 
             Assert.NotNull(json);
             Assert.True(json.ContainsKey(GraphSonTokens.Id));
@@ -890,7 +890,7 @@ namespace Frontenac.Blueprints.Util.IO.GraphSON
 
             v.SetProperty("keyMap", map);
 
-            IDictionary<string, JToken> json = GraphSonUtility.JsonFromElement(v, null, GraphSONMode.EXTENDED);
+            IDictionary<string, JToken> json = GraphSonUtility.JsonFromElement(v, null, GraphSonMode.EXTENDED);
 
             Assert.NotNull(json);
             Assert.True(json.ContainsKey(GraphSonTokens.Id));
@@ -930,7 +930,7 @@ namespace Frontenac.Blueprints.Util.IO.GraphSON
 
             v.SetProperty("keyMap", map);
 
-            IDictionary<string, JToken> json = GraphSonUtility.JsonFromElement(v, null, GraphSONMode.NORMAL);
+            IDictionary<string, JToken> json = GraphSonUtility.JsonFromElement(v, null, GraphSonMode.NORMAL);
 
             Assert.NotNull(json);
             Assert.True(json.ContainsKey(GraphSonTokens.Id));
@@ -951,7 +951,7 @@ namespace Frontenac.Blueprints.Util.IO.GraphSON
             var v = _graph.AddVertex(1);
             v.SetProperty("name", "marko");
 
-            IDictionary<string, JToken> json = GraphSonUtility.JsonFromElement(v, null, GraphSONMode.NORMAL);
+            IDictionary<string, JToken> json = GraphSonUtility.JsonFromElement(v, null, GraphSonMode.NORMAL);
 
             Assert.NotNull(json);
             Assert.True(json.ContainsKey(GraphSonTokens.Id));
@@ -971,7 +971,7 @@ namespace Frontenac.Blueprints.Util.IO.GraphSON
 
             var propertiesToInclude = new HashSet<String> {"y"};
             IDictionary<string, JToken> json = GraphSonUtility.JsonFromElement(v, propertiesToInclude,
-                                                                               GraphSONMode.NORMAL);
+                                                                               GraphSonMode.NORMAL);
 
             Assert.NotNull(json);
             Assert.True(json.ContainsKey(GraphSonTokens.Id));
@@ -995,7 +995,7 @@ namespace Frontenac.Blueprints.Util.IO.GraphSON
             v.SetProperty("keyDouble", 4.4);
             v.SetProperty("keyBoolean", true);
 
-            IDictionary<string, JToken> json = GraphSonUtility.JsonFromElement(v, null, GraphSONMode.NORMAL);
+            IDictionary<string, JToken> json = GraphSonUtility.JsonFromElement(v, null, GraphSonMode.NORMAL);
 
             Assert.NotNull(json);
             Assert.True(json.ContainsKey(GraphSonTokens.Id));
@@ -1027,7 +1027,7 @@ namespace Frontenac.Blueprints.Util.IO.GraphSON
             v.SetProperty("keyDouble", 4.4);
             v.SetProperty("keyBoolean", true);
 
-            IDictionary<string, JToken> json = GraphSonUtility.JsonFromElement(v, null, GraphSONMode.EXTENDED);
+            IDictionary<string, JToken> json = GraphSonUtility.JsonFromElement(v, null, GraphSonMode.EXTENDED);
 
             Assert.NotNull(json);
             Assert.True(json.ContainsKey(GraphSonTokens.Id));
@@ -1085,7 +1085,7 @@ namespace Frontenac.Blueprints.Util.IO.GraphSON
 
             v.SetProperty("keyStringArray", stringArray);
 
-            IDictionary<string, JToken> json = GraphSonUtility.JsonFromElement(v, null, GraphSONMode.NORMAL);
+            IDictionary<string, JToken> json = GraphSonUtility.JsonFromElement(v, null, GraphSonMode.NORMAL);
 
             Assert.NotNull(json);
             Assert.True(json.ContainsKey(GraphSonTokens.Id));
@@ -1115,7 +1115,7 @@ namespace Frontenac.Blueprints.Util.IO.GraphSON
             var propertiesToInclude = new HashSet<String> {"y", "v"};
 
             IDictionary<string, JToken> json = GraphSonUtility.JsonFromElement(v, propertiesToInclude,
-                                                                               GraphSONMode.NORMAL);
+                                                                               GraphSonMode.NORMAL);
 
             Assert.NotNull(json);
             Assert.True(json.ContainsKey(GraphSonTokens.Id));
@@ -1142,7 +1142,7 @@ namespace Frontenac.Blueprints.Util.IO.GraphSON
 
             var ignoreAge = new HashSet<string> {"age"};
             var config = ElementPropertyConfig.ExcludeProperties(ignoreAge, null);
-            var utility = new GraphSonUtility(GraphSONMode.NORMAL, factory, config);
+            var utility = new GraphSonUtility(GraphSonMode.NORMAL, factory, config);
             var v = utility.VertexFromJson((JObject) JsonConvert.DeserializeObject(VertexJson1));
 
             Assert.AreSame(v, g.GetVertex(1));
@@ -1159,7 +1159,7 @@ namespace Frontenac.Blueprints.Util.IO.GraphSON
             var g = new TinkerGraph();
             var factory = new GraphElementFactory(g);
 
-            var v = GraphSonUtility.VertexFromJson(_inputStreamVertexJson1, factory, GraphSONMode.NORMAL, null);
+            var v = GraphSonUtility.VertexFromJson(_inputStreamVertexJson1, factory, GraphSonMode.NORMAL, null);
 
             Assert.AreSame(v, g.GetVertex(1));
 
@@ -1175,7 +1175,7 @@ namespace Frontenac.Blueprints.Util.IO.GraphSON
             var g = new TinkerGraph();
             var factory = new GraphElementFactory(g);
 
-            var v = GraphSonUtility.VertexFromJson(VertexJson1, factory, GraphSONMode.NORMAL, null);
+            var v = GraphSonUtility.VertexFromJson(VertexJson1, factory, GraphSonMode.NORMAL, null);
 
             Assert.AreSame(v, g.GetVertex(1));
 
@@ -1192,7 +1192,7 @@ namespace Frontenac.Blueprints.Util.IO.GraphSON
             var factory = new GraphElementFactory(g);
 
             var v = GraphSonUtility.VertexFromJson((JObject) JsonConvert.DeserializeObject(VertexJson1), factory,
-                                                   GraphSONMode.NORMAL, null);
+                                                   GraphSonMode.NORMAL, null);
 
             Assert.AreSame(v, g.GetVertex(1));
 

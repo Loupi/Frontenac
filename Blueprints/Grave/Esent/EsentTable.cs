@@ -118,15 +118,18 @@ namespace Grave.Esent
             if (!SetCursor(id)) return Enumerable.Empty<string>();
             int nbColumns;
             JET_ENUMCOLUMN[] columnIds;
-            JET_PFNREALLOC allocator =
-                (context, pv, cb) =>
-                IntPtr.Zero == pv ? Marshal.AllocHGlobal(new IntPtr(cb)) : Marshal.ReAllocHGlobal(pv, new IntPtr(cb));
+
+            JET_PFNREALLOC allocator = (context, pv, cb) => IntPtr.Zero == pv 
+                ? Marshal.AllocHGlobal(new IntPtr(cb)) 
+                : Marshal.ReAllocHGlobal(pv, new IntPtr(cb));
+
             Api.JetEnumerateColumns(Session, TableId, 0, null, out nbColumns, out columnIds, allocator, IntPtr.Zero, 0,
                                     EnumerateColumnsGrbit.EnumeratePresenceOnly);
-            var result =
-                columnIds.Where(t => t.err == JET_wrn.ColumnPresent)
-                         .Join(Columns, t => t.columnid, t => t.Value, (t, u) => u.Key)
-                         .ToArray();
+
+            var result = columnIds.Where(t => t.err == JET_wrn.ColumnPresent)
+                                  .Join(Columns, t => t.columnid, t => t.Value, (t, u) => u.Key)
+                                  .ToArray();
+
             allocator(IntPtr.Zero, columnIds[0].pvData, 0);
             return result;
         }
@@ -262,6 +265,7 @@ namespace Grave.Esent
                     coltyp = _contentSerializer.IsBinary ? JET_coltyp.LongBinary : JET_coltyp.LongText,
                     grbit = ColumndefGrbit.ColumnMaybeNull
                 }, null, 0, out columnId);
+
             Columns.Add(columnName, columnId);
 
             Api.JetGotoBookmark(Session, TableId, bookmark, bookmark.Length);

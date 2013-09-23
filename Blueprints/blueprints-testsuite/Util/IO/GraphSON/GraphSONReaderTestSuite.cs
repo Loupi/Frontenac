@@ -24,7 +24,7 @@ namespace Frontenac.Blueprints.Util.IO.GraphSON
                 StopWatch();
                 using (var stream = GetResource<GraphSonReaderTestSuite>("graph-example-1.json"))
                 {
-                    new GraphSONReader(graph).InputGraph(stream);
+                    new GraphSonReader(graph).InputGraph(stream);
                 }
                 PrintPerformance(graph.ToString(), null, "graph-example-1 loaded", StopWatch());
 
@@ -107,7 +107,7 @@ namespace Frontenac.Blueprints.Util.IO.GraphSON
 
                 using (var stream = GetResource<GraphSonReaderTestSuite>("graph-example-1.json"))
                 {
-                    new GraphSONReader(graph).InputGraph(stream);
+                    new GraphSonReader(graph).InputGraph(stream);
                 }
                 PrintPerformance(graph.ToString(), null, "graph-example-1 loaded", StopWatch());
                 var edgeIds = new HashSet<string>();
@@ -147,7 +147,7 @@ namespace Frontenac.Blueprints.Util.IO.GraphSON
 
                 using (var stream = GetResource<GraphSonReaderTestSuite>("graph-example-1.json"))
                 {
-                    new GraphSONReader(graph).InputGraph(stream);
+                    new GraphSonReader(graph).InputGraph(stream);
                 }
                 PrintPerformance(graph.ToString(), null, "graph-example-1 loaded", StopWatch());
                 var vertexNames = new HashSet<string>();
@@ -184,7 +184,7 @@ namespace Frontenac.Blueprints.Util.IO.GraphSON
                 StopWatch();
                 using (var stream = GetResource<GraphSonReaderTestSuite>("graph-example-1.json"))
                 {
-                    new GraphSONReader(graph).InputGraph(stream);
+                    new GraphSonReader(graph).InputGraph(stream);
                 }
                 PrintPerformance(graph.ToString(), null, "graph-example-1 loaded", StopWatch());
                 var softwareVertices = new HashSet<IVertex>();
@@ -222,7 +222,7 @@ namespace Frontenac.Blueprints.Util.IO.GraphSON
                 StopWatch();
                 using (var stream = GetResource<GraphSonReaderTestSuite>("graph-example-1.json"))
                 {
-                    new GraphSONReader(graph).InputGraph(stream);
+                    new GraphSonReader(graph).InputGraph(stream);
                 }
                 PrintPerformance(graph.ToString(), null, "graph-example-1 loaded", StopWatch());
                 IVertex marko = null;

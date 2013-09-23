@@ -1,7 +1,12 @@
 ﻿using System;
+using System.Device.Location;
 using System.Diagnostics.Contracts;
 using System.Runtime.Serialization;
+using Grave.Geo;
 using Lucene.Net.Documents;
+using Lucene.Net.Spatial.Prefix;
+using Lucene.Net.Spatial.Prefix.Tree;
+using Spatial4n.Core.Context;
 
 namespace Grave.Indexing.Lucene
 {
@@ -52,6 +57,18 @@ namespace Grave.Indexing.Lucene
             {
                 var val = Convert.ToDouble(value);
                 _document.Add(new NumericField(key).SetDoubleValue(val));
+            }
+            else if (value is GeoPoint)
+            {
+                var grid = new GeohashPrefixTree(SpatialContext.GEO, 11);
+                var strategy = new RecursivePrefixTreeStrategy(grid, key);
+                var geoCoordinate = value as GeoPoint;
+                var shape = SpatialContext.GEO.MakePoint(geoCoordinate.Latitude, geoCoordinate.Longitude);
+                var fields = strategy.CreateIndexableFields(shape);
+                foreach (var field in fields)
+                {
+                    _document.Add(field);
+                }
             }
             else
             {

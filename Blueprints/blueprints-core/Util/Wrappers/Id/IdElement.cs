@@ -4,7 +4,7 @@ using System.Diagnostics.Contracts;
 
 namespace Frontenac.Blueprints.Util.Wrappers.Id
 {
-    public abstract class IdElement : IElement
+    public abstract class IdElement : DictionaryElement
     {
         protected readonly IElement BaseElement;
         protected readonly IdGraph IdGraph;
@@ -20,7 +20,7 @@ namespace Frontenac.Blueprints.Util.Wrappers.Id
             PropertyBased = propertyBased;
         }
 
-        public object GetProperty(string key)
+        public override object GetProperty(string key)
         {
             if (PropertyBased && key == IdGraph.Id)
                 return null;
@@ -28,7 +28,7 @@ namespace Frontenac.Blueprints.Util.Wrappers.Id
             return BaseElement.GetProperty(key);
         }
 
-        public IEnumerable<string> GetPropertyKeys()
+        public override IEnumerable<string> GetPropertyKeys()
         {
             if (PropertyBased)
             {
@@ -41,7 +41,7 @@ namespace Frontenac.Blueprints.Util.Wrappers.Id
             return BaseElement.GetPropertyKeys();
         }
 
-        public void SetProperty(string key, object value)
+        public override void SetProperty(string key, object value)
         {
             if (PropertyBased && key == IdGraph.Id)
                 throw new ArgumentException(string.Concat("Unable to set value for reserved property ", IdGraph.Id));
@@ -49,7 +49,7 @@ namespace Frontenac.Blueprints.Util.Wrappers.Id
             BaseElement.SetProperty(key, value);
         }
 
-        public object RemoveProperty(string key)
+        public override object RemoveProperty(string key)
         {
             if (PropertyBased && key == IdGraph.Id)
                 throw new ArgumentException(string.Concat("Unable to remove value for reserved property ", IdGraph.Id));
@@ -57,7 +57,7 @@ namespace Frontenac.Blueprints.Util.Wrappers.Id
             return BaseElement.RemoveProperty(key);
         }
 
-        public object Id
+        public override object Id
         {
             get
             {
@@ -67,7 +67,7 @@ namespace Frontenac.Blueprints.Util.Wrappers.Id
             }
         }
 
-        public void Remove()
+        public override void Remove()
         {
             var vertex = this as IVertex;
             if (vertex != null)

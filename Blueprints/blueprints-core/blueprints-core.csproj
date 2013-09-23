@@ -210,7 +210,8 @@
     <PlatformTarget>AnyCPU</PlatformTarget>
     <ErrorReport>prompt</ErrorReport>
     <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
-    <TargetFrameworkProfile></TargetFrameworkProfile>
+    <TargetFrameworkProfile>
+    </TargetFrameworkProfile>
     <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
     <Prefer32Bit>false</Prefer32Bit>
     <CodeContractsRuntimeOnlyPublicSurface>False</CodeContractsRuntimeOnlyPublicSurface>
@@ -301,6 +302,7 @@
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
+    <Reference Include="System.Runtime.Serialization" />
     <Reference Include="System.Xml.Linq" />
     <Reference Include="System.Data.DataSetExtensions" />
     <Reference Include="Microsoft.CSharp" />
@@ -318,6 +320,7 @@
     <Compile Include="Contracts\ThreadedTransactionalGraphContract.cs" />
     <Compile Include="Contracts\VertexContract.cs" />
     <Compile Include="Contracts\VertexQueryContract.cs" />
+    <Compile Include="DictionaryElement.cs" />
     <Compile Include="Direction.cs" />
     <Compile Include="IEdge.cs" />
     <Compile Include="IElement.cs" />
@@ -353,23 +356,23 @@
     <Compile Include="Util\ExceptionFactory.cs" />
     <Compile Include="Util\GraphHelper.cs" />
     <Compile Include="Util\IndexableGraphHelper.cs" />
-    <Compile Include="Util\IO\GML\GMLParser.cs" />
-    <Compile Include="Util\IO\GML\GMLReader.cs" />
-    <Compile Include="Util\IO\GML\GMLTokens.cs" />
-    <Compile Include="Util\IO\GML\GMLWriter.cs" />
+    <Compile Include="Util\IO\GML\GmlParser.cs" />
+    <Compile Include="Util\IO\GML\GmlReader.cs" />
+    <Compile Include="Util\IO\GML\GmlTokens.cs" />
+    <Compile Include="Util\IO\GML\GmlWriter.cs" />
     <Compile Include="Util\IO\GraphML\GraphMigrator.cs" />
     <Compile Include="Util\IO\GraphML\GraphMLReader.cs" />
     <Compile Include="Util\IO\GraphML\GraphMLTokens.cs" />
     <Compile Include="Util\IO\GraphML\GraphMLWriter.cs" />
-    <Compile Include="Util\IO\GraphSON\ElementFactory.cs" />
-    <Compile Include="Util\IO\GraphSON\ElementFactoryContract.cs" />
-    <Compile Include="Util\IO\GraphSON\ElementPropertyConfig.cs" />
-    <Compile Include="Util\IO\GraphSON\GraphElementFactory.cs" />
-    <Compile Include="Util\IO\GraphSON\GraphSONMode.cs" />
-    <Compile Include="Util\IO\GraphSON\GraphSONReader.cs" />
-    <Compile Include="Util\IO\GraphSON\GraphSONTokens.cs" />
-    <Compile Include="Util\IO\GraphSON\GraphSONUtility.cs" />
-    <Compile Include="Util\IO\GraphSON\GraphSONWriter.cs" />
+    <Compile Include="Util\IO\GraphSon\ElementFactory.cs" />
+    <Compile Include="Util\IO\GraphSon\ElementFactoryContract.cs" />
+    <Compile Include="Util\IO\GraphSon\ElementPropertyConfig.cs" />
+    <Compile Include="Util\IO\GraphSon\GraphElementFactory.cs" />
+    <Compile Include="Util\IO\GraphSon\GraphSonMode.cs" />
+    <Compile Include="Util\IO\GraphSon\GraphSonReader.cs" />
+    <Compile Include="Util\IO\GraphSon\GraphSonTokens.cs" />
+    <Compile Include="Util\IO\GraphSon\GraphSonUtility.cs" />
+    <Compile Include="Util\IO\GraphSon\GraphSonWriter.cs" />
     <Compile Include="Util\IO\LexicographicalElementComparator.cs" />
     <Compile Include="Util\IO\StreamTokenizer.cs" />
     <Compile Include="Util\KeyIndexableGraphHelper.cs" />

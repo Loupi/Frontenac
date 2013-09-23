@@ -25,14 +25,14 @@ namespace Frontenac.Blueprints.Util.IO.GraphSON
         private readonly bool _includeReservedEdgeType;
         private readonly bool _includeReservedVertexId;
         private readonly bool _includeReservedVertexType;
-        private readonly GraphSONMode _mode;
+        private readonly GraphSonMode _mode;
         private readonly ElementPropertyConfig.ElementPropertiesRule _vertexPropertiesRule;
         private readonly IEnumerable<string> _vertexPropertyKeys;
 
         /// <summary>
         ///     A GraphSONUtiltiy that includes all properties of vertices and edges.
         /// </summary>
-        public GraphSonUtility(GraphSONMode mode, IElementFactory factory)
+        public GraphSonUtility(GraphSonMode mode, IElementFactory factory)
             : this(mode, factory, ElementPropertyConfig.AllProperties)
         {
         }
@@ -40,7 +40,7 @@ namespace Frontenac.Blueprints.Util.IO.GraphSON
         /// <summary>
         ///     A GraphSONUtility that includes the specified properties.
         /// </summary>
-        public GraphSonUtility(GraphSONMode mode, IElementFactory factory,
+        public GraphSonUtility(GraphSonMode mode, IElementFactory factory,
                                IEnumerable<string> vertexPropertyKeys, IEnumerable<string> edgePropertyKeys) :
                                    this(
                                    mode, factory,
@@ -48,7 +48,7 @@ namespace Frontenac.Blueprints.Util.IO.GraphSON
         {
         }
 
-        public GraphSonUtility(GraphSONMode mode, IElementFactory factory, ElementPropertyConfig config)
+        public GraphSonUtility(GraphSonMode mode, IElementFactory factory, ElementPropertyConfig config)
         {
             Contract.Requires(config != null);
 
@@ -59,7 +59,7 @@ namespace Frontenac.Blueprints.Util.IO.GraphSON
 
             _mode = mode;
             _factory = factory;
-            _hasEmbeddedTypes = mode == GraphSONMode.EXTENDED;
+            _hasEmbeddedTypes = mode == GraphSonMode.EXTENDED;
 
 // ReSharper disable PossibleMultipleEnumeration
             _includeReservedVertexId = IncludeReservedKey(mode, GraphSonTokens.Id, _vertexPropertyKeys,
@@ -188,7 +188,7 @@ namespace Frontenac.Blueprints.Util.IO.GraphSON
             Contract.Ensures(Contract.Result<JObject>() != null);
 
             var isEdge = element is IEdge;
-            var showTypes = _mode == GraphSONMode.EXTENDED;
+            var showTypes = _mode == GraphSonMode.EXTENDED;
             var propertyKeys = isEdge ? _edgePropertyKeys : _vertexPropertyKeys;
             var elementPropertyConfig = isEdge ? _edgePropertiesRule : _vertexPropertiesRule;
 
@@ -240,7 +240,7 @@ namespace Frontenac.Blueprints.Util.IO.GraphSON
         /// <param name="factory">the factory responsible for constructing graph elements</param>
         /// <param name="mode">the mode of the GraphSON</param>
         /// <param name="propertyKeys">a list of keys to include on reading of element properties</param>
-        public static IVertex VertexFromJson(string json, IElementFactory factory, GraphSONMode mode,
+        public static IVertex VertexFromJson(string json, IElementFactory factory, GraphSonMode mode,
                                              IEnumerable<string> propertyKeys)
         {
             Contract.Requires(json != null);
@@ -258,7 +258,7 @@ namespace Frontenac.Blueprints.Util.IO.GraphSON
         /// <param name="factory">the factory responsible for constructing graph elements</param>
         /// <param name="mode">the mode of the GraphSON</param>
         /// <param name="propertyKeys">a list of keys to include on reading of element properties</param>
-        public static IVertex VertexFromJson(Stream json, IElementFactory factory, GraphSONMode mode,
+        public static IVertex VertexFromJson(Stream json, IElementFactory factory, GraphSonMode mode,
                                              IEnumerable<string> propertyKeys)
         {
             Contract.Requires(json != null);
@@ -276,7 +276,7 @@ namespace Frontenac.Blueprints.Util.IO.GraphSON
         /// <param name="factory">the factory responsible for constructing graph elements</param>
         /// <param name="mode">the mode of the GraphSON</param>
         /// <param name="propertyKeys">a list of keys to include on reading of element properties</param>
-        public static IVertex VertexFromJson(JObject json, IElementFactory factory, GraphSONMode mode,
+        public static IVertex VertexFromJson(JObject json, IElementFactory factory, GraphSonMode mode,
                                              IEnumerable<string> propertyKeys)
         {
             Contract.Requires(json != null);
@@ -297,7 +297,7 @@ namespace Frontenac.Blueprints.Util.IO.GraphSON
         /// <param name="mode">the mode of the GraphSON</param>
         /// <param name="propertyKeys">a list of keys to include when reading of element properties</param>
         public static IEdge EdgeFromJson(string json, IVertex out_, IVertex in_,
-                                         IElementFactory factory, GraphSONMode mode,
+                                         IElementFactory factory, GraphSonMode mode,
                                          IEnumerable<string> propertyKeys)
         {
             Contract.Requires(json != null);
@@ -320,7 +320,7 @@ namespace Frontenac.Blueprints.Util.IO.GraphSON
         /// <param name="mode">the mode of the GraphSON</param>
         /// <param name="propertyKeys">a list of keys to include when reading of element properties</param>
         public static IEdge EdgeFromJson(Stream json, IVertex out_, IVertex in_,
-                                         IElementFactory factory, GraphSONMode mode,
+                                         IElementFactory factory, GraphSonMode mode,
                                          IEnumerable<string> propertyKeys)
         {
             Contract.Requires(json != null);
@@ -343,7 +343,7 @@ namespace Frontenac.Blueprints.Util.IO.GraphSON
         /// <param name="mode">the mode of the GraphSON</param>
         /// <param name="propertyKeys">a list of keys to include when reading of element properties</param>
         public static IEdge EdgeFromJson(JObject json, IVertex out_, IVertex in_,
-                                         IElementFactory factory, GraphSONMode mode,
+                                         IElementFactory factory, GraphSonMode mode,
                                          IEnumerable<string> propertyKeys)
         {
             Contract.Requires(json != null);
@@ -362,7 +362,7 @@ namespace Frontenac.Blueprints.Util.IO.GraphSON
         /// <param name="element">the graph element to convert to JSON.</param>
         /// <param name="propertyKeys">The property keys at the root of the element to serialize.  If null, then all keys are serialized.</param>
         /// <param name="mode">The type of GraphSON to generate.</param>
-        public static JObject JsonFromElement(IElement element, IEnumerable<string> propertyKeys, GraphSONMode mode)
+        public static JObject JsonFromElement(IElement element, IEnumerable<string> propertyKeys, GraphSonMode mode)
         {
             Contract.Requires(element != null);
             Contract.Ensures(Contract.Result<JObject>() != null);
@@ -383,14 +383,14 @@ namespace Frontenac.Blueprints.Util.IO.GraphSON
                        .ToDictionary(entry => entry.Key, entry => ReadProperty(entry.Value, hasEmbeddedTypes));
         }
 
-        private static bool IncludeReservedKey(GraphSONMode mode, string key, IEnumerable<string> propertyKeys,
+        private static bool IncludeReservedKey(GraphSonMode mode, string key, IEnumerable<string> propertyKeys,
                                                ElementPropertyConfig.ElementPropertiesRule rule)
         {
             Contract.Ensures(!string.IsNullOrWhiteSpace(key));
 
             // the key is always included in modes other than COMPACT. if it is COMPACT, then validate that the
             // key is in the property key list
-            return mode != GraphSONMode.COMPACT || IncludeKey(key, propertyKeys, rule);
+            return mode != GraphSonMode.COMPACT || IncludeKey(key, propertyKeys, rule);
         }
 
         private static bool IncludeKey(string key, IEnumerable<string> propertyKeys,
@@ -527,7 +527,7 @@ namespace Frontenac.Blueprints.Util.IO.GraphSON
 // ReSharper disable PossibleMultipleEnumeration
                 if (item is IElement)
                     jsonList.Add(JsonFromElement(item as IElement, propertyKeys,
-                                                 showTypes ? GraphSONMode.EXTENDED : GraphSONMode.NORMAL));
+                                                 showTypes ? GraphSonMode.EXTENDED : GraphSonMode.NORMAL));
                 else if (item is IDictionary)
                     jsonList.Add(CreateJsonMap(item as IDictionary, propertyKeys, showTypes));
                 else if (item != null && !(item is string) && item is IEnumerable)
@@ -556,7 +556,7 @@ namespace Frontenac.Blueprints.Util.IO.GraphSON
                         value = CreateJsonMap(value as IDictionary, propertyKeys, showTypes);
                     else if (value is IElement)
                         value = JsonFromElement((IElement) value, propertyKeys,
-                                                showTypes ? GraphSONMode.EXTENDED : GraphSONMode.NORMAL);
+                                                showTypes ? GraphSonMode.EXTENDED : GraphSonMode.NORMAL);
                     else if (!(value is string) && value is IEnumerable)
                         value = CreateJsonList(value as IEnumerable, propertyKeys, showTypes);
 // ReSharper restore PossibleMultipleEnumeration

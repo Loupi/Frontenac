@@ -19,13 +19,13 @@ namespace Frontenac.Blueprints.Util
             return this;
         }
 
-        public virtual IQuery Has<T>(string key, Compare compare, T value) where T : IComparable<T>
+        public virtual IQuery Has<T>(string key, Compare compare, T value)
         {
             HasContainers.Add(new HasContainer(key, value, compare));
             return this;
         }
 
-        public virtual IQuery Interval<T>(string key, T startValue, T endValue) where T : IComparable<T>
+        public virtual IQuery Interval<T>(string key, T startValue, T endValue)
         {
             HasContainers.Add(new HasContainer(key, startValue, Compare.GreaterThanEqual));
             HasContainers.Add(new HasContainer(key, endValue, Compare.LessThan));

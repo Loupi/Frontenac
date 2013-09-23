@@ -311,8 +311,6 @@ namespace Frontenac.Blueprints.Util.IO.GraphML
                 Assert.AreEqual(vertices.Count(), 2);
 // ReSharper disable AssignNullToNotNullAttribute
                 Assert.True(vertices.Contains(lop));
-// ReSharper restore AssignNullToNotNullAttribute
-// ReSharper disable AssignNullToNotNullAttribute
                 Assert.True(vertices.Contains(ripple));
 // ReSharper restore AssignNullToNotNullAttribute
                 vertices = new HashSet<IVertex>();

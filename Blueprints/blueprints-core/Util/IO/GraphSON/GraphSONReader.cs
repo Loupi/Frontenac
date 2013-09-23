@@ -11,16 +11,14 @@ namespace Frontenac.Blueprints.Util.IO.GraphSON
     /// <summary>
     ///     GraphSONReader reads the data from a TinkerPop JSON stream to a graph.
     /// </summary>
-// ReSharper disable InconsistentNaming
-    public class GraphSONReader
-// ReSharper restore InconsistentNaming
+    public class GraphSonReader
     {
         private readonly IGraph _graph;
 
         /// <summary>
         /// </summary>
         /// <param name="graph">the graph to populate with the JSON data</param>
-        public GraphSONReader(IGraph graph)
+        public GraphSonReader(IGraph graph)
         {
             Contract.Requires(graph != null);
 
@@ -177,7 +175,7 @@ namespace Frontenac.Blueprints.Util.IO.GraphSON
                     var elementFactory = new GraphElementFactory(graph);
 
                     // ReSharper disable PossibleMultipleEnumeration
-                    var graphson = new GraphSonUtility(GraphSONMode.NORMAL, elementFactory, vertexPropertyKeys,
+                    var graphson = new GraphSonUtility(GraphSonMode.NORMAL, elementFactory, vertexPropertyKeys,
                                                        edgePropertyKeys);
                     // ReSharper restore PossibleMultipleEnumeration
 
@@ -190,7 +188,7 @@ namespace Frontenac.Blueprints.Util.IO.GraphSON
                         {
                             case GraphSonTokens.Mode:
                                 {
-                                    var mode = (GraphSONMode) Enum.Parse(typeof (GraphSONMode), jp.ReadAsString());
+                                    var mode = (GraphSonMode) Enum.Parse(typeof (GraphSonMode), jp.ReadAsString());
                                     // ReSharper disable PossibleMultipleEnumeration
                                     graphson = new GraphSonUtility(mode, elementFactory, vertexPropertyKeys,
                                                                    edgePropertyKeys);

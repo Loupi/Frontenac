@@ -3,7 +3,7 @@ using System.Diagnostics.Contracts;
 
 namespace Frontenac.Blueprints.Util.Wrappers.Wrapped
 {
-    public abstract class WrappedElement : IElement
+    public abstract class WrappedElement : DictionaryElement
     {
         protected readonly IElement BaseElement;
 
@@ -14,32 +14,32 @@ namespace Frontenac.Blueprints.Util.Wrappers.Wrapped
             BaseElement = baseElement;
         }
 
-        public void SetProperty(string key, object value)
+        public override void SetProperty(string key, object value)
         {
             BaseElement.SetProperty(key, value);
         }
 
-        public object GetProperty(string key)
+        public override object GetProperty(string key)
         {
             return BaseElement.GetProperty(key);
         }
 
-        public object RemoveProperty(string key)
+        public override object RemoveProperty(string key)
         {
             return BaseElement.RemoveProperty(key);
         }
 
-        public IEnumerable<string> GetPropertyKeys()
+        public override IEnumerable<string> GetPropertyKeys()
         {
             return BaseElement.GetPropertyKeys();
         }
 
-        public object Id
+        public override object Id
         {
             get { return BaseElement.Id; }
         }
 
-        public void Remove()
+        public override void Remove()
         {
             BaseElement.Remove();
         }

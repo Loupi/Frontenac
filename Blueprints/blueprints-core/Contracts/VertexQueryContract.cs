@@ -32,8 +32,8 @@ namespace Frontenac.Blueprints.Contracts
         }
 
         public abstract IQuery Has(string key, object value);
-        public abstract IQuery Has<T>(string key, Compare compare, T value) where T : IComparable<T>;
-        public abstract IQuery Interval<T>(string key, T startValue, T endValue) where T : IComparable<T>;
+        public abstract IQuery Has<T>(string key, Compare compare, T value);
+        public abstract IQuery Interval<T>(string key, T startValue, T endValue);
         public abstract IEnumerable<IEdge> Edges();
         public abstract IEnumerable<IVertex> Vertices();
         public abstract IQuery Limit(long max);

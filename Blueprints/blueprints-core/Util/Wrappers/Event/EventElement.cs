@@ -8,7 +8,7 @@ namespace Frontenac.Blueprints.Util.Wrappers.Event
     ///     An element with a GraphChangedListener attached.  Those listeners are notified when changes occur to
     ///     the properties of the element.
     /// </summary>
-    public abstract class EventElement : IElement
+    public abstract class EventElement : DictionaryElement
     {
         protected readonly IElement BaseElement;
         protected readonly EventGraph EventGraph;
@@ -22,12 +22,12 @@ namespace Frontenac.Blueprints.Util.Wrappers.Event
             EventGraph = eventGraph;
         }
 
-        public IEnumerable<string> GetPropertyKeys()
+        public override IEnumerable<string> GetPropertyKeys()
         {
             return BaseElement.GetPropertyKeys();
         }
 
-        public object Id
+        public override object Id
         {
             get { return BaseElement.Id; }
         }
@@ -35,7 +35,7 @@ namespace Frontenac.Blueprints.Util.Wrappers.Event
         /// <note>
         ///     Raises a vertexPropertyRemoved or edgePropertyRemoved event.
         /// </note>
-        public object RemoveProperty(string key)
+        public override object RemoveProperty(string key)
         {
             var propertyRemoved = BaseElement.RemoveProperty(key);
 
@@ -52,7 +52,7 @@ namespace Frontenac.Blueprints.Util.Wrappers.Event
             return propertyRemoved;
         }
 
-        public object GetProperty(string key)
+        public override object GetProperty(string key)
         {
             return BaseElement.GetProperty(key);
         }
@@ -60,7 +60,7 @@ namespace Frontenac.Blueprints.Util.Wrappers.Event
         /// <note>
         ///     Raises a vertexPropertyRemoved or edgePropertyChanged event.
         /// </note>
-        public void SetProperty(string key, object value)
+        public override void SetProperty(string key, object value)
         {
             object oldValue = BaseElement.GetProperty(key);
             BaseElement.SetProperty(key, value);
@@ -76,7 +76,7 @@ namespace Frontenac.Blueprints.Util.Wrappers.Event
             }
         }
 
-        public void Remove()
+        public override void Remove()
         {
             var vertex = this as IVertex;
             if (vertex != null)

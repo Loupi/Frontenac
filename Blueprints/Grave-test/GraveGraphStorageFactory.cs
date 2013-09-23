@@ -114,7 +114,7 @@ namespace Grave_test
 
             public override void Save(GraveGraph graph, string directory)
             {
-                string filePath = string.Concat(directory, GraphFileDotNet);
+                var filePath = string.Concat(directory, GraphFileDotNet);
                 DeleteFile(filePath);
                 using (var stream = File.Create(string.Concat(directory, GraphFileDotNet)))
                 {
@@ -138,7 +138,7 @@ namespace Grave_test
 
             public override void SaveGraphData(GraveGraph graph, string directory)
             {
-                string filePath = string.Concat(directory, GraphFileGml);
+                var filePath = string.Concat(directory, GraphFileGml);
                 DeleteFile(filePath);
                 GmlWriter.OutputGraph(graph, filePath);
             }
@@ -158,7 +158,7 @@ namespace Grave_test
 
             public override void SaveGraphData(GraveGraph graph, string directory)
             {
-                string filePath = string.Concat(directory, GraphFileGraphml);
+                var filePath = string.Concat(directory, GraphFileGraphml);
                 DeleteFile(filePath);
                 GraphMlWriter.OutputGraph(graph, filePath);
             }
@@ -173,14 +173,14 @@ namespace Grave_test
 
             public override void LoadGraphData(GraveGraph graph, string directory)
             {
-                GraphSONReader.InputGraph(graph, string.Concat(directory, GraphFileGraphson));
+                GraphSonReader.InputGraph(graph, string.Concat(directory, GraphFileGraphson));
             }
 
             public override void SaveGraphData(GraveGraph graph, string directory)
             {
-                string filePath = string.Concat(directory, GraphFileGraphson);
+                var filePath = string.Concat(directory, GraphFileGraphson);
                 DeleteFile(filePath);
-                GraphSonWriter.OutputGraph(graph, filePath, GraphSONMode.EXTENDED);
+                GraphSonWriter.OutputGraph(graph, filePath, GraphSonMode.EXTENDED);
             }
         }
     }

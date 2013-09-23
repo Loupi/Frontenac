@@ -23,13 +23,13 @@ namespace Grave
             _indexingService = indexingService;
         }
 
-        public IQuery Has<T>(string key, Compare compare, T value) where T : IComparable<T>
+        public IQuery Has<T>(string key, Compare compare, T value)
         {
             _queryElements.Add(new GraveComparableQueryElement(key, compare, value));
             return this;
         }
 
-        public IQuery Interval<T>(string key, T startValue, T endValue) where T : IComparable<T>
+        public IQuery Interval<T>(string key, T startValue, T endValue)
         {
             _queryElements.Add(new GraveIntervalQueryElement(key, startValue, endValue));
             return this;
@@ -49,7 +49,7 @@ namespace Grave
         public IEnumerable<IEdge> Edges()
         {
             var ids = _indexingService.Query(typeof (IEdge), _queryElements, (int) _limit);
-            return ids.Select(id => _graph.GetEdge(id)).Where(edge => edge != null);
+            return ids.Select(id => _graph.GetEdge(id));
         }
 
         public IEnumerable<IVertex> Vertices()

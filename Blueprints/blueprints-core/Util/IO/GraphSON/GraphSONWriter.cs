@@ -30,7 +30,7 @@ namespace Frontenac.Blueprints.Util.IO.GraphSON
         /// <param name="edgePropertyKeys">the keys of the edge elements to write to JSON</param>
         /// <param name="mode">determines the format of the GraphSON</param>
         public void OutputGraph(string filename, IEnumerable<string> vertexPropertyKeys,
-                                IEnumerable<string> edgePropertyKeys, GraphSONMode mode)
+                                IEnumerable<string> edgePropertyKeys, GraphSonMode mode)
         {
             Contract.Requires(!string.IsNullOrWhiteSpace(filename));
 
@@ -48,7 +48,7 @@ namespace Frontenac.Blueprints.Util.IO.GraphSON
         /// <param name="edgePropertyKeys">the keys of the edge elements to write to JSON</param>
         /// <param name="mode">determines the format of the GraphSON</param>
         public void OutputGraph(Stream jsonOutputStream, IEnumerable<string> vertexPropertyKeys,
-                                IEnumerable<string> edgePropertyKeys, GraphSONMode mode)
+                                IEnumerable<string> edgePropertyKeys, GraphSonMode mode)
         {
             Contract.Requires(jsonOutputStream != null);
 
@@ -92,7 +92,7 @@ namespace Frontenac.Blueprints.Util.IO.GraphSON
             Contract.Requires(jsonOutputStream != null);
 
             var writer = new GraphSonWriter(graph);
-            writer.OutputGraph(jsonOutputStream, null, null, GraphSONMode.NORMAL);
+            writer.OutputGraph(jsonOutputStream, null, null, GraphSonMode.NORMAL);
         }
 
         /// <summary>
@@ -107,7 +107,7 @@ namespace Frontenac.Blueprints.Util.IO.GraphSON
             Contract.Requires(!string.IsNullOrWhiteSpace(filename));
 
             var writer = new GraphSonWriter(graph);
-            writer.OutputGraph(filename, null, null, GraphSONMode.NORMAL);
+            writer.OutputGraph(filename, null, null, GraphSonMode.NORMAL);
         }
 
         /// <summary>
@@ -116,7 +116,7 @@ namespace Frontenac.Blueprints.Util.IO.GraphSON
         /// <param name="graph">the graph to serialize to JSON</param>
         /// <param name="jsonOutputStream">the JSON OutputStream to write the Graph data to</param>
         /// <param name="mode">determines the format of the GraphSON</param>
-        public static void OutputGraph(IGraph graph, Stream jsonOutputStream, GraphSONMode mode)
+        public static void OutputGraph(IGraph graph, Stream jsonOutputStream, GraphSonMode mode)
         {
             Contract.Requires(graph != null);
             Contract.Requires(jsonOutputStream != null);
@@ -131,7 +131,7 @@ namespace Frontenac.Blueprints.Util.IO.GraphSON
         /// <param name="graph">the graph to serialize to JSON</param>
         /// <param name="filename">the JSON file to write the Graph data to</param>
         /// <param name="mode">determines the format of the GraphSON</param>
-        public static void OutputGraph(IGraph graph, string filename, GraphSONMode mode)
+        public static void OutputGraph(IGraph graph, string filename, GraphSonMode mode)
         {
             Contract.Requires(graph != null);
             Contract.Requires(!string.IsNullOrWhiteSpace(filename));
@@ -150,7 +150,7 @@ namespace Frontenac.Blueprints.Util.IO.GraphSON
         /// <param name="mode">determines the format of the GraphSON</param>
         public static void OutputGraph(IGraph graph, Stream jsonOutputStream,
                                        IEnumerable<string> vertexPropertyKeys, IEnumerable<string> edgePropertyKeys,
-                                       GraphSONMode mode)
+                                       GraphSonMode mode)
         {
             Contract.Requires(graph != null);
             Contract.Requires(jsonOutputStream != null);
@@ -169,7 +169,7 @@ namespace Frontenac.Blueprints.Util.IO.GraphSON
         /// <param name="mode">determines the format of the GraphSON</param>
         public static void OutputGraph(IGraph graph, string filename,
                                        IEnumerable<string> vertexPropertyKeys, IEnumerable<string> edgePropertyKeys,
-                                       GraphSONMode mode)
+                                       GraphSonMode mode)
         {
             Contract.Requires(graph != null);
             Contract.Requires(!string.IsNullOrWhiteSpace(filename));

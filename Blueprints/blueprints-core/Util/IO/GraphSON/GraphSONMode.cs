@@ -3,9 +3,9 @@
     /// <summary>
     ///     Modes of operation of the GraphSONUtility.
     /// </summary>
-    // ReSharper disable InconsistentNaming
-    public enum GraphSONMode
+    public enum GraphSonMode
     {
+// ReSharper disable InconsistentNaming
         /// <summary>
         ///     COMPACT constructs GraphSON on the assumption that all property keys
         ///     are fair game for exclusion including _type, _inV, _outV, _label and _id.
@@ -23,7 +23,6 @@
         ///     EXTENDED includes the _type field and explicit data typing.
         /// </summary>
         EXTENDED
+// ReSharper restore InconsistentNaming
     }
-
-    // ReSharper restore InconsistentNaming
 }

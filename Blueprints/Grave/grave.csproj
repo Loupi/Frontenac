@@ -128,13 +128,20 @@
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\packages\Lucene.Net.3.0.3\lib\NET40\Lucene.Net.dll</HintPath>
     </Reference>
+    <Reference Include="Lucene.Net.Contrib.Spatial">
+      <HintPath>..\packages\Lucene.Net.Contrib.Spatial.3.0.3\lib\net40\Lucene.Net.Contrib.Spatial.dll</HintPath>
+    </Reference>
     <Reference Include="Newtonsoft.Json, Version=4.5.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\packages\Newtonsoft.Json.5.0.6\lib\net45\Newtonsoft.Json.dll</HintPath>
     </Reference>
+    <Reference Include="Spatial4n.Core">
+      <HintPath>..\packages\Spatial4n.Core.0.3\lib\net40\Spatial4n.Core.dll</HintPath>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.ComponentModel.Composition" />
     <Reference Include="System.Core" />
+    <Reference Include="System.Device" />
     <Reference Include="System.Xml.Linq" />
     <Reference Include="System.Data.DataSetExtensions" />
     <Reference Include="Microsoft.CSharp" />
@@ -147,6 +154,9 @@
     <Compile Include="Esent\EsentContextBase.cs" />
     <Compile Include="Esent\Serializers\BsonContentSerializer.cs" />
     <Compile Include="Esent\EsentConfigTable.cs" />
+    <Compile Include="Geo\GeoCircle.cs" />
+    <Compile Include="Geo\GeoRectangle.cs" />
+    <Compile Include="Geo\IGeoShape.cs" />
     <Compile Include="GraveEdge.cs" />
     <Compile Include="GraveFactory.cs" />
     <Compile Include="GraveGraphFactoryContract.cs" />
@@ -155,6 +165,7 @@
     <Compile Include="IGraveGraphFactory.cs" />
     <Compile Include="Indexing\DocumentContract.cs" />
     <Compile Include="Indexing\DocumentFactoryContract.cs" />
+    <Compile Include="Geo\GeoPoint.cs" />
     <Compile Include="Indexing\IDocumentFactory.cs" />
     <Compile Include="Indexing\IndexCollection.cs" />
     <Compile Include="Indexing\IndexerFactoryContract.cs" />

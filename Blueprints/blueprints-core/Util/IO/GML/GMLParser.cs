@@ -93,7 +93,6 @@ namespace Frontenac.Blueprints.Util.IO.GML
         {
             Contract.Requires(map != null);
 
-            //final object vertexId = vertexIdKey == null ? (graph.getFeatures().ignoresSuppliedIds ? null : id) : map.remove(vertexIdKey);
             var vertexId = id;
             if (_vertexIdKey != null)
             {
@@ -260,14 +259,12 @@ namespace Frontenac.Blueprints.Util.IO.GML
             while (HasNext(st))
             {
                 var type = st.Ttype;
-                if (NotLineBreak(type))
-                {
-                    if (type == ']')
-                        return map;
-                    var key = st.StringValue;
-                    var value = ParseValue(key, st);
-                    map[key] = value;
-                }
+                if (!NotLineBreak(type)) continue;
+                if (type == ']')
+                    return map;
+                var key = st.StringValue;
+                var value = ParseValue(key, st);
+                map[key] = value;
             }
             throw new IOException(string.Concat(node, " incomplete"));
         }

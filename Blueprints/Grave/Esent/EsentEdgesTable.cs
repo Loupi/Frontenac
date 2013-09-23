@@ -127,9 +127,11 @@ namespace Grave.Esent
             return result ?? 0;
         }
 
-        public Tuple<string, int, int> TryGetEdge(int id)
+        public bool TryGetEdge(int id, out Tuple<string, int, int> edge)
         {
-            return SetCursor(id) ? GetEdgeData() : null;
+            var result = SetCursor(id);
+            edge = result ? GetEdgeData() : null;
+            return result;
         }
 
         public Tuple<string, int, int> GetEdgeData()

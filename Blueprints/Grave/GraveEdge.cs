@@ -27,11 +27,7 @@ namespace Grave
 
         public IVertex GetVertex(Direction direction)
         {
-            if (direction == Direction.In)
-                return _inVertex;
-            if (direction == Direction.Out)
-                return _outVertex;
-            throw ExceptionFactory.BothIsNotSupported();
+            return direction == Direction.In ? _inVertex : _outVertex;
         }
 
         public string Label

@@ -4,43 +4,44 @@ using System.Diagnostics.Contracts;
 
 namespace Frontenac.Blueprints.Util.Wrappers.ReadOnly
 {
-    public abstract class ReadOnlyElement : IElement
+    public abstract class ReadOnlyElement : DictionaryElement
     {
         protected readonly IElement BaseElement;
 
         protected ReadOnlyElement(IElement baseElement)
         {
             Contract.Requires(baseElement != null);
+            IsReadOnly = true;
 
             BaseElement = baseElement;
         }
 
-        public IEnumerable<string> GetPropertyKeys()
+        public override IEnumerable<string> GetPropertyKeys()
         {
             return BaseElement.GetPropertyKeys();
         }
 
-        public object Id
+        public override object Id
         {
             get { return BaseElement.Id; }
         }
 
-        public object RemoveProperty(string key)
+        public override object RemoveProperty(string key)
         {
             throw new InvalidOperationException(ReadOnlyTokens.MutateErrorMessage);
         }
 
-        public object GetProperty(string key)
+        public override object GetProperty(string key)
         {
             return BaseElement.GetProperty(key);
         }
 
-        public void SetProperty(string key, object value)
+        public override void SetProperty(string key, object value)
         {
             throw new InvalidOperationException(ReadOnlyTokens.MutateErrorMessage);
         }
 
-        public void Remove()
+        public override void Remove()
         {
             throw new InvalidOperationException(ReadOnlyTokens.MutateErrorMessage);
         }

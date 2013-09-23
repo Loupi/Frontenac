@@ -13,7 +13,7 @@ namespace Frontenac.Blueprints
     ///     Typically, objects are C# primitives (e.g. string, long, int, boolean, etc.)
     /// </summary>
     [ContractClass(typeof (ElementContract))]
-    public interface IElement
+    public interface IElement : IDictionary<string, object>
     {
         /// <summary>
         ///     An identifier that is unique to its inheriting class.
