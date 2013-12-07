@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Device.Location;
 using System.Diagnostics.Contracts;
 using System.Runtime.Serialization;
 using Grave.Geo;

@@ -1,6 +1,8 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using System.Diagnostics.Contracts;
+using System.Dynamic;
+using System.Linq.Expressions;
 
 namespace Frontenac.Blueprints.Contracts
 {
@@ -59,5 +61,6 @@ namespace Frontenac.Blueprints.Contracts
         public abstract object this[string key] { get; set; }
         public abstract ICollection<string> Keys { get; }
         public abstract ICollection<object> Values { get; }
+        public abstract DynamicMetaObject GetMetaObject(Expression parameter);
     }
 }

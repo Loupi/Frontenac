@@ -141,7 +141,6 @@
     <Reference Include="System" />
     <Reference Include="System.ComponentModel.Composition" />
     <Reference Include="System.Core" />
-    <Reference Include="System.Device" />
     <Reference Include="System.Xml.Linq" />
     <Reference Include="System.Data.DataSetExtensions" />
     <Reference Include="Microsoft.CSharp" />
@@ -162,6 +161,7 @@
     <Compile Include="GraveGraphFactoryContract.cs" />
     <Compile Include="GraveQuery.cs" />
     <Compile Include="GraveTransactionalGraph.cs" />
+    <Compile Include="GremlinqHelpers.cs" />
     <Compile Include="IGraveGraphFactory.cs" />
     <Compile Include="Indexing\DocumentContract.cs" />
     <Compile Include="Indexing\DocumentFactoryContract.cs" />

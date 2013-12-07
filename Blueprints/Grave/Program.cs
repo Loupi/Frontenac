@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
 using Frontenac.Blueprints;
 using Frontenac.Blueprints.Util;
@@ -7,65 +6,7 @@ using Grave.Geo;
 
 namespace Grave
 {
-    public static class GremlinqHelpers
-    {
-        public static IEnumerable<TSource> Loop<TSource>(this TSource element, Func<TSource, IEnumerable<TSource>> func,
-                                                         int nbIterations)
-        {
-            return Loop(new[] {element}, func, nbIterations);
-        }
-
-        public static IEnumerable<TSource> Loop<TSource>(this IEnumerable<TSource> sources,
-                                                         Func<TSource, IEnumerable<TSource>> func, int iterations)
-        {
-            var next = sources;
-
-            for (var i = 0; i < iterations; i++)
-            {
-                next = next.SelectMany(func);
-            }
-
-            return next;
-        }
-
-        public static IEnumerable<IVertex> V(this IGraph g, string propertyName, object value)
-        {
-            return g.GetVertices(propertyName, value);
-        }
-
-        public static IDictionary<string, object> Map(this IElement e)
-        {
-            return e.ToDictionary(t => t.Key, t => t.Value);
-        }
-
-        public static IEnumerable<IDictionary<string, object>> Map(this IEnumerable<IElement> elements)
-        {
-            return elements.Select(e => e.Map());
-        }
-
-        public static IEnumerable<IVertex> In(this IVertex vertex, params string[] labels)
-        {
-            return vertex.GetVertices(Direction.In, labels);
-        }
-
-        public static IEnumerable<IVertex> In(this IEnumerable<IVertex> vertices, params string[] labels)
-        {
-            return vertices.SelectMany(t => t.GetVertices(Direction.In, labels));
-        }
-
-        public static T P<T>(this IElement element, string propertyName)
-        {
-            var result = element[propertyName];
-            return result is T ? (T) result : default(T);
-        }
-
-        public static IEnumerable<T> P<T>(this IEnumerable<IElement> elements, string propertyName)
-        {
-            return elements.Select(e => e[propertyName]).OfType<T>();
-        }
-    }
-
-    internal class Program
+    public static class Program
     {
         private static void Main()
         {
@@ -84,6 +25,9 @@ namespace Grave
                 var saturn = g.V("name", "saturn")
                               .Single();
 
+                
+                var nameFromModel = saturn.As<IGod>().name;
+                
                 var map = saturn.Map();
 
                 var fatherName = saturn.In("father")
@@ -121,7 +65,9 @@ namespace Grave
                     .ToArray();
 
                 var v2 = hercules.GetEdges(Direction.Out, "battled")
-                                 .Where(t => t.GetPropertyKeys().Contains("time") && ((long) t["time"]) > 1)
+                                 //.Where(t => t.P<God>((m, e) => e.P<>()
+                                 //    element.P<God>()) )
+                                 .Where(t => t.P<int>("time") > 1)
                                  .Select(t => t.GetVertex(Direction.In)["name"])
                                  .ToArray();
             }
@@ -130,6 +76,13 @@ namespace Grave
                 g.Shutdown();
                 GraveFactory.Release();
             }
+        }
+
+        public interface IGod
+        {
+            string name { get; set; }
+            string type { get; set; }
+            int age { get; set; }
         }
 
         private static void CreateGraphOfTheGods(IGraph graph)

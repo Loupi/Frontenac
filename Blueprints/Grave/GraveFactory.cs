@@ -7,7 +7,7 @@ using Castle.Windsor.Installer;
 
 namespace Grave
 {
-    public class GraveFactory
+    public static class GraveFactory
     {
         private static readonly object SyncRoot = new object();
         private static FactoryContext _context;
