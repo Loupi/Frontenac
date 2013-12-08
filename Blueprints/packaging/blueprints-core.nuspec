@@ -1,19 +1,27 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <package xmlns="http://schemas.microsoft.com/packaging/2010/07/nuspec.xsd">
-  <metadata>
-    <id>Frontenac.Blueprints</id>
-    <version>2.3.2</version>
-    <authors>Loupi</authors>
-    <projectUrl>https://github.com/Loupi/Frontenac</projectUrl>
-    <requireLicenseAcceptance>false</requireLicenseAcceptance>
-    <description>A .NET port of the Tinkerpop Stack. Blueprints provides a set of interfaces for the property graph data model.</description>
-    <dependencies>
-      <dependency id="Newtonsoft.Json" />
-    </dependencies>
-  </metadata>
-  <files>
-    <file src="..\blueprints-core (.NET 4.0)\bin\Release\net40\Frontenac.Blueprints.dll" target="lib\net40\Frontenac.Blueprints.dll" />
-    <file src="..\blueprints-core (.NET 4.0)\bin\Release\net40-client\Frontenac.Blueprints.dll" target="lib\net40-client\Frontenac.Blueprints.dll" />
-    <file src="..\blueprints-core\bin\Release\net45\Frontenac.Blueprints.dll" target="lib\net45\Frontenac.Blueprints.dll" />
-  </files>
+	<metadata>
+		<id>Frontenac.Blueprints</id>
+		<version>2.3.2</version>
+		<authors>Loupi</authors>
+		<projectUrl>https://github.com/Loupi/Frontenac</projectUrl>
+		<requireLicenseAcceptance>false</requireLicenseAcceptance>
+		<description>A .NET port of the Tinkerpop Stack. Blueprints provides a set of interfaces for the property graph data model.</description>
+		<dependencies>
+			<dependency id="Newtonsoft.Json" />
+		</dependencies>
+		<references>
+			<reference file="Frontenac.Blueprints.dll" />
+		</references>
+	</metadata>
+	<files>
+		<file src="..\blueprints-core (.NET 4.0)\bin\Release\net40\Frontenac.Blueprints.dll" target="lib\net40\Frontenac.Blueprints.dll" />
+		<file src="..\blueprints-core (.NET 4.0)\bin\Release\net40\CodeContracts\Frontenac.Blueprints.Contracts.dll" target="lib\net40\Frontenac.Blueprints.Contracts.dll" />
+		
+		<file src="..\blueprints-core (.NET 4.0)\bin\Release\net40-client\Frontenac.Blueprints.dll" target="lib\net40-client\Frontenac.Blueprints.dll" />
+		<file src="..\blueprints-core (.NET 4.0)\bin\Release\net40-client\CodeContracts\Frontenac.Blueprints.Contracts.dll" target="lib\net40-client\Frontenac.Blueprints.Contracts.dll" />
+
+		<file src="..\blueprints-core\bin\Release\net45\Frontenac.Blueprints.dll" target="lib\net45\Frontenac.Blueprints.dll" />
+		<file src="..\blueprints-core\bin\Release\net45\CodeContracts\Frontenac.Blueprints.Contracts.dll" target="lib\net45\Frontenac.Blueprints.Contracts.dll" />
+	</files>
 </package>
