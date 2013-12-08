@@ -28,12 +28,12 @@ Global
 		Release|Any CPU = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
-		{42ED5D37-0E20-4FC3-B6B1-F38A08283C30}.Debug (.NET 4.0)|Any CPU.ActiveCfg = Debug (.NET 4.0)|Any CPU
-		{42ED5D37-0E20-4FC3-B6B1-F38A08283C30}.Debug (.NET 4.0)|Any CPU.Build.0 = Debug (.NET 4.0)|Any CPU
+		{42ED5D37-0E20-4FC3-B6B1-F38A08283C30}.Debug (.NET 4.0)|Any CPU.ActiveCfg = Debug|Any CPU
+		{42ED5D37-0E20-4FC3-B6B1-F38A08283C30}.Debug (.NET 4.0)|Any CPU.Build.0 = Debug|Any CPU
 		{42ED5D37-0E20-4FC3-B6B1-F38A08283C30}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{42ED5D37-0E20-4FC3-B6B1-F38A08283C30}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{42ED5D37-0E20-4FC3-B6B1-F38A08283C30}.Release (.NET 4.0)|Any CPU.ActiveCfg = Release (.NET 4.0)|Any CPU
-		{42ED5D37-0E20-4FC3-B6B1-F38A08283C30}.Release (.NET 4.0)|Any CPU.Build.0 = Release (.NET 4.0)|Any CPU
+		{42ED5D37-0E20-4FC3-B6B1-F38A08283C30}.Release (.NET 4.0)|Any CPU.ActiveCfg = Release|Any CPU
+		{42ED5D37-0E20-4FC3-B6B1-F38A08283C30}.Release (.NET 4.0)|Any CPU.Build.0 = Release|Any CPU
 		{42ED5D37-0E20-4FC3-B6B1-F38A08283C30}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{42ED5D37-0E20-4FC3-B6B1-F38A08283C30}.Release|Any CPU.Build.0 = Release|Any CPU
 		{CFFA3CED-73DD-4EB3-B464-88534D5CAA1B}.Debug (.NET 4.0)|Any CPU.ActiveCfg = Debug (.NET 4.0)|Any CPU

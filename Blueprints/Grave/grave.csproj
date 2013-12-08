@@ -106,7 +106,7 @@
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="Castle.Core">
-      <HintPath>..\packages\Castle.Core.3.2.0\lib\net45\Castle.Core.dll</HintPath>
+      <HintPath>..\packages\Castle.Core.3.2.2\lib\net45\Castle.Core.dll</HintPath>
     </Reference>
     <Reference Include="Castle.Facilities.FactorySupport">
       <HintPath>..\packages\Castle.FactorySupportFacility.3.2.0\lib\net45\Castle.Facilities.FactorySupport.dll</HintPath>

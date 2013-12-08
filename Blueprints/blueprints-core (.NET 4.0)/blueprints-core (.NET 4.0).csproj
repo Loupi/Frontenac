@@ -1,0 +1,700 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProjectGuid>{30495F9B-5231-477B-B8AD-6D42E1E24D39}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>Frontenac.Blueprints</RootNamespace>
+    <AssemblyName>Frontenac.Blueprints</AssemblyName>
+    <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
+    <FileAlignment>512</FileAlignment>
+    <SolutionDir Condition="$(SolutionDir) == '' Or $(SolutionDir) == '*Undefined*'">..\</SolutionDir>
+    <RestorePackages>true</RestorePackages>
+    <FodyPath>..\packages\Fody.1.18.0.0</FodyPath>
+    <CodeContractsAssemblyMode>0</CodeContractsAssemblyMode>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <CodeContractsEnableRuntimeChecking>True</CodeContractsEnableRuntimeChecking>
+    <CodeContractsRuntimeOnlyPublicSurface>False</CodeContractsRuntimeOnlyPublicSurface>
+    <CodeContractsRuntimeThrowOnFailure>True</CodeContractsRuntimeThrowOnFailure>
+    <CodeContractsRuntimeCallSiteRequires>False</CodeContractsRuntimeCallSiteRequires>
+    <CodeContractsRuntimeSkipQuantifiers>False</CodeContractsRuntimeSkipQuantifiers>
+    <CodeContractsRunCodeAnalysis>False</CodeContractsRunCodeAnalysis>
+    <CodeContractsNonNullObligations>True</CodeContractsNonNullObligations>
+    <CodeContractsBoundsObligations>True</CodeContractsBoundsObligations>
+    <CodeContractsArithmeticObligations>False</CodeContractsArithmeticObligations>
+    <CodeContractsEnumObligations>False</CodeContractsEnumObligations>
+    <CodeContractsRedundantAssumptions>False</CodeContractsRedundantAssumptions>
+    <CodeContractsMissingPublicRequiresAsWarnings>True</CodeContractsMissingPublicRequiresAsWarnings>
+    <CodeContractsInferRequires>True</CodeContractsInferRequires>
+    <CodeContractsInferEnsures>False</CodeContractsInferEnsures>
+    <CodeContractsInferObjectInvariants>False</CodeContractsInferObjectInvariants>
+    <CodeContractsSuggestAssumptions>False</CodeContractsSuggestAssumptions>
+    <CodeContractsSuggestRequires>True</CodeContractsSuggestRequires>
+    <CodeContractsSuggestObjectInvariants>False</CodeContractsSuggestObjectInvariants>
+    <CodeContractsRunInBackground>True</CodeContractsRunInBackground>
+    <CodeContractsShowSquigglies>True</CodeContractsShowSquigglies>
+    <CodeContractsUseBaseLine>False</CodeContractsUseBaseLine>
+    <CodeContractsEmitXMLDocs>False</CodeContractsEmitXMLDocs>
+    <CodeContractsCustomRewriterAssembly />
+    <CodeContractsCustomRewriterClass />
+    <CodeContractsLibPaths />
+    <CodeContractsExtraRewriteOptions />
+    <CodeContractsExtraAnalysisOptions />
+    <CodeContractsSQLServerOption />
+    <CodeContractsBaseLineFile />
+    <CodeContractsCacheAnalysisResults>True</CodeContractsCacheAnalysisResults>
+    <CodeContractsFailBuildOnWarnings>False</CodeContractsFailBuildOnWarnings>
+    <CodeContractsRuntimeCheckingLevel>Full</CodeContractsRuntimeCheckingLevel>
+    <CodeContractsReferenceAssembly>Build</CodeContractsReferenceAssembly>
+    <CodeContractsAnalysisWarningLevel>0</CodeContractsAnalysisWarningLevel>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <CodeContractsEnableRuntimeChecking>True</CodeContractsEnableRuntimeChecking>
+    <CodeContractsRuntimeOnlyPublicSurface>False</CodeContractsRuntimeOnlyPublicSurface>
+    <CodeContractsRuntimeThrowOnFailure>True</CodeContractsRuntimeThrowOnFailure>
+    <CodeContractsRuntimeCallSiteRequires>False</CodeContractsRuntimeCallSiteRequires>
+    <CodeContractsRuntimeSkipQuantifiers>False</CodeContractsRuntimeSkipQuantifiers>
+    <CodeContractsRunCodeAnalysis>False</CodeContractsRunCodeAnalysis>
+    <CodeContractsNonNullObligations>True</CodeContractsNonNullObligations>
+    <CodeContractsBoundsObligations>True</CodeContractsBoundsObligations>
+    <CodeContractsArithmeticObligations>False</CodeContractsArithmeticObligations>
+    <CodeContractsEnumObligations>False</CodeContractsEnumObligations>
+    <CodeContractsRedundantAssumptions>False</CodeContractsRedundantAssumptions>
+    <CodeContractsMissingPublicRequiresAsWarnings>True</CodeContractsMissingPublicRequiresAsWarnings>
+    <CodeContractsInferRequires>True</CodeContractsInferRequires>
+    <CodeContractsInferEnsures>False</CodeContractsInferEnsures>
+    <CodeContractsInferObjectInvariants>False</CodeContractsInferObjectInvariants>
+    <CodeContractsSuggestAssumptions>False</CodeContractsSuggestAssumptions>
+    <CodeContractsSuggestRequires>True</CodeContractsSuggestRequires>
+    <CodeContractsSuggestObjectInvariants>False</CodeContractsSuggestObjectInvariants>
+    <CodeContractsRunInBackground>True</CodeContractsRunInBackground>
+    <CodeContractsShowSquigglies>True</CodeContractsShowSquigglies>
+    <CodeContractsUseBaseLine>False</CodeContractsUseBaseLine>
+    <CodeContractsEmitXMLDocs>False</CodeContractsEmitXMLDocs>
+    <CodeContractsCustomRewriterAssembly />
+    <CodeContractsCustomRewriterClass />
+    <CodeContractsLibPaths />
+    <CodeContractsExtraRewriteOptions />
+    <CodeContractsExtraAnalysisOptions />
+    <CodeContractsSQLServerOption />
+    <CodeContractsBaseLineFile />
+    <CodeContractsCacheAnalysisResults>True</CodeContractsCacheAnalysisResults>
+    <CodeContractsFailBuildOnWarnings>False</CodeContractsFailBuildOnWarnings>
+    <CodeContractsRuntimeCheckingLevel>Full</CodeContractsRuntimeCheckingLevel>
+    <CodeContractsReferenceAssembly>Build</CodeContractsReferenceAssembly>
+    <CodeContractsAnalysisWarningLevel>0</CodeContractsAnalysisWarningLevel>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug %28.NET 4.0 Client%29|AnyCPU'">
+    <DebugSymbols>true</DebugSymbols>
+    <OutputPath>bin\Debug\net40-client\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <DebugType>full</DebugType>
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <ErrorReport>prompt</ErrorReport>
+    <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
+    <TargetFrameworkProfile>Client</TargetFrameworkProfile>
+    <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
+    <Prefer32Bit>false</Prefer32Bit>
+    <CodeContractsRuntimeOnlyPublicSurface>False</CodeContractsRuntimeOnlyPublicSurface>
+    <CodeContractsRuntimeThrowOnFailure>True</CodeContractsRuntimeThrowOnFailure>
+    <CodeContractsRuntimeCallSiteRequires>False</CodeContractsRuntimeCallSiteRequires>
+    <CodeContractsRuntimeSkipQuantifiers>False</CodeContractsRuntimeSkipQuantifiers>
+    <CodeContractsRunCodeAnalysis>False</CodeContractsRunCodeAnalysis>
+    <CodeContractsNonNullObligations>True</CodeContractsNonNullObligations>
+    <CodeContractsBoundsObligations>True</CodeContractsBoundsObligations>
+    <CodeContractsArithmeticObligations>False</CodeContractsArithmeticObligations>
+    <CodeContractsEnumObligations>False</CodeContractsEnumObligations>
+    <CodeContractsRedundantAssumptions>False</CodeContractsRedundantAssumptions>
+    <CodeContractsMissingPublicRequiresAsWarnings>True</CodeContractsMissingPublicRequiresAsWarnings>
+    <CodeContractsInferRequires>True</CodeContractsInferRequires>
+    <CodeContractsInferEnsures>False</CodeContractsInferEnsures>
+    <CodeContractsInferObjectInvariants>False</CodeContractsInferObjectInvariants>
+    <CodeContractsSuggestAssumptions>False</CodeContractsSuggestAssumptions>
+    <CodeContractsSuggestRequires>True</CodeContractsSuggestRequires>
+    <CodeContractsSuggestObjectInvariants>False</CodeContractsSuggestObjectInvariants>
+    <CodeContractsRunInBackground>True</CodeContractsRunInBackground>
+    <CodeContractsShowSquigglies>True</CodeContractsShowSquigglies>
+    <CodeContractsUseBaseLine>False</CodeContractsUseBaseLine>
+    <CodeContractsEmitXMLDocs>False</CodeContractsEmitXMLDocs>
+    <CodeContractsCustomRewriterAssembly />
+    <CodeContractsCustomRewriterClass />
+    <CodeContractsLibPaths />
+    <CodeContractsExtraRewriteOptions />
+    <CodeContractsExtraAnalysisOptions />
+    <CodeContractsSQLServerOption />
+    <CodeContractsBaseLineFile />
+    <CodeContractsCacheAnalysisResults>True</CodeContractsCacheAnalysisResults>
+    <CodeContractsFailBuildOnWarnings>False</CodeContractsFailBuildOnWarnings>
+    <CodeContractsRuntimeCheckingLevel>Full</CodeContractsRuntimeCheckingLevel>
+    <CodeContractsReferenceAssembly>Build</CodeContractsReferenceAssembly>
+    <CodeContractsAnalysisWarningLevel>0</CodeContractsAnalysisWarningLevel>
+    <CodeContractsEnableRuntimeChecking>True</CodeContractsEnableRuntimeChecking>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release %28.NET 4.0 Client%29|AnyCPU'">
+    <OutputPath>bin\Release\net40-client\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <Optimize>true</Optimize>
+    <DebugType>pdbonly</DebugType>
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <ErrorReport>prompt</ErrorReport>
+    <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
+    <TargetFrameworkProfile>Client</TargetFrameworkProfile>
+    <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
+    <Prefer32Bit>false</Prefer32Bit>
+    <CodeContractsRuntimeOnlyPublicSurface>False</CodeContractsRuntimeOnlyPublicSurface>
+    <CodeContractsRuntimeThrowOnFailure>True</CodeContractsRuntimeThrowOnFailure>
+    <CodeContractsRuntimeCallSiteRequires>False</CodeContractsRuntimeCallSiteRequires>
+    <CodeContractsRuntimeSkipQuantifiers>False</CodeContractsRuntimeSkipQuantifiers>
+    <CodeContractsRunCodeAnalysis>False</CodeContractsRunCodeAnalysis>
+    <CodeContractsNonNullObligations>True</CodeContractsNonNullObligations>
+    <CodeContractsBoundsObligations>True</CodeContractsBoundsObligations>
+    <CodeContractsArithmeticObligations>False</CodeContractsArithmeticObligations>
+    <CodeContractsEnumObligations>False</CodeContractsEnumObligations>
+    <CodeContractsRedundantAssumptions>False</CodeContractsRedundantAssumptions>
+    <CodeContractsMissingPublicRequiresAsWarnings>True</CodeContractsMissingPublicRequiresAsWarnings>
+    <CodeContractsInferRequires>True</CodeContractsInferRequires>
+    <CodeContractsInferEnsures>False</CodeContractsInferEnsures>
+    <CodeContractsInferObjectInvariants>False</CodeContractsInferObjectInvariants>
+    <CodeContractsSuggestAssumptions>False</CodeContractsSuggestAssumptions>
+    <CodeContractsSuggestRequires>True</CodeContractsSuggestRequires>
+    <CodeContractsSuggestObjectInvariants>False</CodeContractsSuggestObjectInvariants>
+    <CodeContractsRunInBackground>True</CodeContractsRunInBackground>
+    <CodeContractsShowSquigglies>True</CodeContractsShowSquigglies>
+    <CodeContractsUseBaseLine>False</CodeContractsUseBaseLine>
+    <CodeContractsEmitXMLDocs>False</CodeContractsEmitXMLDocs>
+    <CodeContractsCustomRewriterAssembly />
+    <CodeContractsCustomRewriterClass />
+    <CodeContractsLibPaths />
+    <CodeContractsExtraRewriteOptions />
+    <CodeContractsExtraAnalysisOptions />
+    <CodeContractsSQLServerOption />
+    <CodeContractsBaseLineFile />
+    <CodeContractsCacheAnalysisResults>True</CodeContractsCacheAnalysisResults>
+    <CodeContractsFailBuildOnWarnings>False</CodeContractsFailBuildOnWarnings>
+    <CodeContractsRuntimeCheckingLevel>Full</CodeContractsRuntimeCheckingLevel>
+    <CodeContractsReferenceAssembly>Build</CodeContractsReferenceAssembly>
+    <CodeContractsAnalysisWarningLevel>0</CodeContractsAnalysisWarningLevel>
+    <CodeContractsEnableRuntimeChecking>True</CodeContractsEnableRuntimeChecking>
+  </PropertyGroup>
+  <PropertyGroup>
+    <SignAssembly>true</SignAssembly>
+  </PropertyGroup>
+  <PropertyGroup>
+    <AssemblyOriginatorKeyFile>key.snk</AssemblyOriginatorKeyFile>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="Newtonsoft.Json">
+      <HintPath>..\packages\Newtonsoft.Json.5.0.8\lib\net40\Newtonsoft.Json.dll</HintPath>
+    </Reference>
+    <Reference Include="System" />
+    <Reference Include="System.Core" />
+    <Reference Include="System.Xml.Linq" />
+    <Reference Include="System.Data.DataSetExtensions" />
+    <Reference Include="Microsoft.CSharp" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="..\blueprints-core\Contracts\EdgeContract.cs">
+      <Link>Contracts\EdgeContract.cs</Link>
+    </Compile>
+    <Compile Include="..\blueprints-core\Contracts\ElementContract.cs">
+      <Link>Contracts\ElementContract.cs</Link>
+    </Compile>
+    <Compile Include="..\blueprints-core\Contracts\GraphContract.cs">
+      <Link>Contracts\GraphContract.cs</Link>
+    </Compile>
+    <Compile Include="..\blueprints-core\Contracts\IndexableGraphContract.cs">
+      <Link>Contracts\IndexableGraphContract.cs</Link>
+    </Compile>
+    <Compile Include="..\blueprints-core\Contracts\IndexContract.cs">
+      <Link>Contracts\IndexContract.cs</Link>
+    </Compile>
+    <Compile Include="..\blueprints-core\Contracts\KeyIndexableGraphContract.cs">
+      <Link>Contracts\KeyIndexableGraphContract.cs</Link>
+    </Compile>
+    <Compile Include="..\blueprints-core\Contracts\QueryContract.cs">
+      <Link>Contracts\QueryContract.cs</Link>
+    </Compile>
+    <Compile Include="..\blueprints-core\Contracts\ThreadedTransactionalGraphContract.cs">
+      <Link>Contracts\ThreadedTransactionalGraphContract.cs</Link>
+    </Compile>
+    <Compile Include="..\blueprints-core\Contracts\VertexContract.cs">
+      <Link>Contracts\VertexContract.cs</Link>
+    </Compile>
+    <Compile Include="..\blueprints-core\Contracts\VertexQueryContract.cs">
+      <Link>Contracts\VertexQueryContract.cs</Link>
+    </Compile>
+    <Compile Include="..\blueprints-core\DictionaryElement.cs">
+      <Link>DictionaryElement.cs</Link>
+    </Compile>
+    <Compile Include="..\blueprints-core\Direction.cs">
+      <Link>Direction.cs</Link>
+    </Compile>
+    <Compile Include="..\blueprints-core\Features.cs">
+      <Link>Features.cs</Link>
+    </Compile>
+    <Compile Include="..\blueprints-core\ICloseableIterable.cs">
+      <Link>ICloseableIterable.cs</Link>
+    </Compile>
+    <Compile Include="..\blueprints-core\IEdge.cs">
+      <Link>IEdge.cs</Link>
+    </Compile>
+    <Compile Include="..\blueprints-core\IElement.cs">
+      <Link>IElement.cs</Link>
+    </Compile>
+    <Compile Include="..\blueprints-core\IGraph.cs">
+      <Link>IGraph.cs</Link>
+    </Compile>
+    <Compile Include="..\blueprints-core\IIndex.cs">
+      <Link>IIndex.cs</Link>
+    </Compile>
+    <Compile Include="..\blueprints-core\IIndexableGraph.cs">
+      <Link>IIndexableGraph.cs</Link>
+    </Compile>
+    <Compile Include="..\blueprints-core\IKeyIndexableGraph.cs">
+      <Link>IKeyIndexableGraph.cs</Link>
+    </Compile>
+    <Compile Include="..\blueprints-core\Impls\Sail\SailTokens.cs">
+      <Link>Impls\Sail\SailTokens.cs</Link>
+    </Compile>
+    <Compile Include="..\blueprints-core\Impls\TG\ITinkerStorage.cs">
+      <Link>Impls\TG\ITinkerStorage.cs</Link>
+    </Compile>
+    <Compile Include="..\blueprints-core\Impls\TG\TinkerEdge.cs">
+      <Link>Impls\TG\TinkerEdge.cs</Link>
+    </Compile>
+    <Compile Include="..\blueprints-core\Impls\TG\TinkerElement.cs">
+      <Link>Impls\TG\TinkerElement.cs</Link>
+    </Compile>
+    <Compile Include="..\blueprints-core\Impls\TG\TinkerGraph.cs">
+      <Link>Impls\TG\TinkerGraph.cs</Link>
+    </Compile>
+    <Compile Include="..\blueprints-core\Impls\TG\TinkerGraphFactory.cs">
+      <Link>Impls\TG\TinkerGraphFactory.cs</Link>
+    </Compile>
+    <Compile Include="..\blueprints-core\Impls\TG\TinkerIndex.cs">
+      <Link>Impls\TG\TinkerIndex.cs</Link>
+    </Compile>
+    <Compile Include="..\blueprints-core\Impls\TG\TinkerMetadataReader.cs">
+      <Link>Impls\TG\TinkerMetadataReader.cs</Link>
+    </Compile>
+    <Compile Include="..\blueprints-core\Impls\TG\TinkerMetadataWriter.cs">
+      <Link>Impls\TG\TinkerMetadataWriter.cs</Link>
+    </Compile>
+    <Compile Include="..\blueprints-core\Impls\TG\TinkerStorageContract.cs">
+      <Link>Impls\TG\TinkerStorageContract.cs</Link>
+    </Compile>
+    <Compile Include="..\blueprints-core\Impls\TG\TinkerStorageFactory.cs">
+      <Link>Impls\TG\TinkerStorageFactory.cs</Link>
+    </Compile>
+    <Compile Include="..\blueprints-core\Impls\TG\TinkerVertex.cs">
+      <Link>Impls\TG\TinkerVertex.cs</Link>
+    </Compile>
+    <Compile Include="..\blueprints-core\IQuery.cs">
+      <Link>IQuery.cs</Link>
+    </Compile>
+    <Compile Include="..\blueprints-core\IThreadedTransactionalGraph.cs">
+      <Link>IThreadedTransactionalGraph.cs</Link>
+    </Compile>
+    <Compile Include="..\blueprints-core\ITransactionalGraph.cs">
+      <Link>ITransactionalGraph.cs</Link>
+    </Compile>
+    <Compile Include="..\blueprints-core\IVertex.cs">
+      <Link>IVertex.cs</Link>
+    </Compile>
+    <Compile Include="..\blueprints-core\IVertexQuery.cs">
+      <Link>IVertexQuery.cs</Link>
+    </Compile>
+    <Compile Include="..\blueprints-core\Parameter.cs">
+      <Link>Parameter.cs</Link>
+    </Compile>
+    <Compile Include="..\blueprints-core\Portability.cs">
+      <Link>Portability.cs</Link>
+    </Compile>
+    <Compile Include="..\blueprints-core\Util\DefaultGraphQuery.cs">
+      <Link>Util\DefaultGraphQuery.cs</Link>
+    </Compile>
+    <Compile Include="..\blueprints-core\Util\DefaultQuery.cs">
+      <Link>Util\DefaultQuery.cs</Link>
+    </Compile>
+    <Compile Include="..\blueprints-core\Util\DefaultVertexQuery.cs">
+      <Link>Util\DefaultVertexQuery.cs</Link>
+    </Compile>
+    <Compile Include="..\blueprints-core\Util\EdgeHelper.cs">
+      <Link>Util\EdgeHelper.cs</Link>
+    </Compile>
+    <Compile Include="..\blueprints-core\Util\ElementHelper.cs">
+      <Link>Util\ElementHelper.cs</Link>
+    </Compile>
+    <Compile Include="..\blueprints-core\Util\ExceptionFactory.cs">
+      <Link>Util\ExceptionFactory.cs</Link>
+    </Compile>
+    <Compile Include="..\blueprints-core\Util\GraphHelper.cs">
+      <Link>Util\GraphHelper.cs</Link>
+    </Compile>
+    <Compile Include="..\blueprints-core\Util\IndexableGraphHelper.cs">
+      <Link>Util\IndexableGraphHelper.cs</Link>
+    </Compile>
+    <Compile Include="..\blueprints-core\Util\IO\GML\GmlParser.cs">
+      <Link>Util\IO\GML\GmlParser.cs</Link>
+    </Compile>
+    <Compile Include="..\blueprints-core\Util\IO\GML\GmlReader.cs">
+      <Link>Util\IO\GML\GmlReader.cs</Link>
+    </Compile>
+    <Compile Include="..\blueprints-core\Util\IO\GML\GmlTokens.cs">
+      <Link>Util\IO\GML\GmlTokens.cs</Link>
+    </Compile>
+    <Compile Include="..\blueprints-core\Util\IO\GML\GmlWriter.cs">
+      <Link>Util\IO\GML\GmlWriter.cs</Link>
+    </Compile>
+    <Compile Include="..\blueprints-core\Util\IO\GraphML\GraphMigrator.cs">
+      <Link>Util\IO\GraphML\GraphMigrator.cs</Link>
+    </Compile>
+    <Compile Include="..\blueprints-core\Util\IO\GraphML\GraphMLReader.cs">
+      <Link>Util\IO\GraphML\GraphMLReader.cs</Link>
+    </Compile>
+    <Compile Include="..\blueprints-core\Util\IO\GraphML\GraphMLTokens.cs">
+      <Link>Util\IO\GraphML\GraphMLTokens.cs</Link>
+    </Compile>
+    <Compile Include="..\blueprints-core\Util\IO\GraphML\GraphMLWriter.cs">
+      <Link>Util\IO\GraphML\GraphMLWriter.cs</Link>
+    </Compile>
+    <Compile Include="..\blueprints-core\Util\IO\GraphSon\ElementFactory.cs">
+      <Link>Util\IO\GraphSon\ElementFactory.cs</Link>
+    </Compile>
+    <Compile Include="..\blueprints-core\Util\IO\GraphSon\ElementFactoryContract.cs">
+      <Link>Util\IO\GraphSon\ElementFactoryContract.cs</Link>
+    </Compile>
+    <Compile Include="..\blueprints-core\Util\IO\GraphSon\ElementPropertyConfig.cs">
+      <Link>Util\IO\GraphSon\ElementPropertyConfig.cs</Link>
+    </Compile>
+    <Compile Include="..\blueprints-core\Util\IO\GraphSon\GraphElementFactory.cs">
+      <Link>Util\IO\GraphSon\GraphElementFactory.cs</Link>
+    </Compile>
+    <Compile Include="..\blueprints-core\Util\IO\GraphSon\GraphSonMode.cs">
+      <Link>Util\IO\GraphSon\GraphSonMode.cs</Link>
+    </Compile>
+    <Compile Include="..\blueprints-core\Util\IO\GraphSon\GraphSonReader.cs">
+      <Link>Util\IO\GraphSon\GraphSonReader.cs</Link>
+    </Compile>
+    <Compile Include="..\blueprints-core\Util\IO\GraphSon\GraphSonTokens.cs">
+      <Link>Util\IO\GraphSon\GraphSonTokens.cs</Link>
+    </Compile>
+    <Compile Include="..\blueprints-core\Util\IO\GraphSon\GraphSonUtility.cs">
+      <Link>Util\IO\GraphSon\GraphSonUtility.cs</Link>
+    </Compile>
+    <Compile Include="..\blueprints-core\Util\IO\GraphSon\GraphSonWriter.cs">
+      <Link>Util\IO\GraphSon\GraphSonWriter.cs</Link>
+    </Compile>
+    <Compile Include="..\blueprints-core\Util\IO\LexicographicalElementComparator.cs">
+      <Link>Util\IO\LexicographicalElementComparator.cs</Link>
+    </Compile>
+    <Compile Include="..\blueprints-core\Util\IO\StreamTokenizer.cs">
+      <Link>Util\IO\StreamTokenizer.cs</Link>
+    </Compile>
+    <Compile Include="..\blueprints-core\Util\KeyIndexableGraphHelper.cs">
+      <Link>Util\KeyIndexableGraphHelper.cs</Link>
+    </Compile>
+    <Compile Include="..\blueprints-core\Util\MultiIterable.cs">
+      <Link>Util\MultiIterable.cs</Link>
+    </Compile>
+    <Compile Include="..\blueprints-core\Util\PropertyFilteredIterable.cs">
+      <Link>Util\PropertyFilteredIterable.cs</Link>
+    </Compile>
+    <Compile Include="..\blueprints-core\Util\StringFactory.cs">
+      <Link>Util\StringFactory.cs</Link>
+    </Compile>
+    <Compile Include="..\blueprints-core\Util\VertexHelper.cs">
+      <Link>Util\VertexHelper.cs</Link>
+    </Compile>
+    <Compile Include="..\blueprints-core\Util\VerticesFromEdgesIterable.cs">
+      <Link>Util\VerticesFromEdgesIterable.cs</Link>
+    </Compile>
+    <Compile Include="..\blueprints-core\Util\Wrappers\Batch\BatchGraph.cs">
+      <Link>Util\Wrappers\Batch\BatchGraph.cs</Link>
+    </Compile>
+    <Compile Include="..\blueprints-core\Util\Wrappers\Batch\Cache\IVertexCache.cs">
+      <Link>Util\Wrappers\Batch\Cache\IVertexCache.cs</Link>
+    </Compile>
+    <Compile Include="..\blueprints-core\Util\Wrappers\Batch\Cache\LongIDVertexCache.cs">
+      <Link>Util\Wrappers\Batch\Cache\LongIDVertexCache.cs</Link>
+    </Compile>
+    <Compile Include="..\blueprints-core\Util\Wrappers\Batch\Cache\ObjectIDVertexCache.cs">
+      <Link>Util\Wrappers\Batch\Cache\ObjectIDVertexCache.cs</Link>
+    </Compile>
+    <Compile Include="..\blueprints-core\Util\Wrappers\Batch\Cache\StringCompression.cs">
+      <Link>Util\Wrappers\Batch\Cache\StringCompression.cs</Link>
+    </Compile>
+    <Compile Include="..\blueprints-core\Util\Wrappers\Batch\Cache\StringCompressionContract.cs">
+      <Link>Util\Wrappers\Batch\Cache\StringCompressionContract.cs</Link>
+    </Compile>
+    <Compile Include="..\blueprints-core\Util\Wrappers\Batch\Cache\StringIDVertexCache.cs">
+      <Link>Util\Wrappers\Batch\Cache\StringIDVertexCache.cs</Link>
+    </Compile>
+    <Compile Include="..\blueprints-core\Util\Wrappers\Batch\Cache\URLCompression.cs">
+      <Link>Util\Wrappers\Batch\Cache\URLCompression.cs</Link>
+    </Compile>
+    <Compile Include="..\blueprints-core\Util\Wrappers\Batch\Cache\VertexCacheContract.cs">
+      <Link>Util\Wrappers\Batch\Cache\VertexCacheContract.cs</Link>
+    </Compile>
+    <Compile Include="..\blueprints-core\Util\Wrappers\Batch\VertexIDType.cs">
+      <Link>Util\Wrappers\Batch\VertexIDType.cs</Link>
+    </Compile>
+    <Compile Include="..\blueprints-core\Util\Wrappers\Batch\WritethroughGraph.cs">
+      <Link>Util\Wrappers\Batch\WritethroughGraph.cs</Link>
+    </Compile>
+    <Compile Include="..\blueprints-core\Util\Wrappers\Event\EventEdge.cs">
+      <Link>Util\Wrappers\Event\EventEdge.cs</Link>
+    </Compile>
+    <Compile Include="..\blueprints-core\Util\Wrappers\Event\EventEdgeIterable.cs">
+      <Link>Util\Wrappers\Event\EventEdgeIterable.cs</Link>
+    </Compile>
+    <Compile Include="..\blueprints-core\Util\Wrappers\Event\EventElement.cs">
+      <Link>Util\Wrappers\Event\EventElement.cs</Link>
+    </Compile>
+    <Compile Include="..\blueprints-core\Util\Wrappers\Event\EventGraph.cs">
+      <Link>Util\Wrappers\Event\EventGraph.cs</Link>
+    </Compile>
+    <Compile Include="..\blueprints-core\Util\Wrappers\Event\EventIndex.cs">
+      <Link>Util\Wrappers\Event\EventIndex.cs</Link>
+    </Compile>
+    <Compile Include="..\blueprints-core\Util\Wrappers\Event\EventIndexableGraph.cs">
+      <Link>Util\Wrappers\Event\EventIndexableGraph.cs</Link>
+    </Compile>
+    <Compile Include="..\blueprints-core\Util\Wrappers\Event\EventIndexIterable.cs">
+      <Link>Util\Wrappers\Event\EventIndexIterable.cs</Link>
+    </Compile>
+    <Compile Include="..\blueprints-core\Util\Wrappers\Event\EventTransactionalGraph.cs">
+      <Link>Util\Wrappers\Event\EventTransactionalGraph.cs</Link>
+    </Compile>
+    <Compile Include="..\blueprints-core\Util\Wrappers\Event\EventTransactionalIndexableGraph.cs">
+      <Link>Util\Wrappers\Event\EventTransactionalIndexableGraph.cs</Link>
+    </Compile>
+    <Compile Include="..\blueprints-core\Util\Wrappers\Event\EventTrigger.cs">
+      <Link>Util\Wrappers\Event\EventTrigger.cs</Link>
+    </Compile>
+    <Compile Include="..\blueprints-core\Util\Wrappers\Event\EventVertex.cs">
+      <Link>Util\Wrappers\Event\EventVertex.cs</Link>
+    </Compile>
+    <Compile Include="..\blueprints-core\Util\Wrappers\Event\EventVertexIterable.cs">
+      <Link>Util\Wrappers\Event\EventVertexIterable.cs</Link>
+    </Compile>
+    <Compile Include="..\blueprints-core\Util\Wrappers\Event\Listener\ConsoleGraphChangedListener.cs">
+      <Link>Util\Wrappers\Event\Listener\ConsoleGraphChangedListener.cs</Link>
+    </Compile>
+    <Compile Include="..\blueprints-core\Util\Wrappers\Event\Listener\EdgeAddedEvent .cs">
+      <Link>Util\Wrappers\Event\Listener\EdgeAddedEvent .cs</Link>
+    </Compile>
+    <Compile Include="..\blueprints-core\Util\Wrappers\Event\Listener\EdgePropertyChangedEvent.cs">
+      <Link>Util\Wrappers\Event\Listener\EdgePropertyChangedEvent.cs</Link>
+    </Compile>
+    <Compile Include="..\blueprints-core\Util\Wrappers\Event\Listener\EdgePropertyEvent.cs">
+      <Link>Util\Wrappers\Event\Listener\EdgePropertyEvent.cs</Link>
+    </Compile>
+    <Compile Include="..\blueprints-core\Util\Wrappers\Event\Listener\EdgePropertyEventContract.cs">
+      <Link>Util\Wrappers\Event\Listener\EdgePropertyEventContract.cs</Link>
+    </Compile>
+    <Compile Include="..\blueprints-core\Util\Wrappers\Event\Listener\EdgePropertyRemovedEvent.cs">
+      <Link>Util\Wrappers\Event\Listener\EdgePropertyRemovedEvent.cs</Link>
+    </Compile>
+    <Compile Include="..\blueprints-core\Util\Wrappers\Event\Listener\EdgeRemovedEvent.cs">
+      <Link>Util\Wrappers\Event\Listener\EdgeRemovedEvent.cs</Link>
+    </Compile>
+    <Compile Include="..\blueprints-core\Util\Wrappers\Event\Listener\Event.cs">
+      <Link>Util\Wrappers\Event\Listener\Event.cs</Link>
+    </Compile>
+    <Compile Include="..\blueprints-core\Util\Wrappers\Event\Listener\EventContract.cs">
+      <Link>Util\Wrappers\Event\Listener\EventContract.cs</Link>
+    </Compile>
+    <Compile Include="..\blueprints-core\Util\Wrappers\Event\Listener\GraphChangedListener.cs">
+      <Link>Util\Wrappers\Event\Listener\GraphChangedListener.cs</Link>
+    </Compile>
+    <Compile Include="..\blueprints-core\Util\Wrappers\Event\Listener\GraphChangedListenerContract.cs">
+      <Link>Util\Wrappers\Event\Listener\GraphChangedListenerContract.cs</Link>
+    </Compile>
+    <Compile Include="..\blueprints-core\Util\Wrappers\Event\Listener\StubGraphChangedListener.cs">
+      <Link>Util\Wrappers\Event\Listener\StubGraphChangedListener.cs</Link>
+    </Compile>
+    <Compile Include="..\blueprints-core\Util\Wrappers\Event\Listener\VertexAddedEvent.cs">
+      <Link>Util\Wrappers\Event\Listener\VertexAddedEvent.cs</Link>
+    </Compile>
+    <Compile Include="..\blueprints-core\Util\Wrappers\Event\Listener\VertexPropertyChangedEvent.cs">
+      <Link>Util\Wrappers\Event\Listener\VertexPropertyChangedEvent.cs</Link>
+    </Compile>
+    <Compile Include="..\blueprints-core\Util\Wrappers\Event\Listener\VertexPropertyEvent.cs">
+      <Link>Util\Wrappers\Event\Listener\VertexPropertyEvent.cs</Link>
+    </Compile>
+    <Compile Include="..\blueprints-core\Util\Wrappers\Event\Listener\VertexPropertyEventContract.cs">
+      <Link>Util\Wrappers\Event\Listener\VertexPropertyEventContract.cs</Link>
+    </Compile>
+    <Compile Include="..\blueprints-core\Util\Wrappers\Event\Listener\VertexPropertyRemovedEvent.cs">
+      <Link>Util\Wrappers\Event\Listener\VertexPropertyRemovedEvent.cs</Link>
+    </Compile>
+    <Compile Include="..\blueprints-core\Util\Wrappers\Event\Listener\VertexRemovedEvent.cs">
+      <Link>Util\Wrappers\Event\Listener\VertexRemovedEvent.cs</Link>
+    </Compile>
+    <Compile Include="..\blueprints-core\Util\Wrappers\Id\IdEdge.cs">
+      <Link>Util\Wrappers\Id\IdEdge.cs</Link>
+    </Compile>
+    <Compile Include="..\blueprints-core\Util\Wrappers\Id\IdEdgeIndex.cs">
+      <Link>Util\Wrappers\Id\IdEdgeIndex.cs</Link>
+    </Compile>
+    <Compile Include="..\blueprints-core\Util\Wrappers\Id\IdEdgeIterable.cs">
+      <Link>Util\Wrappers\Id\IdEdgeIterable.cs</Link>
+    </Compile>
+    <Compile Include="..\blueprints-core\Util\Wrappers\Id\IdElement.cs">
+      <Link>Util\Wrappers\Id\IdElement.cs</Link>
+    </Compile>
+    <Compile Include="..\blueprints-core\Util\Wrappers\Id\IdGraph.cs">
+      <Link>Util\Wrappers\Id\IdGraph.cs</Link>
+    </Compile>
+    <Compile Include="..\blueprints-core\Util\Wrappers\Id\IdVertex.cs">
+      <Link>Util\Wrappers\Id\IdVertex.cs</Link>
+    </Compile>
+    <Compile Include="..\blueprints-core\Util\Wrappers\Id\IdVertexIndex.cs">
+      <Link>Util\Wrappers\Id\IdVertexIndex.cs</Link>
+    </Compile>
+    <Compile Include="..\blueprints-core\Util\Wrappers\Id\IdVertexIterable.cs">
+      <Link>Util\Wrappers\Id\IdVertexIterable.cs</Link>
+    </Compile>
+    <Compile Include="..\blueprints-core\Util\Wrappers\IWrapperGraph.cs">
+      <Link>Util\Wrappers\IWrapperGraph.cs</Link>
+    </Compile>
+    <Compile Include="..\blueprints-core\Util\Wrappers\Partition\PartitionEdge.cs">
+      <Link>Util\Wrappers\Partition\PartitionEdge.cs</Link>
+    </Compile>
+    <Compile Include="..\blueprints-core\Util\Wrappers\Partition\PartitionEdgeIterable.cs">
+      <Link>Util\Wrappers\Partition\PartitionEdgeIterable.cs</Link>
+    </Compile>
+    <Compile Include="..\blueprints-core\Util\Wrappers\Partition\PartitionElement.cs">
+      <Link>Util\Wrappers\Partition\PartitionElement.cs</Link>
+    </Compile>
+    <Compile Include="..\blueprints-core\Util\Wrappers\Partition\PartitionGraph.cs">
+      <Link>Util\Wrappers\Partition\PartitionGraph.cs</Link>
+    </Compile>
+    <Compile Include="..\blueprints-core\Util\Wrappers\Partition\PartitionIndex.cs">
+      <Link>Util\Wrappers\Partition\PartitionIndex.cs</Link>
+    </Compile>
+    <Compile Include="..\blueprints-core\Util\Wrappers\Partition\PartitionIndexableGraph.cs">
+      <Link>Util\Wrappers\Partition\PartitionIndexableGraph.cs</Link>
+    </Compile>
+    <Compile Include="..\blueprints-core\Util\Wrappers\Partition\PartitionIndexIterable.cs">
+      <Link>Util\Wrappers\Partition\PartitionIndexIterable.cs</Link>
+    </Compile>
+    <Compile Include="..\blueprints-core\Util\Wrappers\Partition\PartitionVertex.cs">
+      <Link>Util\Wrappers\Partition\PartitionVertex.cs</Link>
+    </Compile>
+    <Compile Include="..\blueprints-core\Util\Wrappers\Partition\PartitionVertexIterable.cs">
+      <Link>Util\Wrappers\Partition\PartitionVertexIterable.cs</Link>
+    </Compile>
+    <Compile Include="..\blueprints-core\Util\Wrappers\ReadOnly\ReadOnlyEdge.cs">
+      <Link>Util\Wrappers\ReadOnly\ReadOnlyEdge.cs</Link>
+    </Compile>
+    <Compile Include="..\blueprints-core\Util\Wrappers\ReadOnly\ReadOnlyEdgeIterable.cs">
+      <Link>Util\Wrappers\ReadOnly\ReadOnlyEdgeIterable.cs</Link>
+    </Compile>
+    <Compile Include="..\blueprints-core\Util\Wrappers\ReadOnly\ReadOnlyElement.cs">
+      <Link>Util\Wrappers\ReadOnly\ReadOnlyElement.cs</Link>
+    </Compile>
+    <Compile Include="..\blueprints-core\Util\Wrappers\ReadOnly\ReadOnlyGraph.cs">
+      <Link>Util\Wrappers\ReadOnly\ReadOnlyGraph.cs</Link>
+    </Compile>
+    <Compile Include="..\blueprints-core\Util\Wrappers\ReadOnly\ReadOnlyIndex.cs">
+      <Link>Util\Wrappers\ReadOnly\ReadOnlyIndex.cs</Link>
+    </Compile>
+    <Compile Include="..\blueprints-core\Util\Wrappers\ReadOnly\ReadOnlyIndexableGraph.cs">
+      <Link>Util\Wrappers\ReadOnly\ReadOnlyIndexableGraph.cs</Link>
+    </Compile>
+    <Compile Include="..\blueprints-core\Util\Wrappers\ReadOnly\ReadOnlyIndexIterable.cs">
+      <Link>Util\Wrappers\ReadOnly\ReadOnlyIndexIterable.cs</Link>
+    </Compile>
+    <Compile Include="..\blueprints-core\Util\Wrappers\ReadOnly\ReadOnlyKeyIndexableGraph.cs">
+      <Link>Util\Wrappers\ReadOnly\ReadOnlyKeyIndexableGraph.cs</Link>
+    </Compile>
+    <Compile Include="..\blueprints-core\Util\Wrappers\ReadOnly\ReadOnlyTokens.cs">
+      <Link>Util\Wrappers\ReadOnly\ReadOnlyTokens.cs</Link>
+    </Compile>
+    <Compile Include="..\blueprints-core\Util\Wrappers\ReadOnly\ReadOnlyVertex.cs">
+      <Link>Util\Wrappers\ReadOnly\ReadOnlyVertex.cs</Link>
+    </Compile>
+    <Compile Include="..\blueprints-core\Util\Wrappers\ReadOnly\ReadOnlyVertexIterable.cs">
+      <Link>Util\Wrappers\ReadOnly\ReadOnlyVertexIterable.cs</Link>
+    </Compile>
+    <Compile Include="..\blueprints-core\Util\Wrappers\WrappedQuery.cs">
+      <Link>Util\Wrappers\WrappedQuery.cs</Link>
+    </Compile>
+    <Compile Include="..\blueprints-core\Util\Wrappers\Wrapped\WrappedEdge.cs">
+      <Link>Util\Wrappers\Wrapped\WrappedEdge.cs</Link>
+    </Compile>
+    <Compile Include="..\blueprints-core\Util\Wrappers\Wrapped\WrappedEdgeIterable.cs">
+      <Link>Util\Wrappers\Wrapped\WrappedEdgeIterable.cs</Link>
+    </Compile>
+    <Compile Include="..\blueprints-core\Util\Wrappers\Wrapped\WrappedElement.cs">
+      <Link>Util\Wrappers\Wrapped\WrappedElement.cs</Link>
+    </Compile>
+    <Compile Include="..\blueprints-core\Util\Wrappers\Wrapped\WrappedGraph.cs">
+      <Link>Util\Wrappers\Wrapped\WrappedGraph.cs</Link>
+    </Compile>
+    <Compile Include="..\blueprints-core\Util\Wrappers\Wrapped\WrappedIndex.cs">
+      <Link>Util\Wrappers\Wrapped\WrappedIndex.cs</Link>
+    </Compile>
+    <Compile Include="..\blueprints-core\Util\Wrappers\Wrapped\WrappedIndexableGraph.cs">
+      <Link>Util\Wrappers\Wrapped\WrappedIndexableGraph.cs</Link>
+    </Compile>
+    <Compile Include="..\blueprints-core\Util\Wrappers\Wrapped\WrappedIndexIterable.cs">
+      <Link>Util\Wrappers\Wrapped\WrappedIndexIterable.cs</Link>
+    </Compile>
+    <Compile Include="..\blueprints-core\Util\Wrappers\Wrapped\WrappedVertex.cs">
+      <Link>Util\Wrappers\Wrapped\WrappedVertex.cs</Link>
+    </Compile>
+    <Compile Include="..\blueprints-core\Util\Wrappers\Wrapped\WrappedVertexIterable.cs">
+      <Link>Util\Wrappers\Wrapped\WrappedVertexIterable.cs</Link>
+    </Compile>
+    <Compile Include="..\blueprints-core\Util\Wrappers\WrapperGraphContract.cs">
+      <Link>Util\Wrappers\WrapperGraphContract.cs</Link>
+    </Compile>
+    <Compile Include="..\blueprints-core\Util\Wrappers\WrapperVertexQuery.cs">
+      <Link>Util\Wrappers\WrapperVertexQuery.cs</Link>
+    </Compile>
+    <Compile Include="..\blueprints-core\Util\WrappingCloseableIterable.cs">
+      <Link>Util\WrappingCloseableIterable.cs</Link>
+    </Compile>
+    <Compile Include="Properties\AssemblyInfo.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Fody.targets" />
+    <None Include="key.snk" />
+    <None Include="packages.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="FodyWeavers.xml" />
+  </ItemGroup>
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <Import Project="$(SolutionDir)\.nuget\NuGet.targets" Condition="Exists('$(SolutionDir)\.nuget\NuGet.targets')" />
+  <Import Project="Fody.targets" />
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
+  -->
+</Project>
