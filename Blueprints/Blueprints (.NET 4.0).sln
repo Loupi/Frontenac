@@ -1,0 +1,26 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 2012
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "blueprints-core (.NET 4.0)", "blueprints-core (.NET 4.0)\blueprints-core (.NET 4.0).csproj", "{30495F9B-5231-477B-B8AD-6D42E1E24D39}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug (.NET 4.0 Client)|Any CPU = Debug (.NET 4.0 Client)|Any CPU
+		Debug|Any CPU = Debug|Any CPU
+		Release (.NET 4.0 Client)|Any CPU = Release (.NET 4.0 Client)|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{30495F9B-5231-477B-B8AD-6D42E1E24D39}.Debug (.NET 4.0 Client)|Any CPU.ActiveCfg = Debug (.NET 4.0 Client)|Any CPU
+		{30495F9B-5231-477B-B8AD-6D42E1E24D39}.Debug (.NET 4.0 Client)|Any CPU.Build.0 = Debug (.NET 4.0 Client)|Any CPU
+		{30495F9B-5231-477B-B8AD-6D42E1E24D39}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{30495F9B-5231-477B-B8AD-6D42E1E24D39}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{30495F9B-5231-477B-B8AD-6D42E1E24D39}.Release (.NET 4.0 Client)|Any CPU.ActiveCfg = Release (.NET 4.0 Client)|Any CPU
+		{30495F9B-5231-477B-B8AD-6D42E1E24D39}.Release (.NET 4.0 Client)|Any CPU.Build.0 = Release (.NET 4.0 Client)|Any CPU
+		{30495F9B-5231-477B-B8AD-6D42E1E24D39}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{30495F9B-5231-477B-B8AD-6D42E1E24D39}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+EndGlobal
