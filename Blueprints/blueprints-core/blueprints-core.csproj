@@ -303,4 +303,5 @@
   </Target>
   -->
   <Import Project="Fody.targets" />
+  <Import Project="..\packages\GitFlowVersionTask.0.11.0\Build\GitFlowVersionTask.targets" Condition="Exists('..\packages\GitFlowVersionTask.0.11.0\Build\GitFlowVersionTask.targets')" />
 </Project>
