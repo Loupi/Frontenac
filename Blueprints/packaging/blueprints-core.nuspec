@@ -15,11 +15,11 @@
 		</references>
 	</metadata>
 	<files>
-		<file src="..\blueprints-core (.NET 4.0)\bin\Release\net40\Frontenac.Blueprints.dll" target="lib\net40\Frontenac.Blueprints.dll" />
-		<file src="..\blueprints-core (.NET 4.0)\bin\Release\net40\CodeContracts\Frontenac.Blueprints.Contracts.dll" target="lib\net40\CodeContracts\Frontenac.Blueprints.Contracts.dll" />
+		<file src="..\blueprints-core-.NET4.0\bin\Release\net40\Frontenac.Blueprints.dll" target="lib\net40\Frontenac.Blueprints.dll" />
+		<file src="..\blueprints-core-.NET4.0\bin\Release\net40\CodeContracts\Frontenac.Blueprints.Contracts.dll" target="lib\net40\CodeContracts\Frontenac.Blueprints.Contracts.dll" />
 		
-		<file src="..\blueprints-core (.NET 4.0)\bin\Release\net40-client\Frontenac.Blueprints.dll" target="lib\net40-client\Frontenac.Blueprints.dll" />
-		<file src="..\blueprints-core (.NET 4.0)\bin\Release\net40-client\CodeContracts\Frontenac.Blueprints.Contracts.dll" target="lib\net40-client\CodeContracts\Frontenac.Blueprints.Contracts.dll" />
+		<file src="..\blueprints-core-.NET4.0\bin\Release\net40-client\Frontenac.Blueprints.dll" target="lib\net40-client\Frontenac.Blueprints.dll" />
+		<file src="..\blueprints-core-.NET4.0\bin\Release\net40-client\CodeContracts\Frontenac.Blueprints.Contracts.dll" target="lib\net40-client\CodeContracts\Frontenac.Blueprints.Contracts.dll" />
 
 		<file src="..\blueprints-core\bin\Release\net45\Frontenac.Blueprints.dll" target="lib\net45\Frontenac.Blueprints.dll" />
 		<file src="..\blueprints-core\bin\Release\net45\CodeContracts\Frontenac.Blueprints.Contracts.dll" target="lib\net45\CodeContracts\Frontenac.Blueprints.Contracts.dll" />
