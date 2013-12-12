@@ -341,20 +341,20 @@
     <Compile Include="..\blueprints-core\Util\DefaultVertexQuery.cs">
       <Link>Util\DefaultVertexQuery.cs</Link>
     </Compile>
-    <Compile Include="..\blueprints-core\Util\EdgeHelper.cs">
-      <Link>Util\EdgeHelper.cs</Link>
+    <Compile Include="..\blueprints-core\Util\EdgeHelpers.cs">
+      <Link>Util\EdgeHelpers.cs</Link>
     </Compile>
-    <Compile Include="..\blueprints-core\Util\ElementHelper.cs">
-      <Link>Util\ElementHelper.cs</Link>
+    <Compile Include="..\blueprints-core\Util\ElementHelpers.cs">
+      <Link>Util\ElementHelpers.cs</Link>
     </Compile>
     <Compile Include="..\blueprints-core\Util\ExceptionFactory.cs">
       <Link>Util\ExceptionFactory.cs</Link>
     </Compile>
-    <Compile Include="..\blueprints-core\Util\GraphHelper.cs">
-      <Link>Util\GraphHelper.cs</Link>
+    <Compile Include="..\blueprints-core\Util\GraphHelpers.cs">
+      <Link>Util\GraphHelpers.cs</Link>
     </Compile>
-    <Compile Include="..\blueprints-core\Util\IndexableGraphHelper.cs">
-      <Link>Util\IndexableGraphHelper.cs</Link>
+    <Compile Include="..\blueprints-core\Util\IndexableGraphHelpers.cs">
+      <Link>Util\IndexableGraphHelpers.cs</Link>
     </Compile>
     <Compile Include="..\blueprints-core\Util\IO\GML\GmlParser.cs">
       <Link>Util\IO\GML\GmlParser.cs</Link>
@@ -413,8 +413,8 @@
     <Compile Include="..\blueprints-core\Util\IO\StreamTokenizer.cs">
       <Link>Util\IO\StreamTokenizer.cs</Link>
     </Compile>
-    <Compile Include="..\blueprints-core\Util\KeyIndexableGraphHelper.cs">
-      <Link>Util\KeyIndexableGraphHelper.cs</Link>
+    <Compile Include="..\blueprints-core\Util\KeyIndexableGraphHelpers.cs">
+      <Link>Util\KeyIndexableGraphHelpers.cs</Link>
     </Compile>
     <Compile Include="..\blueprints-core\Util\MultiIterable.cs">
       <Link>Util\MultiIterable.cs</Link>
@@ -425,8 +425,8 @@
     <Compile Include="..\blueprints-core\Util\StringFactory.cs">
       <Link>Util\StringFactory.cs</Link>
     </Compile>
-    <Compile Include="..\blueprints-core\Util\VertexHelper.cs">
-      <Link>Util\VertexHelper.cs</Link>
+    <Compile Include="..\blueprints-core\Util\VertexHelpers.cs">
+      <Link>Util\VertexHelpers.cs</Link>
     </Compile>
     <Compile Include="..\blueprints-core\Util\VerticesFromEdgesIterable.cs">
       <Link>Util\VerticesFromEdgesIterable.cs</Link>
