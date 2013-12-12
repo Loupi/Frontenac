@@ -80,7 +80,7 @@ namespace Grave
 
         public override bool Equals(object obj)
         {
-            return ElementHelper.AreEqual(this, obj);
+            return this.AreEqual(obj);
         }
     }
 }

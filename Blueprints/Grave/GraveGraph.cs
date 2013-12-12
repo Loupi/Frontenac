@@ -248,9 +248,9 @@ namespace Grave
             indices.CreateIndex(key);
 
             if (elementClass == typeof (IVertex))
-                KeyIndexableGraphHelper.ReIndexElements(this, GetVertices(), new HashSet<string>(new[] {key}));
+                this.ReIndexElements(GetVertices(), new HashSet<string>(new[] {key}));
             else
-                KeyIndexableGraphHelper.ReIndexElements(this, GetEdges(), new HashSet<string>(new[] {key}));
+                this.ReIndexElements(GetEdges(), new HashSet<string>(new[] {key}));
         }
 
         public virtual IEnumerable<string> GetIndexedKeys(Type elementClass)
@@ -354,10 +354,9 @@ namespace Grave
 
         public override string ToString()
         {
-            return StringFactory.GraphString(this,
-                                             string.Format("vertices: {0} Edges: {1}",
-                                                           Context.VertexTable.GetApproximateRecordCount(15),
-                                                           Context.EdgesTable.GetApproximateRecordCount(15)));
+            return this.GraphString(string.Format("vertices: {0} Edges: {1}",
+                                           Context.VertexTable.GetApproximateRecordCount(15),
+                                           Context.EdgesTable.GetApproximateRecordCount(15)));
         }
     }
 }

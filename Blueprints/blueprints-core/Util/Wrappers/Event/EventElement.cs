@@ -129,7 +129,7 @@ namespace Frontenac.Blueprints.Util.Wrappers.Event
 
         public override bool Equals(object obj)
         {
-            return ElementHelper.AreEqual(this, obj);
+            return this.AreEqual(obj);
         }
 
         public IElement GetBaseElement()

@@ -99,37 +99,37 @@ namespace Grave
                     new KeyValuePair<string, object>("type", "location")
                 }, 0);
 
-            ElementHelper.SetProperties(sky, "name", "sky", "type", "location");
+            sky.SetProperties("name", "sky", "type", "location");
 
             var sea = graph.AddVertex(null);
-            ElementHelper.SetProperties(sea, "name", "sea", "type", "location");
+            sea.SetProperties("name", "sea", "type", "location");
 
             var jupiter = graph.AddVertex(null);
-            ElementHelper.SetProperties(jupiter, "name", "jupiter", "age", 5000, "type", "god");
+            jupiter.SetProperties("name", "jupiter", "age", 5000, "type", "god");
 
             var neptune = graph.AddVertex(null);
-            ElementHelper.SetProperties(neptune, "name", "neptune", "age", 4500, "type", "god");
+            neptune.SetProperties("name", "neptune", "age", 4500, "type", "god");
 
             var hercules = graph.AddVertex(null);
-            ElementHelper.SetProperties(hercules, "name", "hercules", "age", 30, "type", "demigod");
+            hercules.SetProperties("name", "hercules", "age", 30, "type", "demigod");
 
             var alcmene = graph.AddVertex(null);
-            ElementHelper.SetProperties(alcmene, "name", "alcmene", "age", 45, "type", "human");
+            alcmene.SetProperties("name", "alcmene", "age", 45, "type", "human");
 
             var pluto = graph.AddVertex(null);
-            ElementHelper.SetProperties(pluto, "name", "pluto", "age", 4000, "type", "god");
+            pluto.SetProperties("name", "pluto", "age", 4000, "type", "god");
 
             var nemean = graph.AddVertex(null);
-            ElementHelper.SetProperties(nemean, "name", "nemean", "type", "monster");
+            nemean.SetProperties("name", "nemean", "type", "monster");
 
             var hydra = graph.AddVertex(null);
-            ElementHelper.SetProperties(hydra, "name", "hydra", "type", "monster");
+            hydra.SetProperties("name", "hydra", "type", "monster");
 
             var cerberus = graph.AddVertex(null);
-            ElementHelper.SetProperties(cerberus, "name", "cerberus", "type", "monster");
+            cerberus.SetProperties("name", "cerberus", "type", "monster");
 
             var tartarus = graph.AddVertex(null);
-            ElementHelper.SetProperties(tartarus, "name", "tartarus", "type", "location");
+            tartarus.SetProperties("name", "tartarus", "type", "location");
 
             // edges
 
@@ -145,12 +145,9 @@ namespace Grave
             hercules.AddEdge("father", jupiter);
             hercules.AddEdge("mother", alcmene);
 
-            ElementHelper.SetProperties(hercules.AddEdge("battled", nemean), "time", 1, "place",
-                                        new GeoPoint(38.1, 23.7));
-            ElementHelper.SetProperties(hercules.AddEdge("battled", hydra), "time", 2, "place",
-                                        new GeoPoint(37.7, 23.9));
-            ElementHelper.SetProperties(hercules.AddEdge("battled", cerberus), "time", 12, "place",
-                                        new GeoPoint(39, 22));
+            hercules.AddEdge("battled", nemean).SetProperties("time", 1, "place", new GeoPoint(38.1, 23.7));
+            hercules.AddEdge("battled", hydra).SetProperties("time", 2, "place", new GeoPoint(37.7, 23.9));
+            hercules.AddEdge("battled", cerberus).SetProperties("time", 12, "place", new GeoPoint(39, 22));
 
             pluto.AddEdge("brother", jupiter);
             pluto.AddEdge("brother", neptune);

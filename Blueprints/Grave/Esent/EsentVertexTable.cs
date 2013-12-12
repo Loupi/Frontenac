@@ -39,7 +39,9 @@ namespace Grave.Esent
 
                     if (edgeId.HasValue && targetId.HasValue)
                     {
+// ReSharper disable RedundantCast
                         var key = ((((ulong) edgeId.Value) << 32)) | (ulong) (long) targetId.Value;
+// ReSharper restore RedundantCast
                         var data = BitConverter.GetBytes(key);
                         Api.JetSetColumn(Session, TableId, Columns[labelColumn], data, data.Length,
                                          SetColumnGrbit.UniqueMultiValues, setInfo);
@@ -93,7 +95,9 @@ namespace Grave.Esent
         {
             Contract.Requires(!string.IsNullOrWhiteSpace(edgeLabel));
 
+// ReSharper disable RedundantCast
             var key = ((((ulong) edgeId) << 32)) | (ulong) (long) targetId;
+// ReSharper restore RedundantCast
             Api.JetSetCurrentIndex(Session, TableId, string.Concat(edgeLabel, "Index"));
             Api.MakeKey(Session, TableId, key, MakeKeyGrbit.NewKey);
             return Api.TrySeek(Session, TableId, SeekGrbit.SeekEQ);

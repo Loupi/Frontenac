@@ -83,7 +83,7 @@ namespace Frontenac.Blueprints.Util.Wrappers.Id
 
         public override bool Equals(object obj)
         {
-            return ElementHelper.AreEqual(this, obj);
+            return this.AreEqual(obj);
         }
 
         public override string ToString()

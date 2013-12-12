@@ -15,15 +15,15 @@ namespace Frontenac.Blueprints.Util
             {
                 foreach (var u in graph.GetVertices())
                 {
-                    if (ElementHelper.AreEqual(v, u))
+                    if (v.AreEqual(u))
                     {
-                        Assert.True(VertexHelper.HaveEqualEdges(v, u, true));
-                        Assert.True(VertexHelper.HaveEqualEdges(v, u, false));
+                        Assert.True(v.HaveEqualEdges(u, true));
+                        Assert.True(v.HaveEqualEdges(u, false));
                     }
                     else
                     {
-                        Assert.False(VertexHelper.HaveEqualEdges(v, u, true));
-                        Assert.False(VertexHelper.HaveEqualEdges(v, u, false));
+                        Assert.False(v.HaveEqualEdges(u, true));
+                        Assert.False(v.HaveEqualEdges(u, false));
                     }
                 }
             }
@@ -38,15 +38,15 @@ namespace Frontenac.Blueprints.Util
             {
                 foreach (var u in graph.GetVertices())
                 {
-                    if (ElementHelper.AreEqual(v, u))
+                    if (v.AreEqual(u))
                     {
-                        Assert.True(VertexHelper.HaveEqualNeighborhood(v, u, true));
-                        Assert.True(VertexHelper.HaveEqualNeighborhood(v, u, false));
+                        Assert.True(v.HaveEqualNeighborhood(u, true));
+                        Assert.True(v.HaveEqualNeighborhood(u, false));
                     }
                     else
                     {
-                        Assert.False(VertexHelper.HaveEqualNeighborhood(v, u, true));
-                        Assert.False(VertexHelper.HaveEqualNeighborhood(v, u, false));
+                        Assert.False(v.HaveEqualNeighborhood(u, true));
+                        Assert.False(v.HaveEqualNeighborhood(u, false));
                     }
                 }
             }

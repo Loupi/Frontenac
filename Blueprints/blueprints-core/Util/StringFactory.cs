@@ -19,7 +19,7 @@ namespace Frontenac.Blueprints.Util
         public const string Label = "label";
         public const string EmptyString = "";
 
-        public static string VertexString(IVertex vertex)
+        public static string VertexString(this IVertex vertex)
         {
             Contract.Requires(vertex != null);
             Contract.Ensures(Contract.Result<string>() != null);
@@ -27,7 +27,7 @@ namespace Frontenac.Blueprints.Util
             return string.Concat(V, LBracket, vertex.Id, RBracket);
         }
 
-        public static string EdgeString(IEdge edge)
+        public static string EdgeString(this IEdge edge)
         {
             Contract.Requires(edge != null);
             Contract.Ensures(Contract.Result<string>() != null);
@@ -36,7 +36,7 @@ namespace Frontenac.Blueprints.Util
                                  Dash, edge.Label, Arrow, edge.GetVertex(Direction.In).Id, RBracket);
         }
 
-        public static string GraphString(IGraph graph, string internalString)
+        public static string GraphString(this IGraph graph, string internalString)
         {
             Contract.Requires(graph != null);
             Contract.Requires(!string.IsNullOrWhiteSpace(internalString));
@@ -45,7 +45,7 @@ namespace Frontenac.Blueprints.Util
             return string.Concat(graph.GetType().Name.ToLower(), LBracket, internalString, RBracket);
         }
 
-        public static string IndexString(IIndex index)
+        public static string IndexString(this IIndex index)
         {
             Contract.Requires(index != null);
             Contract.Ensures(Contract.Result<string>() != null);

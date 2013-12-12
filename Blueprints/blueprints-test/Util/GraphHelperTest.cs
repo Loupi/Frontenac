@@ -12,8 +12,7 @@ namespace Frontenac.Blueprints.Util
         public void TestAddEdge()
         {
             var graph = new TinkerGraph();
-            var edge = GraphHelper.AddEdge(graph, null, graph.AddVertex(null), graph.AddVertex(null), "knows", "weight",
-                                           10.0);
+            var edge = graph.AddEdge(null, graph.AddVertex(null), graph.AddVertex(null), "knows", "weight", 10.0);
             Assert.AreEqual(edge.GetProperty("weight"), 10.0);
             Assert.AreEqual(edge.Label, "knows");
             Assert.AreEqual(edge.GetPropertyKeys().Count(), 1);
@@ -22,7 +21,7 @@ namespace Frontenac.Blueprints.Util
 
             try
             {
-                GraphHelper.AddEdge(graph, null, graph.AddVertex(null), graph.AddVertex(null), "knows", "weight");
+                graph.AddEdge(null, graph.AddVertex(null), graph.AddVertex(null), "knows", "weight");
                 Assert.True(false);
             }
             catch (Exception)
@@ -37,7 +36,7 @@ namespace Frontenac.Blueprints.Util
         public void TestAddVertex()
         {
             var graph = new TinkerGraph();
-            var vertex = GraphHelper.AddVertex(graph, null, "name", "marko", "age", 31);
+            var vertex = graph.AddVertex(null, "name", "marko", "age", 31);
             Assert.AreEqual(vertex.GetProperty("name"), "marko");
             Assert.AreEqual(vertex.GetProperty("age"), 31);
             Assert.AreEqual(vertex.GetPropertyKeys().Count(), 2);
@@ -45,7 +44,7 @@ namespace Frontenac.Blueprints.Util
 
             try
             {
-                GraphHelper.AddVertex(graph, null, "name", "marko", "age");
+                graph.AddVertex(null, "name", "marko", "age");
                 Assert.True(false);
             }
             catch (Exception)
@@ -61,7 +60,7 @@ namespace Frontenac.Blueprints.Util
             var g = TinkerGraphFactory.CreateTinkerGraph();
             var h = new TinkerGraph();
 
-            GraphHelper.CopyGraph(g, h);
+            g.CopyGraph(h);
             Assert.AreEqual(Count(h.GetVertices()), 7);
             Assert.AreEqual(Count(h.GetEdges()), 6);
             Assert.AreEqual(Count(h.GetVertex("1").GetEdges(Direction.Out)), 3);

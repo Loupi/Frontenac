@@ -178,7 +178,7 @@ namespace Frontenac.Blueprints.Util.Wrappers.Partition
 
         public override string ToString()
         {
-            return StringFactory.GraphString(this, BaseGraph.ToString());
+            return this.GraphString(BaseGraph.ToString());
         }
     }
 }

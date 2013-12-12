@@ -67,7 +67,7 @@ namespace Frontenac.Blueprints.Util.Wrappers.Event
 
         public override string ToString()
         {
-            return StringFactory.IndexString(this);
+            return this.IndexString();
         }
     }
 }

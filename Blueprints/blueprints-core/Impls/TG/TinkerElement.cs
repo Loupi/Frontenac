@@ -33,7 +33,7 @@ namespace Frontenac.Blueprints.Impls.TG
 
         public override void SetProperty(string key, object value)
         {
-            ElementHelper.ValidateProperty(this, key, value);
+            this.ValidateProperty(key, value);
             var oldValue = Properties.Put(key, value);
             if (this is TinkerVertex)
                 Graph.VertexKeyIndex.AutoUpdate(key, value, oldValue, this);
@@ -73,7 +73,7 @@ namespace Frontenac.Blueprints.Impls.TG
 
         public override bool Equals(object obj)
         {
-            return ElementHelper.AreEqual(this, obj);
+            return this.AreEqual(obj);
         }
     }
 }

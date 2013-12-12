@@ -43,7 +43,7 @@ namespace Frontenac.Blueprints.Util.Wrappers.Id
 
         public override string ToString()
         {
-            return StringFactory.VertexString(this);
+            return this.VertexString();
         }
     }
 }

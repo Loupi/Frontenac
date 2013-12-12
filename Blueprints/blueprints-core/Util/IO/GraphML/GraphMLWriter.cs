@@ -156,7 +156,9 @@ namespace Frontenac.Blueprints.Util.IO.GraphML
 
                 //XML Schema location
                 writer.WriteAttributeString(GraphMlTokens.XmlSchemaNamespaceTag,
+// ReSharper disable AssignNullToNotNullAttribute
                                             GraphMlTokens.XmlSchemaLocationAttribute, null,
+// ReSharper restore AssignNullToNotNullAttribute
                                             string.Concat(GraphMlTokens.GraphmlXmlns, " ",
                                                           _xmlSchemaLocation ??
                                                           GraphMlTokens.DefaultGraphmlSchemaLocation));

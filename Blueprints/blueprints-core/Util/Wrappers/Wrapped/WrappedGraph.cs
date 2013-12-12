@@ -99,7 +99,7 @@ namespace Frontenac.Blueprints.Util.Wrappers.Wrapped
 
         public override string ToString()
         {
-            return StringFactory.GraphString(this, BaseGraph.ToString());
+            return this.GraphString(BaseGraph.ToString());
         }
     }
 }

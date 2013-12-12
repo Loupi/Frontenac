@@ -31,7 +31,7 @@ namespace Frontenac.Blueprints.Util.Wrappers.Id
 
         public override string ToString()
         {
-            return StringFactory.EdgeString(this);
+            return this.EdgeString();
         }
     }
 }

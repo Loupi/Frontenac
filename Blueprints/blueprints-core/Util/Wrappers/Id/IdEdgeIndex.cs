@@ -58,7 +58,7 @@ namespace Frontenac.Blueprints.Util.Wrappers.Id
 
         public override string ToString()
         {
-            return StringFactory.IndexString(this);
+            return this.IndexString();
         }
 
         private static IEdge GetBaseElement(IElement e)

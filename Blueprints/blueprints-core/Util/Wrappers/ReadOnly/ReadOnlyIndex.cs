@@ -56,7 +56,7 @@ namespace Frontenac.Blueprints.Util.Wrappers.ReadOnly
 
         public override string ToString()
         {
-            return StringFactory.IndexString(this);
+            return this.IndexString();
         }
     }
 }

@@ -37,7 +37,7 @@ namespace Frontenac.Blueprints.Impls.TG
 
         public override string ToString()
         {
-            return StringFactory.EdgeString(this);
+            return this.EdgeString();
         }
     }
 }

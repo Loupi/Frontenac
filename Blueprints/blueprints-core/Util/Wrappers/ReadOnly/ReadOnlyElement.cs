@@ -58,7 +58,7 @@ namespace Frontenac.Blueprints.Util.Wrappers.ReadOnly
 
         public override bool Equals(object obj)
         {
-            return ElementHelper.AreEqual(this, obj);
+            return this.AreEqual(obj);
         }
     }
 }

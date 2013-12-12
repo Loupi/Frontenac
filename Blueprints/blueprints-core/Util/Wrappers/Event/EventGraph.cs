@@ -90,7 +90,7 @@ namespace Frontenac.Blueprints.Util.Wrappers.Event
             if (vertex is EventVertex)
                 vertexToRemove = (vertex as EventVertex).GetBaseVertex();
 
-            var props = ElementHelper.GetProperties(vertex);
+            var props = vertex.GetProperties();
             BaseGraph.RemoveVertex(vertexToRemove);
             OnVertexRemoved(vertex, props);
         }
@@ -140,7 +140,7 @@ namespace Frontenac.Blueprints.Util.Wrappers.Event
             if (edge is EventEdge)
                 edgeToRemove = (edge as EventEdge).GetBaseEdge();
 
-            var props = ElementHelper.GetProperties(edge);
+            var props = edge.GetProperties();
             BaseGraph.RemoveEdge(edgeToRemove);
             OnEdgeRemoved(edge, props);
         }
@@ -246,7 +246,7 @@ namespace Frontenac.Blueprints.Util.Wrappers.Event
 
         public override string ToString()
         {
-            return StringFactory.GraphString(this, BaseGraph.ToString());
+            return this.GraphString(BaseGraph.ToString());
         }
     }
 }

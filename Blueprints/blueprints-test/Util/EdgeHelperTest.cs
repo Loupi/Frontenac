@@ -10,7 +10,7 @@ namespace Frontenac.Blueprints.Util
         public void TestRelabelEdge()
         {
             var graph = TinkerGraphFactory.CreateTinkerGraph();
-            EdgeHelper.RelabelEdge(graph, graph.GetEdge(7), "1234", "use_to_know");
+            graph.GetEdge(7).RelabelEdge(graph, "1234", "use_to_know");
             Assert.AreEqual(7, Count(graph.GetVertices()));
             Assert.AreEqual(6, Count(graph.GetEdges()));
             var counter = 0;
@@ -54,7 +54,7 @@ namespace Frontenac.Blueprints.Util
         public void TestRelabelEdges()
         {
             var graph = TinkerGraphFactory.CreateTinkerGraph();
-            EdgeHelper.RelabelEdges(graph, new[] {graph.GetEdge(7)}, "use_to_know");
+            new[] { graph.GetEdge(7) }.RelabelEdges(graph, "use_to_know");
             Assert.AreEqual(Count(graph.GetVertices()), 7);
             Assert.AreEqual(Count(graph.GetEdges()), 6);
             var counter = 0;

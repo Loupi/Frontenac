@@ -297,16 +297,15 @@ namespace Frontenac.Blueprints.Impls.TG
         {
             foreach (var v in src.GetVertices())
             {
-                ElementHelper.CopyProperties(v, dst.AddVertex(v.Id));
+                v.CopyProperties(dst.AddVertex(v.Id));
             }
 
             foreach (var e in src.GetEdges())
             {
-                ElementHelper.CopyProperties(e,
-                                             dst.AddEdge(e.Id,
-                                                         dst.GetVertex(e.GetVertex(Direction.Out).Id),
-                                                         dst.GetVertex(e.GetVertex(Direction.In).Id),
-                                                         e.Label));
+                e.CopyProperties(dst.AddEdge(e.Id,
+                                   dst.GetVertex(e.GetVertex(Direction.Out).Id),
+                                   dst.GetVertex(e.GetVertex(Direction.In).Id),
+                                   e.Label));
             }
         }
 
@@ -320,8 +319,8 @@ namespace Frontenac.Blueprints.Impls.TG
                 CompareEdgeCounts(v1, v2, Direction.Out);
                 CompareEdgeCounts(v1, v2, Direction.Both);
 
-                Assert.True(ElementHelper.HaveEqualProperties(v1, v2));
-                Assert.True(ElementHelper.AreEqual(v1, v2));
+                Assert.True(v1.HaveEqualProperties(v2));
+                Assert.True(v1.AreEqual(v2));
             }
 
             foreach (var e1 in g1.GetEdges())
@@ -360,10 +359,10 @@ namespace Frontenac.Blueprints.Impls.TG
                 }
                 else
                 {
-                    Assert.True(ElementHelper.HaveEqualProperties(e1, e2));
+                    Assert.True(e1.HaveEqualProperties(e2));
                 }
 
-                Assert.True(ElementHelper.AreEqual(e1, e2));
+                Assert.True(e1.AreEqual(e2));
             }
 
             var idxAge = g2.GetIndex("age", typeof (IVertex));

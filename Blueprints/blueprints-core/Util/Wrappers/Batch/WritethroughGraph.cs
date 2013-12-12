@@ -116,7 +116,7 @@ namespace Frontenac.Blueprints.Util.Wrappers.Batch
 
         public override string ToString()
         {
-            return StringFactory.GraphString(this, _graph.ToString());
+            return this.GraphString(_graph.ToString());
         }
     }
 }

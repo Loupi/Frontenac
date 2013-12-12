@@ -76,7 +76,7 @@ namespace Frontenac.Blueprints.Impls.TG
 
         public override string ToString()
         {
-            return StringFactory.VertexString(this);
+            return this.VertexString();
         }
 
         public void AddOutEdge(string label, IEdge edge)

@@ -327,20 +327,16 @@ namespace Frontenac.Blueprints.Impls.TG
         public override string ToString()
         {
             if (null == _directory)
-                return StringFactory.GraphString(this,
-                                                 string.Concat("vertices:",
-                                                               InnerVertices.LongCount()
-                                                                            .ToString(CultureInfo.InvariantCulture),
-                                                               " edges:",
-                                                               Edges.LongCount().ToString(CultureInfo.InvariantCulture)));
+                return this.GraphString(string.Concat("vertices:",
+                                               InnerVertices.LongCount().ToString(CultureInfo.InvariantCulture),
+                                               " edges:",
+                                               Edges.LongCount().ToString(CultureInfo.InvariantCulture)));
 
-            return StringFactory.GraphString(this,
-                                             string.Concat("vertices:",
-                                                           InnerVertices.LongCount()
-                                                                        .ToString(CultureInfo.InvariantCulture),
-                                                           " edges:",
-                                                           Edges.LongCount().ToString(CultureInfo.InvariantCulture),
-                                                           " directory:", _directory));
+            return this.GraphString(string.Concat("vertices:",
+                                           InnerVertices.LongCount().ToString(CultureInfo.InvariantCulture),
+                                           " edges:",
+                                           Edges.LongCount().ToString(CultureInfo.InvariantCulture),
+                                           " directory:", _directory));
         }
 
         public void Clear()
@@ -412,10 +408,9 @@ namespace Frontenac.Blueprints.Impls.TG
                 _indexedKeys.Add(key);
 
                 if (typeof (TinkerVertex) == IndexClass)
-                    KeyIndexableGraphHelper.ReIndexElements(_graph, _graph.GetVertices(),
-                                                            new HashSet<string>(new[] {key}));
+                    _graph.ReIndexElements(_graph.GetVertices(), new HashSet<string>(new[] {key}));
                 else
-                    KeyIndexableGraphHelper.ReIndexElements(_graph, _graph.GetEdges(), new HashSet<string>(new[] {key}));
+                    _graph.ReIndexElements(_graph.GetEdges(), new HashSet<string>(new[] {key}));
             }
 
             public void DropKeyIndex(string key)

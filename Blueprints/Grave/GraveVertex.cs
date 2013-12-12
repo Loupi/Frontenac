@@ -85,7 +85,7 @@ namespace Grave
 
         public override string ToString()
         {
-            return StringFactory.VertexString(this);
+            return this.VertexString();
         }
     }
 }

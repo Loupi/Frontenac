@@ -398,7 +398,7 @@ namespace Frontenac.Blueprints.Util.Wrappers.Batch
 
         public override string ToString()
         {
-            return StringFactory.GraphString(this, _baseGraph.ToString());
+            return this.GraphString(_baseGraph.ToString());
         }
 
         private static InvalidOperationException RetrievalNotSupported()
