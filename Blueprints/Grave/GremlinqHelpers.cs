@@ -32,10 +32,10 @@ namespace Grave
             return g.GetVertices(propertyName, value);
         }
 
-        public static IEnumerable<IElementWrapper<IVertex, TModel>> V<TModel, TValue>(this IGraph g,
+        public static IEnumerable<IElementWrapper<IVertex, TModel>> V<TModel, TValue>(this IGraph graph,
                                                 Expression<Func<TModel, TValue>> propertySelector, TValue value)
         {
-            return g.GetVertices(ResolvePropertyName(propertySelector), value).As<TModel>();
+            return graph.GetVertices(ResolvePropertyName(propertySelector), value).As<TModel>();
         }
 
         public static IDictionary<string, object> Map(this IElement e)
