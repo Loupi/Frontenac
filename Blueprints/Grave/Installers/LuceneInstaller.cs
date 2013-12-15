@@ -21,11 +21,10 @@ namespace Grave.Installers
                          .ImplementedBy<ObjectIndexer>()
                          .LifestyleTransient()
                          .DependsOn(Dependency.OnValue("maxDepth", Settings.Default.ObjectIndexerMaxDepth)),
-                Component.For<Indexer>()
-                         .ImplementedBy<TestIndexer>()
-                         .LifestyleTransient(),
+
                 Component.For<IIndexerFactory>()
                          .AsFactory(),
+
                 Component.For<FSDirectory>()
                          .UsingFactoryMethod(t =>
                              {
@@ -33,8 +32,10 @@ namespace Grave.Installers
                                                          Settings.Default.IndexPath);
                                  return LuceneIndexingService.CreateMMapDirectory(path);
                              }),
+
                 Component.For<LuceneIndexingServiceParameters>()
                          .Instance(LuceneIndexingServiceParameters.Default),
+
                 Component.For<IndexingService>()
                          .ImplementedBy<LuceneIndexingService>()
                 );

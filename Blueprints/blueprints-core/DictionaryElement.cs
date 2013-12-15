@@ -15,6 +15,17 @@ namespace Frontenac.Blueprints
                 .GetEnumerator();
         }
 
+        public void Remove(object key)
+        {
+            RemoveProperty(key.ToString());
+        }
+
+        object IDictionary.this[object key]
+        {
+            get { return this[key.ToString()]; }
+            set { this[key.ToString()] = value; }
+        }
+
         IEnumerator IEnumerable.GetEnumerator()
         {
             return GetEnumerator();
@@ -25,10 +36,81 @@ namespace Frontenac.Blueprints
             SetProperty(item.Key, item.Value);
         }
 
+        public bool Contains(object key)
+        {
+            return ContainsKey(key.ToString());
+        }
+
+        public virtual void Add(object key, object value)
+        {
+            Add(new KeyValuePair<string, object>(key.ToString(), value));
+        }
+
         public virtual void Clear()
         {
             foreach (var property in GetPropertyKeys())
                 RemoveProperty(property);
+        }
+
+        struct DictionaryEnumerator : IDictionaryEnumerator
+        {
+            readonly IEnumerator<KeyValuePair<string, object>> _en;
+
+            public DictionaryEnumerator(IEnumerator<KeyValuePair<string, object>> en)
+            {
+                _en = en;
+            }
+
+            public object Current
+            {
+                get
+                {
+                    return Entry;
+                }
+            }
+
+            public DictionaryEntry Entry
+            {
+                get
+                {
+                    var kvp = _en.Current;
+                    return new DictionaryEntry(kvp.Key, kvp.Value);
+                }
+            }
+
+            public bool MoveNext()
+            {
+                var result = _en.MoveNext();
+                return result;
+            }
+
+            public void Reset()
+            {
+                throw new NotSupportedException();
+            }
+
+            public object Key
+            {
+                get
+                {
+                    var kvp = _en.Current;
+                    return kvp.Key;
+                }
+            }
+
+            public object Value
+            {
+                get
+                {
+                    var kvp = _en.Current;
+                    return kvp.Value;
+                }
+            }
+        }
+
+        IDictionaryEnumerator IDictionary.GetEnumerator()
+        {
+            return new DictionaryEnumerator(GetEnumerator());
         }
 
         public bool Contains(KeyValuePair<string, object> item)
@@ -38,9 +120,11 @@ namespace Frontenac.Blueprints
 
         public virtual void CopyTo(KeyValuePair<string, object>[] array, int arrayIndex)
         {
-            foreach (var item in array)
+            foreach (var key in GetPropertyKeys())
             {
-                SetProperty(item.Key, item.Value);
+                if (arrayIndex >= array.Length) break;
+                array.SetValue(new KeyValuePair<string, object>(key, GetProperty(key)), arrayIndex);
+                arrayIndex++;
             }
         }
 
@@ -52,12 +136,35 @@ namespace Frontenac.Blueprints
             return result;
         }
 
+        public void CopyTo(Array array, int index)
+        {
+            foreach (var key in GetPropertyKeys())
+            {
+                if (index >= array.Length) break;
+                array.SetValue(new DictionaryEntry(key, GetProperty(key)), index);
+                index++;
+            }
+        }
+
         public virtual int Count
         {
             get { return GetPropertyKeys().Count(); }
         }
 
-        public bool IsReadOnly { get; protected set; }
+        public virtual object SyncRoot 
+        {
+            get { return this; }
+        }
+
+        public virtual bool IsSynchronized { get; protected set; }
+
+        ICollection IDictionary.Values
+        {
+            get { return GetPropertyKeys().Select(GetProperty).ToList(); }
+        }
+
+        public virtual bool IsReadOnly { get; protected set; }
+        public virtual bool IsFixedSize { get; protected set; }
 
         public virtual bool ContainsKey(string key)
         {
@@ -91,6 +198,11 @@ namespace Frontenac.Blueprints
         }
 
         public virtual ICollection<string> Keys
+        {
+            get { return GetPropertyKeys().ToList(); }
+        }
+
+        ICollection IDictionary.Keys
         {
             get { return GetPropertyKeys().ToList(); }
         }

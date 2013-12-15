@@ -34,7 +34,7 @@ namespace Grave.Indexing.Lucene
             else if (value is string)
             {
                 var val = value.ToString();
-                _document.Add(new Field(key, val, Field.Store.NO, Field.Index.ANALYZED));
+                _document.Add(new Field(key, val, Field.Store.NO, Field.Index.ANALYZED_NO_NORMS));
             }
             else if (value is sbyte || value is byte || value is short || value is ushort || value is int ||
                      value is uint)

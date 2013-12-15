@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics.Contracts;
+using System.Linq;
 using Frontenac.Blueprints.Util;
 
 namespace Frontenac.Blueprints.Impls.TG
@@ -23,7 +24,7 @@ namespace Frontenac.Blueprints.Impls.TG
 
         public override IEnumerable<string> GetPropertyKeys()
         {
-            return new HashSet<string>(Properties.Keys);
+            return Properties.Keys.ToArray();
         }
 
         public override object GetProperty(string key)

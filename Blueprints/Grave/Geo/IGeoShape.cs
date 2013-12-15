@@ -1,6 +1,6 @@
 ﻿namespace Grave.Geo
 {
-    interface IGeoShape
+    public interface IGeoShape
     {
     }
 }

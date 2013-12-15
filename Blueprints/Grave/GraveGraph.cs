@@ -248,9 +248,9 @@ namespace Grave
             indices.CreateIndex(key);
 
             if (elementClass == typeof (IVertex))
-                this.ReIndexElements(GetVertices(), new HashSet<string>(new[] {key}));
+                this.ReIndexElements(GetVertices(), new[] {key});
             else
-                this.ReIndexElements(GetEdges(), new HashSet<string>(new[] {key}));
+                this.ReIndexElements(GetEdges(), new[] {key});
         }
 
         public virtual IEnumerable<string> GetIndexedKeys(Type elementClass)

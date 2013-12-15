@@ -1,7 +1,6 @@
-﻿using System.Collections.Generic;
-using System.Linq;
+﻿using System.Linq;
 using Frontenac.Blueprints;
-using Frontenac.Blueprints.Util;
+using Grave.Entities;
 using Grave.Geo;
 
 namespace Grave
@@ -10,151 +9,112 @@ namespace Grave
     {
         private static void Main()
         {
-            var g = GraveFactory.CreateGraph();
+            var graph = GraveFactory.CreateGraph();
             try
             {
-                if (!g.GetIndexedKeys(typeof (IVertex)).Contains("name"))
-                {
-                    g.CreateKeyIndex("name", typeof(IVertex));
-                    g.CreateKeyIndex("place", typeof(IEdge));
-                }
+                if (!graph.GetVertices().Any())
+                    CreateGraphOfTheGods(graph);
 
-                if (!g.GetVertices().Any())
-                    CreateGraphOfTheGods(g);
+                var saturn = graph
+                    .V<ICharacter, string>(t => t.Name, "Saturn")
+                    .Single();
 
-                var saturn = g.V("name", "saturn")
-                              .Single();
+                var map = saturn.Element.Map();
 
-                
-                var nameFromModel = saturn.As<IGod>().name;
-                
-                var map = saturn.Map();
+                var fatherName = saturn
+                    .In(t => t.Father)
+                    .In(t => t.Father)
+                    .Select(t => t.Model.Name)
+                    .Single();
 
-                var fatherName = saturn.In("father")
-                                       .In("father")
-                                       .P<string>("name")
-                                       .Single();
-                
-                var eventsNearAthen = g.Query()
-                    .Has("place", Compare.Equal, new GeoCircle(37.97, 23.72, 50))
+                var eventsNearAthen = graph.Query<IBattle>()
+                    .Has(t => t.Place, Compare.Equal, new GeoCircle(37.97, 23.72, 50))
                     .Edges()
                     .ToArray();
 
                 var opponents = eventsNearAthen
                     .Select(t => new[]
                         {
-                            t.GetVertex(Direction.Out)["name"],
-                            t.GetVertex(Direction.In)["name"]
+                            t.Out(u => u.Out).Model.Name,
+                            t.In(u => u.In).Model.Name
                         })
                     .ToArray();
 
-                var hercules = saturn.Loop(t => t.In("father"), 2).Single();
+                var hercules = saturn
+                    .Loop(t => t.Father, t => t.In(u => u.Father) , 2)
+                    .Single();
 
-                var parents = hercules.GetVertices(Direction.Out, "father", "mother").ToArray();
-
-                var parentNames = parents.Select(t => t["name"])
-                                         .ToArray();
-
-                var parentTypes = parents.Select(t => t["type"])
-                                         .ToArray();
-
-                var battled = hercules.GetVertices(Direction.Out, "battled").ToArray();
-
-                var opponentDetails = battled
-                    .Select(t => t.ToDictionary(u => u.Key, u => u.Value))
+                var parents = hercules
+                    .Out(t => t.Father, t => t.Mother)
                     .ToArray();
 
-                var v2 = hercules.GetEdges(Direction.Out, "battled")
-                                 //.Where(t => t.P<God>((m, e) => e.P<>()
-                                 //    element.P<God>()) )
-                                 .Where(t => t.P<int>("time") > 1)
-                                 .Select(t => t.GetVertex(Direction.In)["name"])
-                                 .ToArray();
+                var parentNames = parents
+                    .Select(t => t.Model.Name)
+                    .ToArray();
+
+                var parentTypes = parents
+                    .Select(t => t.Model.GetType().BaseType)
+                    .ToArray();
+
+                var battled = hercules.Out(t => t.Battled).ToArray();
+
+                var opponentDetails = battled
+                    .Select(t => t.Element.ToDictionary(u => u.Key, u => u.Value))
+                    .ToArray();
+
+                var v2 = hercules
+                    .Out(t => t.Battled)
+                    .Where(t => t.Model.Time > 1)
+                    .Select(t => t.In(u => u.In).Model.Name)
+                    .ToArray();
             }
             finally
             {
-                g.Shutdown();
+                graph.Shutdown();
                 GraveFactory.Release();
             }
         }
 
-        public interface IGod
+        private static void CreateGraphOfTheGods(IKeyIndexableGraph graph)
         {
-            string name { get; set; }
-            string type { get; set; }
-            int age { get; set; }
-        }
+            graph.CreateVertexIndex<INamedEntity, string>(t => t.Name);
+            graph.CreateEdgeIndex<IBattle, GeoPoint>(t => t.Place);
 
-        private static void CreateGraphOfTheGods(IGraph graph)
-        {
-            var saturn = graph.AddVertex(null);
-            saturn.Add("name", "saturn");
-            saturn.Add("age", 10000);
-            saturn.Add("type", "titan");
+            var sky = graph.AddVertex<ILocation>(t => t.Name = "Sky");
+            var sea = graph.AddVertex<ILocation>(t => t.Name = "Sea");
+            var tartarus = graph.AddVertex<ILocation>(t => t.Name = "Tartarus");
 
-            var sky = graph.AddVertex(null);
-            sky.CopyTo(new[]
-                {
-                    new KeyValuePair<string, object>("name", "sky"),
-                    new KeyValuePair<string, object>("type", "location")
-                }, 0);
+            var saturn = graph.AddVertex<ITitan>(t => { t.Name = "Saturn"; t.Age = 10000; });
+            var jupiter = graph.AddVertex<IGod>(t => { t.Name = "Jupiter"; t.Age = 5000; });
+            var neptune = graph.AddVertex<IGod>(t => { t.Name = "Neptune"; t.Age = 4500; });
+            var pluto = graph.AddVertex<IGod>(t => { t.Name = "Pluto"; t.Age = 4000; });
+            var hercules = graph.AddVertex<IDemiGod>(t => { t.Name = "Hercules"; t.Age = 30; });          
+            var alcmene = graph.AddVertex<IHuman>(t => { t.Name = "Alcmene"; t.Age = 45; });
+            var nemean = graph.AddVertex<IMonster>(t => t.Name = "Nemean");
+            var hydra = graph.AddVertex<IMonster>(t => t.Name = "Hydra");
+            var cerberus = graph.AddVertex<IMonster>(t => t.Name = "Cerberus");
+            
+            jupiter.AddEdge(t => t.Father, saturn);
+            jupiter.AddEdge(t => t.Lives, sky, t => t.Reason = "Loves fresh breezes.");
+            jupiter.AddEdge(t => t.Brother, neptune);
+            jupiter.AddEdge(t => t.Brother, pluto);
 
-            sky.SetProperties("name", "sky", "type", "location");
+            neptune.AddEdge(t => t.Lives, sea, t => t.Reason = "Loves waves.");
+            neptune.AddEdge(t => t.Brother, jupiter);
+            neptune.AddEdge(t => t.Brother, pluto);
 
-            var sea = graph.AddVertex(null);
-            sea.SetProperties("name", "sea", "type", "location");
+            hercules.AddEdge(t => t.Father, jupiter);
+            hercules.AddEdge(t => t.Mother, alcmene);
+            hercules.AddEdge(t => t.Battled, nemean, t => { t.Time = 1; t.Place = new GeoPoint(38.1, 23.7); });
+            hercules.AddEdge(t => t.Battled, hydra, t => { t.Time = 2; t.Place = new GeoPoint(37.7, 23.9); });
+            hercules.AddEdge(t => t.Battled, cerberus, t => { t.Time = 12; t.Place = new GeoPoint(39, 22); });
 
-            var jupiter = graph.AddVertex(null);
-            jupiter.SetProperties("name", "jupiter", "age", 5000, "type", "god");
+            pluto.AddEdge(t => t.Brother, jupiter);
+            pluto.AddEdge(t => t.Brother, neptune);
+            pluto.AddEdge(t => t.Lives, tartarus, t => t.Reason = "No fear of death");
+            pluto.AddEdge(t => t.Pet, cerberus);
 
-            var neptune = graph.AddVertex(null);
-            neptune.SetProperties("name", "neptune", "age", 4500, "type", "god");
-
-            var hercules = graph.AddVertex(null);
-            hercules.SetProperties("name", "hercules", "age", 30, "type", "demigod");
-
-            var alcmene = graph.AddVertex(null);
-            alcmene.SetProperties("name", "alcmene", "age", 45, "type", "human");
-
-            var pluto = graph.AddVertex(null);
-            pluto.SetProperties("name", "pluto", "age", 4000, "type", "god");
-
-            var nemean = graph.AddVertex(null);
-            nemean.SetProperties("name", "nemean", "type", "monster");
-
-            var hydra = graph.AddVertex(null);
-            hydra.SetProperties("name", "hydra", "type", "monster");
-
-            var cerberus = graph.AddVertex(null);
-            cerberus.SetProperties("name", "cerberus", "type", "monster");
-
-            var tartarus = graph.AddVertex(null);
-            tartarus.SetProperties("name", "tartarus", "type", "location");
-
-            // edges
-
-            jupiter.AddEdge("father", saturn);
-            jupiter.AddEdge("lives", sky).SetProperty("reason", "loves fresh breezes");
-            jupiter.AddEdge("brother", neptune);
-            jupiter.AddEdge("brother", pluto);
-
-            neptune.AddEdge("lives", sea).SetProperty("reason", "loves waves");
-            neptune.AddEdge("brother", jupiter);
-            neptune.AddEdge("brother", pluto);
-
-            hercules.AddEdge("father", jupiter);
-            hercules.AddEdge("mother", alcmene);
-
-            hercules.AddEdge("battled", nemean).SetProperties("time", 1, "place", new GeoPoint(38.1, 23.7));
-            hercules.AddEdge("battled", hydra).SetProperties("time", 2, "place", new GeoPoint(37.7, 23.9));
-            hercules.AddEdge("battled", cerberus).SetProperties("time", 12, "place", new GeoPoint(39, 22));
-
-            pluto.AddEdge("brother", jupiter);
-            pluto.AddEdge("brother", neptune);
-            pluto.AddEdge("lives", tartarus).SetProperty("reason", "no fear of death");
-            pluto.AddEdge("pet", cerberus);
-
-            cerberus.AddEdge("lives", tartarus);
+            cerberus.AddEdge(t => t.Lives, tartarus);
         }
     }
 }

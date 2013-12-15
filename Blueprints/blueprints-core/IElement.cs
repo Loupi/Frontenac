@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System.Collections;
+using System.Collections.Generic;
 using System.Diagnostics.Contracts;
 using Frontenac.Blueprints.Contracts;
 
@@ -13,7 +14,7 @@ namespace Frontenac.Blueprints
     ///     Typically, objects are C# primitives (e.g. string, long, int, boolean, etc.)
     /// </summary>
     [ContractClass(typeof (ElementContract))]
-    public interface IElement : IDictionary<string, object>
+    public interface IElement : IDictionary<string, object>, IDictionary
     {
         /// <summary>
         ///     An identifier that is unique to its inheriting class.

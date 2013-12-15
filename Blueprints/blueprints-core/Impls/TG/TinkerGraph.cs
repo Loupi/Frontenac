@@ -408,9 +408,9 @@ namespace Frontenac.Blueprints.Impls.TG
                 _indexedKeys.Add(key);
 
                 if (typeof (TinkerVertex) == IndexClass)
-                    _graph.ReIndexElements(_graph.GetVertices(), new HashSet<string>(new[] {key}));
+                    _graph.ReIndexElements(_graph.GetVertices(), new[] {key});
                 else
-                    _graph.ReIndexElements(_graph.GetEdges(), new HashSet<string>(new[] {key}));
+                    _graph.ReIndexElements(_graph.GetEdges(), new[] {key});
             }
 
             public void DropKeyIndex(string key)
@@ -428,7 +428,7 @@ namespace Frontenac.Blueprints.Impls.TG
             {
                 Contract.Ensures(Contract.Result<IEnumerable<string>>() != null);
 
-                return null != _indexedKeys ? new HashSet<string>(_indexedKeys) : Enumerable.Empty<string>();
+                return null != _indexedKeys ? _indexedKeys.ToArray() : Enumerable.Empty<string>();
             }
         }
     }

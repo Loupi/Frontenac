@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Diagnostics.Contracts;
+using System.Linq;
 
 namespace Frontenac.Blueprints.Util.Wrappers.Partition
 {
@@ -35,9 +36,9 @@ namespace Frontenac.Blueprints.Util.Wrappers.Partition
 
         public override IEnumerable<string> GetPropertyKeys()
         {
-            var keys = new HashSet<string>(BaseElement.GetPropertyKeys());
-            keys.Remove(Graph.PartitionKey);
-            return keys;
+            return BaseElement.GetPropertyKeys()
+                .Except(new string[] { Graph.PartitionKey })
+                .ToArray();
         }
 
         public override object Id

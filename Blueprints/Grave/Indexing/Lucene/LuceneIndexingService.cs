@@ -6,6 +6,7 @@ using System.Linq;
 using Frontenac.Blueprints;
 using Grave.Esent;
 using Grave.Geo;
+using Lucene.Net.Analysis;
 using Lucene.Net.Analysis.Standard;
 using Lucene.Net.Contrib.Management;
 using Lucene.Net.Documents;
@@ -26,7 +27,7 @@ namespace Grave.Indexing.Lucene
 {
     public class LuceneIndexingService : IndexingService
     {
-        private readonly StandardAnalyzer _analyzer;
+        private readonly KeywordAnalyzer _analyzer;
         private readonly FSDirectory _directory;
         private readonly IIndexerFactory _indexerFactory;
         private readonly NrtManager _nrtManager;
@@ -50,7 +51,7 @@ namespace Grave.Indexing.Lucene
             _directory = directory;
             _indexerFactory = indexerFactory;
 
-            _analyzer = new StandardAnalyzer(Version.LUCENE_30);
+            _analyzer = new KeywordAnalyzer();
             _writer = new IndexWriter(_directory, _analyzer, IndexWriter.MaxFieldLength.UNLIMITED);
             _nrtManager = new NrtManager(_writer);
             _searcherManager = _nrtManager.GetSearcherManager();

@@ -65,7 +65,7 @@ namespace Grave
             throw new NotImplementedException();
         }
 
-        private static IEnumerable<string> FilterLabels(Direction direction, string[] labels, Direction directionFilter,
+        private static IEnumerable<string> FilterLabels(Direction direction, ICollection<string> labels, Direction directionFilter,
                                                         IEnumerable<string> columns, string prefix)
         {
             Contract.Requires(labels != null);
@@ -74,7 +74,7 @@ namespace Grave
 
             if (direction == directionFilter || direction == Direction.Both)
             {
-                if (labels.Length == 0)
+                if (!labels.Any())
                     return columns.Where(t => t.StartsWith(prefix));
 
                 var labelsFilter = labels.Select(t => string.Format("{0}{1}", prefix, t)).ToArray();

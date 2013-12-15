@@ -112,7 +112,7 @@ namespace Frontenac.Blueprints.Util
 
             foreach (var element in elements)
             {
-                var value = element.RemoveProperty(key);
+                var value = element.GetProperty(key);
                 if (null == value) continue;
                 try
                 {
