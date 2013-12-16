@@ -221,9 +221,9 @@
     </None>
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\blueprints-core\blueprints-core.csproj">
+    <ProjectReference Include="..\Blueprints\Blueprints.csproj">
       <Project>{42ed5d37-0e20-4fc3-b6b1-f38a08283c30}</Project>
-      <Name>blueprints-core</Name>
+      <Name>Blueprints</Name>
     </ProjectReference>
     <ProjectReference Include="..\Lucene.Net.Contrib.Management\Lucene.Net.Contrib.Management.csproj">
       <Project>{fb47e2ae-dc85-4a77-9ffb-2843b984c87b}</Project>

@@ -12,10 +12,10 @@
 		</dependencies>
 	</metadata>
 	<files>
-		<file src="..\blueprints-testsuite-.NET4.0\bin\Release\net40\Frontenac.Blueprints.dll" target="lib\net40\Frontenac.Blueprints.TestSuite.dll" />
+		<file src="..\Blueprints.TestSuite-.NET4.0\bin\Release\net40\Frontenac.Blueprints.dll" target="lib\net40\Frontenac.Blueprints.TestSuite.dll" />
 		
-		<file src="..\blueprints-testsuite-.NET4.0\bin\Release\net40-client\Frontenac.Blueprints.dll" target="lib\net40-client\Frontenac.Blueprints.TestSuite.dll" />
+		<file src="..\Blueprints.TestSuite-.NET4.0\bin\Release\net40-client\Frontenac.Blueprints.dll" target="lib\net40-client\Frontenac.Blueprints.TestSuite.dll" />
 		
-		<file src="..\blueprints-testsuite\bin\Release\net45\Frontenac.Blueprints.dll" target="lib\net45\Frontenac.Blueprints.TestSuite.dll" />
+		<file src="..\Blueprints.TestSuite\bin\Release\net45\Frontenac.Blueprints.dll" target="lib\net45\Frontenac.Blueprints.TestSuite.dll" />
 	</files>
 </package>

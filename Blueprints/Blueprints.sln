@@ -1,51 +1,77 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 2012
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "blueprints-core", "blueprints-core\blueprints-core.csproj", "{42ED5D37-0E20-4FC3-B6B1-F38A08283C30}"
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "blueprints-test", "blueprints-test\blueprints-test.csproj", "{CFFA3CED-73DD-4EB3-B464-88534D5CAA1B}"
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "blueprints-testsuite", "blueprints-testsuite\blueprints-testsuite.csproj", "{2F1387C2-845B-4D3D-9851-1B67FFD741AC}"
-EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = ".nuget", ".nuget", "{2BC1E84F-7185-4AC7-A8F7-27C658C58577}"
 	ProjectSection(SolutionItems) = preProject
 		.nuget\NuGet.Config = .nuget\NuGet.Config
 	EndProjectSection
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "grave", "Grave\grave.csproj", "{15DB2CDC-CAFD-49E4-B71E-8D5843084065}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Grave", "Grave\Grave.csproj", "{15DB2CDC-CAFD-49E4-B71E-8D5843084065}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Lucene.Net.Contrib.Management", "Lucene.Net.Contrib.Management\Lucene.Net.Contrib.Management.csproj", "{FB47E2AE-DC85-4A77-9FFB-2843B984C87B}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "grave-test", "Grave-test\grave-test.csproj", "{067ABBDC-F36E-4EF7-B068-654F5D281A46}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Blueprints", "Blueprints\Blueprints.csproj", "{42ED5D37-0E20-4FC3-B6B1-F38A08283C30}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Blueprints.Test", "Blueprints.Test\Blueprints.Test.csproj", "{CFFA3CED-73DD-4EB3-B464-88534D5CAA1B}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Blueprints.TestSuite", "Blueprints.TestSuite\Blueprints.TestSuite.csproj", "{2F1387C2-845B-4D3D-9851-1B67FFD741AC}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Grave.Test", "Grave.Test\Grave.Test.csproj", "{067ABBDC-F36E-4EF7-B068-654F5D281A46}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug (.NET 4.0)|Any CPU = Debug (.NET 4.0)|Any CPU
 		Debug|Any CPU = Debug|Any CPU
+		Release (.NET 4.0)|Any CPU = Release (.NET 4.0)|Any CPU
 		Release|Any CPU = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
-		{42ED5D37-0E20-4FC3-B6B1-F38A08283C30}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{42ED5D37-0E20-4FC3-B6B1-F38A08283C30}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{42ED5D37-0E20-4FC3-B6B1-F38A08283C30}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{42ED5D37-0E20-4FC3-B6B1-F38A08283C30}.Release|Any CPU.Build.0 = Release|Any CPU
-		{CFFA3CED-73DD-4EB3-B464-88534D5CAA1B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{CFFA3CED-73DD-4EB3-B464-88534D5CAA1B}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{CFFA3CED-73DD-4EB3-B464-88534D5CAA1B}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{CFFA3CED-73DD-4EB3-B464-88534D5CAA1B}.Release|Any CPU.Build.0 = Release|Any CPU
-		{2F1387C2-845B-4D3D-9851-1B67FFD741AC}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{2F1387C2-845B-4D3D-9851-1B67FFD741AC}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{2F1387C2-845B-4D3D-9851-1B67FFD741AC}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{2F1387C2-845B-4D3D-9851-1B67FFD741AC}.Release|Any CPU.Build.0 = Release|Any CPU
+		{15DB2CDC-CAFD-49E4-B71E-8D5843084065}.Debug (.NET 4.0)|Any CPU.ActiveCfg = Debug|Any CPU
+		{15DB2CDC-CAFD-49E4-B71E-8D5843084065}.Debug (.NET 4.0)|Any CPU.Build.0 = Debug|Any CPU
 		{15DB2CDC-CAFD-49E4-B71E-8D5843084065}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{15DB2CDC-CAFD-49E4-B71E-8D5843084065}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{15DB2CDC-CAFD-49E4-B71E-8D5843084065}.Release (.NET 4.0)|Any CPU.ActiveCfg = Release|Any CPU
+		{15DB2CDC-CAFD-49E4-B71E-8D5843084065}.Release (.NET 4.0)|Any CPU.Build.0 = Release|Any CPU
 		{15DB2CDC-CAFD-49E4-B71E-8D5843084065}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{15DB2CDC-CAFD-49E4-B71E-8D5843084065}.Release|Any CPU.Build.0 = Release|Any CPU
+		{FB47E2AE-DC85-4A77-9FFB-2843B984C87B}.Debug (.NET 4.0)|Any CPU.ActiveCfg = Debug|Any CPU
+		{FB47E2AE-DC85-4A77-9FFB-2843B984C87B}.Debug (.NET 4.0)|Any CPU.Build.0 = Debug|Any CPU
 		{FB47E2AE-DC85-4A77-9FFB-2843B984C87B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{FB47E2AE-DC85-4A77-9FFB-2843B984C87B}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{FB47E2AE-DC85-4A77-9FFB-2843B984C87B}.Release (.NET 4.0)|Any CPU.ActiveCfg = Release|Any CPU
+		{FB47E2AE-DC85-4A77-9FFB-2843B984C87B}.Release (.NET 4.0)|Any CPU.Build.0 = Release|Any CPU
 		{FB47E2AE-DC85-4A77-9FFB-2843B984C87B}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{FB47E2AE-DC85-4A77-9FFB-2843B984C87B}.Release|Any CPU.Build.0 = Release|Any CPU
+		{42ED5D37-0E20-4FC3-B6B1-F38A08283C30}.Debug (.NET 4.0)|Any CPU.ActiveCfg = Debug|Any CPU
+		{42ED5D37-0E20-4FC3-B6B1-F38A08283C30}.Debug (.NET 4.0)|Any CPU.Build.0 = Debug|Any CPU
+		{42ED5D37-0E20-4FC3-B6B1-F38A08283C30}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{42ED5D37-0E20-4FC3-B6B1-F38A08283C30}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{42ED5D37-0E20-4FC3-B6B1-F38A08283C30}.Release (.NET 4.0)|Any CPU.ActiveCfg = Release|Any CPU
+		{42ED5D37-0E20-4FC3-B6B1-F38A08283C30}.Release (.NET 4.0)|Any CPU.Build.0 = Release|Any CPU
+		{42ED5D37-0E20-4FC3-B6B1-F38A08283C30}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{42ED5D37-0E20-4FC3-B6B1-F38A08283C30}.Release|Any CPU.Build.0 = Release|Any CPU
+		{CFFA3CED-73DD-4EB3-B464-88534D5CAA1B}.Debug (.NET 4.0)|Any CPU.ActiveCfg = Debug (.NET 4.0)|Any CPU
+		{CFFA3CED-73DD-4EB3-B464-88534D5CAA1B}.Debug (.NET 4.0)|Any CPU.Build.0 = Debug (.NET 4.0)|Any CPU
+		{CFFA3CED-73DD-4EB3-B464-88534D5CAA1B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{CFFA3CED-73DD-4EB3-B464-88534D5CAA1B}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{CFFA3CED-73DD-4EB3-B464-88534D5CAA1B}.Release (.NET 4.0)|Any CPU.ActiveCfg = Release (.NET 4.0)|Any CPU
+		{CFFA3CED-73DD-4EB3-B464-88534D5CAA1B}.Release (.NET 4.0)|Any CPU.Build.0 = Release (.NET 4.0)|Any CPU
+		{CFFA3CED-73DD-4EB3-B464-88534D5CAA1B}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{CFFA3CED-73DD-4EB3-B464-88534D5CAA1B}.Release|Any CPU.Build.0 = Release|Any CPU
+		{2F1387C2-845B-4D3D-9851-1B67FFD741AC}.Debug (.NET 4.0)|Any CPU.ActiveCfg = Debug (.NET 4.0)|Any CPU
+		{2F1387C2-845B-4D3D-9851-1B67FFD741AC}.Debug (.NET 4.0)|Any CPU.Build.0 = Debug (.NET 4.0)|Any CPU
+		{2F1387C2-845B-4D3D-9851-1B67FFD741AC}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{2F1387C2-845B-4D3D-9851-1B67FFD741AC}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{2F1387C2-845B-4D3D-9851-1B67FFD741AC}.Release (.NET 4.0)|Any CPU.ActiveCfg = Release (.NET 4.0)|Any CPU
+		{2F1387C2-845B-4D3D-9851-1B67FFD741AC}.Release (.NET 4.0)|Any CPU.Build.0 = Release (.NET 4.0)|Any CPU
+		{2F1387C2-845B-4D3D-9851-1B67FFD741AC}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{2F1387C2-845B-4D3D-9851-1B67FFD741AC}.Release|Any CPU.Build.0 = Release|Any CPU
+		{067ABBDC-F36E-4EF7-B068-654F5D281A46}.Debug (.NET 4.0)|Any CPU.ActiveCfg = Debug|Any CPU
+		{067ABBDC-F36E-4EF7-B068-654F5D281A46}.Debug (.NET 4.0)|Any CPU.Build.0 = Debug|Any CPU
 		{067ABBDC-F36E-4EF7-B068-654F5D281A46}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{067ABBDC-F36E-4EF7-B068-654F5D281A46}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{067ABBDC-F36E-4EF7-B068-654F5D281A46}.Release (.NET 4.0)|Any CPU.ActiveCfg = Release|Any CPU
+		{067ABBDC-F36E-4EF7-B068-654F5D281A46}.Release (.NET 4.0)|Any CPU.Build.0 = Release|Any CPU
 		{067ABBDC-F36E-4EF7-B068-654F5D281A46}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{067ABBDC-F36E-4EF7-B068-654F5D281A46}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection

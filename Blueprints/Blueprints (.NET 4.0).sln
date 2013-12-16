@@ -1,9 +1,9 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 2012
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "blueprints-core (.NET 4.0)", "blueprints-core-.NET4.0\blueprints-core (.NET 4.0).csproj", "{30495F9B-5231-477B-B8AD-6D42E1E24D39}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Blueprints (.NET 4.0)", "Blueprints-.NET4.0\Blueprints (.NET 4.0).csproj", "{30495F9B-5231-477B-B8AD-6D42E1E24D39}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "blueprints-testsuite (.NET 4.0)", "blueprints-testsuite-.NET4.0\blueprints-testsuite (.NET 4.0).csproj", "{71D5E1D9-83DA-4375-96E2-0B8BD8162973}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Blueprints.Testsuite (.NET 4.0)", "Blueprints.TestSuite-.NET4.0\Blueprints.Testsuite (.NET 4.0).csproj", "{71D5E1D9-83DA-4375-96E2-0B8BD8162973}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
