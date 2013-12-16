@@ -6,11 +6,11 @@ using System.Runtime.InteropServices;
 // set of attributes. Change these attribute values to modify the information
 // associated with an assembly.
 
-[assembly: AssemblyTitle("blueprints-core")]
+[assembly: AssemblyTitle("Frontenac.Blueprints")]
 [assembly: AssemblyDescription("")]
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("")]
-[assembly: AssemblyProduct("blueprints-core")]
+[assembly: AssemblyProduct("Frontenac.Blueprints")]
 [assembly: AssemblyCopyright("Copyright © Frontenac 2013")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]

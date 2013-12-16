@@ -1,7 +1,9 @@
-﻿using System.Linq;
+﻿using System.Diagnostics.Contracts;
+using System.Linq;
 using Frontenac.Blueprints;
 using Frontenac.Grave.Entities;
 using Frontenac.Grave.Geo;
+using Frontenac.Gremlinq;
 
 namespace Frontenac.Grave
 {
@@ -77,6 +79,8 @@ namespace Frontenac.Grave
 
         private static void CreateGraphOfTheGods(IKeyIndexableGraph graph)
         {
+            Contract.Requires(graph != null);
+
             graph.CreateVertexIndex<INamedEntity, string>(t => t.Name);
             graph.CreateEdgeIndex<IBattle, GeoPoint>(t => t.Place);
 

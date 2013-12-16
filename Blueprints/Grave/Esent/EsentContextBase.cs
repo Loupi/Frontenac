@@ -63,7 +63,6 @@ namespace Frontenac.Grave.Esent
         {
             Contract.Requires(!string.IsNullOrWhiteSpace(databaseName));
             Contract.Ensures(!string.IsNullOrWhiteSpace(Contract.Result<string>()));
-            Contract.Ensures(databaseName != ".db");
 
             databaseName = databaseName.Trim();
 

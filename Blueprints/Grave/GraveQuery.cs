@@ -31,6 +31,11 @@ namespace Frontenac.Grave
 
         public IQuery Interval<T>(string key, T startValue, T endValue)
         {
+// ReSharper disable CompareNonConstrainedGenericWithNull
+            Contract.Assume(startValue != null);
+            Contract.Assume(endValue != null);
+// ReSharper restore CompareNonConstrainedGenericWithNull
+
             _queryElements.Add(new GraveIntervalQueryElement(key, startValue, endValue));
             return this;
         }

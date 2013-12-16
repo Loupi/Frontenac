@@ -13,6 +13,8 @@ namespace Frontenac.Grave.Esent
         public EsentVertexTable(Session session, IContentSerializer contentSerializer)
             : base(session, "Vertices", contentSerializer)
         {
+            Contract.Requires(session != null);
+            Contract.Requires(contentSerializer != null);
         }
 
         public void AddEdge(int vertexId, Direction direction, string label, int edgeId, int targetId)

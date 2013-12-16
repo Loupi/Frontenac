@@ -33,7 +33,8 @@ namespace Frontenac.Blueprints.Util
 
         private IEnumerable<T> GetElementIterable<T>(Type elementClass) where T : IElement
         {
-            Contract.Ensures(elementClass != null);
+            Contract.Requires(elementClass != null);
+            Contract.Ensures(Contract.Result<IEnumerable<T>>() != null);
 
             if (_graph is IKeyIndexableGraph)
             {

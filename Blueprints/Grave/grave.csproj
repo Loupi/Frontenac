@@ -14,7 +14,7 @@
     <SolutionDir Condition="$(SolutionDir) == '' Or $(SolutionDir) == '*Undefined*'">..\</SolutionDir>
     <RestorePackages>true</RestorePackages>
     <CodeContractsAssemblyMode>1</CodeContractsAssemblyMode>
-    <FodyPath>..\packages\Fody.1.18.0.0</FodyPath>
+    <FodyPath>..\packages\Fody.1.19.1.0</FodyPath>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <PlatformTarget>AnyCPU</PlatformTarget>
@@ -25,13 +25,13 @@
     <DefineConstants>TRACE;DEBUG;CONTRACTS_FULL</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
-    <RunCodeAnalysis>false</RunCodeAnalysis>
+    <RunCodeAnalysis>true</RunCodeAnalysis>
     <CodeContractsEnableRuntimeChecking>True</CodeContractsEnableRuntimeChecking>
     <CodeContractsRuntimeOnlyPublicSurface>False</CodeContractsRuntimeOnlyPublicSurface>
     <CodeContractsRuntimeThrowOnFailure>True</CodeContractsRuntimeThrowOnFailure>
     <CodeContractsRuntimeCallSiteRequires>False</CodeContractsRuntimeCallSiteRequires>
     <CodeContractsRuntimeSkipQuantifiers>False</CodeContractsRuntimeSkipQuantifiers>
-    <CodeContractsRunCodeAnalysis>False</CodeContractsRunCodeAnalysis>
+    <CodeContractsRunCodeAnalysis>True</CodeContractsRunCodeAnalysis>
     <CodeContractsNonNullObligations>True</CodeContractsNonNullObligations>
     <CodeContractsBoundsObligations>True</CodeContractsBoundsObligations>
     <CodeContractsArithmeticObligations>False</CodeContractsArithmeticObligations>
@@ -104,6 +104,12 @@
     <CodeContractsReferenceAssembly>Build</CodeContractsReferenceAssembly>
     <CodeContractsAnalysisWarningLevel>0</CodeContractsAnalysisWarningLevel>
   </PropertyGroup>
+  <PropertyGroup>
+    <SignAssembly>true</SignAssembly>
+  </PropertyGroup>
+  <PropertyGroup>
+    <AssemblyOriginatorKeyFile>key.snk</AssemblyOriginatorKeyFile>
+  </PropertyGroup>
   <ItemGroup>
     <Reference Include="Castle.Core">
       <HintPath>..\packages\Castle.Core.3.2.2\lib\net45\Castle.Core.dll</HintPath>
@@ -162,12 +168,12 @@
     <Compile Include="GraveGraphFactoryContract.cs" />
     <Compile Include="GraveQuery.cs" />
     <Compile Include="GraveTransactionalGraph.cs" />
-    <Compile Include="GremlinqHelpers.cs" />
     <Compile Include="Entities\IAgedCharacter.cs" />
     <Compile Include="Entities\IBattle.cs" />
     <Compile Include="Entities\ICharacter.cs" />
     <Compile Include="Entities\IDemiGod.cs" />
     <Compile Include="Entities\IGod.cs" />
+    <Compile Include="GremlinqHelpers.cs" />
     <Compile Include="IGraveGraphFactory.cs" />
     <Compile Include="Entities\IHuman.cs" />
     <Compile Include="Entities\ILive.cs" />
@@ -214,6 +220,7 @@
   <ItemGroup>
     <None Include="App.config" />
     <None Include="Fody.targets" />
+    <None Include="key.snk" />
     <None Include="packages.config" />
     <None Include="Properties\Settings.settings">
       <Generator>SettingsSingleFileGenerator</Generator>
@@ -224,6 +231,10 @@
     <ProjectReference Include="..\Blueprints\Blueprints.csproj">
       <Project>{42ed5d37-0e20-4fc3-b6b1-f38a08283c30}</Project>
       <Name>Blueprints</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Gremlinq\Gremlinq.csproj">
+      <Project>{bef87227-a8ba-4edc-835c-b13de0e6a7c2}</Project>
+      <Name>Gremlinq</Name>
     </ProjectReference>
     <ProjectReference Include="..\Lucene.Net.Contrib.Management\Lucene.Net.Contrib.Management.csproj">
       <Project>{fb47e2ae-dc85-4a77-9ffb-2843b984c87b}</Project>
@@ -236,8 +247,8 @@
   <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Import Project="$(SolutionDir)\.nuget\NuGet.targets" Condition="Exists('$(SolutionDir)\.nuget\NuGet.targets')" />
+  <Import Project="..\packages\GitFlowVersionTask.0.13.0\Build\GitFlowVersionTask.targets" Condition="Exists('..\packages\GitFlowVersionTask.0.13.0\Build\GitFlowVersionTask.targets')" />
   <Import Project="Fody.targets" />
-  <Import Project="..\packages\GitFlowVersionTask.0.11.0\Build\GitFlowVersionTask.targets" Condition="Exists('..\packages\GitFlowVersionTask.0.11.0\Build\GitFlowVersionTask.targets')" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.
   <Target Name="BeforeBuild">

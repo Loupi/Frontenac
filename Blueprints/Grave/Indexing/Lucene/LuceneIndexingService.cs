@@ -267,6 +267,8 @@ namespace Frontenac.Grave.Indexing.Lucene
 
         Query CreateComparableQuery(Type indexType, GraveComparableQueryElement comparable)
         {
+            Contract.Requires(comparable != null);
+
             object min;
             object max;
             bool minInclusive;
@@ -377,6 +379,8 @@ namespace Frontenac.Grave.Indexing.Lucene
         private static Query CreateQuery(string key, object value, object minValue, object maxValue,
                                          bool minInclusive, bool maxInclusive)
         {
+            Contract.Requires(((((!(Portability.IsNumber(value)) || !(string.IsNullOrWhiteSpace(key))) || key == null) || key.Length != 0) || value != null));
+
             Contract.Ensures(Contract.Result<Query>() != null);
 
             var query = Portability.IsNumber(value)
@@ -388,6 +392,7 @@ namespace Frontenac.Grave.Indexing.Lucene
 
         private Query WrapQuery(Type indexType, Query query, string indexName, bool isUserIndex)
         {
+            Contract.Requires(query != null);
             Contract.Requires(IsValidIndexType(indexType));
             Contract.Ensures(Contract.Result<Query>() != null);
 

@@ -94,6 +94,7 @@ namespace Frontenac.Grave.Indexing
         public IEnumerable<int> Get(string term, object value, int hitsLimit = 1000)
         {
             Contract.Requires(!string.IsNullOrWhiteSpace(term));
+            Contract.Requires(hitsLimit >= 0);
             Contract.Ensures(Contract.Result<IEnumerable<int>>() != null);
 
             return _indexingService.Get(_indexType, null, term, value, _isUserIndex, hitsLimit);
@@ -103,6 +104,7 @@ namespace Frontenac.Grave.Indexing
         {
             Contract.Requires(!string.IsNullOrWhiteSpace(indexName));
             Contract.Requires(!string.IsNullOrWhiteSpace(key));
+            Contract.Requires(hitsLimit >= 0);
             Contract.Ensures(Contract.Result<IEnumerable<int>>() != null);
 
             return _indexingService.Get(_indexType, indexName, key, value, _isUserIndex, hitsLimit);

@@ -16,6 +16,8 @@ namespace Frontenac.Grave
         public GraveVertex(GraveGraph graph, EsentTable vertexTable, int id)
             : base(graph, vertexTable, id)
         {
+            Contract.Requires(graph != null);
+            Contract.Requires(vertexTable != null);
         }
 
         public IEdge AddEdge(string label, IVertex inVertex)

@@ -36,7 +36,6 @@ namespace Frontenac.Grave.Indexing
                                              bool isUserIndex, int hitsLimit = 1000)
         {
             Contract.Requires(IsValidIndexType(indexType));
-            Contract.Requires(!string.IsNullOrWhiteSpace(indexName));
             Contract.Requires(!string.IsNullOrWhiteSpace(key));
             Contract.Requires(hitsLimit >= 0);
             Contract.Ensures(Contract.Result<IEnumerable<int>>() != null);

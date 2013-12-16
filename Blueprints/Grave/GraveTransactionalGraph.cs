@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics.Contracts;
 using Frontenac.Blueprints;
 using Frontenac.Grave.Esent;
 using Frontenac.Grave.Indexing;
@@ -14,6 +15,9 @@ namespace Frontenac.Grave
         public GraveTransactionalGraph(IGraveGraphFactory factory, EsentContext context, IndexingService indexingService)
             : base(factory, indexingService, context)
         {
+            Contract.Requires(factory != null);
+            Contract.Requires(context != null);
+            Contract.Requires(indexingService != null);
         }
 
         #region IDisposable
