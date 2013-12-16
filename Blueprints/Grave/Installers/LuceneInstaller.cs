@@ -4,13 +4,13 @@ using Castle.Facilities.TypedFactory;
 using Castle.MicroKernel.Registration;
 using Castle.MicroKernel.SubSystems.Configuration;
 using Castle.Windsor;
-using Grave.Indexing;
-using Grave.Indexing.Indexers;
-using Grave.Indexing.Lucene;
-using Grave.Properties;
+using Frontenac.Grave.Indexing;
+using Frontenac.Grave.Indexing.Indexers;
+using Frontenac.Grave.Indexing.Lucene;
+using Frontenac.Grave.Properties;
 using Lucene.Net.Store;
 
-namespace Grave.Installers
+namespace Frontenac.Grave.Installers
 {
     public class LuceneInstaller : IWindsorInstaller
     {

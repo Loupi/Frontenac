@@ -7,10 +7,9 @@ using Frontenac.Blueprints.Util;
 using Frontenac.Blueprints.Util.IO.GML;
 using Frontenac.Blueprints.Util.IO.GraphML;
 using Frontenac.Blueprints.Util.IO.GraphSON;
-using Grave;
 using NUnit.Framework;
 
-namespace Grave_test
+namespace Frontenac.Grave.Tests
 {
     [TestFixture(Category = "GraveGraphGraphTestSuite")]
     public class GraveGraphGraphTestSuite : GraphTestSuite

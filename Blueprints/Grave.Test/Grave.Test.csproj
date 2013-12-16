@@ -7,8 +7,8 @@
     <ProjectGuid>{067ABBDC-F36E-4EF7-B068-654F5D281A46}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>Grave_test</RootNamespace>
-    <AssemblyName>Grave-test</AssemblyName>
+    <RootNamespace>Frontenac.Grave.Tests</RootNamespace>
+    <AssemblyName>Frontenac.Grave.Tests</AssemblyName>
     <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <SolutionDir Condition="$(SolutionDir) == '' Or $(SolutionDir) == '*Undefined*'">..\</SolutionDir>

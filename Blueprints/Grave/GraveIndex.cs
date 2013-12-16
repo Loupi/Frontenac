@@ -4,9 +4,9 @@ using System.Diagnostics.Contracts;
 using System.Linq;
 using Frontenac.Blueprints;
 using Frontenac.Blueprints.Util;
-using Grave.Indexing;
+using Frontenac.Grave.Indexing;
 
-namespace Grave
+namespace Frontenac.Grave
 {
     public class GraveIndex : IIndex
     {

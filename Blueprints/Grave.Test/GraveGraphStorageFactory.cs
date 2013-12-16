@@ -4,9 +4,8 @@ using System.Runtime.Serialization.Formatters.Binary;
 using Frontenac.Blueprints.Util.IO.GML;
 using Frontenac.Blueprints.Util.IO.GraphML;
 using Frontenac.Blueprints.Util.IO.GraphSON;
-using Grave;
 
-namespace Grave_test
+namespace Frontenac.Grave.Tests
 {
     /// <summary>
     ///     Constructs GraveFile instances to load and save GraveGraph instances.

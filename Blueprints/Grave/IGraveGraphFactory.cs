@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Diagnostics.Contracts;
 
-namespace Grave
+namespace Frontenac.Grave
 {
     [ContractClass(typeof (GraveGraphFactoryContract))]
     public interface IGraveGraphFactory : IDisposable

@@ -1,13 +1,13 @@
 ﻿using System;
 using System.Diagnostics.Contracts;
 using System.Runtime.Serialization;
-using Grave.Geo;
+using Frontenac.Grave.Geo;
 using Lucene.Net.Documents;
 using Lucene.Net.Spatial.Prefix;
 using Lucene.Net.Spatial.Prefix.Tree;
 using Spatial4n.Core.Context;
 
-namespace Grave.Indexing.Lucene
+namespace Frontenac.Grave.Indexing.Lucene
 {
     public class LuceneDocument : IDocument
     {

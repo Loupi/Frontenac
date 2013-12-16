@@ -4,10 +4,9 @@ using System.Linq;
 using System.Linq.Expressions;
 using Castle.Components.DictionaryAdapter;
 using Frontenac.Blueprints;
-using Grave.Geo;
-using PropertyDescriptor = Castle.Components.DictionaryAdapter.PropertyDescriptor;
+using Frontenac.Grave.Geo;
 
-namespace Grave
+namespace Frontenac.Grave
 {
     public static class GremlinqHelpers
     {

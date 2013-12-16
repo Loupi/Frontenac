@@ -3,7 +3,7 @@ using System.ComponentModel;
 using Castle.Components.DictionaryAdapter;
 using PropertyDescriptor = Castle.Components.DictionaryAdapter.PropertyDescriptor;
 
-namespace Grave
+namespace Frontenac.Grave
 {
     class DictionaryPropertyConverter : DictionaryBehaviorAttribute, IDictionaryPropertyGetter
     {

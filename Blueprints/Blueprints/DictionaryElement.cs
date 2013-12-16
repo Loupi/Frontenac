@@ -163,8 +163,8 @@ namespace Frontenac.Blueprints
             get { return GetPropertyKeys().Select(GetProperty).ToList(); }
         }
 
-        public virtual bool IsReadOnly { get; protected set; }
-        public virtual bool IsFixedSize { get; protected set; }
+        public bool IsReadOnly { get; protected set; }
+        public bool IsFixedSize { get; protected set; }
 
         public virtual bool ContainsKey(string key)
         {

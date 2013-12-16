@@ -3,10 +3,9 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using Frontenac.Blueprints;
-using Grave;
 using NUnit.Framework;
 
-namespace Grave_test
+namespace Frontenac.Grave.Tests
 {
     public interface IGraveStorage
     {

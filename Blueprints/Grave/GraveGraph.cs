@@ -4,10 +4,10 @@ using System.Diagnostics.Contracts;
 using System.Linq;
 using Frontenac.Blueprints;
 using Frontenac.Blueprints.Util;
-using Grave.Esent;
-using Grave.Indexing;
+using Frontenac.Grave.Esent;
+using Frontenac.Grave.Indexing;
 
-namespace Grave
+namespace Frontenac.Grave
 {
     public class GraveGraph : IKeyIndexableGraph, IIndexableGraph
     {

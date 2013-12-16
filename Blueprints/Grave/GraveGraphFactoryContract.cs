@@ -1,6 +1,6 @@
 ﻿using System.Diagnostics.Contracts;
 
-namespace Grave
+namespace Frontenac.Grave
 {
     [ContractClassFor(typeof (IGraveGraphFactory))]
     public abstract class GraveGraphFactoryContract : IGraveGraphFactory

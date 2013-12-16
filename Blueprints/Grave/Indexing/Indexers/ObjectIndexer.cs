@@ -4,7 +4,7 @@ using System.Security.Principal;
 using System.Text;
 using Fasterflect;
 
-namespace Grave.Indexing.Indexers
+namespace Frontenac.Grave.Indexing.Indexers
 {
     public class ObjectIndexer : Indexer
     {

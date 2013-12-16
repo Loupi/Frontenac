@@ -552,11 +552,11 @@ namespace Frontenac.Blueprints.Util.IO.GraphSON
                 if (value != null)
                 {
 // ReSharper disable PossibleMultipleEnumeration
-                    if (value is IDictionary)
-                        value = CreateJsonMap(value as IDictionary, propertyKeys, showTypes);
-                    else if (value is IElement)
+                    if (value is IElement)
                         value = JsonFromElement((IElement) value, propertyKeys,
                                                 showTypes ? GraphSonMode.EXTENDED : GraphSonMode.NORMAL);
+                    else if (value is IDictionary)
+                        value = CreateJsonMap(value as IDictionary, propertyKeys, showTypes);
                     else if (!(value is string) && value is IEnumerable)
                         value = CreateJsonList(value as IEnumerable, propertyKeys, showTypes);
 // ReSharper restore PossibleMultipleEnumeration

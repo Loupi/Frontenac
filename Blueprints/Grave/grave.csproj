@@ -7,8 +7,8 @@
     <ProjectGuid>{15DB2CDC-CAFD-49E4-B71E-8D5843084065}</ProjectGuid>
     <OutputType>Exe</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>Grave</RootNamespace>
-    <AssemblyName>Grave</AssemblyName>
+    <RootNamespace>Frontenac.Grave</RootNamespace>
+    <AssemblyName>Frontenac.Grave</AssemblyName>
     <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <SolutionDir Condition="$(SolutionDir) == '' Or $(SolutionDir) == '*Undefined*'">..\</SolutionDir>

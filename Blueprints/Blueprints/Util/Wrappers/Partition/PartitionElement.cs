@@ -37,7 +37,7 @@ namespace Frontenac.Blueprints.Util.Wrappers.Partition
         public override IEnumerable<string> GetPropertyKeys()
         {
             return BaseElement.GetPropertyKeys()
-                .Except(new string[] { Graph.PartitionKey })
+                .Except(new[] { Graph.PartitionKey })
                 .ToArray();
         }
 

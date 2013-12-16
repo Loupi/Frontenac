@@ -3,9 +3,9 @@ using System.Collections.Generic;
 using System.Diagnostics.Contracts;
 using System.Threading;
 using Frontenac.Blueprints;
-using Grave.Esent;
+using Frontenac.Grave.Esent;
 
-namespace Grave.Indexing
+namespace Frontenac.Grave.Indexing
 {
     [ContractClass(typeof (IndexingServiceContract))]
     public abstract class IndexingService : IDisposable

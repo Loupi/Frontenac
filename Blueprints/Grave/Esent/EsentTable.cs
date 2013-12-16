@@ -4,10 +4,10 @@ using System.Diagnostics.Contracts;
 using System.Linq;
 using System.Runtime.InteropServices;
 using System.Text;
-using Grave.Esent.Serializers;
+using Frontenac.Grave.Esent.Serializers;
 using Microsoft.Isam.Esent.Interop;
 
-namespace Grave.Esent
+namespace Frontenac.Grave.Esent
 {
     public abstract class EsentTable
     {

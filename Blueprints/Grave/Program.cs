@@ -1,9 +1,9 @@
 ﻿using System.Linq;
 using Frontenac.Blueprints;
-using Grave.Entities;
-using Grave.Geo;
+using Frontenac.Grave.Entities;
+using Frontenac.Grave.Geo;
 
-namespace Grave
+namespace Frontenac.Grave
 {
     public static class Program
     {

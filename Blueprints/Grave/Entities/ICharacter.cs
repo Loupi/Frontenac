@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 
-namespace Grave.Entities
+namespace Frontenac.Grave.Entities
 {
     public interface ICharacter : INamedEntity
     {

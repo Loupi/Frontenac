@@ -6,12 +6,12 @@ using Castle.MicroKernel.Registration;
 using Castle.MicroKernel.SubSystems.Configuration;
 using Castle.Windsor;
 using Frontenac.Blueprints;
-using Grave.Esent;
-using Grave.Esent.Serializers;
-using Grave.Properties;
+using Frontenac.Grave.Esent;
+using Frontenac.Grave.Esent.Serializers;
+using Frontenac.Grave.Properties;
 using Microsoft.Isam.Esent.Interop;
 
-namespace Grave.Installers
+namespace Frontenac.Grave.Installers
 {
     public class InstanceStarter : IStartable
     {

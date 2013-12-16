@@ -5,7 +5,7 @@ using Castle.Facilities.TypedFactory;
 using Castle.Windsor;
 using Castle.Windsor.Installer;
 
-namespace Grave
+namespace Frontenac.Grave
 {
     public static class GraveFactory
     {

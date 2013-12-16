@@ -3,7 +3,7 @@ using Frontenac.Blueprints.Impls;
 using Frontenac.Blueprints.Util.IO.GraphML;
 using NUnit.Framework;
 
-namespace Grave_test
+namespace Frontenac.Grave.Tests
 {
     public abstract class GraveBenchmarkTestSuite : TestSuite
     {

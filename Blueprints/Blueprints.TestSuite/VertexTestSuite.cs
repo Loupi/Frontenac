@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Linq;
 using Frontenac.Blueprints.Impls;
-using Frontenac.Blueprints.Impls.Sail;
 using Frontenac.Blueprints.Util;
 using NUnit.Framework;
 
@@ -338,20 +337,6 @@ namespace Frontenac.Blueprints
                         Assert.AreEqual(20, v2.GetProperty("key2"));
                     }
                 }
-                else if (graph.Features.IsRdfModel)
-                {
-                    var v1 = graph.AddVertex("\"1\"^^<http://www.w3.org/2001/XMLSchema#int>");
-                    Assert.AreEqual("http://www.w3.org/2001/XMLSchema#int", v1.GetProperty(SailTokens.Datatype));
-                    Assert.AreEqual(1, v1.GetProperty(SailTokens.Value));
-                    Assert.Null(v1.GetProperty(SailTokens.Language));
-                    Assert.Null(v1.GetProperty("random something"));
-
-                    var v2 = graph.AddVertex("\"hello\"@en");
-                    Assert.AreEqual("en", v2.GetProperty(SailTokens.Language));
-                    Assert.AreEqual("hello", v2.GetProperty(SailTokens.Value));
-                    Assert.Null(v2.GetProperty(SailTokens.Datatype));
-                    Assert.Null(v2.GetProperty("random something"));
-                }
             }
             finally
             {
@@ -385,33 +370,6 @@ namespace Frontenac.Blueprints
                     Assert.AreEqual(50, vertices.Count());
                     foreach (var vertex in vertices)
                         Assert.AreEqual(15, vertex.GetPropertyKeys().Count());
-                }
-                else if (graph.Features.IsRdfModel)
-                {
-                    var vertices = new HashSet<IVertex>();
-                    StopWatch();
-                    for (var i = 0; i < 50; i++)
-                    {
-                        var vertex = graph.AddVertex(string.Concat("\"", Guid.NewGuid().ToString(), "\""));
-                        for (var j = 0; j < 15; j++)
-                            vertex.SetProperty(SailTokens.Datatype, "http://www.w3.org/2001/XMLSchema#anyURI");
-
-                        vertices.Add(vertex);
-                    }
-                    PrintPerformance(graph.ToString(), 15*50, "vertex properties added (with vertices being added too)",
-                                     StopWatch());
-                    if (graph.Features.SupportsVertexIteration)
-                        Assert.AreEqual(Count(graph.GetVertices()), 50);
-                    Assert.AreEqual(vertices.Count(), 50);
-                    foreach (var vertex in vertices)
-                    {
-                        Assert.AreEqual(3, vertex.GetPropertyKeys().Count());
-                        Assert.True(vertex.GetPropertyKeys().Contains(SailTokens.Datatype));
-                        Assert.AreEqual("http://www.w3.org/2001/XMLSchema#anyURI",
-                                        vertex.GetProperty(SailTokens.Datatype));
-                        Assert.True(vertex.GetPropertyKeys().Contains(SailTokens.Value));
-                        Assert.AreEqual("literal", vertex.GetProperty(SailTokens.Kind));
-                    }
                 }
             }
             finally

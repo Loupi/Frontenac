@@ -1,7 +1,7 @@
-﻿using Grave.Esent.Serializers;
+﻿using Frontenac.Grave.Esent.Serializers;
 using Microsoft.Isam.Esent.Interop;
 
-namespace Grave.Esent
+namespace Frontenac.Grave.Esent
 {
     public class EsentContext : EsentContextBase
     {

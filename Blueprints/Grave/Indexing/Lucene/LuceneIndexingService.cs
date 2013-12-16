@@ -4,10 +4,9 @@ using System.Diagnostics.Contracts;
 using System.IO;
 using System.Linq;
 using Frontenac.Blueprints;
-using Grave.Esent;
-using Grave.Geo;
+using Frontenac.Grave.Esent;
+using Frontenac.Grave.Geo;
 using Lucene.Net.Analysis;
-using Lucene.Net.Analysis.Standard;
 using Lucene.Net.Contrib.Management;
 using Lucene.Net.Documents;
 using Lucene.Net.Index;
@@ -21,9 +20,8 @@ using Spatial4n.Core.Context;
 using Spatial4n.Core.Distance;
 using Spatial4n.Core.Shapes;
 using Directory = System.IO.Directory;
-using Version = Lucene.Net.Util.Version;
 
-namespace Grave.Indexing.Lucene
+namespace Frontenac.Grave.Indexing.Lucene
 {
     public class LuceneIndexingService : IndexingService
     {

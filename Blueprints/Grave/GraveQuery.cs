@@ -3,9 +3,9 @@ using System.Collections.Generic;
 using System.Diagnostics.Contracts;
 using System.Linq;
 using Frontenac.Blueprints;
-using Grave.Indexing;
+using Frontenac.Grave.Indexing;
 
-namespace Grave
+namespace Frontenac.Grave
 {
     public class GraveQuery : IQuery
     {

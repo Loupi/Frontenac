@@ -1128,8 +1128,8 @@ namespace Frontenac.Blueprints.Util.IO.GraphSON
             Assert.True(json.ContainsKey("v"));
 
             IDictionary<string, JToken> innerJson = (JObject) json["v"];
-            Assert.True(innerJson.ContainsKey("x"));
-            Assert.True(innerJson.ContainsKey("z"));
+            Assert.False(innerJson.ContainsKey("x"));
+            Assert.False(innerJson.ContainsKey("z"));
             Assert.True(innerJson.ContainsKey("y"));
             Assert.False(innerJson.ContainsKey("v"));
         }

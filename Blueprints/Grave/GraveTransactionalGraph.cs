@@ -1,11 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
 using Frontenac.Blueprints;
-using Grave.Esent;
-using Grave.Indexing;
+using Frontenac.Grave.Esent;
+using Frontenac.Grave.Indexing;
 using Microsoft.Isam.Esent.Interop;
 
-namespace Grave
+namespace Frontenac.Grave
 {
     public class GraveTransactionalGraph : GraveGraph, ITransactionalGraph, IDisposable
     {

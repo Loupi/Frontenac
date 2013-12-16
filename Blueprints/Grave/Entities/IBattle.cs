@@ -1,6 +1,6 @@
-﻿using Grave.Geo;
+﻿using Frontenac.Grave.Geo;
 
-namespace Grave.Entities
+namespace Frontenac.Grave.Entities
 {
     public interface IBattle
     {

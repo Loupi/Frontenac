@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Diagnostics.Contracts;
 
-namespace Grave.Indexing
+namespace Frontenac.Grave.Indexing
 {
     public class IndexCollection
     {

@@ -4,9 +4,9 @@ using System.Diagnostics.Contracts;
 using System.Linq;
 using Frontenac.Blueprints;
 using Frontenac.Blueprints.Util;
-using Grave.Esent;
+using Frontenac.Grave.Esent;
 
-namespace Grave
+namespace Frontenac.Grave
 {
     public class GraveVertex : GraveElement, IVertex
     {
