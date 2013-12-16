@@ -142,7 +142,6 @@
     <Compile Include="Features.cs" />
     <Compile Include="IGraph.cs" />
     <Compile Include="ICloseableIterable.cs" />
-    <Compile Include="Impls\Sail\SailTokens.cs" />
     <Compile Include="Impls\TG\TinkerEdge.cs" />
     <Compile Include="Impls\TG\TinkerElement.cs" />
     <Compile Include="Impls\TG\TinkerGraph.cs" />
