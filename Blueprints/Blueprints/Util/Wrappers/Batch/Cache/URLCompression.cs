@@ -32,7 +32,7 @@ namespace Frontenac.Blueprints.Util.Wrappers.Batch.Cache
                 _urlPrefix[url[0]] = prefix;
             }
 
-            return prefix + url[1];
+            return string.Concat(prefix, url.Length > 1 ? url[1] : string.Empty);
         }
 
         private static string[] SplitUrl(string url)
@@ -84,8 +84,10 @@ namespace Frontenac.Blueprints.Util.Wrappers.Batch.Cache
 
             do
             {
-                buffer[--i] = baseChars[value%targetBase];
-                value = value/targetBase;
+                if (buffer.Length <= --i) continue;
+                var idx = value%targetBase;
+                if (baseChars.Count > idx) buffer[i] = baseChars[idx];
+                value = value / targetBase;
             } while (value > 0);
 
             var result = new char[32 - i];

@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Diagnostics.Contracts;
 using Frontenac.Blueprints.Contracts;
 
@@ -33,7 +34,7 @@ namespace Frontenac.Blueprints
         /// <param name="key">the key of the indexed elements</param>
         /// <param name="value">the value of the indexed elements</param>
         /// <returns>an IEnumerable of elements that have a particular key/value in the index</returns>
-        ICloseableIterable<IElement> Get(string key, object value);
+        IEnumerable<IElement> Get(string key, object value);
 
         /// <summary>
         ///     Get all the elements that are indexed by the provided key and specified query object.
@@ -43,7 +44,7 @@ namespace Frontenac.Blueprints
         /// <param name="key">the key of the indexed elements</param>
         /// <param name="query">the query object for the indexed elements' keys</param>
         /// <returns>an IEnumerable of elements that have a particular key/value in the index that match the query object</returns>
-        ICloseableIterable<IElement> Query(string key, object query);
+        IEnumerable<IElement> Query(string key, object query);
 
         /// <summary>
         ///     Get a count of elements with a particular key/value pair.

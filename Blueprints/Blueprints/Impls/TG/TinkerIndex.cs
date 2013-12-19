@@ -52,7 +52,7 @@ namespace Frontenac.Blueprints.Impls.TG
             objects.Add(element);
         }
 
-        public ICloseableIterable<IElement> Get(string key, object value)
+        public IEnumerable<IElement> Get(string key, object value)
         {
             var keyMap = Index.Get(key);
             if (null == keyMap)
@@ -64,7 +64,7 @@ namespace Frontenac.Blueprints.Impls.TG
                        : new WrappingCloseableIterable<IElement>(new List<IElement>(set));
         }
 
-        public ICloseableIterable<IElement> Query(string key, object query)
+        public IEnumerable<IElement> Query(string key, object query)
         {
             throw new NotImplementedException();
         }

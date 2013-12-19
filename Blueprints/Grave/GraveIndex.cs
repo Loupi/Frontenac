@@ -35,7 +35,7 @@ namespace Frontenac.Grave
             return _indexingService.Get(_indexType, _indexName, key, value, true).Count();
         }
 
-        public ICloseableIterable<IElement> Get(string key, object value)
+        public IEnumerable<IElement> Get(string key, object value)
         {
             _graph.WaitForGeneration();
 
@@ -63,7 +63,7 @@ namespace Frontenac.Grave
             _graph.UpdateGeneration(generation);
         }
 
-        public ICloseableIterable<IElement> Query(string key, object query)
+        public IEnumerable<IElement> Query(string key, object query)
         {
             _graph.WaitForGeneration();
 

@@ -25,14 +25,14 @@ namespace Frontenac.Blueprints.Util.Wrappers.ReadOnly
             throw new InvalidOperationException(ReadOnlyTokens.MutateErrorMessage);
         }
 
-        public ICloseableIterable<IElement> Get(string key, object value)
+        public IEnumerable<IElement> Get(string key, object value)
         {
             if (typeof (IVertex).IsAssignableFrom(Type))
                 return new ReadOnlyVertexIterable((IEnumerable<IVertex>) RawIndex.Get(key, value));
             return new ReadOnlyEdgeIterable((IEnumerable<IEdge>) RawIndex.Get(key, value));
         }
 
-        public ICloseableIterable<IElement> Query(string key, object value)
+        public IEnumerable<IElement> Query(string key, object value)
         {
             if (typeof (IVertex).IsAssignableFrom(Type))
                 return new ReadOnlyVertexIterable((IEnumerable<IVertex>) RawIndex.Query(key, value));

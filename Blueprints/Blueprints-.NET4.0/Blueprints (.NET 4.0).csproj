@@ -275,9 +275,6 @@
     <Compile Include="..\Blueprints\IKeyIndexableGraph.cs">
       <Link>IKeyIndexableGraph.cs</Link>
     </Compile>
-    <Compile Include="..\Blueprints\Impls\Sail\SailTokens.cs">
-      <Link>Impls\Sail\SailTokens.cs</Link>
-    </Compile>
     <Compile Include="..\Blueprints\Impls\TG\ITinkerStorage.cs">
       <Link>Impls\TG\ITinkerStorage.cs</Link>
     </Compile>

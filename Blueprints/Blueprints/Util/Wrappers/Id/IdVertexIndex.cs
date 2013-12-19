@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Diagnostics.Contracts;
 
 namespace Frontenac.Blueprints.Util.Wrappers.Id
@@ -32,12 +33,12 @@ namespace Frontenac.Blueprints.Util.Wrappers.Id
             _baseIndex.Put(key, value, GetBaseElement(element));
         }
 
-        public ICloseableIterable<IElement> Get(string key, object value)
+        public IEnumerable<IElement> Get(string key, object value)
         {
             return new IdVertexIterable(_baseIndex.Get(key, value), _idGraph);
         }
 
-        public ICloseableIterable<IElement> Query(string key, object value)
+        public IEnumerable<IElement> Query(string key, object value)
         {
             return new IdVertexIterable(_baseIndex.Query(key, value), _idGraph);
         }

@@ -36,14 +36,14 @@ namespace Frontenac.Blueprints.Util.Wrappers.Event
             if (eventElement != null) RawIndex.Put(key, value, eventElement.GetBaseElement());
         }
 
-        public ICloseableIterable<IElement> Get(string key, object value)
+        public IEnumerable<IElement> Get(string key, object value)
         {
             if (typeof (IVertex).IsAssignableFrom(Type))
                 return new EventVertexIterable((IEnumerable<IVertex>) RawIndex.Get(key, value), _eventGraph);
             return new EventEdgeIterable((IEnumerable<IEdge>) RawIndex.Get(key, value), _eventGraph);
         }
 
-        public ICloseableIterable<IElement> Query(string key, object value)
+        public IEnumerable<IElement> Query(string key, object value)
         {
             if (typeof (IVertex).IsAssignableFrom(Type))
                 return new EventVertexIterable((IEnumerable<IVertex>) RawIndex.Query(key, value), _eventGraph);

@@ -15,19 +15,17 @@ namespace Frontenac.Blueprints.Util.Wrappers.Wrapped
 
         public IEnumerable<IEdge> GetEdges(Direction direction, params string[] labels)
         {
-            return new WrappedEdgeIterable(Vertex.GetEdges(direction, labels));
+            return Vertex.GetEdges(direction, labels);
         }
 
         public IEnumerable<IVertex> GetVertices(Direction direction, params string[] labels)
         {
-            return new WrappedVertexIterable(Vertex.GetVertices(direction, labels));
+            return Vertex.GetVertices(direction, labels);
         }
 
         public IVertexQuery Query()
         {
-            return new WrapperVertexQuery(Vertex.Query(),
-                                          t => new WrappedEdgeIterable(t.Edges()),
-                                          t => new WrappedVertexIterable(t.Vertices()));
+            return new WrapperVertexQuery(Vertex.Query(), t => t.Edges(), t => t.Vertices());
         }
 
         public IEdge AddEdge(string label, IVertex vertex)

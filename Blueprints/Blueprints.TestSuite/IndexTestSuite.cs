@@ -169,7 +169,6 @@ namespace Frontenac.Blueprints
                 var hits = index.Get("dog", "puppy");
                 var counter = hits.Cast<IVertex>().Count();
                 Assert.AreEqual(counter, 10);
-                hits.Dispose();
             }
             finally
             {

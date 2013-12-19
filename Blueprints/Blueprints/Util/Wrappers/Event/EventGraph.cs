@@ -91,8 +91,11 @@ namespace Frontenac.Blueprints.Util.Wrappers.Event
                 vertexToRemove = (vertex as EventVertex).Vertex;
 
             var props = vertex.GetProperties();
-            BaseGraph.RemoveVertex(vertexToRemove);
-            OnVertexRemoved(vertex, props);
+            if (vertexToRemove != null)
+            {
+                BaseGraph.RemoveVertex(vertexToRemove);
+                OnVertexRemoved(vertex, props);
+            }
         }
 
         public IEnumerable<IVertex> GetVertices()
@@ -118,9 +121,9 @@ namespace Frontenac.Blueprints.Util.Wrappers.Event
             if (inVertex is EventVertex)
                 inVertexToSet = (inVertex as EventVertex).Vertex;
 
+            if(inVertexToSet == null || outVertexToSet == null)
+                throw new InvalidOperationException();
             var edge = BaseGraph.AddEdge(id, outVertexToSet, inVertexToSet, label);
-            if (edge == null)
-                return null;
             OnEdgeAdded(edge);
             return new EventEdge(edge, this);
         }

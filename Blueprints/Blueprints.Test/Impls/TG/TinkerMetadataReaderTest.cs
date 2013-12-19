@@ -39,12 +39,10 @@ namespace Frontenac.Blueprints.Impls.TG
             var idxAge = _graph.GetIndex("age", typeof (IVertex));
             var vertices = idxAge.Get("age", 27);
             Assert.AreEqual(1, vertices.Count());
-            vertices.Dispose();
 
             var idxWeight = _graph.GetIndex("weight", typeof (IEdge));
             var edges = idxWeight.Get("weight", 0.5);
             Assert.AreEqual(1, edges.Count());
-            edges.Dispose();
         }
 
         [Test]

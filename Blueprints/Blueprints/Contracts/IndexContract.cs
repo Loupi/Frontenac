@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Diagnostics.Contracts;
 
 namespace Frontenac.Blueprints.Contracts
@@ -31,17 +32,17 @@ namespace Frontenac.Blueprints.Contracts
             Contract.Requires(Type.IsInstanceOfType(element));
         }
 
-        public ICloseableIterable<IElement> Get(string key, object value)
+        public IEnumerable<IElement> Get(string key, object value)
         {
             Contract.Requires(!string.IsNullOrWhiteSpace(key));
-            Contract.Ensures(Contract.Result<ICloseableIterable<IElement>>() != null);
+            Contract.Ensures(Contract.Result<IEnumerable<IElement>>() != null);
             return null;
         }
 
-        public ICloseableIterable<IElement> Query(string key, object query)
+        public IEnumerable<IElement> Query(string key, object query)
         {
             Contract.Requires(!string.IsNullOrWhiteSpace(key));
-            Contract.Ensures(Contract.Result<ICloseableIterable<IElement>>() != null);
+            Contract.Ensures(Contract.Result<IEnumerable<IElement>>() != null);
             return null;
         }
 

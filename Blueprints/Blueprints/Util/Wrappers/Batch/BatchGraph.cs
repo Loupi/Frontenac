@@ -175,9 +175,12 @@ namespace Frontenac.Blueprints.Util.Wrappers.Batch
 
             _previousOutVertexId = outVertex.Id; //keep track of the previous out vertex id
 
-            _currentEdgeCached = _baseGraph.AddEdge(id, ov, iv, label);
-            if (_edgeIdKey != null && id != null)
-                _currentEdgeCached.SetProperty(_edgeIdKey, id);
+            if (ov != null && iv != null)
+            {
+                _currentEdgeCached = _baseGraph.AddEdge(id, ov, iv, label);
+                if (_edgeIdKey != null && id != null)
+                    _currentEdgeCached.SetProperty(_edgeIdKey, id);
+            }
 
             _currentEdge = new BatchEdge(this);
             return _currentEdge;
@@ -480,6 +483,7 @@ namespace Frontenac.Blueprints.Util.Wrappers.Batch
             {
                 Contract.Requires(id != null);
                 Contract.Requires(batchGraph != null);
+                Contract.Ensures(_batchGraph != null);
 
                 if (id == null) throw new ArgumentNullException("id");
                 _externalId = id;
@@ -508,7 +512,7 @@ namespace Frontenac.Blueprints.Util.Wrappers.Batch
 
             public override void SetProperty(string key, object value)
             {
-                _batchGraph.GetCachedVertex(_externalId).SetProperty(key, value);
+                if (_batchGraph != null) _batchGraph.GetCachedVertex(_externalId).SetProperty(key, value);
             }
 
             public override object Id

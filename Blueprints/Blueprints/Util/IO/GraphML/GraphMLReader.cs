@@ -287,12 +287,13 @@ namespace Frontenac.Blueprints.Util.IO.GraphML
                         switch (elementName)
                         {
                             case GraphMlTokens.Node:
+                                if (vertexId != null)
                                 {
                                     var currentVertex = graph.GetVertex(vertexId) ?? graph.AddVertex(vertexId);
                                     if (vertexProps != null)
                                     {
                                         foreach (var prop in vertexProps)
-                                            currentVertex.SetProperty(prop.Key, prop.Value);    
+                                            currentVertex.SetProperty(prop.Key, prop.Value);
                                     }
 
                                     vertexId = null;
@@ -301,12 +302,16 @@ namespace Frontenac.Blueprints.Util.IO.GraphML
                                 }
                                 break;
                             case GraphMlTokens.Edge:
+                                if (edgeEndVertices.Length > 1)
                                 {
                                     var currentEdge = graph.AddEdge(edgeId, edgeEndVertices[0], edgeEndVertices[1], edgeLabel);
 
-                                    foreach (var prop in edgeProps)
-                                        currentEdge.SetProperty(prop.Key, prop.Value);
-
+                                    if(edgeProps != null)
+                                    {
+                                        foreach (var prop in edgeProps)
+                                            currentEdge.SetProperty(prop.Key, prop.Value);
+                                    }
+                                    
                                     edgeId = null;
                                     edgeLabel = null;
                                     edgeEndVertices = null;

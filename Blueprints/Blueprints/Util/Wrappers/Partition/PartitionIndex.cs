@@ -48,14 +48,14 @@ namespace Frontenac.Blueprints.Util.Wrappers.Partition
                 RawIndex.Put(key, value, partitionElement.GetBaseElement());
         }
 
-        public ICloseableIterable<IElement> Get(string key, object value)
+        public IEnumerable<IElement> Get(string key, object value)
         {
             if (typeof (IVertex).IsAssignableFrom(Type))
                 return new PartitionVertexIterable((IEnumerable<IVertex>) RawIndex.Get(key, value), Graph);
             return new PartitionEdgeIterable((IEnumerable<IEdge>) RawIndex.Get(key, value), Graph);
         }
 
-        public ICloseableIterable<IElement> Query(string key, object value)
+        public IEnumerable<IElement> Query(string key, object value)
         {
             if (typeof (IVertex).IsAssignableFrom(Type))
                 return new PartitionVertexIterable((IEnumerable<IVertex>) RawIndex.Query(key, value), Graph);
