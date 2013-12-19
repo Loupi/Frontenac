@@ -34,14 +34,14 @@ namespace Frontenac.Blueprints.Util.Wrappers.Wrapped
         {
             var wrappedElement = element as WrappedElement;
             if (wrappedElement != null)
-                RawIndex.Remove(key, value, wrappedElement.GetBaseElement());
+                RawIndex.Remove(key, value, wrappedElement.Element);
         }
 
         public void Put(string key, object value, IElement element)
         {
             var wrappedElement = element as WrappedElement;
             if (wrappedElement != null)
-                RawIndex.Put(key, value, wrappedElement.GetBaseElement());
+                RawIndex.Put(key, value, wrappedElement.Element);
         }
 
         public ICloseableIterable<IElement> Get(string key, object value)

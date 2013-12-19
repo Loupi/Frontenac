@@ -10,6 +10,8 @@ namespace Frontenac.Blueprints
 
         public static TValue Get<TKey, TValue>(this IDictionary<TKey, TValue> dictionary, TKey key)
         {
+            Contract.Requires(dictionary != null);
+
             TValue ret;
             dictionary.TryGetValue(key, out ret);
             return ret;
@@ -17,6 +19,8 @@ namespace Frontenac.Blueprints
 
         public static TValue Get<TValue>(this IList<TValue> list, int at)
         {
+            Contract.Requires(list != null);
+
             var ret = list.ElementAtOrDefault(at);
             return ret;
         }
@@ -34,6 +38,8 @@ namespace Frontenac.Blueprints
 
         public static TValue Put<TKey, TValue>(this IDictionary<TKey, TValue> dictionary, TKey key, TValue value)
         {
+            Contract.Requires(dictionary != null);
+
             TValue ret;
             if (dictionary.TryGetValue(key, out ret))
                 dictionary[key] = value;

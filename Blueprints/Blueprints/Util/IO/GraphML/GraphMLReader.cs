@@ -263,7 +263,7 @@ namespace Frontenac.Blueprints.Util.IO.GraphML
                                                 vertexMappedIdMap[vertexId] = value;
                                                 vertexId = value;
                                             }
-                                            else
+                                            else if(vertexProps != null)
                                                 vertexProps[attributeName] = TypeCastValue(key, value, keyTypesMaps);
                                         }
                                         else if (inEdge)
@@ -272,7 +272,7 @@ namespace Frontenac.Blueprints.Util.IO.GraphML
                                                 edgeLabel = value;
                                             else if ((edgeIdKey != null) && (key == edgeIdKey))
                                                 edgeId = value;
-                                            else
+                                            else if(edgeProps != null)
                                                 edgeProps[attributeName] = TypeCastValue(key, value, keyTypesMaps);
                                         }
                                     }
@@ -289,9 +289,11 @@ namespace Frontenac.Blueprints.Util.IO.GraphML
                             case GraphMlTokens.Node:
                                 {
                                     var currentVertex = graph.GetVertex(vertexId) ?? graph.AddVertex(vertexId);
-
-                                    foreach (var prop in vertexProps)
-                                        currentVertex.SetProperty(prop.Key, prop.Value);
+                                    if (vertexProps != null)
+                                    {
+                                        foreach (var prop in vertexProps)
+                                            currentVertex.SetProperty(prop.Key, prop.Value);    
+                                    }
 
                                     vertexId = null;
                                     vertexProps = null;
@@ -300,8 +302,7 @@ namespace Frontenac.Blueprints.Util.IO.GraphML
                                 break;
                             case GraphMlTokens.Edge:
                                 {
-                                    var currentEdge = graph.AddEdge(edgeId, edgeEndVertices[0], edgeEndVertices[1],
-                                                                    edgeLabel);
+                                    var currentEdge = graph.AddEdge(edgeId, edgeEndVertices[0], edgeEndVertices[1], edgeLabel);
 
                                     foreach (var prop in edgeProps)
                                         currentEdge.SetProperty(prop.Key, prop.Value);

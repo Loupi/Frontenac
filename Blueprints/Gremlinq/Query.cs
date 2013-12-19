@@ -2,9 +2,9 @@
 
 namespace Frontenac.Gremlinq
 {
-    public class QueryWrapper<TModel> : IQueryWrapper<TModel>
+    public class Query<TModel> : IQuery<TModel>
     {
-        internal QueryWrapper(IQuery query)
+        internal Query(IQuery query)
         {
             InnerQuery = query;
         }

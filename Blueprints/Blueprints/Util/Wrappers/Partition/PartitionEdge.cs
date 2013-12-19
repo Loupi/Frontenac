@@ -4,28 +4,31 @@ namespace Frontenac.Blueprints.Util.Wrappers.Partition
 {
     public class PartitionEdge : PartitionElement, IEdge
     {
-        private readonly IEdge _baseEdge;
+        private readonly IEdge _edge;
 
-        public PartitionEdge(IEdge baseEdge, PartitionGraph graph)
-            : base(baseEdge, graph)
+        public PartitionEdge(IEdge edge, PartitionGraph graph)
+            : base(edge, graph)
         {
-            _baseEdge = baseEdge;
+            Contract.Requires(edge != null);
+            Contract.Requires(graph != null);
+
+            _edge = edge;
         }
 
         public IVertex GetVertex(Direction direction)
         {
-            return new PartitionVertex(_baseEdge.GetVertex(direction), Graph);
+            return new PartitionVertex(_edge.GetVertex(direction), Graph);
         }
 
         public string Label
         {
-            get { return _baseEdge.Label; }
+            get { return _edge.Label; }
         }
 
         public IEdge GetBaseEdge()
         {
             Contract.Ensures(Contract.Result<IEdge>() != null);
-            return _baseEdge;
+            return _edge;
         }
     }
 }

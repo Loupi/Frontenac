@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics.Contracts;
 
 namespace Frontenac.Blueprints.Util.Wrappers.Wrapped
 {
@@ -10,6 +11,8 @@ namespace Frontenac.Blueprints.Util.Wrappers.Wrapped
         public WrappedIndexableGraph(IIndexableGraph baseIndexableGraph)
             : base(baseIndexableGraph)
         {
+            Contract.Requires(baseIndexableGraph != null);
+
             _baseIndexableGraph = baseIndexableGraph;
         }
 

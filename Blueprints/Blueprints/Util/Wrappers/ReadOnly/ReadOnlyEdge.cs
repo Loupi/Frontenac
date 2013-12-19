@@ -9,6 +9,8 @@ namespace Frontenac.Blueprints.Util.Wrappers.ReadOnly
         public ReadOnlyEdge(IEdge baseEdge)
             : base(baseEdge)
         {
+            Contract.Requires(baseEdge != null);
+
             _baseEdge = baseEdge;
         }
 

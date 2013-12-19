@@ -8,12 +8,15 @@ namespace Frontenac.Blueprints.Util.Wrappers.Event
     /// </summary>
     public class EventEdge : EventElement, IEdge
     {
-        private readonly IEdge _baseEdge;
+        private readonly IEdge _edge;
 
-        public EventEdge(IEdge baseEdge, EventGraph eventGraph)
-            : base(baseEdge, eventGraph)
+        public EventEdge(IEdge edge, EventGraph eventGraph)
+            : base(edge, eventGraph)
         {
-            _baseEdge = baseEdge;
+            Contract.Requires(edge != null);
+            Contract.Requires(eventGraph != null);
+
+            _edge = edge;
         }
 
         public IVertex GetVertex(Direction direction)
@@ -23,14 +26,14 @@ namespace Frontenac.Blueprints.Util.Wrappers.Event
 
         public string Label
         {
-            get { return _baseEdge.Label; }
+            get { return _edge.Label; }
         }
 
         public IEdge GetBaseEdge()
         {
             Contract.Ensures(Contract.Result<IEdge>() != null);
 
-            return _baseEdge;
+            return _edge;
         }
     }
 }

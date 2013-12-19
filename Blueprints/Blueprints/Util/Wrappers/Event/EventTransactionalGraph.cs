@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Diagnostics.Contracts;
 
 namespace Frontenac.Blueprints.Util.Wrappers.Event
 {
@@ -9,6 +10,8 @@ namespace Frontenac.Blueprints.Util.Wrappers.Event
         public EventTransactionalGraph(ITransactionalGraph transactionalGraph)
             : base(transactionalGraph)
         {
+            Contract.Requires(transactionalGraph != null);
+
             TransactionalGraph = transactionalGraph;
             Trigger = new EventTrigger(this, true);
         }

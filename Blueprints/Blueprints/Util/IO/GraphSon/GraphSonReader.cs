@@ -208,12 +208,8 @@ namespace Frontenac.Blueprints.Util.IO.GraphSON
                                 while (jp.Read() && jp.TokenType != JsonToken.EndArray)
                                 {
                                     var node = (JObject) serializer.Deserialize(jp);
-                                    var inV =
-                                        graph.GetVertex(
-                                            GraphSonUtility.GetTypedValueFromJsonNode(node[GraphSonTokens.InV]));
-                                    var outV =
-                                        graph.GetVertex(
-                                            GraphSonUtility.GetTypedValueFromJsonNode(node[GraphSonTokens.OutV]));
+                                    var inV = graph.GetVertex(GraphSonUtility.GetTypedValueFromJsonNode(node[GraphSonTokens.InV]));
+                                    var outV = graph.GetVertex(GraphSonUtility.GetTypedValueFromJsonNode(node[GraphSonTokens.OutV]));
                                     graphson.EdgeFromJson(node, outV, inV);
                                 }
                                 break;

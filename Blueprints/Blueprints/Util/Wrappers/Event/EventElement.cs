@@ -10,26 +10,26 @@ namespace Frontenac.Blueprints.Util.Wrappers.Event
     /// </summary>
     public abstract class EventElement : DictionaryElement
     {
-        protected readonly IElement BaseElement;
+        protected readonly IElement Element;
         protected readonly EventGraph EventGraph;
 
-        protected EventElement(IElement baseElement, EventGraph eventGraph)
+        protected EventElement(IElement element, EventGraph eventGraph)
         {
-            Contract.Requires(baseElement != null);
+            Contract.Requires(element != null);
             Contract.Requires(eventGraph != null);
 
-            BaseElement = baseElement;
+            Element = element;
             EventGraph = eventGraph;
         }
 
         public override IEnumerable<string> GetPropertyKeys()
         {
-            return BaseElement.GetPropertyKeys();
+            return Element.GetPropertyKeys();
         }
 
         public override object Id
         {
-            get { return BaseElement.Id; }
+            get { return Element.Id; }
         }
 
         /// <note>
@@ -37,7 +37,7 @@ namespace Frontenac.Blueprints.Util.Wrappers.Event
         /// </note>
         public override object RemoveProperty(string key)
         {
-            var propertyRemoved = BaseElement.RemoveProperty(key);
+            var propertyRemoved = Element.RemoveProperty(key);
 
             var vertex = this as IVertex;
             if (vertex != null)
@@ -54,7 +54,7 @@ namespace Frontenac.Blueprints.Util.Wrappers.Event
 
         public override object GetProperty(string key)
         {
-            return BaseElement.GetProperty(key);
+            return Element.GetProperty(key);
         }
 
         /// <note>
@@ -62,8 +62,8 @@ namespace Frontenac.Blueprints.Util.Wrappers.Event
         /// </note>
         public override void SetProperty(string key, object value)
         {
-            object oldValue = BaseElement.GetProperty(key);
-            BaseElement.SetProperty(key, value);
+            object oldValue = Element.GetProperty(key);
+            Element.SetProperty(key, value);
 
             var vertex = this as IVertex;
             if (vertex != null)
@@ -119,12 +119,12 @@ namespace Frontenac.Blueprints.Util.Wrappers.Event
 
         public override string ToString()
         {
-            return BaseElement.ToString();
+            return Element.ToString();
         }
 
         public override int GetHashCode()
         {
-            return BaseElement.GetHashCode();
+            return Element.GetHashCode();
         }
 
         public override bool Equals(object obj)
@@ -136,7 +136,7 @@ namespace Frontenac.Blueprints.Util.Wrappers.Event
         {
             Contract.Ensures(Contract.Result<IElement>() != null);
 
-            return BaseElement;
+            return Element;
         }
     }
 }

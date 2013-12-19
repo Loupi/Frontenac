@@ -9,31 +9,28 @@ namespace Frontenac.Blueprints.Util.Wrappers.Event
     /// </summary>
     public class EventVertex : EventElement, IVertex
     {
-        private readonly IVertex _baseVertex;
-
-        public EventVertex(IVertex baseVertex, EventGraph eventGraph)
-            : base(baseVertex, eventGraph)
+        public EventVertex(IVertex vertex, EventGraph eventGraph)
+            : base(vertex, eventGraph)
         {
-            _baseVertex = baseVertex;
+            Contract.Requires(vertex != null);
+            Contract.Requires(eventGraph != null);
+
+            Vertex = vertex;
         }
 
         public IEnumerable<IEdge> GetEdges(Direction direction, params string[] labels)
         {
-            return _baseVertex != null
-                       ? new EventEdgeIterable(_baseVertex.GetEdges(direction, labels), EventGraph)
-                       : null;
+            return new EventEdgeIterable(Vertex.GetEdges(direction, labels), EventGraph);
         }
 
         public IEnumerable<IVertex> GetVertices(Direction direction, params string[] labels)
         {
-            return _baseVertex != null
-                       ? new EventVertexIterable(_baseVertex.GetVertices(direction, labels), EventGraph)
-                       : null;
+            return new EventVertexIterable(Vertex.GetVertices(direction, labels), EventGraph);
         }
 
         public IVertexQuery Query()
         {
-            return new WrapperVertexQuery(_baseVertex.Query(),
+            return new WrapperVertexQuery(Vertex.Query(),
                                           t => new EventEdgeIterable(t.Edges(), EventGraph),
                                           t => new EventVertexIterable(t.Vertices(), EventGraph));
         }
@@ -43,11 +40,6 @@ namespace Frontenac.Blueprints.Util.Wrappers.Event
             return EventGraph.AddEdge(null, this, vertex, label);
         }
 
-        public IVertex GetBaseVertex()
-        {
-            Contract.Ensures(Contract.Result<IVertex>() != null);
-
-            return _baseVertex;
-        }
+        public IVertex Vertex { get; protected set; }
     }
 }

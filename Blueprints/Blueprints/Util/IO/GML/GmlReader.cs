@@ -32,6 +32,7 @@ namespace Frontenac.Blueprints.Util.IO.GML
         public GmlReader(IGraph graph)
             : this(graph, DefaultLabel)
         {
+            Contract.Requires(graph != null);
         }
 
         /// <summary>

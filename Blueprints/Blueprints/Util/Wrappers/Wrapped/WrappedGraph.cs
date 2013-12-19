@@ -45,8 +45,8 @@ namespace Frontenac.Blueprints.Util.Wrappers.Wrapped
         public IEdge AddEdge(object id, IVertex outVertex, IVertex inVertex, string label)
         {
             return
-                new WrappedEdge(BaseGraph.AddEdge(id, ((WrappedVertex) outVertex).GetBaseVertex(),
-                                                  ((WrappedVertex) inVertex).GetBaseVertex(), label));
+                new WrappedEdge(BaseGraph.AddEdge(id, ((WrappedVertex) outVertex).Vertex,
+                                                  ((WrappedVertex) inVertex).Vertex, label));
         }
 
         public IEdge GetEdge(object id)
@@ -67,12 +67,12 @@ namespace Frontenac.Blueprints.Util.Wrappers.Wrapped
 
         public void RemoveEdge(IEdge edge)
         {
-            BaseGraph.RemoveEdge(((WrappedEdge) edge).GetBaseEdge());
+            BaseGraph.RemoveEdge(((WrappedEdge) edge).Edge);
         }
 
         public void RemoveVertex(IVertex vertex)
         {
-            BaseGraph.RemoveVertex(((WrappedVertex) vertex).GetBaseVertex());
+            BaseGraph.RemoveVertex(((WrappedVertex) vertex).Vertex);
         }
 
         public IQuery Query()

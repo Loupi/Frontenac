@@ -73,6 +73,7 @@ namespace Frontenac.Blueprints.Util.Wrappers.Batch
         public BatchGraph(ITransactionalGraph graph)
             : this(graph, VertexIdType.Object, DefaultBufferSize)
         {
+            Contract.Requires(graph != null);
         }
 
         /// <summary>
@@ -87,11 +88,11 @@ namespace Frontenac.Blueprints.Util.Wrappers.Batch
         }
 
         /// <summary>
-        ///     ot supported for batch loading, since data may have already been partially persisted.
+        ///     Not supported for batch loading, since data may have already been partially persisted.
         /// </summary>
         public void Rollback()
         {
-            Contract.Assert(false);
+            throw new InvalidOperationException();
         }
 
         public void Shutdown()
@@ -380,7 +381,6 @@ namespace Frontenac.Blueprints.Util.Wrappers.Batch
         private IVertex GetCachedVertex(object externalId)
         {
             Contract.Requires(externalId != null);
-            Contract.Ensures(Contract.Result<IVertex>() != null);
 
             var v = RetrieveFromCache(externalId);
 

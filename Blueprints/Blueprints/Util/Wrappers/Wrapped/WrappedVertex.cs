@@ -5,29 +5,27 @@ namespace Frontenac.Blueprints.Util.Wrappers.Wrapped
 {
     public class WrappedVertex : WrappedElement, IVertex
     {
-        private readonly IVertex _baseVertex;
-
-        public WrappedVertex(IVertex baseVertex)
-            : base(baseVertex)
+        public WrappedVertex(IVertex vertex)
+            : base(vertex)
         {
-            _baseVertex = baseVertex;
+            Contract.Requires(vertex != null);
+
+            Vertex = vertex;
         }
 
         public IEnumerable<IEdge> GetEdges(Direction direction, params string[] labels)
         {
-            var vertex = BaseElement as IVertex;
-            return vertex != null ? new WrappedEdgeIterable(vertex.GetEdges(direction, labels)) : null;
+            return new WrappedEdgeIterable(Vertex.GetEdges(direction, labels));
         }
 
         public IEnumerable<IVertex> GetVertices(Direction direction, params string[] labels)
         {
-            var vertex = BaseElement as IVertex;
-            return vertex != null ? new WrappedVertexIterable(vertex.GetVertices(direction, labels)) : null;
+            return new WrappedVertexIterable(Vertex.GetVertices(direction, labels));
         }
 
         public IVertexQuery Query()
         {
-            return new WrapperVertexQuery(_baseVertex.Query(),
+            return new WrapperVertexQuery(Vertex.Query(),
                                           t => new WrappedEdgeIterable(t.Edges()),
                                           t => new WrappedVertexIterable(t.Vertices()));
         }
@@ -35,24 +33,11 @@ namespace Frontenac.Blueprints.Util.Wrappers.Wrapped
         public IEdge AddEdge(string label, IVertex vertex)
         {
             if (vertex is WrappedVertex)
-            {
-                var vertex1 = BaseElement as IVertex;
-                if (vertex1 != null)
-                    return new WrappedEdge(vertex1.AddEdge(label, (vertex as WrappedVertex).GetBaseVertex()));
-            }
-            else
-            {
-                var vertex2 = BaseElement as IVertex;
-                if (vertex2 != null)
-                    return new WrappedEdge(vertex2.AddEdge(label, vertex));
-            }
-            return null;
+                return new WrappedEdge(Vertex.AddEdge(label, (vertex as WrappedVertex).Vertex));
+            
+            return new WrappedEdge(Vertex.AddEdge(label, vertex));
         }
 
-        public IVertex GetBaseVertex()
-        {
-            Contract.Ensures(Contract.Result<IVertex>() != null);
-            return _baseVertex;
-        }
+        public IVertex Vertex { get; protected set; }
     }
 }

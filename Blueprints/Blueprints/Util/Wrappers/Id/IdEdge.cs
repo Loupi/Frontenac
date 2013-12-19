@@ -9,6 +9,9 @@ namespace Frontenac.Blueprints.Util.Wrappers.Id
         public IdEdge(IEdge baseEdge, IdGraph idGraph)
             : base(baseEdge, idGraph, idGraph.GetSupportEdgeIds())
         {
+            Contract.Requires(baseEdge != null);
+            Contract.Requires(idGraph != null);
+
             _baseEdge = baseEdge;
         }
 

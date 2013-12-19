@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Diagnostics.Contracts;
 
 namespace Frontenac.Blueprints.Util.Wrappers.Batch
@@ -27,7 +28,7 @@ namespace Frontenac.Blueprints.Util.Wrappers.Batch
 
         public void Rollback()
         {
-            Contract.Assert(false);
+            throw new InvalidOperationException();
         }
 
         public void Commit()

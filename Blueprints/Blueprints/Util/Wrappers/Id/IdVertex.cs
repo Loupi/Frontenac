@@ -10,6 +10,9 @@ namespace Frontenac.Blueprints.Util.Wrappers.Id
         public IdVertex(IVertex baseVertex, IdGraph idGraph)
             : base(baseVertex, idGraph, idGraph.GetSupportVertexIds())
         {
+            Contract.Requires(baseVertex != null);
+            Contract.Requires(idGraph != null);
+
             _baseVertex = baseVertex;
         }
 

@@ -134,7 +134,7 @@ namespace Frontenac.Blueprints.Util.IO.GraphSON
         {
             Contract.Requires(json != null);
             Contract.Requires(out_ != null);
-            Contract.Requires(out_ != null);
+            Contract.Requires(in_ != null);
             Contract.Ensures(Contract.Result<IEdge>() != null);
 
             var node = (JObject) JsonConvert.DeserializeObject(json);
@@ -145,7 +145,7 @@ namespace Frontenac.Blueprints.Util.IO.GraphSON
         {
             Contract.Requires(json != null);
             Contract.Requires(out_ != null);
-            Contract.Requires(out_ != null);
+            Contract.Requires(in_ != null);
             Contract.Ensures(Contract.Result<IEdge>() != null);
 
             using (var reader = new StreamReader(json))
@@ -162,7 +162,7 @@ namespace Frontenac.Blueprints.Util.IO.GraphSON
         {
             Contract.Requires(json != null);
             Contract.Requires(out_ != null);
-            Contract.Requires(out_ != null);
+            Contract.Requires(in_ != null);
             Contract.Ensures(Contract.Result<IEdge>() != null);
 
             var props = ReadProperties(json, true, _hasEmbeddedTypes);
@@ -396,7 +396,7 @@ namespace Frontenac.Blueprints.Util.IO.GraphSON
         private static bool IncludeKey(string key, IEnumerable<string> propertyKeys,
                                        ElementPropertyConfig.ElementPropertiesRule rule)
         {
-            Contract.Ensures(!string.IsNullOrWhiteSpace(key));
+            Contract.Requires((propertyKeys != null || !(string.IsNullOrWhiteSpace(key))) || string.IsNullOrEmpty(key));
 
             if (propertyKeys == null)
             {

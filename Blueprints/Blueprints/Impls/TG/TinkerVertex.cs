@@ -15,6 +15,8 @@ namespace Frontenac.Blueprints.Impls.TG
         public TinkerVertex(string id, TinkerGraph graph)
             : base(id, graph)
         {
+            Contract.Requires(id != null);
+            Contract.Requires(graph != null);
         }
 
         public IEnumerable<IEdge> GetEdges(Direction direction, params string[] labels)

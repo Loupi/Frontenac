@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics.Contracts;
 
 namespace Frontenac.Blueprints.Util.Wrappers.ReadOnly
 {
@@ -9,9 +10,10 @@ namespace Frontenac.Blueprints.Util.Wrappers.ReadOnly
     /// </summary>
     public class ReadOnlyKeyIndexableGraph : ReadOnlyIndexableGraph, IKeyIndexableGraph
     {
-        public ReadOnlyKeyIndexableGraph(IKeyIndexableGraph baseKiGraph)
-            : base((IIndexableGraph) baseKiGraph)
+        public ReadOnlyKeyIndexableGraph(IKeyIndexableGraph baseGraph)
+            : base((IIndexableGraph)baseGraph)
         {
+            Contract.Requires(baseGraph != null);
         }
 
         public void DropKeyIndex(string key, Type elementClass)

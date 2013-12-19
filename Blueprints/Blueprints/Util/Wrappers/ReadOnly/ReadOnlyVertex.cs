@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics.Contracts;
 
 namespace Frontenac.Blueprints.Util.Wrappers.ReadOnly
 {
@@ -10,6 +11,8 @@ namespace Frontenac.Blueprints.Util.Wrappers.ReadOnly
         public ReadOnlyVertex(IVertex baseVertex)
             : base(baseVertex)
         {
+            Contract.Requires(baseVertex != null);
+
             _baseVertex = baseVertex;
         }
 

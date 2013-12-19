@@ -124,12 +124,15 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="DictionaryPropertyConverter.cs" />
-    <Compile Include="ElementWrapper.cs" />
+    <Compile Include="Edge.cs" />
     <Compile Include="GremlinqHelpers.cs" />
-    <Compile Include="IElementWrapper.cs" />
-    <Compile Include="IQueryWrapper.cs" />
+    <Compile Include="IEdge.cs" />
+    <Compile Include="IElement.cs" />
+    <Compile Include="IQuery.cs" />
+    <Compile Include="IVertex.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="QueryWrapper.cs" />
+    <Compile Include="Query.cs" />
+    <Compile Include="Vertex.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Fody.targets" />

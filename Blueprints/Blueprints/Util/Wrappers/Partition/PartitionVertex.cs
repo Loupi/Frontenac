@@ -5,29 +5,28 @@ namespace Frontenac.Blueprints.Util.Wrappers.Partition
 {
     public class PartitionVertex : PartitionElement, IVertex
     {
-        private readonly IVertex _baseVertex;
-
-        public PartitionVertex(IVertex baseVertex, PartitionGraph graph)
-            : base(baseVertex, graph)
+        public PartitionVertex(IVertex vertex, PartitionGraph graph)
+            : base(vertex, graph)
         {
-            _baseVertex = baseVertex;
+            Contract.Requires(vertex != null);
+            Contract.Requires(graph != null);
+
+            Vertex = vertex;
         }
 
         public IEnumerable<IEdge> GetEdges(Direction direction, params string[] labels)
         {
-            var vertex = BaseElement as IVertex;
-            return vertex != null ? new PartitionEdgeIterable(vertex.GetEdges(direction, labels), Graph) : null;
+            return new PartitionEdgeIterable(Vertex.GetEdges(direction, labels), Graph);
         }
 
         public IEnumerable<IVertex> GetVertices(Direction direction, params string[] labels)
         {
-            var vertex = BaseElement as IVertex;
-            return vertex != null ? new PartitionVertexIterable(vertex.GetVertices(direction, labels), Graph) : null;
+            return new PartitionVertexIterable(Vertex.GetVertices(direction, labels), Graph);
         }
 
         public IVertexQuery Query()
         {
-            return new WrapperVertexQuery(_baseVertex.Query(),
+            return new WrapperVertexQuery(Vertex.Query(),
                                           t => new PartitionEdgeIterable(t.Edges(), Graph),
                                           t => new PartitionVertexIterable(t.Vertices(), Graph));
         }
@@ -37,10 +36,6 @@ namespace Frontenac.Blueprints.Util.Wrappers.Partition
             return Graph.AddEdge(null, this, vertex, label);
         }
 
-        public IVertex GetBaseVertex()
-        {
-            Contract.Ensures(Contract.Result<IVertex>() != null);
-            return _baseVertex;
-        }
+        public IVertex Vertex { get; protected set; }
     }
 }

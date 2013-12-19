@@ -31,6 +31,7 @@ namespace Frontenac.Blueprints.Util.Wrappers.Partition
         public PartitionGraph(IGraph baseGraph, string partitionKey, string readWritePartition) :
             this(baseGraph, partitionKey, readWritePartition, new[] {readWritePartition})
         {
+            Contract.Requires(baseGraph != null);
         }
 
         public string WritePartition
@@ -89,10 +90,11 @@ namespace Frontenac.Blueprints.Util.Wrappers.Partition
 
         public IEdge AddEdge(object id, IVertex outVertex, IVertex inVertex, string label)
         {
-            var edge =
-                new PartitionEdge(
-                    BaseGraph.AddEdge(id, ((PartitionVertex) outVertex).GetBaseVertex(),
-                                      ((PartitionVertex) inVertex).GetBaseVertex(), label), this);
+            var edge = new PartitionEdge(BaseGraph.AddEdge(id, 
+                                                           ((PartitionVertex) outVertex).Vertex, 
+                                                           ((PartitionVertex) inVertex).Vertex, 
+                                                           label), 
+                                         this);
             edge.SetPartition(_writePartition);
             return edge;
         }
@@ -120,7 +122,7 @@ namespace Frontenac.Blueprints.Util.Wrappers.Partition
 
         public void RemoveVertex(IVertex vertex)
         {
-            BaseGraph.RemoveVertex(((PartitionVertex) vertex).GetBaseVertex());
+            BaseGraph.RemoveVertex(((PartitionVertex) vertex).Vertex);
         }
 
         public Features Features

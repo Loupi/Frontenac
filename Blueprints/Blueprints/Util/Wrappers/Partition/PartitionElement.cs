@@ -6,44 +6,44 @@ namespace Frontenac.Blueprints.Util.Wrappers.Partition
 {
     public abstract class PartitionElement : DictionaryElement
     {
-        protected readonly IElement BaseElement;
+        protected readonly IElement Element;
         protected PartitionGraph Graph;
 
-        protected PartitionElement(IElement baseElement, PartitionGraph partitionGraph)
+        protected PartitionElement(IElement element, PartitionGraph partitionGraph)
         {
-            Contract.Requires(baseElement != null);
+            Contract.Requires(element != null);
             Contract.Requires(partitionGraph != null);
 
-            BaseElement = baseElement;
+            Element = element;
             Graph = partitionGraph;
         }
 
         public override void SetProperty(string key, object value)
         {
             if (!key.Equals(Graph.PartitionKey))
-                BaseElement.SetProperty(key, value);
+                Element.SetProperty(key, value);
         }
 
         public override object GetProperty(string key)
         {
-            return key.Equals(Graph.PartitionKey) ? null : BaseElement.GetProperty(key);
+            return key.Equals(Graph.PartitionKey) ? null : Element.GetProperty(key);
         }
 
         public override object RemoveProperty(string key)
         {
-            return key.Equals(Graph.PartitionKey) ? null : BaseElement.RemoveProperty(key);
+            return key.Equals(Graph.PartitionKey) ? null : Element.RemoveProperty(key);
         }
 
         public override IEnumerable<string> GetPropertyKeys()
         {
-            return BaseElement.GetPropertyKeys()
+            return Element.GetPropertyKeys()
                 .Except(new[] { Graph.PartitionKey })
                 .ToArray();
         }
 
         public override object Id
         {
-            get { return BaseElement.Id; }
+            get { return Element.Id; }
         }
 
         public override void Remove()
@@ -61,30 +61,30 @@ namespace Frontenac.Blueprints.Util.Wrappers.Partition
 
         public override int GetHashCode()
         {
-            return BaseElement.GetHashCode();
+            return Element.GetHashCode();
         }
 
         public IElement GetBaseElement()
         {
             Contract.Ensures(Contract.Result<IElement>() != null);
-            return BaseElement;
+            return Element;
         }
 
         public string GetPartition()
         {
             Contract.Ensures(!string.IsNullOrWhiteSpace(Contract.Result<string>()));
-            return (string) BaseElement.GetProperty(Graph.PartitionKey);
+            return (string) Element.GetProperty(Graph.PartitionKey);
         }
 
         public void SetPartition(string partition)
         {
             Contract.Requires(!string.IsNullOrWhiteSpace(partition));
-            BaseElement.SetProperty(Graph.PartitionKey, partition);
+            Element.SetProperty(Graph.PartitionKey, partition);
         }
 
         public override string ToString()
         {
-            return BaseElement.ToString();
+            return Element.ToString();
         }
     }
 }

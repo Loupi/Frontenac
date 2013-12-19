@@ -2,7 +2,7 @@
 
 namespace Frontenac.Gremlinq
 {
-    public interface IQueryWrapper<out TModel>
+    public interface IQuery<out TModel>
     {
         IQuery InnerQuery { get; set; }
     }

@@ -35,6 +35,7 @@ namespace Frontenac.Blueprints.Util.Wrappers.Id
         public IdGraph(IKeyIndexableGraph baseGraph)
             : this(baseGraph, true, true)
         {
+            Contract.Requires(baseGraph != null);
         }
 
         /// <summary>

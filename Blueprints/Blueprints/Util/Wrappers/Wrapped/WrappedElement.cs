@@ -5,43 +5,41 @@ namespace Frontenac.Blueprints.Util.Wrappers.Wrapped
 {
     public abstract class WrappedElement : DictionaryElement
     {
-        protected readonly IElement BaseElement;
-
-        protected WrappedElement(IElement baseElement)
+        protected WrappedElement(IElement element)
         {
-            Contract.Requires(baseElement != null);
+            Contract.Requires(element != null);
 
-            BaseElement = baseElement;
+            Element = element;
         }
 
         public override void SetProperty(string key, object value)
         {
-            BaseElement.SetProperty(key, value);
+            Element.SetProperty(key, value);
         }
 
         public override object GetProperty(string key)
         {
-            return BaseElement.GetProperty(key);
+            return Element.GetProperty(key);
         }
 
         public override object RemoveProperty(string key)
         {
-            return BaseElement.RemoveProperty(key);
+            return Element.RemoveProperty(key);
         }
 
         public override IEnumerable<string> GetPropertyKeys()
         {
-            return BaseElement.GetPropertyKeys();
+            return Element.GetPropertyKeys();
         }
 
         public override object Id
         {
-            get { return BaseElement.Id; }
+            get { return Element.Id; }
         }
 
         public override void Remove()
         {
-            BaseElement.Remove();
+            Element.Remove();
         }
 
         public override bool Equals(object obj)
@@ -51,18 +49,14 @@ namespace Frontenac.Blueprints.Util.Wrappers.Wrapped
 
         public override int GetHashCode()
         {
-            return BaseElement.GetHashCode();
+            return Element.GetHashCode();
         }
 
-        public IElement GetBaseElement()
-        {
-            Contract.Ensures(Contract.Result<IElement>() != null);
-            return BaseElement;
-        }
+        public IElement Element { get; protected set; }
 
         public override string ToString()
         {
-            return BaseElement.ToString();
+            return Element.ToString();
         }
     }
 }

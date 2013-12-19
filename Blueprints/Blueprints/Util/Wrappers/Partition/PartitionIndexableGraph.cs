@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics.Contracts;
 
 namespace Frontenac.Blueprints.Util.Wrappers.Partition
 {
@@ -11,12 +12,16 @@ namespace Frontenac.Blueprints.Util.Wrappers.Partition
                                        IEnumerable<string> readGraphs)
             : base(baseIndexableGraph, writeGraphKey, writeGraph, readGraphs)
         {
+            Contract.Requires(baseIndexableGraph != null);
+            Contract.Requires(readGraphs != null);
+
             BaseIndexableGraph = baseIndexableGraph;
         }
 
         public PartitionIndexableGraph(IIndexableGraph baseIndexableGraph, string writeGraphKey, string readWriteGraph)
             : base(baseIndexableGraph, writeGraphKey, readWriteGraph)
         {
+            Contract.Requires(baseIndexableGraph != null);
         }
 
         public void DropIndex(string indexName)

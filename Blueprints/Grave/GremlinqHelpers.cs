@@ -9,7 +9,7 @@ namespace Frontenac.Grave
 {
     public static class GremlinqHelpers
     {
-        public static IQueryWrapper<TModel> Has<TModel>(this IQueryWrapper<TModel> query, 
+        public static IQuery<TModel> Has<TModel>(this IQuery<TModel> query, 
                                                         Expression<Func<TModel, GeoPoint>> propertySelector, 
                                                         Compare compare, 
                                                         IGeoShape value)

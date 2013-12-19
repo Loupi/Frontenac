@@ -373,6 +373,7 @@ namespace Frontenac.Blueprints.Impls.TG
             public TinkerKeyIndex(Type indexClass, TinkerGraph graph)
                 : base(null, indexClass)
             {
+                Contract.Requires(indexClass != null);
                 Contract.Requires(graph != null);
 
                 _graph = graph;

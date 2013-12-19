@@ -163,7 +163,7 @@ namespace Frontenac.Blueprints.Util.IO.GML
             // This data will be lost
             map.Remove(GmlTokens.Id);
 
-            var edge = _graph.AddEdge(edgeId, outVertex, inVertex, label.ToString());
+            var edge = _graph.AddEdge(edgeId, outVertex, inVertex, (string)label);
             if (_directed)
                 edge.SetProperty(GmlTokens.Directed, _directed);
 

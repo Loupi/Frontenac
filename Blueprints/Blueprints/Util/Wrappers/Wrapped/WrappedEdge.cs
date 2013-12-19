@@ -4,28 +4,33 @@ namespace Frontenac.Blueprints.Util.Wrappers.Wrapped
 {
     public class WrappedEdge : WrappedElement, IEdge
     {
-        private readonly IEdge _baseEdge;
+        private readonly IEdge _edge;
 
-        public WrappedEdge(IEdge baseEdge)
-            : base(baseEdge)
+        public WrappedEdge(IEdge edge)
+            : base(edge)
         {
-            _baseEdge = baseEdge;
+            Contract.Requires(edge != null);
+
+            _edge = edge;
         }
 
         public IVertex GetVertex(Direction direction)
         {
-            return new WrappedVertex(_baseEdge.GetVertex(direction));
+            return new WrappedVertex(_edge.GetVertex(direction));
         }
 
         public string Label
         {
-            get { return _baseEdge.Label; }
+            get { return _edge.Label; }
         }
 
-        public IEdge GetBaseEdge()
+        public IEdge Edge
         {
-            Contract.Ensures(Contract.Result<IEdge>() != null);
-            return _baseEdge;
+            get
+            {
+                Contract.Ensures(Contract.Result<IEdge>() != null);
+                return _edge;
+            }
         }
     }
 }
