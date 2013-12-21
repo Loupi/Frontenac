@@ -11,11 +11,14 @@ namespace Frontenac.Grave
     {
         private static void Main()
         {
-            var graph = GraveFactory.CreateGraph();
+            var graph = GraveFactory.CreateTransactionalGraph();
             try
             {
                 if (!graph.GetVertices().Any())
+                {
                     CreateGraphOfTheGods(graph);
+                    graph.Commit();
+                }
 
                 var saturn = graph
                     .V<ICharacter, string>(t => t.Name, "Saturn")

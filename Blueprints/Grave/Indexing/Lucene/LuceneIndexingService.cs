@@ -25,6 +25,7 @@ namespace Frontenac.Grave.Indexing.Lucene
     public class LuceneIndexingService : IndexingService
     {
         public readonly NrtManager NrtManager;
+        private readonly IndexWriter _Writer;
         private readonly SearcherManager _searcherManager;
         private readonly IIndexerFactory _indexerFactory;
 
@@ -37,6 +38,7 @@ namespace Frontenac.Grave.Indexing.Lucene
             Contract.Requires(indexerFactory != null);
             Contract.Requires(writer != null);
 
+            _Writer = writer;
             _indexerFactory = indexerFactory;
             NrtManager = new NrtManager(writer);
             _searcherManager = NrtManager.GetSearcherManager();
@@ -216,6 +218,23 @@ namespace Frontenac.Grave.Indexing.Lucene
             }
 
             return Fetch(indexType, queryToRun, hitsLimit);
+        }
+
+        public override void Commit()
+        {
+            _Writer.Commit();
+            NrtManager.MaybeReopen(true);
+        }
+
+        public override void Prepare()
+        {
+            _Writer.PrepareCommit();
+        }
+
+        public override void Rollback()
+        {
+            _Writer.Rollback();
+            NrtManager.MaybeReopen(false);
         }
 
         Query CreateGeoQuery(Type indexType, string key, IGeoShape geoShape)

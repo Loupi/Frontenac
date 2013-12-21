@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Diagnostics.Contracts;
 using System.Transactions;
 using Frontenac.Blueprints;
@@ -13,9 +12,11 @@ namespace Frontenac.Grave
     public class GraveTransactionalGraph : GraveGraph, ITransactionalGraph, IEnlistmentNotification, IDisposable
     {
         private Transaction _transaction;
-        TransactionScope _transactionScope;
+        private TransactionScope _transactionScope;
 
-        public GraveTransactionalGraph(IGraveGraphFactory factory, EsentContext context, IndexingService indexingService)
+        public GraveTransactionalGraph(IGraveGraphFactory factory, 
+                                       EsentContext context, 
+                                       IndexingService indexingService)
             : base(factory, indexingService, context)
         {
             Contract.Requires(factory != null);
@@ -45,6 +46,7 @@ namespace Frontenac.Grave
 
             if (disposing && _transaction != null)
             {
+                Rollback();
                 _transaction.Dispose();
             }
 
@@ -65,14 +67,21 @@ namespace Frontenac.Grave
 
         public void Commit()
         {
-            if (_transaction != null && _transaction.IsInTransaction)
-                _transaction.Commit(CommitTransactionGrbit.None);
+            if (_transactionScope != null)
+            {
+                _transactionScope.Complete();
+                _transactionScope.Dispose();
+                _transactionScope = null;
+            }
         }
 
         public void Rollback()
         {
-            if (_transaction != null && _transaction.IsInTransaction)
-                _transaction.Rollback();
+            if (_transactionScope != null)
+            {
+                _transactionScope.Dispose();
+                _transactionScope = null;
+            }
         }
 
         public override IEdge AddEdge(object unused, IVertex outVertex, IVertex inVertex, string label)
@@ -85,48 +94,6 @@ namespace Frontenac.Grave
         {
             BeginTransaction();
             return base.AddVertex(unused);
-        }
-
-        public override IEdge GetEdge(object id)
-        {
-            BeginTransaction();
-            return base.GetEdge(id);
-        }
-
-        public override IEnumerable<IEdge> GetEdges()
-        {
-            BeginTransaction();
-            return base.GetEdges();
-        }
-
-        public override IEnumerable<IEdge> GetEdges(string key, object value)
-        {
-            BeginTransaction();
-            return base.GetEdges(key, value);
-        }
-
-        public override IVertex GetVertex(object id)
-        {
-            BeginTransaction();
-            return base.GetVertex(id);
-        }
-
-        public override IEnumerable<IVertex> GetVertices()
-        {
-            BeginTransaction();
-            return base.GetVertices();
-        }
-
-        public override IEnumerable<IVertex> GetVertices(string key, object value)
-        {
-            BeginTransaction();
-            return base.GetVertices(key, value);
-        }
-
-        public override IQuery Query()
-        {
-            BeginTransaction();
-            return base.Query();
         }
 
         public override void RemoveEdge(IEdge edge)
@@ -148,6 +115,11 @@ namespace Frontenac.Grave
             _transactionScope = System.Transactions.Transaction.Current != null 
                 ? new TransactionScope(System.Transactions.Transaction.Current) 
                 : new TransactionScope();
+
+            if (System.Transactions.Transaction.Current != null)
+            {
+                System.Transactions.Transaction.Current.EnlistVolatile(this, EnlistmentOptions.None);
+            }
 
             if (_transaction == null)
                 _transaction = new Transaction(Context.Session);
@@ -173,38 +145,29 @@ namespace Frontenac.Grave
             base.DropIndex(indexName);
         }
 
-        public override IIndex GetIndex(string indexName, Type indexClass)
-        {
-            BeginTransaction();
-            return base.GetIndex(indexName, indexClass);
-        }
-
-        public override IEnumerable<string> GetIndexedKeys(Type elementClass)
-        {
-            BeginTransaction();
-            return base.GetIndexedKeys(elementClass);
-        }
-
-        public override IEnumerable<IIndex> GetIndices()
-        {
-            BeginTransaction();
-            return base.GetIndices();
-        }
-
         public void Prepare(PreparingEnlistment preparingEnlistment)
         {
+            IndexingService.Prepare();
             preparingEnlistment.Prepared();
         }
 
         public void Commit(Enlistment enlistment)
         {
-            Commit();
+            if (_transaction != null && _transaction.IsInTransaction)
+                _transaction.Commit(CommitTransactionGrbit.None);
+
+            IndexingService.Commit();
+
             enlistment.Done();
         }
 
         public void Rollback(Enlistment enlistment)
         {
-            Rollback();
+            if (_transaction != null && _transaction.IsInTransaction)
+                _transaction.Rollback();
+
+            IndexingService.Rollback();
+
             enlistment.Done();
         }
 

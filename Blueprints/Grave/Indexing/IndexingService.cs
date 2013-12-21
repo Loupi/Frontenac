@@ -126,6 +126,10 @@ namespace Frontenac.Grave.Indexing
         public abstract IEnumerable<int> Query(Type indexType, IEnumerable<GraveQueryElement> query,
                                                int hitsLimit = 1000);
 
+        public abstract void Commit();
+        public abstract void Prepare();
+        public abstract void Rollback();
+
         #region IDisposable
 
         private bool _disposed;
