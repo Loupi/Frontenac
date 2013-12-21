@@ -48,6 +48,13 @@ namespace Frontenac.Grave
             return Context.GraphFactory.Create();
         }
 
+        public static GraveTransactionalGraph CreateTransactionalGraph()
+        {
+            Contract.Ensures(Contract.Result<GraveGraph>() != null);
+
+            return Context.GraphFactory.CreateTransactional();
+        }
+
         public static GraveGraph CreateTinkerGraph()
         {
             Contract.Ensures(Contract.Result<GraveGraph>() != null);
@@ -104,7 +111,7 @@ namespace Frontenac.Grave
                 _container = new WindsorContainer();
                 _container.AddFacility<StartableFacility>(f => f.DeferredStart());
                 _container.AddFacility<TypedFactoryFacility>();
-                _container.Install(FromAssembly.Named("Grave"));
+                _container.Install(FromAssembly.Named("Frontenac.Grave"));
                 GraphFactory = _container.Resolve<IGraveGraphFactory>();
             }
 

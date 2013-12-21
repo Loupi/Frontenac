@@ -386,7 +386,7 @@ namespace Frontenac.Blueprints.Util.IO.GraphSON
         private static bool IncludeReservedKey(GraphSonMode mode, string key, IEnumerable<string> propertyKeys,
                                                ElementPropertyConfig.ElementPropertiesRule rule)
         {
-            Contract.Ensures(!string.IsNullOrWhiteSpace(key));
+            Contract.Requires(!string.IsNullOrWhiteSpace(key));
 
             // the key is always included in modes other than COMPACT. if it is COMPACT, then validate that the
             // key is in the property key list

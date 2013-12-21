@@ -7,6 +7,7 @@ namespace Frontenac.Grave
     public interface IGraveGraphFactory : IDisposable
     {
         GraveGraph Create();
+        GraveTransactionalGraph CreateTransactional();
         void Destroy(GraveGraph graph);
     }
 }

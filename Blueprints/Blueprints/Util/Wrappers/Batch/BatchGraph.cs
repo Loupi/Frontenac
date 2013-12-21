@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Diagnostics.Contracts;
 using Frontenac.Blueprints.Util.Wrappers.Batch.Cache;
+using System.Linq;
 
 namespace Frontenac.Blueprints.Util.Wrappers.Batch
 {
@@ -52,11 +53,13 @@ namespace Frontenac.Blueprints.Util.Wrappers.Batch
         /// </summary>
         /// <param name="graph">Graph to be wrapped</param>
         /// <param name="type"> Type of vertex id expected. This information is used to optimize the vertex cache memory footprint.</param>
-        /// <param name="bufferSize">Defines the number of vertices and edges loaded before starting a new transaction. The larger this value, the more memory is required but the faster the loading process.</param>
+        /// <param name="bufferSize">Defines the number of vertices and edges loaded before starting a new transaction. The larger this value, 
+        /// the more memory is required but the faster the loading process.</param>
         public BatchGraph(ITransactionalGraph graph, VertexIdType type, long bufferSize)
         {
             Contract.Requires(graph != null);
             Contract.Requires(bufferSize > 0);
+            Contract.Ensures(_baseGraph != null);
 
             _baseGraph = graph;
             _bufferSize = bufferSize;
@@ -512,7 +515,9 @@ namespace Frontenac.Blueprints.Util.Wrappers.Batch
 
             public override void SetProperty(string key, object value)
             {
-                if (_batchGraph != null) _batchGraph.GetCachedVertex(_externalId).SetProperty(key, value);
+                var cachedVertex = _batchGraph.GetCachedVertex(_externalId);
+                if(cachedVertex != null)
+                    cachedVertex.SetProperty(key, value);
             }
 
             public override object Id
@@ -522,17 +527,28 @@ namespace Frontenac.Blueprints.Util.Wrappers.Batch
 
             public override object GetProperty(string key)
             {
-                return _batchGraph.GetCachedVertex(_externalId).GetProperty(key);
+                object result  = null;
+                var chachedVertex = _batchGraph.GetCachedVertex(_externalId);
+                if(chachedVertex != null)
+                    result = chachedVertex.GetProperty(key);
+                return result;
             }
 
             public override IEnumerable<string> GetPropertyKeys()
             {
-                return _batchGraph.GetCachedVertex(_externalId).GetPropertyKeys();
+                IEnumerable<string> result;
+                var chachedVertex = _batchGraph.GetCachedVertex(_externalId);
+                result = chachedVertex != null ? chachedVertex.GetPropertyKeys() : Enumerable.Empty<string>();
+                return result;
             }
 
             public override object RemoveProperty(string key)
             {
-                return _batchGraph.GetCachedVertex(_externalId).RemoveProperty(key);
+                object result = null;
+                var cachedVertex = _batchGraph.GetCachedVertex(_externalId);
+                if(cachedVertex != null)
+                    result = cachedVertex.RemoveProperty(key);
+                return result;
             }
 
             public override void Remove()

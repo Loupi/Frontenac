@@ -1,16 +1,19 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics.Contracts;
+using System.Transactions;
 using Frontenac.Blueprints;
 using Frontenac.Grave.Esent;
 using Frontenac.Grave.Indexing;
 using Microsoft.Isam.Esent.Interop;
+using Transaction = Microsoft.Isam.Esent.Interop.Transaction;
 
 namespace Frontenac.Grave
 {
-    public class GraveTransactionalGraph : GraveGraph, ITransactionalGraph, IDisposable
+    public class GraveTransactionalGraph : GraveGraph, ITransactionalGraph, IEnlistmentNotification, IDisposable
     {
         private Transaction _transaction;
+        TransactionScope _transactionScope;
 
         public GraveTransactionalGraph(IGraveGraphFactory factory, EsentContext context, IndexingService indexingService)
             : base(factory, indexingService, context)
@@ -140,6 +143,12 @@ namespace Frontenac.Grave
 
         private void BeginTransaction()
         {
+            if (_transactionScope != null) return;
+
+            _transactionScope = System.Transactions.Transaction.Current != null 
+                ? new TransactionScope(System.Transactions.Transaction.Current) 
+                : new TransactionScope();
+
             if (_transaction == null)
                 _transaction = new Transaction(Context.Session);
             else if (!_transaction.IsInTransaction)
@@ -180,6 +189,28 @@ namespace Frontenac.Grave
         {
             BeginTransaction();
             return base.GetIndices();
+        }
+
+        public void Prepare(PreparingEnlistment preparingEnlistment)
+        {
+            preparingEnlistment.Prepared();
+        }
+
+        public void Commit(Enlistment enlistment)
+        {
+            Commit();
+            enlistment.Done();
+        }
+
+        public void Rollback(Enlistment enlistment)
+        {
+            Rollback();
+            enlistment.Done();
+        }
+
+        public void InDoubt(Enlistment enlistment)
+        {
+            enlistment.Done();
         }
     }
 }

@@ -11,6 +11,12 @@ namespace Frontenac.Grave
             return null;
         }
 
+        public GraveTransactionalGraph CreateTransactional()
+        {
+            Contract.Ensures(Contract.Result<GraveTransactionalGraph>() != null);
+            return null;
+        }
+
         public void Destroy(GraveGraph graph)
         {
             Contract.Requires(graph != null);

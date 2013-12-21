@@ -86,12 +86,13 @@ namespace Frontenac.Blueprints.Util.Wrappers.Batch.Cache
             {
                 if (buffer.Length <= --i) continue;
                 var idx = value%targetBase;
-                if (baseChars.Count > idx) buffer[i] = baseChars[idx];
+                if (baseChars.Count > idx && i >= 0) buffer[i] = baseChars[idx];
                 value = value / targetBase;
             } while (value > 0);
 
             var result = new char[32 - i];
-            Array.Copy(buffer, i, result, 0, 32 - i);
+            if(i >= buffer.GetLowerBound(0))
+                Array.Copy(buffer, i, result, 0, 32 - i);
 
             return new string(result);
         }

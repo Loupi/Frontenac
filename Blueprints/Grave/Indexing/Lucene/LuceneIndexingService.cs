@@ -6,7 +6,6 @@ using System.Linq;
 using Frontenac.Blueprints;
 using Frontenac.Grave.Esent;
 using Frontenac.Grave.Geo;
-using Lucene.Net.Analysis;
 using Lucene.Net.Contrib.Management;
 using Lucene.Net.Documents;
 using Lucene.Net.Index;
@@ -25,37 +24,22 @@ namespace Frontenac.Grave.Indexing.Lucene
 {
     public class LuceneIndexingService : IndexingService
     {
-        private readonly KeywordAnalyzer _analyzer;
-        private readonly FSDirectory _directory;
-        private readonly IIndexerFactory _indexerFactory;
-        private readonly NrtManager _nrtManager;
-        private readonly LuceneIndexingServiceParameters _parameters;
-        private readonly NrtManagerReopener _reopener;
+        public readonly NrtManager NrtManager;
         private readonly SearcherManager _searcherManager;
-        private readonly IndexWriter _writer;
+        private readonly IIndexerFactory _indexerFactory;
 
-        public Dictionary<Type, object> ClassMaps = new Dictionary<Type, object>();
-
-        public LuceneIndexingService(EsentConfigContext configContext, LuceneIndexingServiceParameters parameters,
-                                     FSDirectory directory, IIndexerFactory indexerFactory)
+        public LuceneIndexingService(EsentConfigContext configContext,
+                                     IIndexerFactory indexerFactory,
+                                     IndexWriter writer)
             : base(configContext)
         {
             Contract.Requires(configContext != null);
-            Contract.Requires(parameters != null);
-            Contract.Requires(directory != null);
             Contract.Requires(indexerFactory != null);
+            Contract.Requires(writer != null);
 
-            _parameters = parameters;
-            _directory = directory;
             _indexerFactory = indexerFactory;
-
-            _analyzer = new KeywordAnalyzer();
-            _writer = new IndexWriter(_directory, _analyzer, IndexWriter.MaxFieldLength.UNLIMITED);
-            _nrtManager = new NrtManager(_writer);
-            _searcherManager = _nrtManager.GetSearcherManager();
-            _reopener = new NrtManagerReopener(_nrtManager, TimeSpan.FromSeconds(_parameters.MaxStaleSeconds),
-                                               TimeSpan.FromMilliseconds(_parameters.MinStaleMilliseconds),
-                                               _parameters.CloseTimeoutSeconds);
+            NrtManager = new NrtManager(writer);
+            _searcherManager = NrtManager.GetSearcherManager();
         }
 
         #region IDisposable
@@ -66,11 +50,8 @@ namespace Frontenac.Grave.Indexing.Lucene
 
             if (!disposing) return;
 
-            _reopener.Dispose();
             _searcherManager.Dispose();
-            _nrtManager.Dispose();
-            _writer.Dispose();
-            _analyzer.Dispose();
+            NrtManager.Dispose();
         }
 
         #endregion
@@ -138,7 +119,9 @@ namespace Frontenac.Grave.Indexing.Lucene
             Contract.Requires(indexType != null);
             Contract.Ensures(!string.IsNullOrWhiteSpace(Contract.Result<string>()));
 
-            return indexType == typeof (IVertex) ? _parameters.VertexIdColumnName : _parameters.EdgeIdColumnName;
+            return indexType == typeof(IVertex) 
+                ? LuceneIndexingServiceParameters.Default.VertexIdColumnName 
+                : LuceneIndexingServiceParameters.Default.EdgeIdColumnName;
         }
 
         private string GetKeyColumn(Type indexType)
@@ -146,7 +129,9 @@ namespace Frontenac.Grave.Indexing.Lucene
             Contract.Requires(indexType != null);
             Contract.Ensures(!string.IsNullOrWhiteSpace(Contract.Result<string>()));
 
-            return indexType == typeof (IVertex) ? _parameters.VertexKeyColumnName : _parameters.EdgeKeyColumnName;
+            return indexType == typeof(IVertex) 
+                ? LuceneIndexingServiceParameters.Default.VertexKeyColumnName 
+                : LuceneIndexingServiceParameters.Default.EdgeKeyColumnName;
         }
 
         private string GetIndexColumn(Type indexType)
@@ -154,12 +139,14 @@ namespace Frontenac.Grave.Indexing.Lucene
             Contract.Requires(indexType != null);
             Contract.Ensures(!string.IsNullOrWhiteSpace(Contract.Result<string>()));
 
-            return indexType == typeof (IVertex) ? _parameters.VertexIndexColumnName : _parameters.EdgeIndexColumnName;
+            return indexType == typeof(IVertex) 
+                ? LuceneIndexingServiceParameters.Default.VertexIndexColumnName 
+                : LuceneIndexingServiceParameters.Default.EdgeIndexColumnName;
         }
 
         public override long DeleteIndex(Type indexType, string indexName, bool isUserIndex)
         {
-            return _nrtManager.DeleteDocuments(new TermQuery(new Term(isUserIndex ? GetIndexColumn(indexType)
+            return NrtManager.DeleteDocuments(new TermQuery(new Term(isUserIndex ? GetIndexColumn(indexType)
                                                                                   : GetKeyColumn(indexType), indexName)));
         }
 
@@ -340,7 +327,7 @@ namespace Frontenac.Grave.Indexing.Lucene
 
         public override long DeleteDocuments(Type indexType, int id)
         {
-            return _nrtManager.DeleteDocuments(NumericRangeQuery.NewIntRange(GetIdColumn(indexType), id, id, true, true));
+            return NrtManager.DeleteDocuments(NumericRangeQuery.NewIntRange(GetIdColumn(indexType), id, id, true, true));
         }
 
         public override long DeleteUserDocuments(Type indexType, int id, string key, object value)
@@ -351,7 +338,7 @@ namespace Frontenac.Grave.Indexing.Lucene
                     new BooleanClause(WrapQuery(indexType, CreateQuery(key, value, value, value, true, true), 
                         GetIndexColumn(indexType), true), Occur.MUST)
                 };
-            return _nrtManager.DeleteDocuments(query);
+            return NrtManager.DeleteDocuments(query);
         }
 
         public override long Set(Type indexType, int id, string indexName, string propertyName, object value,
@@ -359,21 +346,21 @@ namespace Frontenac.Grave.Indexing.Lucene
         {
             var idColumn = GetIdColumn(indexType);
             var keyColumn = isUserIndex ? GetIndexColumn(indexType) : GetKeyColumn(indexType);
-            var generation = _nrtManager.DeleteDocuments(CreateKeyQuery(idColumn, keyColumn, id, indexName));
+            var generation = NrtManager.DeleteDocuments(CreateKeyQuery(idColumn, keyColumn, id, indexName));
             if (value == null) return generation;
 
             var rawDocument = CreateDocument(idColumn, keyColumn, id, indexName);
             var document = new LuceneDocument(rawDocument);
             var indexer = _indexerFactory.Create(value, document);
             indexer.Index(propertyName);
-            generation = _nrtManager.AddDocument(rawDocument);
+            generation = NrtManager.AddDocument(rawDocument);
 
             return generation;
         }
 
         public override void WaitForGeneration(long generation)
         {
-            _nrtManager.WaitForGeneration(generation);
+            NrtManager.WaitForGeneration(generation);
         }
 
         private static Query CreateQuery(string key, object value, object minValue, object maxValue,
@@ -444,14 +431,14 @@ namespace Frontenac.Grave.Indexing.Lucene
             if (value is sbyte || value is byte || value is short || value is ushort ||
                 value is int || value is uint || value is long || value is ulong)
             {
-                var minVal = min == null ? (long?) null : Convert.ToInt64(min);
-                var maxVal = max == null ? (long?) null : Convert.ToInt64(max);
+                var minVal = min == null ? (long?)null : Convert.ToInt64(min);
+                var maxVal = max == null ? (long?)null : Convert.ToInt64(max);
                 query = NumericRangeQuery.NewLongRange(term, minVal, maxVal, minInclusive, maxInclusive);
             }
             else
             {
-                var minVal = min == null ? (double?) null : Convert.ToDouble(min);
-                var maxVal = max == null ? (double?) null : Convert.ToDouble(max);
+                var minVal = min == null ? (double?)null : Convert.ToDouble(min);
+                var maxVal = max == null ? (double?)null : Convert.ToDouble(max);
                 query = NumericRangeQuery.NewDoubleRange(term, minVal, maxVal, minInclusive, maxInclusive);
             }
 

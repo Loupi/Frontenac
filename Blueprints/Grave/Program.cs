@@ -21,6 +21,14 @@ namespace Frontenac.Grave
                     .V<ICharacter, string>(t => t.Name, "Saturn")
                     .Single();
 
+                var jupiter = graph
+                    .V<ICharacter, string>(t => t.Name, "Jupiter")
+                    .Single();
+
+                var both = jupiter.Both().ToArray();
+                var sIn = jupiter.In();
+                var sOut = jupiter.Out();
+                
                 var map = saturn.Element.Map();
 
                 var fatherName = saturn

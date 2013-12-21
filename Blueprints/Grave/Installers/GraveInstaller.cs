@@ -47,22 +47,34 @@ namespace Frontenac.Grave.Installers
                 Component.For<InstanceStarter>()
                          .StartUsingMethod(t => t.Start)
                          .StopUsingMethod(t => t.Stop),
+
                 Component.For<IContentSerializer>()
                          .ImplementedBy<JsonContentSerializer>(),
+
                 Component.For<Session>()
                          .LifestyleTransient()
                          .DynamicParameters((k, p) => p["instance"] = (JET_INSTANCE) k.Resolve<Instance>()),
+
                 Component.For<EsentContext>()
                          .LifestyleTransient()
                          .DependsOn(Dependency.OnConfigValue("databaseName", Settings.Default.DatabaseFilePath)),
+
                 Component.For<EsentConfigContext>()
                          .DependsOn(Dependency.OnConfigValue("databaseName", Settings.Default.DatabaseFilePath))
                          .Start(),
+
                 Component.For<IGraveGraphFactory>()
                          .AsFactory(),
+
                 Component.For<IGraph>()
                          .Forward<IKeyIndexableGraph, IIndexableGraph, GraveGraph>()
                          .ImplementedBy<GraveGraph>()
+                         .LifestyleTransient(),
+
+                Component.For<IGraph>()
+                         .Forward<IKeyIndexableGraph, IIndexableGraph, ITransactionalGraph, GraveTransactionalGraph>()
+                         .ImplementedBy<GraveTransactionalGraph>()
+                         .DependsOn(Dependency.OnComponent("indexingService", "TransactionalIndexingService"))
                          .LifestyleTransient()
                 );
         }

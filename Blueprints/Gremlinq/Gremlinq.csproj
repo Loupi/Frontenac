@@ -123,9 +123,20 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="GremlinqHelpers.OutE.cs" />
+    <Compile Include="GremlinqHelpers.InE.cs" />
     <Compile Include="DictionaryPropertyConverter.cs" />
     <Compile Include="Edge.cs" />
-    <Compile Include="GremlinqHelpers.cs" />
+    <Compile Include="GremlinqHelpers.Add.cs" />
+    <Compile Include="GremlinqHelpers.As.cs" />
+    <Compile Include="GremlinqHelpers.Both.cs" />
+    <Compile Include="GremlinqHelpers.In.cs" />
+    <Compile Include="GremlinqHelpers.Indexing.cs" />
+    <Compile Include="GremlinqHelpers.Map.cs" />
+    <Compile Include="GremlinqHelpers.Out.cs" />
+    <Compile Include="GremlinqHelpers.Proxying.cs" />
+    <Compile Include="GremlinqHelpers.Query.cs" />
+    <Compile Include="GremlinqHelpers.V.cs" />
     <Compile Include="IEdge.cs" />
     <Compile Include="IElement.cs" />
     <Compile Include="IQuery.cs" />
@@ -136,6 +147,7 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="Fody.targets" />
+    <Compile Include="GremlinqHelpers.Loop.cs" />
     <None Include="key.snk" />
     <None Include="packages.config" />
   </ItemGroup>
@@ -151,7 +163,7 @@
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Import Project="$(SolutionDir)\.nuget\NuGet.targets" Condition="Exists('$(SolutionDir)\.nuget\NuGet.targets')" />
   <Import Project="Fody.targets" />
-  <Import Project="..\packages\GitFlowVersionTask.0.13.0\Build\GitFlowVersionTask.targets" Condition="Exists('..\packages\GitFlowVersionTask.0.13.0\Build\GitFlowVersionTask.targets')" />
+  <Import Project="..\packages\GitFlowVersionTask.0.14.0\Build\GitFlowVersionTask.targets" Condition="Exists('..\packages\GitFlowVersionTask.0.14.0\Build\GitFlowVersionTask.targets')" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.
   <Target Name="BeforeBuild">

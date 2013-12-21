@@ -302,6 +302,6 @@
   <Target Name="AfterBuild">
   </Target>
   -->
-  <Import Project="..\packages\GitFlowVersionTask.0.13.0\Build\GitFlowVersionTask.targets" Condition="Exists('..\packages\GitFlowVersionTask.0.13.0\Build\GitFlowVersionTask.targets')" />
   <Import Project="Fody.targets" />
+  <Import Project="..\packages\GitFlowVersionTask.0.14.0\Build\GitFlowVersionTask.targets" Condition="Exists('..\packages\GitFlowVersionTask.0.14.0\Build\GitFlowVersionTask.targets')" />
 </Project>
