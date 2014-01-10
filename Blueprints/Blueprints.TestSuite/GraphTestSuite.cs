@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using Frontenac.Blueprints.Impls;
 using Frontenac.Blueprints.Util.IO;
@@ -445,6 +446,7 @@ namespace Frontenac.Blueprints
             var graph = GraphTest.GenerateGraph();
             try
             {
+                    
                 const int vertexCount = 500;
                 var vertices = new List<IVertex>();
                 var edges = new List<IEdge>();
@@ -460,7 +462,7 @@ namespace Frontenac.Blueprints
                 {
                     var a = vertices.ElementAt(i);
                     var b = vertices.ElementAt(i + 1);
-                    edges.Add(graph.AddEdge(null, a, b, ConvertId(graph, string.Concat("a", Guid.NewGuid()))));
+                    edges.Add(graph.AddEdge(null, a, b, "lolo" /* ConvertId(graph, string.Concat("a", Guid.NewGuid())) */  ));
                 }
                 PrintPerformance(graph.ToString(), vertexCount/2, "edges added", StopWatch());
 
@@ -473,14 +475,15 @@ namespace Frontenac.Blueprints
                     if ((counter + 1)%2 == 0)
                     {
                         if (graph.Features.SupportsEdgeIteration)
-                            Assert.AreEqual(edges.Count() - ((counter + 1)/2), Count(graph.GetEdges()));
+                            Assert.AreEqual(edges.Count() - ((counter + 1)/2), graph.GetEdges().Count());
                     }
 
                     if (graph.Features.SupportsVertexIteration)
-                        Assert.AreEqual(vertices.Count() - counter, Count(graph.GetVertices()));
+                        Assert.AreEqual(vertices.Count() - counter, graph.GetVertices().Count());
                 }
                 PrintPerformance(graph.ToString(), vertexCount, "vertices deleted (with Count check on each delete)",
-                                 StopWatch());
+                                    StopWatch());
+
             }
             finally
             {

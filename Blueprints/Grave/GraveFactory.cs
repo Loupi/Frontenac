@@ -4,6 +4,8 @@ using Castle.Facilities.Startable;
 using Castle.Facilities.TypedFactory;
 using Castle.Windsor;
 using Castle.Windsor.Installer;
+using Frontenac.Grave.Entities;
+using Frontenac.Gremlinq;
 
 namespace Frontenac.Grave
 {
@@ -61,43 +63,22 @@ namespace Frontenac.Grave
 
             var graph = Context.GraphFactory.Create();
 
-            var marko = graph.AddVertex("1");
-            marko.SetProperty("name", "marko");
-            marko.SetProperty("age", 29);
+            var marko = graph.AddVertex<IContributor>(t => { t.Name = "Marko"; t.Age = 29; });
+            var vadas = graph.AddVertex<IContributor>(t => { t.Name = "Vadas"; t.Age = 27; });
+            var lop = graph.AddVertex<IContributor>(t => { t.Name = "Lop"; t.Language = "Java"; });
+            var josh = graph.AddVertex<IContributor>(t => { t.Name = "Josh"; t.Age = 32; });
+            var ripple = graph.AddVertex<IContributor>(t => { t.Name = "Ripple"; t.Language = "Java"; });
+            var peter = graph.AddVertex<IContributor>(t => { t.Name = "Peter"; t.Age = 35; });
+            var loupi = graph.AddVertex<IContributor>(t => { t.Name = "Loupi"; t.Age = 33; t.Language = "C#"; });
 
-            var vadas = graph.AddVertex("2");
-            vadas.SetProperty("name", "vadas");
-            vadas.SetProperty("age", 27);
+            marko.AddEdge(t => t.Knows, vadas, t => t.Weight = 0.5f);
+            marko.AddEdge(t => t.Knows, josh, t => t.Weight = 1.0f);
+            marko.AddEdge(t => t.Created, lop, t => t.Weight = 0.4f);
 
-            var lop = graph.AddVertex("3");
-            lop.SetProperty("name", "lop");
-            lop.SetProperty("lang", "java");
+            josh.AddEdge(t => t.Created, ripple, t => t.Weight = 1.0f);
+            josh.AddEdge(t => t.Created, lop, t => t.Weight = 0.4f);
 
-            var josh = graph.AddVertex("4");
-            josh.SetProperty("name", "josh");
-            josh.SetProperty("age", 32);
-
-            var ripple = graph.AddVertex("5");
-            ripple.SetProperty("name", "ripple");
-            ripple.SetProperty("lang", "java");
-
-            var peter = graph.AddVertex("6");
-            peter.SetProperty("name", "peter");
-            peter.SetProperty("age", 35);
-
-            var loupi = graph.AddVertex("7");
-            loupi.SetProperty("name", "loupi");
-            loupi.SetProperty("age", 33);
-            loupi.SetProperty("lang", "c#");
-
-            graph.AddEdge("7", marko, vadas, "knows").SetProperty("weight", 0.5);
-            graph.AddEdge("8", marko, josh, "knows").SetProperty("weight", 1.0);
-            graph.AddEdge("9", marko, lop, "created").SetProperty("weight", 0.4);
-
-            graph.AddEdge("10", josh, ripple, "created").SetProperty("weight", 1.0);
-            graph.AddEdge("11", josh, lop, "created").SetProperty("weight", 0.4);
-
-            graph.AddEdge("12", peter, lop, "created").SetProperty("weight", 0.2);
+            peter.AddEdge(t => t.Created, lop, t => t.Weight = 0.2f);
 
             return graph;
         }

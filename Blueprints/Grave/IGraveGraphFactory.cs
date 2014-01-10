@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Diagnostics.Contracts;
+using Frontenac.Grave.Esent;
 
 namespace Frontenac.Grave
 {
@@ -9,5 +10,7 @@ namespace Frontenac.Grave
         GraveGraph Create();
         GraveTransactionalGraph CreateTransactional();
         void Destroy(GraveGraph graph);
+        EsentContext GetEsentContext();
+        void Destroy(EsentContext context);
     }
 }

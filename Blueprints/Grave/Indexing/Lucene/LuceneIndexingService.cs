@@ -25,7 +25,7 @@ namespace Frontenac.Grave.Indexing.Lucene
     public class LuceneIndexingService : IndexingService
     {
         public readonly NrtManager NrtManager;
-        private readonly IndexWriter _Writer;
+        private readonly IndexWriter _writer;
         private readonly SearcherManager _searcherManager;
         private readonly IIndexerFactory _indexerFactory;
 
@@ -38,7 +38,7 @@ namespace Frontenac.Grave.Indexing.Lucene
             Contract.Requires(indexerFactory != null);
             Contract.Requires(writer != null);
 
-            _Writer = writer;
+            _writer = writer;
             _indexerFactory = indexerFactory;
             NrtManager = new NrtManager(writer);
             _searcherManager = NrtManager.GetSearcherManager();
@@ -116,7 +116,7 @@ namespace Frontenac.Grave.Indexing.Lucene
                 };
         }
 
-        private string GetIdColumn(Type indexType)
+        private static string GetIdColumn(Type indexType)
         {
             Contract.Requires(indexType != null);
             Contract.Ensures(!string.IsNullOrWhiteSpace(Contract.Result<string>()));
@@ -126,7 +126,7 @@ namespace Frontenac.Grave.Indexing.Lucene
                 : LuceneIndexingServiceParameters.Default.EdgeIdColumnName;
         }
 
-        private string GetKeyColumn(Type indexType)
+        private static string GetKeyColumn(Type indexType)
         {
             Contract.Requires(indexType != null);
             Contract.Ensures(!string.IsNullOrWhiteSpace(Contract.Result<string>()));
@@ -136,7 +136,7 @@ namespace Frontenac.Grave.Indexing.Lucene
                 : LuceneIndexingServiceParameters.Default.EdgeKeyColumnName;
         }
 
-        private string GetIndexColumn(Type indexType)
+        private static string GetIndexColumn(Type indexType)
         {
             Contract.Requires(indexType != null);
             Contract.Ensures(!string.IsNullOrWhiteSpace(Contract.Result<string>()));
@@ -222,22 +222,22 @@ namespace Frontenac.Grave.Indexing.Lucene
 
         public override void Commit()
         {
-            _Writer.Commit();
+            _writer.Commit();
             NrtManager.MaybeReopen(true);
         }
 
         public override void Prepare()
         {
-            _Writer.PrepareCommit();
+            _writer.PrepareCommit();
         }
 
         public override void Rollback()
         {
-            _Writer.Rollback();
+            _writer.Rollback();
             NrtManager.MaybeReopen(false);
         }
 
-        Query CreateGeoQuery(Type indexType, string key, IGeoShape geoShape)
+        static Query CreateGeoQuery(Type indexType, string key, IGeoShape geoShape)
         {
             Shape shape;
             if (geoShape is GeoCircle)
@@ -271,7 +271,7 @@ namespace Frontenac.Grave.Indexing.Lucene
             return query;
         }
 
-        Query CreateComparableQuery(Type indexType, GraveComparableQueryElement comparable)
+        static Query CreateComparableQuery(Type indexType, GraveComparableQueryElement comparable)
         {
             Contract.Requires(comparable != null);
 
@@ -386,7 +386,6 @@ namespace Frontenac.Grave.Indexing.Lucene
                                          bool minInclusive, bool maxInclusive)
         {
             Contract.Requires(((((!(Portability.IsNumber(value)) || !(string.IsNullOrWhiteSpace(key))) || key == null) || key.Length != 0) || value != null));
-
             Contract.Ensures(Contract.Result<Query>() != null);
 
             var query = Portability.IsNumber(value)
@@ -396,7 +395,7 @@ namespace Frontenac.Grave.Indexing.Lucene
             return query;
         }
 
-        private Query WrapQuery(Type indexType, Query query, string indexName, bool isUserIndex)
+        private static Query WrapQuery(Type indexType, Query query, string indexName, bool isUserIndex)
         {
             Contract.Requires(query != null);
             Contract.Requires(IsValidIndexType(indexType));
@@ -415,8 +414,13 @@ namespace Frontenac.Grave.Indexing.Lucene
             return query;
         }
 
-        public override IEnumerable<int> Get(Type indexType, string indexName, string key, object value,
-                                             bool isUserIndex, int hitsLimit = 1000)
+        public override IEnumerable<int> Get(
+            Type indexType, 
+            string indexName, 
+            string key, 
+            object value,
+            bool isUserIndex, 
+            int hitsLimit = 1000)
         {
             var query = WrapQuery(indexType, CreateQuery(key, value, value, value, true, true), indexName, isUserIndex);
             return Fetch(indexType, query, hitsLimit);
@@ -438,8 +442,13 @@ namespace Frontenac.Grave.Indexing.Lucene
             }
         }
 
-        private static Query CreateRangeQuery(string term, object value, object min, object max, bool minInclusive,
-                                              bool maxInclusive)
+        private static Query CreateRangeQuery(
+            string term, 
+            object value, 
+            object min, 
+            object max, 
+            bool minInclusive,
+            bool maxInclusive)
         {
             Contract.Requires(!string.IsNullOrWhiteSpace(term));
             Contract.Requires(value != null);

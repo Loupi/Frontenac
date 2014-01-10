@@ -10,10 +10,11 @@ namespace Frontenac.Gremlinq
     {
         private static readonly IDictionaryAdapterFactory DictionaryAdapterFactory = new DictionaryAdapterFactory();
 
-        public static IEdge<TModel> CreateWrapper<TInModel, TOutModel, TModel>(
+        public static IEdge<TModel> Wrap<TInModel, TOutModel, TModel>(
             IVertex<TOutModel> outVertex,
             Expression expression,
-            IVertex<TInModel> inVertex) where TModel : class
+            IVertex<TInModel> inVertex) 
+            where TModel : class
         {
             Contract.Requires(outVertex != null);
             Contract.Requires(expression != null);
@@ -25,11 +26,12 @@ namespace Frontenac.Gremlinq
             return new Edge<TModel>(edge, model);
         }
 
-        public static IEdge<TModel> CreateWrapper<TInModel, TOutModel, TModel>(
+        public static IEdge<TModel> Wrap<TInModel, TOutModel, TModel>(
             IVertex<TOutModel> outVertex,
             Expression expression,
             IVertex<TInModel> inVertex,
-            Action<TModel> assignMembers) where TModel : class
+            Action<TModel> assignMembers)
+            where TModel : class
         {
             Contract.Requires(outVertex != null);
             Contract.Requires(expression != null);
@@ -37,19 +39,20 @@ namespace Frontenac.Gremlinq
             Contract.Requires(assignMembers != null);
             Contract.Ensures(Contract.Result<IEdge<TModel>>() != null);
 
-            var wrapper = CreateWrapper<TInModel, TOutModel, TModel>(outVertex, expression, inVertex);
+            var wrapper = Wrap<TInModel, TOutModel, TModel>(outVertex, expression, inVertex);
             assignMembers(wrapper.Model);
             return wrapper;
         }
 
-        public static TModel Proxy<TModel>(this IElement element) where TModel : class
+        public static TModel Proxy<TModel>(this IElement element) 
+            where TModel : class
         {
             Contract.Requires(element != null);
             Contract.Ensures(Contract.Result<TModel>() != null);
 
             object typeName;
-            var typeToProxy = element.TryGetValue("_type", out typeName)
-                                  ? Type.GetType(typeName.ToString())
+            var typeToProxy = element.TryGetValue(TypePropertyName, out typeName)
+                                  ? System.Type.GetType(typeName.ToString())
                                   : typeof(TModel);
             var propsDesc = new PropertyDescriptor();
             propsDesc.AddBehavior(new DictionaryPropertyConverter());
@@ -69,6 +72,18 @@ namespace Frontenac.Gremlinq
                 return ((MemberExpression)e).Member.Name;
 
             throw new InvalidOperationException("Given expression is not type MemberAccess.");
+        }
+
+        public static Type Type(this IElement element)
+        {
+            Contract.Requires(element != null);
+            Contract.Ensures(Contract.Result<Type>() != null);
+
+            object typeName;
+            if (!element.TryGetValue(TypePropertyName, out typeName))
+                throw new NullReferenceException();
+
+            return System.Type.GetType(typeName.ToString());
         }
     }
 }

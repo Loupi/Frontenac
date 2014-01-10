@@ -57,10 +57,12 @@ namespace Frontenac.Grave.Installers
 
                 Component.For<EsentContext>()
                          .LifestyleTransient()
+                         .Named("EsentContext")
                          .DependsOn(Dependency.OnConfigValue("databaseName", Settings.Default.DatabaseFilePath)),
 
                 Component.For<EsentConfigContext>()
                          .DependsOn(Dependency.OnConfigValue("databaseName", Settings.Default.DatabaseFilePath))
+                         .LifestyleTransient()
                          .Start(),
 
                 Component.For<IGraveGraphFactory>()

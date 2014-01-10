@@ -29,9 +29,7 @@ namespace Frontenac.Blueprints
 
         protected string ConvertId(IGraph graph, string id)
         {
-            if (graph.Features.IsRdfModel)
-                return string.Concat("blueprints:", id);
-            return id;
+            return graph.Features.IsRdfModel ? string.Concat("blueprints:", id) : id;
         }
 
         protected void VertexCount(IGraph graph, int expectedCount)

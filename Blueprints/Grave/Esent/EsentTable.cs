@@ -263,7 +263,7 @@ namespace Frontenac.Grave.Esent
             Api.JetAddColumn(Session, TableId, columnName, new JET_COLUMNDEF
                 {
                     coltyp = _contentSerializer.IsBinary ? JET_coltyp.LongBinary : JET_coltyp.LongText,
-                    grbit = ColumndefGrbit.ColumnMaybeNull
+                    grbit = ColumndefGrbit.ColumnMaybeNull | ColumndefGrbit.ColumnTagged
                 }, null, 0, out columnId);
 
             Columns.Add(columnName, columnId);

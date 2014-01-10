@@ -1,0 +1,21 @@
+<?xml version="1.0"?>
+<package xmlns="http://schemas.microsoft.com/packaging/2010/07/nuspec.xsd">
+  <metadata>
+    <id>Lucene.Net.Contrib.Spatial</id>
+    <version>3.0.3</version>
+    <title>Lucene.Net Contrib Spatial</title>
+    <authors>Lucene.Net Community</authors>
+    <owners>Lucene.Net Community</owners>
+    <licenseUrl>http://www.apache.org/licenses/LICENSE-2.0.html</licenseUrl>
+    <projectUrl>http://lucenenet.apache.org/</projectUrl>
+    <iconUrl>https://svn.apache.org/repos/asf/lucene.net/trunk/branding/logo/lucene-net-icon-128x128.png</iconUrl>
+    <requireLicenseAcceptance>false</requireLicenseAcceptance>
+    <description>Lucene.Net Contrib Spatial add Geospatial support for Lucene.Net</description>
+    <summary>Lucene.Net Contrib Spatial add Geospatial support for Lucene.Net</summary>
+    <tags>lucene.net core text contrib search information retrieval lucene apache spatial</tags>
+    <dependencies>
+      <dependency id="Lucene.Net" version="3.0.3" />
+      <dependency id="Spatial4n.Core" version="0.3" />
+    </dependencies>
+  </metadata>
+</package>

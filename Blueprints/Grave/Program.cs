@@ -41,20 +41,20 @@ namespace Frontenac.Grave
                     .Single();
 
                 var eventsNearAthen = graph.Query<IBattle>()
-                    .Has(t => t.Place, Compare.Equal, new GeoCircle(37.97, 23.72, 50))
+                    .Has(t => t.Place, new GeoCircle(37.97, 23.72, 50))
                     .Edges()
                     .ToArray();
-
+                
                 var opponents = eventsNearAthen
                     .Select(t => new[]
                         {
-                            t.Out(u => u.Out).Model.Name,
-                            t.In(u => u.In).Model.Name
+                            t.Out(u => u.Opponent).Model.Name,
+                            t.In(u => u.Opponent).Model.Name
                         })
                     .ToArray();
 
                 var hercules = saturn
-                    .Loop(t => t.Father, t => t.In(u => u.Father) , 2)
+                    .Loop(t => t.In(u => u.Father) , 2)
                     .Single();
 
                 var parents = hercules
@@ -66,10 +66,12 @@ namespace Frontenac.Grave
                     .ToArray();
 
                 var parentTypes = parents
-                    .Select(t => t.Model.GetType().BaseType)
+                    .Select(t => t.Type())
                     .ToArray();
 
-                var battled = hercules.Out(t => t.Battled).ToArray();
+                var battled = hercules
+                    .Out(t => t.Battled)
+                    .ToArray();
 
                 var opponentDetails = battled
                     .Select(t => t.Element.ToDictionary(u => u.Key, u => u.Value))
@@ -78,7 +80,7 @@ namespace Frontenac.Grave
                 var v2 = hercules
                     .Out(t => t.Battled)
                     .Where(t => t.Model.Time > 1)
-                    .Select(t => t.In(u => u.In).Model.Name)
+                    .Select(t => t.In(u => u.Opponent).Model.Name)
                     .ToArray();
             }
             finally
@@ -88,7 +90,7 @@ namespace Frontenac.Grave
             }
         }
 
-        private static void CreateGraphOfTheGods(IKeyIndexableGraph graph)
+        public static void CreateGraphOfTheGods(IKeyIndexableGraph graph)
         {
             Contract.Requires(graph != null);
 

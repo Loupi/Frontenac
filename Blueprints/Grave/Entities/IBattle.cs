@@ -7,7 +7,6 @@ namespace Frontenac.Grave.Entities
         int Time { get; set; }
         GeoPoint Place { get; set; }
 
-        ICharacter In { get; }
-        ICharacter Out { get; }
+        ICharacter Opponent { get; }
     }
 }

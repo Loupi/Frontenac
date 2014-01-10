@@ -1,4 +1,5 @@
 ﻿using System.Diagnostics.Contracts;
+using Frontenac.Grave.Esent;
 
 namespace Frontenac.Grave
 {
@@ -20,6 +21,17 @@ namespace Frontenac.Grave
         public void Destroy(GraveGraph graph)
         {
             Contract.Requires(graph != null);
+        }
+
+        public EsentContext GetEsentContext()
+        {
+            Contract.Ensures(Contract.Result<EsentContext>() != null);
+            return null;
+        }
+
+        public void Destroy(EsentContext context)
+        {
+            Contract.Requires(context != null);
         }
 
         public abstract void Dispose();

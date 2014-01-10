@@ -11,6 +11,9 @@ namespace Frontenac.Grave
 {
     public class GraveGraph : IKeyIndexableGraph, IIndexableGraph
     {
+        private const string EdgeInPrefix = "$e_i_";
+        private const string EdgeOutPrefix = "$e_o_";
+
         private static readonly Features GraveGraphFeatures = new Features
             {
                 SupportsDuplicateEdges = true,
@@ -53,14 +56,13 @@ namespace Frontenac.Grave
         private long _generation;
         private bool _refreshRequired;
 
-        public GraveGraph(IGraveGraphFactory factory, IndexingService indexingService, EsentContext context)
+        public GraveGraph(IGraveGraphFactory factory, IndexingService indexingService)
         {
             Contract.Requires(factory != null);
             Contract.Requires(indexingService != null);
-            Contract.Requires(context != null);
 
             _factory = factory;
-            Context = context;
+            Context = factory.GetEsentContext();
             IndexingService = indexingService;
         }
 
@@ -233,7 +235,91 @@ namespace Frontenac.Grave
             return IterateEdges(key, value);
         }
 
-        public void DropKeyIndex(string key, Type elementClass)
+        public virtual IEnumerable<IEdge> GetEdges(GraveVertex vertex, Direction direction, params string[] labels)
+        {
+            var cursor = Context.GetVerticesCursor();
+            try
+            {
+                var columns = cursor.GetColumns().ToArray();
+                var edgeColumns = new List<string>();
+                edgeColumns.AddRange(FilterLabels(direction, labels, Direction.In, columns, EdgeInPrefix));
+                edgeColumns.AddRange(FilterLabels(direction, labels, Direction.Out, columns, EdgeOutPrefix));
+
+                foreach (var label in edgeColumns)
+                {
+                    var isVertexIn = label.StartsWith(EdgeInPrefix);
+                    var labelName = label.Substring(EdgeInPrefix.Length);
+                    foreach (var edgeData in cursor.GetEdges((int)vertex.Id, label))
+                    {
+                        var edgeId = (int)(edgeData >> 32);
+                        var targetId = (int)(edgeData & 0xFFFF);
+                        var targetVertex = new GraveVertex(this, Context.VertexTable, targetId);
+                        var outVertex = isVertexIn ? targetVertex : vertex;
+                        var inVertex = isVertexIn ? vertex : targetVertex;
+                        yield return
+                            new GraveEdge(edgeId, outVertex, inVertex, labelName, this, Context.EdgesTable);
+                    }
+                }
+            }
+            finally
+            {
+                cursor.Close();
+            }
+        }
+
+        private static IEnumerable<string> FilterLabels(Direction direction, ICollection<string> labels, Direction directionFilter,
+                                                        IEnumerable<string> columns, string prefix)
+        {
+            Contract.Requires(labels != null);
+            Contract.Requires(columns != null);
+            Contract.Requires(!String.IsNullOrWhiteSpace(prefix));
+
+            if (direction == directionFilter || direction == Direction.Both)
+            {
+                if (!labels.Any())
+                    return columns.Where(t => t.StartsWith(prefix));
+
+                var labelsFilter = labels.Select(t => String.Format("{0}{1}", prefix, t)).ToArray();
+                return columns.Where(labelsFilter.Contains);
+            }
+            return Enumerable.Empty<string>();
+        }
+
+        public virtual object GetProperty(GraveElement element, string key)
+        {
+            Contract.Requires(element != null);
+            Contract.Requires(!string.IsNullOrWhiteSpace(key));
+
+            return element.Table.ReadCell(element.RawId, key);
+        }
+
+        public virtual IEnumerable<string> GetPropertyKeys(GraveElement element)
+        {
+            Contract.Requires(element != null);
+
+            return element.Table.GetColumnsForRow(element.RawId).Where(t => !t.StartsWith("$"));
+        }
+
+        public virtual void SetProperty(GraveElement element, string key, object value)
+        {
+            Contract.Requires(element != null);
+            Contract.Requires(!string.IsNullOrWhiteSpace(key));
+
+            element.Table.WriteCell(element.RawId, key, value);
+            element.SetIndexedKeyValue(key, value);
+        }
+
+        public virtual object RemoveProperty(GraveElement element, string key)
+        {
+            Contract.Requires(element != null);
+            Contract.Requires(!string.IsNullOrWhiteSpace(key));
+
+            var result = element.Table.DeleteCell(element.RawId, key);
+            element.SetIndexedKeyValue(key, null);
+            return result;
+        }
+
+        public virtual void DropKeyIndex(string key, Type elementClass)
         {
             var generation = GetIndices(elementClass, false).DropIndex(key);
             if (generation != -1)
@@ -266,6 +352,8 @@ namespace Frontenac.Grave
 
         public virtual void Shutdown()
         {
+            //_factory.Destroy(Context);
+            Context.Dispose();
             _factory.Destroy(this);
         }
 
@@ -291,7 +379,7 @@ namespace Frontenac.Grave
             else if (value is string)
             {
                 int intVal;
-                result = int.TryParse(value as string, out intVal) ? (int?) intVal : null;
+                result = Int32.TryParse(value as string, out intVal) ? (int?) intVal : null;
             }
             else if (value == null)
                 result = null;
@@ -315,7 +403,7 @@ namespace Frontenac.Grave
 
         private IEnumerable<IEdge> IterateEdges(string key, object value)
         {
-            Contract.Requires(!string.IsNullOrWhiteSpace(key));
+            Contract.Requires(!String.IsNullOrWhiteSpace(key));
 
             var cursor = Context.GetEdgesCursor();
             try
@@ -354,7 +442,7 @@ namespace Frontenac.Grave
 
         public override string ToString()
         {
-            return this.GraphString(string.Format("vertices: {0} Edges: {1}",
+            return this.GraphString(String.Format("vertices: {0} Edges: {1}",
                                            Context.VertexTable.GetApproximateRecordCount(15),
                                            Context.EdgesTable.GetApproximateRecordCount(15)));
         }

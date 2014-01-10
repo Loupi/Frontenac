@@ -1,6 +1,5 @@
 ﻿using System.Collections.Generic;
 using System.Diagnostics.Contracts;
-using System.Linq;
 using Frontenac.Blueprints;
 using Frontenac.Blueprints.Util;
 using Frontenac.Grave.Esent;
@@ -10,8 +9,8 @@ namespace Frontenac.Grave
     public abstract class GraveElement : DictionaryElement
     {
         protected readonly GraveGraph Graph;
-        protected readonly int RawId;
-        protected readonly EsentTable Table;
+        internal readonly int RawId;
+        internal readonly EsentTable Table;
 
         protected GraveElement(GraveGraph graph, EsentTable table, int id)
         {
@@ -25,25 +24,22 @@ namespace Frontenac.Grave
 
         public override object GetProperty(string key)
         {
-            return Table.ReadCell(RawId, key);
+            return Graph.GetProperty(this, key);
         }
 
         public override IEnumerable<string> GetPropertyKeys()
         {
-            return Table.GetColumnsForRow(RawId).Where(t => !t.StartsWith("$"));
+            return Graph.GetPropertyKeys(this);
         }
 
         public override void SetProperty(string key, object value)
         {
-            Table.WriteCell(RawId, key, value);
-            SetIndexedKeyValue(key, value);
+            Graph.SetProperty(this, key, value);
         }
 
         public override object RemoveProperty(string key)
         {
-            var result = Table.DeleteCell(RawId, key);
-            SetIndexedKeyValue(key, null);
-            return result;
+            return Graph.RemoveProperty(this, key);
         }
 
         public override void Remove()
@@ -60,7 +56,7 @@ namespace Frontenac.Grave
             get { return RawId; }
         }
 
-        private void SetIndexedKeyValue(string key, object value)
+        internal void SetIndexedKeyValue(string key, object value)
         {
             Contract.Requires(!string.IsNullOrWhiteSpace(key));
 

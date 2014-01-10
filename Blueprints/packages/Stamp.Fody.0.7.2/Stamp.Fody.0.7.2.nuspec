@@ -1,0 +1,20 @@
+<?xml version="1.0"?>
+<package xmlns="http://schemas.microsoft.com/packaging/2010/07/nuspec.xsd">
+  <metadata>
+    <id>Stamp.Fody</id>
+    <version>0.7.2</version>
+    <title>Stamp.Fody</title>
+    <authors>Simon Cropp</authors>
+    <owners>Simon Cropp</owners>
+    <licenseUrl>http://www.opensource.org/licenses/mit-license.php</licenseUrl>
+    <projectUrl>http://github.com/Fody/Stamp</projectUrl>
+    <iconUrl>https://raw.github.com/Fody/Stamp/master/Icons/package_icon.png</iconUrl>
+    <requireLicenseAcceptance>false</requireLicenseAcceptance>
+    <description>Stamps an assembly with git information.</description>
+    <language>en-AU</language>
+    <tags>Git Versioning ILWeaving Fody Stamp Cecil</tags>
+    <dependencies>
+      <dependency id="Fody" />
+    </dependencies>
+  </metadata>
+</package>

@@ -1,0 +1,16 @@
+<?xml version="1.0"?>
+<package xmlns="http://schemas.microsoft.com/packaging/2011/08/nuspec.xsd">
+  <metadata>
+    <id>ManagedEsent</id>
+    <version>1.8.3.2</version>
+    <authors>martinc</authors>
+    <owners>martinc</owners>
+    <licenseUrl>http://managedesent.codeplex.com/license</licenseUrl>
+    <projectUrl>http://managedesent.codeplex.com/</projectUrl>
+    <requireLicenseAcceptance>false</requireLicenseAcceptance>
+    <description>ManagedEsent provides managed access to ESENT, the embeddable database engine native to Windows. ManagedEsent uses the esent.dll that is part of Microsoft Windows so there are no extra unmanaged binaries to download and install.</description>
+    <releaseNotes>Release 1.8.3.2 from 2013-04-04. No source code changes. Changed the binaries to go to net40, and also moved the WSA version to netcore45.</releaseNotes>
+    <copyright>Copyright 2013 Microsoft. All Rights Reserved.</copyright>
+    <tags>ManagedEsent NoSql ISAM</tags>
+  </metadata>
+</package>

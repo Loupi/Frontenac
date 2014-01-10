@@ -65,7 +65,7 @@ namespace Frontenac.Grave.Installers
                                      TimeSpan.FromMilliseconds(LuceneIndexingServiceParameters.Default.MinStaleMilliseconds),
                                      LuceneIndexingServiceParameters.Default.CloseTimeoutSeconds);
                              })
-                          .Start()
+                         .Start()
                 );
         }
     }

@@ -8,6 +8,8 @@ namespace Frontenac.Gremlinq
 {
     public static partial class GremlinqHelpers
     {
+        private const string TypePropertyName = "__type__";
+
         public static IVertex<TModel> AddVertex<TModel>(this IGraph graph, Action<TModel> assignMembers) where TModel : class
         {
             Contract.Requires(graph != null);
@@ -16,7 +18,7 @@ namespace Frontenac.Gremlinq
 
             var vertex = graph.AddVertex(null);
             var typeName = typeof(TModel).AssemblyQualifiedName;
-            vertex.Add("_type", typeName);
+            vertex.Add(TypePropertyName, typeName);
             var proxy = vertex.Proxy<TModel>();
             assignMembers(proxy);
             return new Vertex<TModel>(vertex, proxy);
@@ -58,7 +60,7 @@ namespace Frontenac.Gremlinq
             Contract.Requires(inVertex != null);
             Contract.Ensures(Contract.Result<IEdge<TModel>>() != null);
 
-            return CreateWrapper<TInModel, TOutModel, TModel>(outVertex, edgePropertySelector, inVertex);
+            return Wrap<TInModel, TOutModel, TModel>(outVertex, edgePropertySelector, inVertex);
         }
 
         public static IEdge<TModel> AddEdge<TOutModel, TInModel, TModel>(
@@ -73,7 +75,7 @@ namespace Frontenac.Gremlinq
             Contract.Requires(assignMembers != null);
             Contract.Ensures(Contract.Result<IEdge<TModel>>() != null);
 
-            return CreateWrapper(outVertex, edgePropertySelector, inVertex, assignMembers);
+            return Wrap(outVertex, edgePropertySelector, inVertex, assignMembers);
         }
 
         public static IEdge<TModel> AddEdge<TOutModel, TInModel, TModel>(
@@ -88,7 +90,7 @@ namespace Frontenac.Gremlinq
             Contract.Requires(assignMembers != null);
             Contract.Ensures(Contract.Result<IEdge<TModel>>() != null);
 
-            return CreateWrapper(outVertex, edgePropertySelector, inVertex, assignMembers);
+            return Wrap(outVertex, edgePropertySelector, inVertex, assignMembers);
         }
     }
 }

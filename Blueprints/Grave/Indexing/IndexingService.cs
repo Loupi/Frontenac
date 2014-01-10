@@ -151,10 +151,7 @@ namespace Frontenac.Grave.Indexing
                 return;
 
             if (disposing)
-            {
-                _context.Dispose();
                 IndicesLock.Dispose();
-            }
 
             _disposed = true;
         }

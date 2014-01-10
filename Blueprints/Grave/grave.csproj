@@ -157,8 +157,12 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="DictionaryPropertyConverter.cs" />
+    <Compile Include="Entities\IContributor.cs" />
+    <Compile Include="Entities\IWeightedEntity.cs" />
+    <Compile Include="Esent\DisposableAction.cs" />
     <Compile Include="Esent\EsentConfigContext.cs" />
     <Compile Include="Esent\EsentContextBase.cs" />
+    <Compile Include="Esent\EsentTransaction.cs" />
     <Compile Include="Esent\Serializers\BsonContentSerializer.cs" />
     <Compile Include="Esent\EsentConfigTable.cs" />
     <Compile Include="Geo\GeoCircle.cs" />
@@ -190,7 +194,6 @@
     <Compile Include="Indexing\Indexers\IndexerContract.cs" />
     <Compile Include="Indexing\IndexingService.cs" />
     <Compile Include="Indexing\IndexingServiceContract.cs" />
-    <Compile Include="Indexing\Lucene\TransactionalIndexWriter.cs" />
     <Compile Include="Installers\GraveInstaller.cs" />
     <Compile Include="Esent\EsentContext.cs" />
     <Compile Include="GraveIndex.cs" />
