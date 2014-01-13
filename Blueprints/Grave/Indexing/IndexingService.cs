@@ -16,22 +16,24 @@ namespace Frontenac.Grave.Indexing
         private const string UserEdgeIndicesColumnName = "UserEdgeIndices";
         public const int ConfigVertexId = 1;
 
-        internal readonly ReaderWriterLockSlim IndicesLock;
+        internal readonly ReaderWriterLockSlim IndicesLock = new ReaderWriterLockSlim();
         private readonly EsentConfigContext _context;
+        private readonly IIndexCollectionFactory _indexCollectionFactory;
 
-        protected IndexingService(EsentConfigContext context)
+        protected IndexingService(EsentConfigContext context, IIndexCollectionFactory indexCollectionFactory)
         {
             Contract.Requires(context != null);
+            Contract.Requires(indexCollectionFactory != null);
 
             _context = context;
-            IndicesLock = new ReaderWriterLockSlim();
+            _indexCollectionFactory = indexCollectionFactory;
             LoadConfig();
         }
 
-        public IndexCollection VertexIndices { get; private set; }
-        public IndexCollection EdgeIndices { get; private set; }
-        public IndexCollection UserVertexIndices { get; private set; }
-        public IndexCollection UserEdgeIndices { get; private set; }
+        public IIndexCollection VertexIndices { get; private set; }
+        public IIndexCollection EdgeIndices { get; private set; }
+        public IIndexCollection UserVertexIndices { get; private set; }
+        public IIndexCollection UserEdgeIndices { get; private set; }
 
         [Pure]
         public static bool IsValidIndexType(Type indexType)
@@ -45,10 +47,10 @@ namespace Frontenac.Grave.Indexing
             if (!_context.ConfigTable.SetCursor(ConfigVertexId))
                 _context.ConfigTable.AddRow();
 
-            VertexIndices = new IndexCollection(VertexIndicesColumnName, typeof (IVertex), false, this);
-            EdgeIndices = new IndexCollection(EdgeIndicesColumnName, typeof (IEdge), false, this);
-            UserVertexIndices = new IndexCollection(UserVertexIndicesColumnName, typeof (IVertex), true, this);
-            UserEdgeIndices = new IndexCollection(UserEdgeIndicesColumnName, typeof (IEdge), true, this);
+            VertexIndices = _indexCollectionFactory.Create(VertexIndicesColumnName, typeof (IVertex), false, this);
+            EdgeIndices = _indexCollectionFactory.Create(EdgeIndicesColumnName, typeof(IEdge), false, this);
+            UserVertexIndices = _indexCollectionFactory.Create(UserVertexIndicesColumnName, typeof(IVertex), true, this);
+            UserEdgeIndices = _indexCollectionFactory.Create(UserEdgeIndicesColumnName, typeof(IEdge), true, this);
         }
 
         public void CreateIndexOfType(string indexName, string indexColumn, List<string> indices)
@@ -60,11 +62,9 @@ namespace Frontenac.Grave.Indexing
             IndicesLock.EnterWriteLock();
             try
             {
-                if (!indices.Contains(indexName))
-                {
-                    indices.Add(indexName);
-                    _context.ConfigTable.WriteCell(ConfigVertexId, indexColumn, indices);
-                }
+                if (indices.Contains(indexName)) return;
+                indices.Add(indexName);
+                _context.ConfigTable.WriteCell(ConfigVertexId, indexColumn, indices);
             }
             finally
             {

@@ -62,11 +62,9 @@ namespace Frontenac.Grave
 
             var type = this is IVertex ? typeof (IVertex) : typeof (IEdge);
             var indices = Graph.GetIndices(type, false);
-            if (indices.HasIndex(key))
-            {
-                var generation = indices.Set(RawId, key, key, value);
-                Graph.UpdateGeneration(generation);
-            }
+            if (!indices.HasIndex(key)) return;
+            var generation = indices.Set(RawId, key, key, value);
+            Graph.UpdateGeneration(generation);
         }
 
         public override int GetHashCode()

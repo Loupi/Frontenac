@@ -181,6 +181,7 @@
     <Compile Include="Entities\ICharacter.cs" />
     <Compile Include="Entities\IDemiGod.cs" />
     <Compile Include="Entities\IGod.cs" />
+    <Compile Include="GraveTransactionalIndex.cs" />
     <Compile Include="GremlinqHelpers.cs" />
     <Compile Include="IGraveGraphFactory.cs" />
     <Compile Include="Entities\IHuman.cs" />
@@ -188,6 +189,11 @@
     <Compile Include="Entities\ILocation.cs" />
     <Compile Include="Entities\IMonster.cs" />
     <Compile Include="Entities\INamedEntity.cs" />
+    <Compile Include="Indexing\IIndexCollection.cs" />
+    <Compile Include="Indexing\IIndexCollectionFactory.cs" />
+    <Compile Include="Indexing\IndexCollectionContract.cs" />
+    <Compile Include="Indexing\IndexCollectionFactory.cs" />
+    <Compile Include="Indexing\IndexCollectionFactoryContract.cs" />
     <Compile Include="Indexing\Lucene\DocumentContract.cs" />
     <Compile Include="Indexing\DocumentFactoryContract.cs" />
     <Compile Include="Geo\GeoPoint.cs" />
@@ -197,6 +203,8 @@
     <Compile Include="Indexing\Indexers\IndexerContract.cs" />
     <Compile Include="Indexing\IndexingService.cs" />
     <Compile Include="Indexing\IndexingServiceContract.cs" />
+    <Compile Include="Indexing\TransactionalIndexCollection.cs" />
+    <Compile Include="Indexing\TransactionalIndexCollectionFactory.cs" />
     <Compile Include="Installers\GraveInstaller.cs" />
     <Compile Include="Esent\EsentContext.cs" />
     <Compile Include="GraveIndex.cs" />

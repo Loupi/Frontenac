@@ -14,6 +14,8 @@ namespace Frontenac.Grave
         private static int _transactionNumber = 1;
         private EsentTransaction _transaction;
         private TransactionScope _transactionScope;
+        private readonly Dictionary<string, GraveTransactionalIndex> _transactionalIndices
+            = new Dictionary<string, GraveTransactionalIndex>();
 
         public GraveTransactionalGraph(IGraveGraphFactory factory, 
                                        EsentContext context, 
@@ -314,6 +316,10 @@ namespace Frontenac.Grave
             if (_transaction != null)
                 _transaction.Commit();
 
+            foreach (var index in _transactionalIndices.Values)
+                index.Commit();
+            _transactionalIndices.Clear();
+            
             IndexingService.Commit();
 
             enlistment.Done();
@@ -324,6 +330,10 @@ namespace Frontenac.Grave
             if (_transaction != null)
                 _transaction.Rollback();
 
+            foreach (var index in _transactionalIndices.Values)
+                index.Rollback();
+            _transactionalIndices.Clear();
+
             IndexingService.Rollback();
 
             enlistment.Done();
@@ -332,6 +342,20 @@ namespace Frontenac.Grave
         public void InDoubt(Enlistment enlistment)
         {
             enlistment.Done();
+        }
+
+        protected override IIndex CreateIndexObject(string indexName, Type indexType, IIndexCollection indexCollection, IIndexCollection userIndexCollection)
+        {
+            var key = string.Concat(indexName, indexType);
+            GraveTransactionalIndex index;
+            if (!_transactionalIndices.TryGetValue(key, out index))
+            {
+                index = new GraveTransactionalIndex((GraveIndex)base.CreateIndexObject(indexName, indexType, indexCollection, userIndexCollection),
+                                                    (TransactionalIndexCollection)indexCollection,
+                                                    (TransactionalIndexCollection)userIndexCollection);
+                _transactionalIndices.Add(key, index);
+            }
+            return index;
         }
     }
 }

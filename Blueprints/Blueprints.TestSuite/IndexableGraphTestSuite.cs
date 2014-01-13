@@ -206,10 +206,6 @@ namespace Frontenac.Blueprints
                 Assert.AreEqual(vertex.Id, id);
                 graph.RemoveVertex(vertex);
 
-                var transactionalGraph = graph as ITransactionalGraph;
-                if (transactionalGraph != null)
-                    transactionalGraph.Commit();
-
                 Assert.AreEqual(0, Count(manualIndex.Get("key", "value")));
                 PrintPerformance(graph.ToString(), 1, "index reloaded and 1 vertex checked and then removed",
                                  StopWatch());

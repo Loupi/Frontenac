@@ -88,8 +88,8 @@ namespace Frontenac.Grave.Esent
             instance.Parameters.LogFileDirectory = logsDirectory;
             instance.Parameters.CreatePathIfNotExist = true;
             instance.Parameters.MaxVerPages = 16 * 1024; //1024 = 64Mb
-            instance.Parameters.MaxOpenTables = int.MaxValue;
-            instance.Parameters.MaxCursors = int.MaxValue;
+            //instance.Parameters.MaxOpenTables = int.MaxValue;
+            //instance.Parameters.MaxCursors = int.MaxValue;
             SystemParameters.CacheSizeMin = 16 * 1024;
             instance.Init();
             return instance;

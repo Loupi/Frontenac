@@ -4,7 +4,7 @@ using System.Diagnostics.Contracts;
 
 namespace Frontenac.Grave.Indexing
 {
-    public class IndexCollection
+    public class IndexCollection : IIndexCollection
     {
         private readonly Type _indexType;
         private readonly IndexingService _indexingService;
@@ -28,22 +28,16 @@ namespace Frontenac.Grave.Indexing
 
         public void CreateIndex(string indexName)
         {
-            Contract.Requires(!string.IsNullOrWhiteSpace(indexName));
-
             _indexingService.CreateIndexOfType(indexName, _indicesColumnName, _indices);
         }
 
         public long DropIndex(string indexName)
         {
-            Contract.Requires(!string.IsNullOrWhiteSpace(indexName));
-
             return _indexingService.DropIndexOfType(indexName, _indicesColumnName, _indexType, _indices, _isUserIndex);
         }
 
         public IEnumerable<string> GetIndices()
         {
-            Contract.Ensures(Contract.Result<IEnumerable<string>>() != null);
-
             IEnumerable<string> result;
 
             _indexingService.IndicesLock.EnterReadLock();
@@ -61,9 +55,7 @@ namespace Frontenac.Grave.Indexing
 
         public bool HasIndex(string indexName)
         {
-            Contract.Requires(!string.IsNullOrWhiteSpace(indexName));
-
-            bool result;
+           bool result;
 
             _indexingService.IndicesLock.EnterReadLock();
             try
@@ -80,9 +72,6 @@ namespace Frontenac.Grave.Indexing
 
         public long Set(int id, string indexName, string key, object value)
         {
-            Contract.Requires(!string.IsNullOrWhiteSpace(indexName));
-            Contract.Requires(!string.IsNullOrWhiteSpace(key));
-
             return _indexingService.Set(_indexType, id, indexName, key, value, _isUserIndex);
         }
 
@@ -91,22 +80,13 @@ namespace Frontenac.Grave.Indexing
             _indexingService.WaitForGeneration(generation);
         }
 
-        public IEnumerable<int> Get(string term, object value, int hitsLimit = 1000)
+        public IEnumerable<int> Get(string term, object value, int hitsLimit)
         {
-            Contract.Requires(!string.IsNullOrWhiteSpace(term));
-            Contract.Requires(hitsLimit >= 0);
-            Contract.Ensures(Contract.Result<IEnumerable<int>>() != null);
-
             return _indexingService.Get(_indexType, null, term, value, _isUserIndex, hitsLimit);
         }
 
-        public IEnumerable<int> Get(string indexName, string key, object value, int hitsLimit = 1000)
+        public IEnumerable<int> Get(string indexName, string key, object value, int hitsLimit)
         {
-            Contract.Requires(!string.IsNullOrWhiteSpace(indexName));
-            Contract.Requires(!string.IsNullOrWhiteSpace(key));
-            Contract.Requires(hitsLimit >= 0);
-            Contract.Ensures(Contract.Result<IEnumerable<int>>() != null);
-
             return _indexingService.Get(_indexType, indexName, key, value, _isUserIndex, hitsLimit);
         }
 
@@ -117,9 +97,17 @@ namespace Frontenac.Grave.Indexing
 
         public long DeleteIndex(string indexName)
         {
-            Contract.Requires(!string.IsNullOrWhiteSpace(indexName));
-
             return _indexingService.DeleteIndex(_indexType, indexName, _isUserIndex);
+        }
+
+        public void Commit()
+        {
+
+        }
+
+        public void Rollback()
+        {
+            
         }
     }
 }

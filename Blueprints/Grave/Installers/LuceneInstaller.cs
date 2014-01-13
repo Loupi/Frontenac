@@ -44,6 +44,13 @@ namespace Frontenac.Grave.Installers
                          .ImplementedBy<IndexWriter>()
                          .DependsOn(Dependency.OnValue("mfl", IndexWriter.MaxFieldLength.UNLIMITED)),
 
+                Component.For<IIndexCollectionFactory>()
+                         .ImplementedBy<IndexCollectionFactory>(),
+
+                Component.For<IIndexCollectionFactory>()
+                         .ImplementedBy<TransactionalIndexCollectionFactory>()
+                         .Named("TransactionalIndexCollectionFactory"),
+
                 Component.For<IndexingService>()
                          .Forward<LuceneIndexingService>()
                          .ImplementedBy<LuceneIndexingService>(),
@@ -51,6 +58,7 @@ namespace Frontenac.Grave.Installers
                 Component.For<IndexingService>()
                          .Forward<LuceneIndexingService>()
                          .Named("TransactionalIndexingService")
+                         .DependsOn(Dependency.OnComponent("indexCollectionFactory", "TransactionalIndexCollectionFactory"))
                          .LifestyleTransient(),
 
                 Component.For<NrtManagerReopener>()

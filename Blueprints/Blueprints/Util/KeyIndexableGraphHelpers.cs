@@ -42,6 +42,9 @@ namespace Frontenac.Blueprints.Util
                     }
                 }
             }
+            if (isTransactional)
+                ((ITransactionalGraph)graph).Commit();
+
             return counter;
         }
     }

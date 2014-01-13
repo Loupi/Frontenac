@@ -31,12 +31,14 @@ namespace Frontenac.Grave.Indexing.Lucene
 
         public LuceneIndexingService(EsentConfigContext configContext,
                                      IIndexerFactory indexerFactory,
-                                     IndexWriter writer)
-            : base(configContext)
+                                     IndexWriter writer,
+                                     IIndexCollectionFactory indexCollectionFactory)
+            : base(configContext, indexCollectionFactory)
         {
             Contract.Requires(configContext != null);
             Contract.Requires(indexerFactory != null);
             Contract.Requires(writer != null);
+            Contract.Requires(indexCollectionFactory != null);
 
             _writer = writer;
             _indexerFactory = indexerFactory;
@@ -222,6 +224,10 @@ namespace Frontenac.Grave.Indexing.Lucene
 
         public override void Commit()
         {
+            VertexIndices.Commit();
+            EdgeIndices.Commit();
+            UserVertexIndices.Commit();
+            UserEdgeIndices.Commit();
             _writer.Commit();
             NrtManager.MaybeReopen(true);
         }
@@ -233,6 +239,10 @@ namespace Frontenac.Grave.Indexing.Lucene
 
         public override void Rollback()
         {
+            VertexIndices.Rollback();
+            EdgeIndices.Rollback();
+            UserVertexIndices.Rollback();
+            UserEdgeIndices.Rollback();
             _writer.Rollback();
             NrtManager.MaybeReopen(false);
         }

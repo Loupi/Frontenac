@@ -53,9 +53,10 @@ namespace Frontenac.Grave
         internal readonly EsentContext Context;
         internal readonly IndexingService IndexingService;
         private readonly IGraveGraphFactory _factory;
+        private readonly Dictionary<string, GraveIndex> _indices = new Dictionary<string, GraveIndex>();
         private long _generation;
         private bool _refreshRequired;
-
+        
         public GraveGraph(IGraveGraphFactory factory, IndexingService indexingService)
         {
             Contract.Requires(factory != null);
@@ -72,26 +73,45 @@ namespace Frontenac.Grave
                 GetIndices(typeof (IEdge), true).HasIndex(indexName))
                 throw ExceptionFactory.IndexAlreadyExists(indexName);
 
-            GetIndices(indexClass, true).CreateIndex(indexName);
-            return new GraveIndex(indexName, indexClass, this, IndexingService);
+            var indexCollection = GetIndices(indexClass, true);
+            var userIndexCollection = GetIndices(indexClass, false);
+            indexCollection.CreateIndex(indexName);
+            return CreateIndexObject(indexName, indexClass, indexCollection, userIndexCollection);
         }
 
         public virtual IIndex GetIndex(string indexName, Type indexClass)
         {
-            return GetIndices(indexClass, true).HasIndex(indexName)
-                       ? new GraveIndex(indexName, indexClass, this, IndexingService)
+            var indexCollection = GetIndices(indexClass, true);
+            var userIndexCollection = GetIndices(indexClass, false);
+            return indexCollection.HasIndex(indexName)
+                       ? CreateIndexObject(indexName, indexClass, indexCollection, userIndexCollection)
                        : null;
         }
 
         public virtual IEnumerable<IIndex> GetIndices()
         {
-            return GetIndices(typeof (IVertex), true)
-                .GetIndices()
-                .Select(t => new GraveIndex(t, typeof (IVertex), this, IndexingService))
-                .Concat(
-                    GetIndices(typeof (IEdge), true)
-                        .GetIndices()
-                        .Select(t => new GraveIndex(t, typeof (IEdge), this, IndexingService)));
+            var vertexIndexCollection = GetIndices(typeof (IVertex), true);
+            var edgeIndexCollection = GetIndices(typeof (IEdge), true);
+
+            var userVertexIndexCollection = GetIndices(typeof(IVertex), false);
+            var userEdgeIndexCollection = GetIndices(typeof(IEdge), false);
+
+            return vertexIndexCollection.GetIndices()
+                .Select(t => CreateIndexObject(t, typeof(IVertex), vertexIndexCollection, userVertexIndexCollection))
+                .Concat(edgeIndexCollection.GetIndices()
+                        .Select(t => CreateIndexObject(t, typeof(IEdge), edgeIndexCollection, userEdgeIndexCollection)));
+        }
+
+        protected virtual IIndex CreateIndexObject(string indexName, Type indexType, IIndexCollection indexCollection, IIndexCollection userIndexCollection)
+        {
+            var key = string.Concat(indexName, indexType);
+            GraveIndex index;
+            if (!_indices.TryGetValue(key, out index))
+            {
+                index = new GraveIndex(indexName, indexType, this, IndexingService);
+                _indices.Add(key, index);
+            }
+            return index;
         }
 
         public virtual void DropIndex(string indexName)
@@ -164,7 +184,7 @@ namespace Frontenac.Grave
                 return new PropertyFilteredIterable<IVertex>(key, value, GetVertices());
 
             WaitForGeneration();
-            return IndexingService.VertexIndices.Get(key, key, value)
+            return IndexingService.VertexIndices.Get(key, key, value, int.MaxValue)
                                   .Select(vertexId => new GraveVertex(this, Context.VertexTable, vertexId));
         }
 
@@ -408,7 +428,7 @@ namespace Frontenac.Grave
             var cursor = Context.GetEdgesCursor();
             try
             {
-                var edgeIds = IndexingService.EdgeIndices.Get(key, key, value);
+                var edgeIds = IndexingService.EdgeIndices.Get(key, key, value, int.MaxValue);
                 foreach (var edgeId in edgeIds)
                 {
                     Tuple<string, int, int> data;
@@ -424,7 +444,7 @@ namespace Frontenac.Grave
             }
         }
 
-        internal IndexCollection GetIndices(Type indexType, bool isUserIndex)
+        internal IIndexCollection GetIndices(Type indexType, bool isUserIndex)
         {
             Contract.Requires(indexType != null);
             Contract.Requires(indexType.IsAssignableFrom(typeof (IVertex)) || indexType.IsAssignableFrom(typeof (IEdge)));
@@ -443,8 +463,8 @@ namespace Frontenac.Grave
         public override string ToString()
         {
             return this.GraphString(String.Format("vertices: {0} Edges: {1}",
-                                           Context.VertexTable.GetApproximateRecordCount(15),
-                                           Context.EdgesTable.GetApproximateRecordCount(15)));
+                                           Context.VertexTable.GetApproximateRecordCount(30),
+                                           Context.EdgesTable.GetApproximateRecordCount(30)));
         }
     }
 }

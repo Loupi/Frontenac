@@ -8,7 +8,8 @@ namespace Frontenac.Grave.Indexing
     [ContractClassFor(typeof (IndexingService))]
     public abstract class IndexingServiceContract : IndexingService
     {
-        protected IndexingServiceContract(EsentConfigContext context) : base(context)
+        protected IndexingServiceContract(EsentConfigContext context, IIndexCollectionFactory indexCollectionFactory) 
+            : base(context, indexCollectionFactory)
         {
         }
 
