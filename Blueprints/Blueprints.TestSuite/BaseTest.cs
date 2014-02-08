@@ -16,17 +16,9 @@ namespace Frontenac.Blueprints
             return typeof (T).Assembly.GetManifestResourceStream(typeof (T), resourceName);
         }
 
-        public static T GetOnlyElement<T>(IEnumerator<T> iterator)
-        {
-            if (!iterator.MoveNext()) return default(T);
-            var element = iterator.Current;
-            if (iterator.MoveNext()) throw new ArgumentException("Iterator has multiple elmenets");
-            return element;
-        }
-
         public static T GetOnlyElement<T>(IEnumerable<T> iterable)
         {
-            return GetOnlyElement(iterable.GetEnumerator());
+            return iterable.Single();
         }
 
         public static int Count(IEnumerator iterator)

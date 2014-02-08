@@ -362,6 +362,7 @@ namespace Frontenac.Blueprints
                 PrintPerformance(graph.ToString(), 2, "vertex properties checked in a successful transaction",
                                  StopWatch());
 
+                graph.AddEdge(null, v, graph.AddVertex(null), "test");
                 EdgeCount(graph, 1);
                 graph.Commit();
                 EdgeCount(graph, 1);
@@ -409,9 +410,9 @@ namespace Frontenac.Blueprints
                 v.SetProperty("name", "marko");
                 index.Put("name", "marko", v);
                 VertexCount(graph, 1);
-                v =
-                    (IVertex)
-                    GetOnlyElement(((IIndexableGraph) graph).GetIndex("txIdx", typeof (IVertex)).Get("name", "marko"));
+                v = (IVertex)GetOnlyElement(((IIndexableGraph) graph)
+                    .GetIndex("txIdx", typeof (IVertex))
+                    .Get("name", "marko"));
                 Assert.AreEqual(v.Id, id);
                 Assert.AreEqual(v.GetProperty("name"), "marko");
                 graph.Commit();
@@ -420,9 +421,9 @@ namespace Frontenac.Blueprints
 
                 StopWatch();
                 VertexCount(graph, 1);
-                v =
-                    (IVertex)
-                    GetOnlyElement(((IIndexableGraph) graph).GetIndex("txIdx", typeof (IVertex)).Get("name", "marko"));
+                v = (IVertex)GetOnlyElement(((IIndexableGraph) graph)
+                    .GetIndex("txIdx", typeof (IVertex))
+                    .Get("name", "marko"));
                 Assert.AreEqual(v.Id, id);
                 Assert.AreEqual(v.GetProperty("name"), "marko");
                 PrintPerformance(graph.ToString(), 1, "vertex retrieved from index outside successful transaction",
@@ -433,25 +434,24 @@ namespace Frontenac.Blueprints
                 v.SetProperty("name", "pavel");
                 index.Put("name", "pavel", v);
                 VertexCount(graph, 2);
-                v =
-                    (IVertex)
-                    GetOnlyElement(((IIndexableGraph) graph).GetIndex("txIdx", typeof (IVertex)).Get("name", "marko"));
+                v = (IVertex)GetOnlyElement(((IIndexableGraph) graph)
+                    .GetIndex("txIdx", typeof (IVertex))
+                    .Get("name", "marko"));
                 Assert.AreEqual(v.GetProperty("name"), "marko");
-                v =
-                    (IVertex)
-                    GetOnlyElement(((IIndexableGraph) graph).GetIndex("txIdx", typeof (IVertex)).Get("name", "pavel"));
+                v = (IVertex)GetOnlyElement(((IIndexableGraph) graph)
+                    .GetIndex("txIdx", typeof (IVertex))
+                    .Get("name", "pavel"));
                 Assert.AreEqual(v.GetProperty("name"), "pavel");
                 graph.Rollback();
                 PrintPerformance(graph.ToString(), 1, "vertex not added in a failed transaction", StopWatch());
 
                 StopWatch();
                 VertexCount(graph, 1);
-                Assert.AreEqual(
-                    Count(((IIndexableGraph) graph).GetIndex("txIdx", typeof (IVertex)).Get("name", "pavel")), 0);
+                Assert.AreEqual(Count(((IIndexableGraph) graph).GetIndex("txIdx", typeof (IVertex)).Get("name", "pavel")), 0);
                 PrintPerformance(graph.ToString(), 1, "vertex not retrieved in a successful transaction", StopWatch());
-                v =
-                    (IVertex)
-                    GetOnlyElement(((IIndexableGraph) graph).GetIndex("txIdx", typeof (IVertex)).Get("name", "marko"));
+                v = (IVertex)GetOnlyElement(((IIndexableGraph) graph)
+                    .GetIndex("txIdx", typeof (IVertex))
+                    .Get("name", "marko"));
                 Assert.AreEqual(v.GetProperty("name"), "marko");
             }
             finally
@@ -631,41 +631,33 @@ namespace Frontenac.Blueprints
             // the idea behind this test is to simulate a rexster environment where two graphs of the same type
             // are being mutated by multiple threads. the test itself surfaced issues with OrientDB in such
             // an environment and remains relevant for any graph that might be exposed through rexster.
+            var graph1 = (ITransactionalGraph)GraphTest.GenerateGraph("first");
+            
             var threadModFirstGraph = Task.Factory.StartNew(() =>
                 {
-                    var graph1 = (ITransactionalGraph) GraphTest.GenerateGraph("first");
-                    try
-                    {
-                        if (graph1.Features.IsRdfModel) return;
-                        var v = graph1.AddVertex(null);
-                        v.SetProperty("name", "stephen");
-                        graph1.Commit();
-                    }
-                    finally
-                    {
-                        graph1.Shutdown();
-                    }
+                    if (graph1.Features.IsRdfModel) return;
+                    var v = graph1.AddVertex(null);
+                    v.SetProperty("name", "stephen");
+                    graph1.Commit();
                 });
+
+            threadModFirstGraph.Wait();
+
+            var graph2 = (ITransactionalGraph)GraphTest.GenerateGraph("second");
 
             var threadReadBothGraphs = Task.Factory.StartNew(() =>
                 {
-                    var graph2 = (ITransactionalGraph) GraphTest.GenerateGraph("second");
-                    try
-                    {
-                        if (graph2.Features.IsRdfModel) return;
-
-                        var counter = graph2.GetVertices().Count();
-                        Assert.AreEqual(1, counter);
-                        counter = graph2.GetVertices().Count();
-                        Assert.AreEqual(0, counter);
-                    }
-                    finally
-                    {
-                        graph2.Shutdown();
-                    }
+                    if (graph2.Features.IsRdfModel) return;
+                    var counter = graph1.GetVertices().Count();
+                    Assert.AreEqual(1, counter);
+                    counter = graph2.GetVertices().Count();
+                    Assert.AreEqual(0, counter);
                 });
 
-            Task.WaitAll(threadModFirstGraph, threadReadBothGraphs);
+            threadReadBothGraphs.Wait();
+
+            graph1.Shutdown();
+            graph2.Shutdown();
         }
 
         [Test]
@@ -691,25 +683,30 @@ namespace Frontenac.Blueprints
 
                         Console.WriteLine("added vertex");
 
-                        latchFirstRead.AddCount();
+                        latchFirstRead.Signal();
                         latchCommit.Wait();
                         graph.Commit();
 
                         Console.WriteLine("committed vertex");
 
-                        latchSecondRead.AddCount();
+                        latchSecondRead.Signal();
                     });
 
                 var threadRead = Task.Factory.StartNew(() =>
                     {
                         latchFirstRead.Wait();
 
-                        Console.WriteLine("reading vertex before tx");
-                        Assert.False(graph.GetVertices().Any());
-                        Console.WriteLine("read vertex before tx");
-
-                        latchCommit.AddCount();
-                        latchSecondRead.Wait();
+                        try
+                        {
+                            Console.WriteLine("reading vertex before tx");
+                            Assert.False(graph.GetVertices().Any());
+                            Console.WriteLine("read vertex before tx");
+                        }
+                        finally 
+                        {
+                            latchCommit.Signal();
+                            latchSecondRead.Wait();
+                        }
 
                         Console.WriteLine("reading vertex after tx");
                         Assert.True(graph.GetVertices().Any());
@@ -745,7 +742,7 @@ namespace Frontenac.Blueprints
 
                         Console.WriteLine("added vertex");
 
-                        latchCommitInOtherThread.AddCount();
+                        latchCommitInOtherThread.Signal();
                         latchCommittedInOtherThread.Wait();
                         graph.Rollback();
 
@@ -760,10 +757,15 @@ namespace Frontenac.Blueprints
                     {
                         latchCommitInOtherThread.Wait();
 
-                        // try to commit the other transaction
-                        graph.Commit();
-
-                        latchCommittedInOtherThread.AddCount();
+                        try
+                        {
+                            // try to commit the other transaction
+                            graph.Commit();
+                        }
+                        finally 
+                        {
+                            latchCommittedInOtherThread.Signal();
+                        }
                     });
 
                 Task.WaitAll(threadTxStarter, threadTryCommitTx);
@@ -793,7 +795,7 @@ namespace Frontenac.Blueprints
                 Assert.NotNull(e1);
                 graph.RemoveEdge(e1);
                 EdgeCount(graph, 0);
-                Assert.Null(GetOnlyElement(graph.GetVertex(v1Id).GetEdges(Direction.Out)));
+                Assert.Null(graph.GetVertex(v1Id).GetEdges(Direction.Out).SingleOrDefault());
                 graph.Rollback();
 
                 EdgeCount(graph, 1);
@@ -804,7 +806,7 @@ namespace Frontenac.Blueprints
                 graph.Commit();
 
                 EdgeCount(graph, 0);
-                Assert.Null(GetOnlyElement(graph.GetVertex(v1Id).GetEdges(Direction.Out)));
+                Assert.Null(graph.GetVertex(v1Id).GetEdges(Direction.Out).SingleOrDefault());
             }
             finally
             {

@@ -41,7 +41,6 @@ namespace Frontenac.Grave.Installers
                          .ImplementedBy<KeywordAnalyzer>(),
 
                 Component.For<IndexWriter>()
-                         .ImplementedBy<IndexWriter>()
                          .DependsOn(Dependency.OnValue("mfl", IndexWriter.MaxFieldLength.UNLIMITED)),
 
                 Component.For<IIndexCollectionFactory>()

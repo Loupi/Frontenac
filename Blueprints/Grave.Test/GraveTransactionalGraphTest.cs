@@ -199,6 +199,7 @@ namespace Frontenac.Grave.Tests
         }
     }
 
+    [TestFixture(Category = "GraveTransactionalGraphGraphTestSuite")]
     public class GraveTransactionalGraphTestImpl : GraphTest
     {
         public override IGraph GenerateGraph()
@@ -214,6 +215,27 @@ namespace Frontenac.Grave.Tests
         public static string GetGraveGraphDirectory()
         {
             return Path.Combine(Directory.GetCurrentDirectory(), "Data");
+        }
+    }
+
+    [TestFixture(Category = "GraveTransactionalGraphGraphTestSuite")]
+    public class GraveTransactionalGraphTest : TransactionalGraphTestSuite
+    {
+        [SetUp]
+        public void SetUp()
+        {
+            GraveFactory.Release();
+            DeleteDirectory(GraveTransactionalGraphTestImpl.GetGraveGraphDirectory());
+        }
+
+        public GraveTransactionalGraphTest()
+            : base(new GraveTransactionalGraphTestImpl())
+        {
+        }
+
+        public GraveTransactionalGraphTest(GraphTest graphTest)
+            : base(graphTest)
+        {
         }
     }
 

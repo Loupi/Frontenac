@@ -125,7 +125,7 @@ namespace Frontenac.Grave
             _index.Graph.WaitForGeneration();
         }
 
-        public void Rollback()
+        public void Clear()
         {
             _putBuffer.Clear();
             _removeBuffer.Clear();

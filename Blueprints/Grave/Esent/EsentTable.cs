@@ -91,6 +91,11 @@ namespace Frontenac.Grave.Esent
         public void Open(JET_DBID dbid)
         {
             Api.JetOpenTable(Session, dbid, TableName, null, 0, OpenTableGrbit.Updatable, out TableId);
+            RefreshColumns();
+        }
+
+        public void RefreshColumns()
+        {
             Columns = Api.GetColumnDictionary(Session, TableId);
         }
 

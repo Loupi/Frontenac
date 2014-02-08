@@ -181,7 +181,7 @@ namespace Frontenac.Grave
             if (_transactionScope == null)
             {
                 _transactionScope = Transaction.Current != null
-                    ? new TransactionScope(Transaction.Current, TimeSpan.MaxValue)
+                    ? new TransactionScope(Transaction.Current)
                     : new TransactionScope(TransactionScopeOption.RequiresNew, TimeSpan.MaxValue);
 
                 if (Transaction.Current != null)
@@ -317,9 +317,11 @@ namespace Frontenac.Grave
                 _transaction.Commit();
 
             foreach (var index in _transactionalIndices.Values)
+            {
                 index.Commit();
-            _transactionalIndices.Clear();
-            
+                index.Clear();
+            }
+
             IndexingService.Commit();
 
             enlistment.Done();
@@ -331,10 +333,12 @@ namespace Frontenac.Grave
                 _transaction.Rollback();
 
             foreach (var index in _transactionalIndices.Values)
-                index.Rollback();
-            _transactionalIndices.Clear();
+                index.Clear();
 
             IndexingService.Rollback();
+
+            Context.VertexTable.RefreshColumns();
+            Context.EdgesTable.RefreshColumns();
 
             enlistment.Done();
         }

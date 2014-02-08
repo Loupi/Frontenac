@@ -1,6 +1,4 @@
-﻿using System.Diagnostics.Contracts;
-using Castle.Core;
-using Castle.Facilities.Startable;
+﻿using Castle.Facilities.Startable;
 using Castle.Facilities.TypedFactory;
 using Castle.MicroKernel.Registration;
 using Castle.MicroKernel.SubSystems.Configuration;
@@ -13,27 +11,6 @@ using Microsoft.Isam.Esent.Interop;
 
 namespace Frontenac.Grave.Installers
 {
-    public class InstanceStarter : IStartable
-    {
-        private readonly Instance _instance;
-
-        public InstanceStarter(Instance instance)
-        {
-            Contract.Requires(instance != null);
-
-            _instance = instance;
-        }
-
-        public void Start()
-        {
-        }
-
-        public void Stop()
-        {
-            _instance.Close();
-        }
-    }
-
     public class GraveInstaller : IWindsorInstaller
     {
         public void Install(IWindsorContainer container, IConfigurationStore store)

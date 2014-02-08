@@ -536,10 +536,8 @@ namespace Frontenac.Blueprints.Util.Wrappers.Batch
 
             public override IEnumerable<string> GetPropertyKeys()
             {
-                IEnumerable<string> result;
                 var chachedVertex = _batchGraph.GetCachedVertex(_externalId);
-                result = chachedVertex != null ? chachedVertex.GetPropertyKeys() : Enumerable.Empty<string>();
-                return result;
+                return chachedVertex != null ? chachedVertex.GetPropertyKeys() : Enumerable.Empty<string>();
             }
 
             public override object RemoveProperty(string key)

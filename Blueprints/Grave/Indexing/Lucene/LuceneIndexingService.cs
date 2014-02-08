@@ -31,18 +31,18 @@ namespace Frontenac.Grave.Indexing.Lucene
 
         public LuceneIndexingService(EsentConfigContext configContext,
                                      IIndexerFactory indexerFactory,
-                                     IndexWriter writer,
+                                     IndexWriter indexWriter,
                                      IIndexCollectionFactory indexCollectionFactory)
             : base(configContext, indexCollectionFactory)
         {
             Contract.Requires(configContext != null);
             Contract.Requires(indexerFactory != null);
-            Contract.Requires(writer != null);
+            Contract.Requires(indexWriter != null);
             Contract.Requires(indexCollectionFactory != null);
 
-            _writer = writer;
             _indexerFactory = indexerFactory;
-            NrtManager = new NrtManager(writer);
+            _writer = indexWriter;
+            NrtManager = new NrtManager(_writer);
             _searcherManager = NrtManager.GetSearcherManager();
         }
 
@@ -243,8 +243,9 @@ namespace Frontenac.Grave.Indexing.Lucene
             EdgeIndices.Rollback();
             UserVertexIndices.Rollback();
             UserEdgeIndices.Rollback();
-            _writer.Rollback();
-            NrtManager.MaybeReopen(false);
+
+            //We are not calling _writer.Rollback because 
+            //it closes the writer and would create multithreading issues.
         }
 
         static Query CreateGeoQuery(Type indexType, string key, IGeoShape geoShape)

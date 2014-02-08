@@ -14,7 +14,9 @@ namespace Frontenac.Blueprints
     ///     Typically, objects are C# primitives (e.g. string, long, int, boolean, etc.)
     /// </summary>
     [ContractClass(typeof (ElementContract))]
+// ReSharper disable PossibleInterfaceMemberAmbiguity
     public interface IElement : IDictionary<string, object>, IDictionary
+// ReSharper restore PossibleInterfaceMemberAmbiguity
     {
         /// <summary>
         ///     An identifier that is unique to its inheriting class.

@@ -69,7 +69,7 @@ namespace Frontenac.Grave
             var josh = graph.AddVertex<IContributor>(t => { t.Name = "Josh"; t.Age = 32; });
             var ripple = graph.AddVertex<IContributor>(t => { t.Name = "Ripple"; t.Language = "Java"; });
             var peter = graph.AddVertex<IContributor>(t => { t.Name = "Peter"; t.Age = 35; });
-            var loupi = graph.AddVertex<IContributor>(t => { t.Name = "Loupi"; t.Age = 33; t.Language = "C#"; });
+            graph.AddVertex<IContributor>(t => { t.Name = "Loupi"; t.Age = 33; t.Language = "C#"; });
 
             marko.AddEdge(t => t.Knows, vadas, t => t.Weight = 0.5f);
             marko.AddEdge(t => t.Knows, josh, t => t.Weight = 1.0f);
