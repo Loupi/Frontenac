@@ -1,7 +1,7 @@
 ﻿using System.Text;
 using Newtonsoft.Json;
 
-namespace Grave.Esent.Serializers
+namespace Frontenac.Grave.Esent.Serializers
 {
     public class JsonContentSerializer : IContentSerializer
     {

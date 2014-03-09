@@ -1,9 +1,9 @@
 ﻿using System.Diagnostics.Contracts;
 using Frontenac.Blueprints;
 using Frontenac.Blueprints.Util;
-using Grave.Esent;
+using Frontenac.Grave.Esent;
 
-namespace Grave
+namespace Frontenac.Grave
 {
     public class GraveEdge : GraveElement, IEdge
     {
@@ -37,7 +37,7 @@ namespace Grave
 
         public override string ToString()
         {
-            return StringFactory.EdgeString(this);
+            return this.EdgeString();
         }
     }
 }

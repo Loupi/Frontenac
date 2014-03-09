@@ -1,13 +1,13 @@
 ﻿using System;
 using System.Diagnostics.Contracts;
 using System.Runtime.Serialization;
-using Grave.Geo;
+using Frontenac.Grave.Geo;
 using Lucene.Net.Documents;
 using Lucene.Net.Spatial.Prefix;
 using Lucene.Net.Spatial.Prefix.Tree;
 using Spatial4n.Core.Context;
 
-namespace Grave.Indexing.Lucene
+namespace Frontenac.Grave.Indexing.Lucene
 {
     public class LuceneDocument : IDocument
     {
@@ -34,7 +34,7 @@ namespace Grave.Indexing.Lucene
             else if (value is string)
             {
                 var val = value.ToString();
-                _document.Add(new Field(key, val, Field.Store.NO, Field.Index.ANALYZED));
+                _document.Add(new Field(key, val, Field.Store.NO, Field.Index.ANALYZED_NO_NORMS));
             }
             else if (value is sbyte || value is byte || value is short || value is ushort || value is int ||
                      value is uint)

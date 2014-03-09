@@ -1,6 +1,6 @@
 ﻿using System.Diagnostics.Contracts;
 
-namespace Grave.Indexing.Indexers
+namespace Frontenac.Grave.Indexing.Indexers
 {
     [ContractClassFor(typeof (Indexer))]
     public abstract class IndexerContract : Indexer

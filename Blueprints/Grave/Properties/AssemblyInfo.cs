@@ -5,11 +5,11 @@ using System.Runtime.InteropServices;
 // set of attributes. Change these attribute values to modify the information
 // associated with an assembly.
 
-[assembly: AssemblyTitle("Grave")]
+[assembly: AssemblyTitle("Frontenac.Grave")]
 [assembly: AssemblyDescription("")]
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("")]
-[assembly: AssemblyProduct("Grave")]
+[assembly: AssemblyProduct("Frontenac.Grave")]
 [assembly: AssemblyCopyright("Copyright © Frontenac 2013")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]

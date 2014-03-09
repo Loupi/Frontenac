@@ -2,17 +2,19 @@
 using System.Collections.Generic;
 using System.Diagnostics.Contracts;
 using Frontenac.Blueprints;
-using Grave.Esent.Serializers;
+using Frontenac.Grave.Esent.Serializers;
 using Microsoft.Isam.Esent.Interop;
 using Microsoft.Isam.Esent.Interop.Vista;
 
-namespace Grave.Esent
+namespace Frontenac.Grave.Esent
 {
     public class EsentVertexTable : EsentTable
     {
         public EsentVertexTable(Session session, IContentSerializer contentSerializer)
             : base(session, "Vertices", contentSerializer)
         {
+            Contract.Requires(session != null);
+            Contract.Requires(contentSerializer != null);
         }
 
         public void AddEdge(int vertexId, Direction direction, string label, int edgeId, int targetId)
@@ -39,7 +41,9 @@ namespace Grave.Esent
 
                     if (edgeId.HasValue && targetId.HasValue)
                     {
+// ReSharper disable RedundantCast
                         var key = ((((ulong) edgeId.Value) << 32)) | (ulong) (long) targetId.Value;
+// ReSharper restore RedundantCast
                         var data = BitConverter.GetBytes(key);
                         Api.JetSetColumn(Session, TableId, Columns[labelColumn], data, data.Length,
                                          SetColumnGrbit.UniqueMultiValues, setInfo);
@@ -93,7 +97,9 @@ namespace Grave.Esent
         {
             Contract.Requires(!string.IsNullOrWhiteSpace(edgeLabel));
 
+// ReSharper disable RedundantCast
             var key = ((((ulong) edgeId) << 32)) | (ulong) (long) targetId;
+// ReSharper restore RedundantCast
             Api.JetSetCurrentIndex(Session, TableId, string.Concat(edgeLabel, "Index"));
             Api.MakeKey(Session, TableId, key, MakeKeyGrbit.NewKey);
             return Api.TrySeek(Session, TableId, SeekGrbit.SeekEQ);

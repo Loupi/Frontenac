@@ -1,6 +1,6 @@
 ﻿using System.Diagnostics.Contracts;
 
-namespace Grave.Indexing
+namespace Frontenac.Grave.Indexing
 {
     [ContractClass(typeof (DocumentContract))]
     public interface IDocument

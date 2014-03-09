@@ -1,10 +1,11 @@
 ﻿using System;
+using System.Diagnostics.Contracts;
 using System.Text;
-using Grave.Esent.Serializers;
+using Frontenac.Grave.Esent.Serializers;
 using Microsoft.Isam.Esent.Interop;
 using Microsoft.Isam.Esent.Interop.Vista;
 
-namespace Grave.Esent
+namespace Frontenac.Grave.Esent
 {
     public class EsentEdgesTable : EsentTable
     {
@@ -15,6 +16,8 @@ namespace Grave.Esent
         public EsentEdgesTable(Session session, IContentSerializer contentSerializer)
             : base(session, "Edges", contentSerializer)
         {
+            Contract.Requires(session != null);
+            Contract.Requires(contentSerializer != null);
         }
 
         protected override JET_TABLECREATE GetTableDefinition()

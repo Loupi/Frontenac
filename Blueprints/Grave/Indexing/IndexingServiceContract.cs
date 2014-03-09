@@ -1,14 +1,15 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics.Contracts;
-using Grave.Esent;
+using Frontenac.Grave.Esent;
 
-namespace Grave.Indexing
+namespace Frontenac.Grave.Indexing
 {
     [ContractClassFor(typeof (IndexingService))]
     public abstract class IndexingServiceContract : IndexingService
     {
-        protected IndexingServiceContract(EsentConfigContext context) : base(context)
+        protected IndexingServiceContract(EsentConfigContext context, IIndexCollectionFactory indexCollectionFactory) 
+            : base(context, indexCollectionFactory)
         {
         }
 
@@ -36,7 +37,6 @@ namespace Grave.Indexing
                                              bool isUserIndex, int hitsLimit = 1000)
         {
             Contract.Requires(IsValidIndexType(indexType));
-            Contract.Requires(!string.IsNullOrWhiteSpace(indexName));
             Contract.Requires(!string.IsNullOrWhiteSpace(key));
             Contract.Requires(hitsLimit >= 0);
             Contract.Ensures(Contract.Result<IEnumerable<int>>() != null);

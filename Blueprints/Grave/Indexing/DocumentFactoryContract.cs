@@ -1,6 +1,6 @@
 ﻿using System.Diagnostics.Contracts;
 
-namespace Grave.Indexing
+namespace Frontenac.Grave.Indexing
 {
     [ContractClassFor(typeof (IDocumentFactory))]
     public abstract class DocumentFactoryContract : IDocumentFactory
