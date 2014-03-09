@@ -218,6 +218,45 @@
     <Compile Include="..\Gremlinq\Edge.cs">
       <Link>Edge.cs</Link>
     </Compile>
+    <Compile Include="..\Gremlinq\GremlinqHelpers.Add.cs">
+      <Link>GremlinqHelpers.Add.cs</Link>
+    </Compile>
+    <Compile Include="..\Gremlinq\GremlinqHelpers.As.cs">
+      <Link>GremlinqHelpers.As.cs</Link>
+    </Compile>
+    <Compile Include="..\Gremlinq\GremlinqHelpers.Both.cs">
+      <Link>GremlinqHelpers.Both.cs</Link>
+    </Compile>
+    <Compile Include="..\Gremlinq\GremlinqHelpers.In.cs">
+      <Link>GremlinqHelpers.In.cs</Link>
+    </Compile>
+    <Compile Include="..\Gremlinq\GremlinqHelpers.Indexing.cs">
+      <Link>GremlinqHelpers.Indexing.cs</Link>
+    </Compile>
+    <Compile Include="..\Gremlinq\GremlinqHelpers.InE.cs">
+      <Link>GremlinqHelpers.InE.cs</Link>
+    </Compile>
+    <Compile Include="..\Gremlinq\GremlinqHelpers.Loop.cs">
+      <Link>GremlinqHelpers.Loop.cs</Link>
+    </Compile>
+    <Compile Include="..\Gremlinq\GremlinqHelpers.Map.cs">
+      <Link>GremlinqHelpers.Map.cs</Link>
+    </Compile>
+    <Compile Include="..\Gremlinq\GremlinqHelpers.Out.cs">
+      <Link>GremlinqHelpers.Out.cs</Link>
+    </Compile>
+    <Compile Include="..\Gremlinq\GremlinqHelpers.OutE.cs">
+      <Link>GremlinqHelpers.OutE.cs</Link>
+    </Compile>
+    <Compile Include="..\Gremlinq\GremlinqHelpers.Proxying.cs">
+      <Link>GremlinqHelpers.Proxying.cs</Link>
+    </Compile>
+    <Compile Include="..\Gremlinq\GremlinqHelpers.Query.cs">
+      <Link>GremlinqHelpers.Query.cs</Link>
+    </Compile>
+    <Compile Include="..\Gremlinq\GremlinqHelpers.V.cs">
+      <Link>GremlinqHelpers.V.cs</Link>
+    </Compile>
     <Compile Include="..\Gremlinq\IEdge.cs">
       <Link>IEdge.cs</Link>
     </Compile>
@@ -236,19 +275,6 @@
     <Compile Include="..\Gremlinq\Vertex.cs">
       <Link>Vertex.cs</Link>
     </Compile>
-    <Compile Include="GremlinqHelpers.Add.cs" />
-    <Compile Include="GremlinqHelpers.As.cs" />
-    <Compile Include="GremlinqHelpers.Both.cs" />
-    <Compile Include="GremlinqHelpers.In.cs" />
-    <Compile Include="GremlinqHelpers.Indexing.cs" />
-    <Compile Include="GremlinqHelpers.InE.cs" />
-    <Compile Include="GremlinqHelpers.Loop.cs" />
-    <Compile Include="GremlinqHelpers.Map.cs" />
-    <Compile Include="GremlinqHelpers.Out.cs" />
-    <Compile Include="GremlinqHelpers.OutE.cs" />
-    <Compile Include="GremlinqHelpers.Proxying.cs" />
-    <Compile Include="GremlinqHelpers.Query.cs" />
-    <Compile Include="GremlinqHelpers.V.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
