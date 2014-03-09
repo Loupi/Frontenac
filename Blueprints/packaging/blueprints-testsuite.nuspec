@@ -2,7 +2,6 @@
 <package xmlns="http://schemas.microsoft.com/packaging/2010/07/nuspec.xsd">
 	<metadata>
 		<id>Frontenac.Blueprints.TestSuite</id>
-		<version>1.0</version>
 		<authors>Loupi</authors>
 		<projectUrl>https://github.com/Loupi/Frontenac</projectUrl>
 		<requireLicenseAcceptance>false</requireLicenseAcceptance>
