@@ -1,7 +1,7 @@
 ﻿using System.Diagnostics.Contracts;
-using Grave.Indexing.Indexers;
+using Frontenac.Grave.Indexing.Indexers;
 
-namespace Grave.Indexing
+namespace Frontenac.Grave.Indexing
 {
     [ContractClassFor(typeof (IIndexerFactory))]
     public abstract class IndexerFactoryContract : IIndexerFactory

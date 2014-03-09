@@ -4,7 +4,7 @@ using System.Security.Principal;
 using System.Text;
 using Fasterflect;
 
-namespace Grave.Indexing.Indexers
+namespace Frontenac.Grave.Indexing.Indexers
 {
     public class ObjectIndexer : Indexer
     {
@@ -16,6 +16,7 @@ namespace Grave.Indexing.Indexers
         public ObjectIndexer(object content, IDocument document, IIndexerFactory indexerFactory, uint maxDepth)
             : base(document)
         {
+            Contract.Requires(document != null);
             Contract.Requires(content != null);
             Contract.Requires(indexerFactory != null);
             Contract.Requires(maxDepth > 0);
@@ -33,6 +34,8 @@ namespace Grave.Indexing.Indexers
 
         private void Recurse(uint depth, object value)
         {
+            Contract.Requires(value != null);
+
             var type = value.GetType();
 
             if (!type.IsValueType && Document.Present(value))

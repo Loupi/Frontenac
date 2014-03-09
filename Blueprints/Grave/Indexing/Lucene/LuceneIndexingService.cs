@@ -4,10 +4,8 @@ using System.Diagnostics.Contracts;
 using System.IO;
 using System.Linq;
 using Frontenac.Blueprints;
-using Grave.Esent;
-using Grave.Geo;
-using Lucene.Net.Analysis;
-using Lucene.Net.Analysis.Standard;
+using Frontenac.Grave.Esent;
+using Frontenac.Grave.Geo;
 using Lucene.Net.Contrib.Management;
 using Lucene.Net.Documents;
 using Lucene.Net.Index;
@@ -21,43 +19,31 @@ using Spatial4n.Core.Context;
 using Spatial4n.Core.Distance;
 using Spatial4n.Core.Shapes;
 using Directory = System.IO.Directory;
-using Version = Lucene.Net.Util.Version;
 
-namespace Grave.Indexing.Lucene
+namespace Frontenac.Grave.Indexing.Lucene
 {
     public class LuceneIndexingService : IndexingService
     {
-        private readonly KeywordAnalyzer _analyzer;
-        private readonly FSDirectory _directory;
-        private readonly IIndexerFactory _indexerFactory;
-        private readonly NrtManager _nrtManager;
-        private readonly LuceneIndexingServiceParameters _parameters;
-        private readonly NrtManagerReopener _reopener;
-        private readonly SearcherManager _searcherManager;
+        public readonly NrtManager NrtManager;
         private readonly IndexWriter _writer;
+        private readonly SearcherManager _searcherManager;
+        private readonly IIndexerFactory _indexerFactory;
 
-        public Dictionary<Type, object> ClassMaps = new Dictionary<Type, object>();
-
-        public LuceneIndexingService(EsentConfigContext configContext, LuceneIndexingServiceParameters parameters,
-                                     FSDirectory directory, IIndexerFactory indexerFactory)
-            : base(configContext)
+        public LuceneIndexingService(EsentConfigContext configContext,
+                                     IIndexerFactory indexerFactory,
+                                     IndexWriter indexWriter,
+                                     IIndexCollectionFactory indexCollectionFactory)
+            : base(configContext, indexCollectionFactory)
         {
             Contract.Requires(configContext != null);
-            Contract.Requires(parameters != null);
-            Contract.Requires(directory != null);
             Contract.Requires(indexerFactory != null);
+            Contract.Requires(indexWriter != null);
+            Contract.Requires(indexCollectionFactory != null);
 
-            _parameters = parameters;
-            _directory = directory;
             _indexerFactory = indexerFactory;
-
-            _analyzer = new KeywordAnalyzer();
-            _writer = new IndexWriter(_directory, _analyzer, IndexWriter.MaxFieldLength.UNLIMITED);
-            _nrtManager = new NrtManager(_writer);
-            _searcherManager = _nrtManager.GetSearcherManager();
-            _reopener = new NrtManagerReopener(_nrtManager, TimeSpan.FromSeconds(_parameters.MaxStaleSeconds),
-                                               TimeSpan.FromMilliseconds(_parameters.MinStaleMilliseconds),
-                                               _parameters.CloseTimeoutSeconds);
+            _writer = indexWriter;
+            NrtManager = new NrtManager(_writer);
+            _searcherManager = NrtManager.GetSearcherManager();
         }
 
         #region IDisposable
@@ -68,11 +54,8 @@ namespace Grave.Indexing.Lucene
 
             if (!disposing) return;
 
-            _reopener.Dispose();
             _searcherManager.Dispose();
-            _nrtManager.Dispose();
-            _writer.Dispose();
-            _analyzer.Dispose();
+            NrtManager.Dispose();
         }
 
         #endregion
@@ -135,33 +118,39 @@ namespace Grave.Indexing.Lucene
                 };
         }
 
-        private string GetIdColumn(Type indexType)
+        private static string GetIdColumn(Type indexType)
         {
             Contract.Requires(indexType != null);
             Contract.Ensures(!string.IsNullOrWhiteSpace(Contract.Result<string>()));
 
-            return indexType == typeof (IVertex) ? _parameters.VertexIdColumnName : _parameters.EdgeIdColumnName;
+            return indexType == typeof(IVertex) 
+                ? LuceneIndexingServiceParameters.Default.VertexIdColumnName 
+                : LuceneIndexingServiceParameters.Default.EdgeIdColumnName;
         }
 
-        private string GetKeyColumn(Type indexType)
+        private static string GetKeyColumn(Type indexType)
         {
             Contract.Requires(indexType != null);
             Contract.Ensures(!string.IsNullOrWhiteSpace(Contract.Result<string>()));
 
-            return indexType == typeof (IVertex) ? _parameters.VertexKeyColumnName : _parameters.EdgeKeyColumnName;
+            return indexType == typeof(IVertex) 
+                ? LuceneIndexingServiceParameters.Default.VertexKeyColumnName 
+                : LuceneIndexingServiceParameters.Default.EdgeKeyColumnName;
         }
 
-        private string GetIndexColumn(Type indexType)
+        private static string GetIndexColumn(Type indexType)
         {
             Contract.Requires(indexType != null);
             Contract.Ensures(!string.IsNullOrWhiteSpace(Contract.Result<string>()));
 
-            return indexType == typeof (IVertex) ? _parameters.VertexIndexColumnName : _parameters.EdgeIndexColumnName;
+            return indexType == typeof(IVertex) 
+                ? LuceneIndexingServiceParameters.Default.VertexIndexColumnName 
+                : LuceneIndexingServiceParameters.Default.EdgeIndexColumnName;
         }
 
         public override long DeleteIndex(Type indexType, string indexName, bool isUserIndex)
         {
-            return _nrtManager.DeleteDocuments(new TermQuery(new Term(isUserIndex ? GetIndexColumn(indexType)
+            return NrtManager.DeleteDocuments(new TermQuery(new Term(isUserIndex ? GetIndexColumn(indexType)
                                                                                   : GetKeyColumn(indexType), indexName)));
         }
 
@@ -233,7 +222,33 @@ namespace Grave.Indexing.Lucene
             return Fetch(indexType, queryToRun, hitsLimit);
         }
 
-        Query CreateGeoQuery(Type indexType, string key, IGeoShape geoShape)
+        public override void Commit()
+        {
+            VertexIndices.Commit();
+            EdgeIndices.Commit();
+            UserVertexIndices.Commit();
+            UserEdgeIndices.Commit();
+            _writer.Commit();
+            NrtManager.MaybeReopen(true);
+        }
+
+        public override void Prepare()
+        {
+            _writer.PrepareCommit();
+        }
+
+        public override void Rollback()
+        {
+            VertexIndices.Rollback();
+            EdgeIndices.Rollback();
+            UserVertexIndices.Rollback();
+            UserEdgeIndices.Rollback();
+
+            //We are not calling _writer.Rollback because 
+            //it closes the writer and would create multithreading issues.
+        }
+
+        static Query CreateGeoQuery(Type indexType, string key, IGeoShape geoShape)
         {
             Shape shape;
             if (geoShape is GeoCircle)
@@ -267,8 +282,10 @@ namespace Grave.Indexing.Lucene
             return query;
         }
 
-        Query CreateComparableQuery(Type indexType, GraveComparableQueryElement comparable)
+        static Query CreateComparableQuery(Type indexType, GraveComparableQueryElement comparable)
         {
+            Contract.Requires(comparable != null);
+
             object min;
             object max;
             bool minInclusive;
@@ -340,7 +357,7 @@ namespace Grave.Indexing.Lucene
 
         public override long DeleteDocuments(Type indexType, int id)
         {
-            return _nrtManager.DeleteDocuments(NumericRangeQuery.NewIntRange(GetIdColumn(indexType), id, id, true, true));
+            return NrtManager.DeleteDocuments(NumericRangeQuery.NewIntRange(GetIdColumn(indexType), id, id, true, true));
         }
 
         public override long DeleteUserDocuments(Type indexType, int id, string key, object value)
@@ -351,7 +368,7 @@ namespace Grave.Indexing.Lucene
                     new BooleanClause(WrapQuery(indexType, CreateQuery(key, value, value, value, true, true), 
                         GetIndexColumn(indexType), true), Occur.MUST)
                 };
-            return _nrtManager.DeleteDocuments(query);
+            return NrtManager.DeleteDocuments(query);
         }
 
         public override long Set(Type indexType, int id, string indexName, string propertyName, object value,
@@ -359,26 +376,27 @@ namespace Grave.Indexing.Lucene
         {
             var idColumn = GetIdColumn(indexType);
             var keyColumn = isUserIndex ? GetIndexColumn(indexType) : GetKeyColumn(indexType);
-            var generation = _nrtManager.DeleteDocuments(CreateKeyQuery(idColumn, keyColumn, id, indexName));
+            var generation = NrtManager.DeleteDocuments(CreateKeyQuery(idColumn, keyColumn, id, indexName));
             if (value == null) return generation;
 
             var rawDocument = CreateDocument(idColumn, keyColumn, id, indexName);
             var document = new LuceneDocument(rawDocument);
             var indexer = _indexerFactory.Create(value, document);
             indexer.Index(propertyName);
-            generation = _nrtManager.AddDocument(rawDocument);
+            generation = NrtManager.AddDocument(rawDocument);
 
             return generation;
         }
 
         public override void WaitForGeneration(long generation)
         {
-            _nrtManager.WaitForGeneration(generation);
+            NrtManager.WaitForGeneration(generation);
         }
 
         private static Query CreateQuery(string key, object value, object minValue, object maxValue,
                                          bool minInclusive, bool maxInclusive)
         {
+            Contract.Requires(((((!(Portability.IsNumber(value)) || !(string.IsNullOrWhiteSpace(key))) || key == null) || key.Length != 0) || value != null));
             Contract.Ensures(Contract.Result<Query>() != null);
 
             var query = Portability.IsNumber(value)
@@ -388,8 +406,9 @@ namespace Grave.Indexing.Lucene
             return query;
         }
 
-        private Query WrapQuery(Type indexType, Query query, string indexName, bool isUserIndex)
+        private static Query WrapQuery(Type indexType, Query query, string indexName, bool isUserIndex)
         {
+            Contract.Requires(query != null);
             Contract.Requires(IsValidIndexType(indexType));
             Contract.Ensures(Contract.Result<Query>() != null);
 
@@ -406,8 +425,13 @@ namespace Grave.Indexing.Lucene
             return query;
         }
 
-        public override IEnumerable<int> Get(Type indexType, string indexName, string key, object value,
-                                             bool isUserIndex, int hitsLimit = 1000)
+        public override IEnumerable<int> Get(
+            Type indexType, 
+            string indexName, 
+            string key, 
+            object value,
+            bool isUserIndex, 
+            int hitsLimit = 1000)
         {
             var query = WrapQuery(indexType, CreateQuery(key, value, value, value, true, true), indexName, isUserIndex);
             return Fetch(indexType, query, hitsLimit);
@@ -429,8 +453,13 @@ namespace Grave.Indexing.Lucene
             }
         }
 
-        private static Query CreateRangeQuery(string term, object value, object min, object max, bool minInclusive,
-                                              bool maxInclusive)
+        private static Query CreateRangeQuery(
+            string term, 
+            object value, 
+            object min, 
+            object max, 
+            bool minInclusive,
+            bool maxInclusive)
         {
             Contract.Requires(!string.IsNullOrWhiteSpace(term));
             Contract.Requires(value != null);
@@ -441,14 +470,14 @@ namespace Grave.Indexing.Lucene
             if (value is sbyte || value is byte || value is short || value is ushort ||
                 value is int || value is uint || value is long || value is ulong)
             {
-                var minVal = min == null ? (long?) null : Convert.ToInt64(min);
-                var maxVal = max == null ? (long?) null : Convert.ToInt64(max);
+                var minVal = min == null ? (long?)null : Convert.ToInt64(min);
+                var maxVal = max == null ? (long?)null : Convert.ToInt64(max);
                 query = NumericRangeQuery.NewLongRange(term, minVal, maxVal, minInclusive, maxInclusive);
             }
             else
             {
-                var minVal = min == null ? (double?) null : Convert.ToDouble(min);
-                var maxVal = max == null ? (double?) null : Convert.ToDouble(max);
+                var minVal = min == null ? (double?)null : Convert.ToDouble(min);
+                var maxVal = max == null ? (double?)null : Convert.ToDouble(max);
                 query = NumericRangeQuery.NewDoubleRange(term, minVal, maxVal, minInclusive, maxInclusive);
             }
 

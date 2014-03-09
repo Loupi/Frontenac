@@ -1,4 +1,4 @@
-﻿namespace Grave.Geo
+﻿namespace Frontenac.Grave.Geo
 {
     public class GeoPoint : IGeoShape
     {

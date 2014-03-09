@@ -1,24 +1,37 @@
-﻿using System.Linq;
+﻿using System.Diagnostics.Contracts;
+using System.Linq;
 using Frontenac.Blueprints;
-using Grave.Entities;
-using Grave.Geo;
+using Frontenac.Grave.Entities;
+using Frontenac.Grave.Geo;
+using Frontenac.Gremlinq;
 
-namespace Grave
+namespace Frontenac.Grave
 {
     public static class Program
     {
         private static void Main()
         {
-            var graph = GraveFactory.CreateGraph();
+            var graph = GraveFactory.CreateTransactionalGraph();
             try
             {
                 if (!graph.GetVertices().Any())
+                {
                     CreateGraphOfTheGods(graph);
+                    graph.Commit();
+                }
 
                 var saturn = graph
                     .V<ICharacter, string>(t => t.Name, "Saturn")
                     .Single();
 
+                var jupiter = graph
+                    .V<ICharacter, string>(t => t.Name, "Jupiter")
+                    .Single();
+
+                var both = jupiter.Both().ToArray();
+                var sIn = jupiter.In();
+                var sOut = jupiter.Out();
+                
                 var map = saturn.Element.Map();
 
                 var fatherName = saturn
@@ -28,20 +41,20 @@ namespace Grave
                     .Single();
 
                 var eventsNearAthen = graph.Query<IBattle>()
-                    .Has(t => t.Place, Compare.Equal, new GeoCircle(37.97, 23.72, 50))
+                    .Has(t => t.Place, new GeoCircle(37.97, 23.72, 50))
                     .Edges()
                     .ToArray();
-
+                
                 var opponents = eventsNearAthen
                     .Select(t => new[]
                         {
-                            t.Out(u => u.Out).Model.Name,
-                            t.In(u => u.In).Model.Name
+                            t.Out(u => u.Opponent).Model.Name,
+                            t.In(u => u.Opponent).Model.Name
                         })
                     .ToArray();
 
                 var hercules = saturn
-                    .Loop(t => t.Father, t => t.In(u => u.Father) , 2)
+                    .Loop(t => t.In(u => u.Father) , 2)
                     .Single();
 
                 var parents = hercules
@@ -53,10 +66,12 @@ namespace Grave
                     .ToArray();
 
                 var parentTypes = parents
-                    .Select(t => t.Model.GetType().BaseType)
+                    .Select(t => t.Type())
                     .ToArray();
 
-                var battled = hercules.Out(t => t.Battled).ToArray();
+                var battled = hercules
+                    .Out(t => t.Battled)
+                    .ToArray();
 
                 var opponentDetails = battled
                     .Select(t => t.Element.ToDictionary(u => u.Key, u => u.Value))
@@ -65,7 +80,7 @@ namespace Grave
                 var v2 = hercules
                     .Out(t => t.Battled)
                     .Where(t => t.Model.Time > 1)
-                    .Select(t => t.In(u => u.In).Model.Name)
+                    .Select(t => t.In(u => u.Opponent).Model.Name)
                     .ToArray();
             }
             finally
@@ -75,8 +90,10 @@ namespace Grave
             }
         }
 
-        private static void CreateGraphOfTheGods(IKeyIndexableGraph graph)
+        public static void CreateGraphOfTheGods(IKeyIndexableGraph graph)
         {
+            Contract.Requires(graph != null);
+
             graph.CreateVertexIndex<INamedEntity, string>(t => t.Name);
             graph.CreateEdgeIndex<IBattle, GeoPoint>(t => t.Place);
 

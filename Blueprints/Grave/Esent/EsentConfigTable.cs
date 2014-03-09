@@ -1,13 +1,17 @@
-﻿using Grave.Esent.Serializers;
+﻿using System.Diagnostics.Contracts;
+using Frontenac.Grave.Esent.Serializers;
 using Microsoft.Isam.Esent.Interop;
 
-namespace Grave.Esent
+namespace Frontenac.Grave.Esent
 {
     public class EsentConfigTable : EsentVertexTable
     {
         public EsentConfigTable(Session session, IContentSerializer contentSerializer)
             : base(session, contentSerializer)
         {
+            Contract.Requires(session != null);
+            Contract.Requires(contentSerializer != null);
+
             TableName = "Config";
         }
     }

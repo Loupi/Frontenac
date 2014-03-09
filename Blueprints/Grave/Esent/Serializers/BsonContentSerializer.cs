@@ -2,7 +2,7 @@
 using Newtonsoft.Json;
 using Newtonsoft.Json.Bson;
 
-namespace Grave.Esent.Serializers
+namespace Frontenac.Grave.Esent.Serializers
 {
     public class BsonContentSerializer : IContentSerializer
     {

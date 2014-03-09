@@ -3,18 +3,12 @@ using System.Collections.Generic;
 using System.Diagnostics.Contracts;
 using System.Linq;
 using Frontenac.Blueprints;
-using Frontenac.Blueprints.Util;
-using Grave.Indexing;
+using Frontenac.Grave.Indexing;
 
-namespace Grave
+namespace Frontenac.Grave
 {
     public class GraveIndex : IIndex
     {
-        private readonly GraveGraph _graph;
-        private readonly string _indexName;
-        private readonly Type _indexType;
-        private readonly IndexingService _indexingService;
-
         public GraveIndex(string indexName, Type indexType, GraveGraph graph, IndexingService indexingService)
         {
             Contract.Requires(!string.IsNullOrWhiteSpace(indexName));
@@ -22,72 +16,76 @@ namespace Grave
             Contract.Requires(graph != null);
             Contract.Requires(indexingService != null);
 
-            _indexName = indexName;
-            _indexType = indexType;
-            _graph = graph;
-            _indexingService = indexingService;
+            IndexName = indexName;
+            IndexType = indexType;
+            Graph = graph;
+            IndexingService = indexingService;
         }
 
-        public long Count(string key, object value)
-        {
-            _graph.WaitForGeneration();
+        public GraveGraph Graph { get; private set; }
+        public string IndexName { get; private set; }
+        public Type IndexType { get; private set; }
+        public IndexingService IndexingService { get; private set; }
 
-            return _indexingService.Get(_indexType, _indexName, key, value, true).Count();
+        public virtual long Count(string key, object value)
+        {
+            Graph.WaitForGeneration();
+
+            return IndexingService.Get(IndexType, IndexName, key, value, true).Count();
         }
 
-        public ICloseableIterable<IElement> Get(string key, object value)
+        public virtual IEnumerable<IElement> Get(string key, object value)
         {
-            _graph.WaitForGeneration();
+            Graph.WaitForGeneration();
 
-            var hits = _indexingService.Get(_indexType, _indexName, key, value, true);
-            var elements = ElementsFromHits(hits);
-            return new WrappingCloseableIterable<IElement>(elements);
+            var hits = IndexingService.Get(IndexType, IndexName, key, value, true);
+            return ElementsFromHits(hits);
         }
 
         public Type Type
         {
-            get { return _indexType; }
+            get { return IndexType; }
         }
 
         public string Name
         {
-            get { return _indexName; }
+            get { return IndexName; }
         }
 
-        public void Put(string key, object value, IElement element)
+        public virtual void Put(string key, object value, IElement element)
         {
             var id = (int) element.Id;
-            var generation = _indexType == typeof (IVertex)
-                                 ? _indexingService.UserVertexIndices.Set(id, Name, key, value)
-                                 : _indexingService.UserEdgeIndices.Set(id, Name, key, value);
-            _graph.UpdateGeneration(generation);
+            var generation = IndexType == typeof (IVertex)
+                                 ? IndexingService.UserVertexIndices.Set(id, Name, key, value)
+                                 : IndexingService.UserEdgeIndices.Set(id, Name, key, value);
+            Graph.UpdateGeneration(generation);
         }
 
-        public ICloseableIterable<IElement> Query(string key, object query)
+        public IEnumerable<IElement> Query(string key, object query)
         {
-            _graph.WaitForGeneration();
+            Graph.WaitForGeneration();
 
             throw new NotImplementedException();
         }
 
-        public void Remove(string key, object value, IElement element)
+        public virtual void Remove(string key, object value, IElement element)
         {
             var id = (int) element.Id;
-            var generation = _indexingService.DeleteUserDocuments(_indexType, id, key, value);
-            _graph.UpdateGeneration(generation);
+            var generation = IndexingService.DeleteUserDocuments(IndexType, id, key, value);
+            Graph.UpdateGeneration(generation);
         }
 
-        private IEnumerable<IElement> ElementsFromHits(IEnumerable<int> hits)
+        internal IEnumerable<IElement> ElementsFromHits(IEnumerable<int> hits)
         {
             Contract.Requires(hits != null);
             Contract.Ensures(Contract.Result<IEnumerable<IElement>>() != null);
 
             IEnumerable<IElement> elements;
 
-            if (_indexType == typeof (IVertex))
-                elements = hits.Select(hit => _graph.GetVertex(hit));
+            if (IndexType == typeof (IVertex))
+                elements = hits.Select(hit => Graph.GetVertex(hit));
             else
-                elements = hits.Select(hit => _graph.GetEdge(hit));
+                elements = hits.Select(hit => Graph.GetEdge(hit));
 
             return elements.Where(element => element != null);
         }

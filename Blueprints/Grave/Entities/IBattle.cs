@@ -1,13 +1,12 @@
-﻿using Grave.Geo;
+﻿using Frontenac.Grave.Geo;
 
-namespace Grave.Entities
+namespace Frontenac.Grave.Entities
 {
     public interface IBattle
     {
         int Time { get; set; }
         GeoPoint Place { get; set; }
 
-        ICharacter In { get; }
-        ICharacter Out { get; }
+        ICharacter Opponent { get; }
     }
 }

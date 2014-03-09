@@ -4,10 +4,10 @@ using System.Diagnostics.Contracts;
 using System.Linq;
 using System.Runtime.InteropServices;
 using System.Text;
-using Grave.Esent.Serializers;
+using Frontenac.Grave.Esent.Serializers;
 using Microsoft.Isam.Esent.Interop;
 
-namespace Grave.Esent
+namespace Frontenac.Grave.Esent
 {
     public abstract class EsentTable
     {
@@ -91,6 +91,11 @@ namespace Grave.Esent
         public void Open(JET_DBID dbid)
         {
             Api.JetOpenTable(Session, dbid, TableName, null, 0, OpenTableGrbit.Updatable, out TableId);
+            RefreshColumns();
+        }
+
+        public void RefreshColumns()
+        {
             Columns = Api.GetColumnDictionary(Session, TableId);
         }
 
@@ -263,7 +268,7 @@ namespace Grave.Esent
             Api.JetAddColumn(Session, TableId, columnName, new JET_COLUMNDEF
                 {
                     coltyp = _contentSerializer.IsBinary ? JET_coltyp.LongBinary : JET_coltyp.LongText,
-                    grbit = ColumndefGrbit.ColumnMaybeNull
+                    grbit = ColumndefGrbit.ColumnMaybeNull | ColumndefGrbit.ColumnTagged
                 }, null, 0, out columnId);
 
             Columns.Add(columnName, columnId);

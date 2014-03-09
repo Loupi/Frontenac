@@ -1,6 +1,6 @@
 ﻿using System.Diagnostics.Contracts;
 
-namespace Grave.Indexing.Lucene
+namespace Frontenac.Grave.Indexing.Lucene
 {
     public class LuceneIndexingServiceParameters
     {

@@ -1,9 +1,9 @@
 ﻿using System;
 using System.Diagnostics.Contracts;
-using Grave.Esent.Serializers;
+using Frontenac.Grave.Esent.Serializers;
 using Microsoft.Isam.Esent.Interop;
 
-namespace Grave.Esent
+namespace Frontenac.Grave.Esent
 {
     public abstract class EsentContextBase
     {
@@ -63,7 +63,6 @@ namespace Grave.Esent
         {
             Contract.Requires(!string.IsNullOrWhiteSpace(databaseName));
             Contract.Ensures(!string.IsNullOrWhiteSpace(Contract.Result<string>()));
-            Contract.Ensures(databaseName != ".db");
 
             databaseName = databaseName.Trim();
 
@@ -80,7 +79,7 @@ namespace Grave.Esent
                                               string systemDirectory)
         {
             var instance = new Instance(instanceName);
-            instance.Parameters.CircularLog = true;
+            instance.Parameters.CircularLog = false;
             instance.Parameters.Recovery = true;
             instance.Parameters.LogBuffers = 8*1024;
             instance.Parameters.LogFileSize = 16*1024;
@@ -88,7 +87,10 @@ namespace Grave.Esent
             instance.Parameters.TempDirectory = tempDirectory;
             instance.Parameters.LogFileDirectory = logsDirectory;
             instance.Parameters.CreatePathIfNotExist = true;
-            SystemParameters.CacheSizeMin = 16*1024;
+            instance.Parameters.MaxVerPages = 16 * 1024; //1024 = 64Mb
+            //instance.Parameters.MaxOpenTables = int.MaxValue;
+            //instance.Parameters.MaxCursors = int.MaxValue;
+            SystemParameters.CacheSizeMin = 16 * 1024;
             instance.Init();
             return instance;
         }
@@ -123,6 +125,7 @@ namespace Grave.Esent
         {
             VertexTable.Close();
             EdgesTable.Close();
+            Session.Dispose();
         }
     }
 }

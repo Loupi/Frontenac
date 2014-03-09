@@ -1,14 +1,18 @@
-﻿using System.IO;
-using Grave.Esent.Serializers;
+﻿using System.Diagnostics.Contracts;
+using System.IO;
+using Frontenac.Grave.Esent.Serializers;
 using Microsoft.Isam.Esent.Interop;
 
-namespace Grave.Esent
+namespace Frontenac.Grave.Esent
 {
     public class EsentConfigContext : EsentContextBase
     {
         public EsentConfigContext(Session session, string databaseName, IContentSerializer contentSerializer) :
             base(session, databaseName, contentSerializer)
         {
+            Contract.Requires(session != null);
+            Contract.Requires(contentSerializer != null);
+
             ConfigTable = new EsentConfigTable(Session, ContentSerializer);
             CreateDatabase();
             OpenDatabase();
