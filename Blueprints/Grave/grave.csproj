@@ -191,6 +191,7 @@
     <Compile Include="Entities\INamedEntity.cs" />
     <Compile Include="Indexing\IIndexCollection.cs" />
     <Compile Include="Indexing\IIndexCollectionFactory.cs" />
+    <Compile Include="Indexing\IIndexingServiceFactory.cs" />
     <Compile Include="Indexing\IndexCollectionContract.cs" />
     <Compile Include="Indexing\IndexCollectionFactory.cs" />
     <Compile Include="Indexing\IndexCollectionFactoryContract.cs" />

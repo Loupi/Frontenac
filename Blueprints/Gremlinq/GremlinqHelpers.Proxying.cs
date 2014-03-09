@@ -71,7 +71,7 @@ namespace Frontenac.Gremlinq
             if (e.NodeType == ExpressionType.MemberAccess)
                 return ((MemberExpression)e).Member.Name;
 
-            throw new InvalidOperationException("Given expression is not type MemberAccess.");
+            throw new InvalidOperationException("Given expression is not of type MemberAccess.");
         }
 
         public static Type Type(this IElement element)

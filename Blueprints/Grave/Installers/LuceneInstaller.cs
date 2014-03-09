@@ -52,13 +52,28 @@ namespace Frontenac.Grave.Installers
 
                 Component.For<IndexingService>()
                          .Forward<LuceneIndexingService>()
-                         .ImplementedBy<LuceneIndexingService>(),
+                         .ImplementedBy<LuceneIndexingService>()
+                         .Named("IndexingService"),
 
                 Component.For<IndexingService>()
                          .Forward<LuceneIndexingService>()
-                         .Named("TransactionalIndexingService")
+                         .LifestyleTransient()
                          .DependsOn(Dependency.OnComponent("indexCollectionFactory", "TransactionalIndexCollectionFactory"))
-                         .LifestyleTransient(),
+                         .Named("TransactionalIndexingService"),
+
+                Component.For<IndexingServiceComponentSelector>(),
+
+                Component.For<TransactionaIndexingServiceComponentSelector>(),
+
+                Component.For<IIndexingServiceFactory>()
+                         .AsFactory(c => c.SelectedWith<IndexingServiceComponentSelector>())
+                         .Named("IndexingServiceFactory"),
+
+                Component.For<IIndexingServiceFactory>()
+                         .AsFactory(c => c.SelectedWith<TransactionaIndexingServiceComponentSelector>())
+                         .Named("TransactionalIndexingServiceFactory"),
+
+                
 
                 Component.For<NrtManagerReopener>()
                          .UsingFactoryMethod(input =>
@@ -74,6 +89,22 @@ namespace Frontenac.Grave.Installers
                              })
                          .Start()
                 );
+        }
+    }
+
+    public class IndexingServiceComponentSelector : DefaultTypedFactoryComponentSelector
+    {
+        protected override string GetComponentName(System.Reflection.MethodInfo method, object[] arguments)
+        {
+            return "IndexingService";
+        }
+    }
+
+    public class TransactionaIndexingServiceComponentSelector : DefaultTypedFactoryComponentSelector
+    {
+        protected override string GetComponentName(System.Reflection.MethodInfo method, object[] arguments)
+        {
+            return "TransactionalIndexingService";
         }
     }
 }

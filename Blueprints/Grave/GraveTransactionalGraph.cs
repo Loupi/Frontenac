@@ -12,19 +12,35 @@ namespace Frontenac.Grave
     public class GraveTransactionalGraph : GraveGraph, ITransactionalGraph, IEnlistmentNotification, IDisposable
     {
         private static int _transactionNumber = 1;
-        private EsentTransaction _transaction;
-        private TransactionScope _transactionScope;
-        private readonly Dictionary<string, GraveTransactionalIndex> _transactionalIndices
-            = new Dictionary<string, GraveTransactionalIndex>();
+
+        private readonly ThreadLocal<TransactionContext> _transactionContexts 
+            = new ThreadLocal<TransactionContext>(() => new TransactionContext(), true);
+
+        public class TransactionContext
+        {
+            public TransactionContext()
+            {
+                TransactionalIndices = new Dictionary<string, GraveTransactionalIndex>();
+            }
+
+            public EsentTransaction Transaction { get; set; }
+            public TransactionScope TransactionScope { get; set; }
+            public Dictionary<string, GraveTransactionalIndex> TransactionalIndices { get; private set; } 
+        }
+        
+        public TransactionContext Transaction
+        {
+            get { return _transactionContexts.Value; }
+        }
 
         public GraveTransactionalGraph(IGraveGraphFactory factory, 
                                        EsentContext context, 
-                                       IndexingService indexingService)
-            : base(factory, indexingService)
+                                       IIndexingServiceFactory indexingServiceFactory)
+            : base(factory, indexingServiceFactory)
         {
             Contract.Requires(factory != null);
             Contract.Requires(context != null);
-            Contract.Requires(indexingService != null);
+            Contract.Requires(indexingServiceFactory != null);
         }
 
         #region IDisposable
@@ -47,10 +63,21 @@ namespace Frontenac.Grave
             if (_disposed)
                 return;
 
-            if (disposing && _transaction != null)
+            if (disposing)
             {
-                Rollback();
-                _transaction.Dispose();
+                foreach (var transaction in _transactionContexts.Values)
+                {
+                    if (transaction.TransactionScope != null)
+                        transaction.TransactionScope.Dispose();
+                    else
+                    {
+                        Rollback();
+                        if (transaction.Transaction != null)
+                        {
+                            transaction.Transaction.Dispose();
+                        }
+                    }
+                }
             }
 
             _disposed = true;
@@ -60,28 +87,49 @@ namespace Frontenac.Grave
 
         public override void Shutdown()
         {
-            if (_transaction != null)
+            foreach (var transaction in _transactionContexts.Values)
             {
-                Commit();
-                _transaction.Dispose();
-                _transaction = null;
+                if (transaction != null)
+                {
+                    Commit();
+                    if (transaction.Transaction != null)
+                    {
+                        transaction.Transaction.Dispose();
+                        transaction.Transaction = null;
+                    }
+                }
             }
+            
+            //Commit();
             base.Shutdown();
         }
 
         public void Commit()
         {
-            if (_transactionScope == null) return;
-            _transactionScope.Complete();
-            _transactionScope.Dispose();
-            _transactionScope = null;
+            if (Transaction.Transaction != null)
+                Transaction.Transaction.Commit();
+
+            foreach (var index in Transaction.TransactionalIndices.Values)
+            {
+                index.Commit();
+                index.Clear();
+            }
+
+            Context.IndexingService.Commit();
         }
 
         public void Rollback()
         {
-            if (_transactionScope == null) return;
-            _transactionScope.Dispose();
-            _transactionScope = null;
+            if (Transaction.Transaction != null)
+                Transaction.Transaction.Rollback();
+
+            foreach (var index in Transaction.TransactionalIndices.Values)
+                index.Clear();
+
+            Context.IndexingService.Rollback();
+            
+            Context.Context.VertexTable.RefreshColumns();
+            Context.Context.EdgesTable.RefreshColumns();
         }
 
         public override IEdge AddEdge(object unused, IVertex outVertex, IVertex inVertex, string label)
@@ -178,23 +226,22 @@ namespace Frontenac.Grave
 
         private IDisposable EnterTransactionContext()
         {
-            if (_transactionScope == null)
+            if (Transaction.TransactionScope == null)
             {
-                _transactionScope = Transaction.Current != null
-                    ? new TransactionScope(Transaction.Current)
-                    : new TransactionScope(TransactionScopeOption.RequiresNew, TimeSpan.MaxValue);
-
-                if (Transaction.Current != null)
-                    Transaction.Current.EnlistVolatile(this, EnlistmentOptions.None);
-
-                if (_transaction == null)
+                if (System.Transactions.Transaction.Current != null)
                 {
-                    var transactionNumber = Interlocked.Increment(ref _transactionNumber);
-                    _transaction = new EsentTransaction(Context.Session, transactionNumber);
+                    Transaction.TransactionScope = new TransactionScope(System.Transactions.Transaction.Current);
+                    System.Transactions.Transaction.Current.EnlistVolatile(this, EnlistmentOptions.None);
                 }
             }
 
-            return _transaction.EnterSessionContext();
+            if (Transaction.Transaction == null)
+            {
+                var transactionNumber = Interlocked.Increment(ref _transactionNumber);
+                Transaction.Transaction = new EsentTransaction(Context.Context.Session, transactionNumber);
+            }
+
+            return Transaction.Transaction.EnterSessionContext();
         }
 
         public override IIndex CreateIndex(string indexName, Type indexClass, params Parameter[] indexParameters)
@@ -202,7 +249,7 @@ namespace Frontenac.Grave
             using (EnterTransactionContext())
             {
                 return base.CreateIndex(indexName, indexClass, indexParameters);
-            }
+            }      
         }
 
         public override IIndex GetIndex(string indexName, Type indexClass)
@@ -307,38 +354,19 @@ namespace Frontenac.Grave
 
         public void Prepare(PreparingEnlistment preparingEnlistment)
         {
-            IndexingService.Prepare();
+            Context.IndexingService.Prepare();
             preparingEnlistment.Prepared();
         }
 
         public void Commit(Enlistment enlistment)
         {
-            if (_transaction != null)
-                _transaction.Commit();
-
-            foreach (var index in _transactionalIndices.Values)
-            {
-                index.Commit();
-                index.Clear();
-            }
-
-            IndexingService.Commit();
-
+            Commit();
             enlistment.Done();
         }
 
         public void Rollback(Enlistment enlistment)
         {
-            if (_transaction != null)
-                _transaction.Rollback();
-
-            foreach (var index in _transactionalIndices.Values)
-                index.Clear();
-
-            IndexingService.Rollback();
-
-            Context.VertexTable.RefreshColumns();
-            Context.EdgesTable.RefreshColumns();
+            Rollback();
 
             enlistment.Done();
         }
@@ -352,12 +380,12 @@ namespace Frontenac.Grave
         {
             var key = string.Concat(indexName, indexType);
             GraveTransactionalIndex index;
-            if (!_transactionalIndices.TryGetValue(key, out index))
+            if (!Transaction.TransactionalIndices.TryGetValue(key, out index))
             {
                 index = new GraveTransactionalIndex((GraveIndex)base.CreateIndexObject(indexName, indexType, indexCollection, userIndexCollection),
                                                     (TransactionalIndexCollection)indexCollection,
                                                     (TransactionalIndexCollection)userIndexCollection);
-                _transactionalIndices.Add(key, index);
+                Transaction.TransactionalIndices.Add(key, index);
             }
             return index;
         }

@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Diagnostics.Contracts;
 using System.Linq;
+using System.Threading;
 using Frontenac.Blueprints;
 using Frontenac.Blueprints.Util;
 using Frontenac.Grave.Esent;
@@ -50,21 +51,48 @@ namespace Frontenac.Grave
                 SupportsLabelProperty = true
             };
 
-        internal readonly EsentContext Context;
-        internal readonly IndexingService IndexingService;
         private readonly IGraveGraphFactory _factory;
+
+        /*internal readonly EsentContext Context;
+        internal readonly IndexingService IndexingService;
         private readonly Dictionary<string, GraveIndex> _indices = new Dictionary<string, GraveIndex>();
         private long _generation;
-        private bool _refreshRequired;
-        
-        public GraveGraph(IGraveGraphFactory factory, IndexingService indexingService)
+        private bool _refreshRequired;*/
+
+        public class ThreadContext
+        {
+            public ThreadContext()
+            {
+                Indices = new Dictionary<string, GraveIndex>();
+            }
+
+            public EsentContext Context { get; set; }
+            public IndexingService IndexingService { get; set; }
+            public Dictionary<string, GraveIndex> Indices { get; private set; }
+            public long Generation { get; set; }
+            public bool RefreshRequired { get; set; }
+        }
+
+        private readonly ThreadLocal<ThreadContext> _contexts;
+
+        public GraveGraph(IGraveGraphFactory factory, 
+                          IIndexingServiceFactory indexingServiceFactory)
         {
             Contract.Requires(factory != null);
-            Contract.Requires(indexingService != null);
+            Contract.Requires(indexingServiceFactory != null);
 
             _factory = factory;
-            Context = factory.GetEsentContext();
-            IndexingService = indexingService;
+
+            _contexts = new ThreadLocal<ThreadContext>(() => new ThreadContext
+                {
+                    Context = _factory.GetEsentContext(),
+                    IndexingService = indexingServiceFactory.Create()
+                }, true);
+        }
+
+        public ThreadContext Context
+        {
+            get { return _contexts.Value; }
         }
 
         public virtual IIndex CreateIndex(string indexName, Type indexClass, params Parameter[] indexParameters)
@@ -106,10 +134,10 @@ namespace Frontenac.Grave
         {
             var key = string.Concat(indexName, indexType);
             GraveIndex index;
-            if (!_indices.TryGetValue(key, out index))
+            if (!Context.Indices.TryGetValue(key, out index))
             {
-                index = new GraveIndex(indexName, indexType, this, IndexingService);
-                _indices.Add(key, index);
+                index = new GraveIndex(indexName, indexType, this, Context.IndexingService);
+                Context.Indices.Add(key, index);
             }
             return index;
         }
@@ -133,8 +161,8 @@ namespace Frontenac.Grave
 
         public virtual IVertex AddVertex(object unused)
         {
-            var id = Context.VertexTable.AddRow();
-            return new GraveVertex(this, Context.VertexTable, id);
+            var id = Context.Context.VertexTable.AddRow();
+            return new GraveVertex(this, Context.Context.VertexTable, id);
         }
 
         public virtual IVertex GetVertex(object id)
@@ -143,8 +171,8 @@ namespace Frontenac.Grave
             var vertexId = TryToInt32(id);
             if (!vertexId.HasValue) return null;
 
-            if (Context.VertexTable.SetCursor(vertexId.Value))
-                result = new GraveVertex(this, Context.VertexTable, vertexId.Value);
+            if (Context.Context.VertexTable.SetCursor(vertexId.Value))
+                result = new GraveVertex(this, Context.Context.VertexTable, vertexId.Value);
 
             return result;
         }
@@ -155,20 +183,20 @@ namespace Frontenac.Grave
                 RemoveEdge(edge);
 
             var vertexId = (int) vertex.Id;
-            Context.VertexTable.DeleteRow(vertexId);
-            var generation = IndexingService.VertexIndices.DeleteDocuments(vertexId);
+            Context.Context.VertexTable.DeleteRow(vertexId);
+            var generation = Context.IndexingService.VertexIndices.DeleteDocuments(vertexId);
             UpdateGeneration(generation);
         }
 
         public virtual IEnumerable<IVertex> GetVertices()
         {
-            var cursor = Context.GetVerticesCursor();
+            var cursor = Context.Context.GetVerticesCursor();
             try
             {
                 var id = cursor.MoveFirst();
                 while (id != 0)
                 {
-                    yield return new GraveVertex(this, Context.VertexTable, id);
+                    yield return new GraveVertex(this, Context.Context.VertexTable, id);
                     id = cursor.MoveNext();
                 }
             }
@@ -180,22 +208,22 @@ namespace Frontenac.Grave
 
         public virtual IEnumerable<IVertex> GetVertices(string key, object value)
         {
-            if (!IndexingService.VertexIndices.HasIndex(key))
+            if (!Context.IndexingService.VertexIndices.HasIndex(key))
                 return new PropertyFilteredIterable<IVertex>(key, value, GetVertices());
 
             WaitForGeneration();
-            return IndexingService.VertexIndices.Get(key, key, value, int.MaxValue)
-                                  .Select(vertexId => new GraveVertex(this, Context.VertexTable, vertexId));
+            return Context.IndexingService.VertexIndices.Get(key, key, value, int.MaxValue)
+                                  .Select(vertexId => new GraveVertex(this, Context.Context.VertexTable, vertexId));
         }
 
         public virtual IEdge AddEdge(object unused, IVertex outVertex, IVertex inVertex, string label)
         {
             var inVertexId = (int) inVertex.Id;
             var outVertexId = (int) outVertex.Id;
-            var edgeId = Context.EdgesTable.AddEdge(label, inVertexId, outVertexId);
-            Context.VertexTable.AddEdge(inVertexId, Direction.In, label, edgeId, outVertexId);
-            Context.VertexTable.AddEdge(outVertexId, Direction.Out, label, edgeId, inVertexId);
-            return new GraveEdge(edgeId, outVertex, inVertex, label, this, Context.EdgesTable);
+            var edgeId = Context.Context.EdgesTable.AddEdge(label, inVertexId, outVertexId);
+            Context.Context.VertexTable.AddEdge(inVertexId, Direction.In, label, edgeId, outVertexId);
+            Context.Context.VertexTable.AddEdge(outVertexId, Direction.Out, label, edgeId, inVertexId);
+            return new GraveEdge(edgeId, outVertex, inVertex, label, this, Context.Context.EdgesTable);
         }
 
         public virtual IEdge GetEdge(object id)
@@ -204,27 +232,27 @@ namespace Frontenac.Grave
             if (!edgeId.HasValue) return null;
 
             Tuple<string, int, int> data;
-            return Context.EdgesTable.TryGetEdge(edgeId.Value, out data)
+            return Context.Context.EdgesTable.TryGetEdge(edgeId.Value, out data)
                        ? new GraveEdge(edgeId.Value, GetVertex(data.Item3), GetVertex(data.Item2), data.Item1, this,
-                                       Context.EdgesTable)
+                                       Context.Context.EdgesTable)
                        : null;
         }
 
         public virtual void RemoveEdge(IEdge edge)
         {
             var edgeId = (int) edge.Id;
-            Context.EdgesTable.DeleteRow(edgeId);
+            Context.Context.EdgesTable.DeleteRow(edgeId);
             var inVertexId = (int) edge.GetVertex(Direction.In).Id;
             var outVertexId = (int) edge.GetVertex(Direction.Out).Id;
-            Context.VertexTable.DeleteEdge(inVertexId, Direction.In, edge.Label, edgeId, outVertexId);
-            Context.VertexTable.DeleteEdge(outVertexId, Direction.Out, edge.Label, edgeId, inVertexId);
-            var generation = IndexingService.EdgeIndices.DeleteDocuments(edgeId);
+            Context.Context.VertexTable.DeleteEdge(inVertexId, Direction.In, edge.Label, edgeId, outVertexId);
+            Context.Context.VertexTable.DeleteEdge(outVertexId, Direction.Out, edge.Label, edgeId, inVertexId);
+            var generation = Context.IndexingService.EdgeIndices.DeleteDocuments(edgeId);
             UpdateGeneration(generation);
         }
 
         public virtual IEnumerable<IEdge> GetEdges()
         {
-            var cursor = Context.GetEdgesCursor();
+            var cursor = Context.Context.GetEdgesCursor();
             try
             {
                 var id = cursor.MoveFirst();
@@ -233,9 +261,9 @@ namespace Frontenac.Grave
                     var data = cursor.GetEdgeData();
                     if (data != null)
                     {
-                        var vertexOut = new GraveVertex(this, Context.VertexTable, data.Item3);
-                        var vertexIn = new GraveVertex(this, Context.VertexTable, data.Item2);
-                        yield return new GraveEdge(id, vertexOut, vertexIn, data.Item1, this, Context.EdgesTable);
+                        var vertexOut = new GraveVertex(this, Context.Context.VertexTable, data.Item3);
+                        var vertexIn = new GraveVertex(this, Context.Context.VertexTable, data.Item2);
+                        yield return new GraveEdge(id, vertexOut, vertexIn, data.Item1, this, Context.Context.EdgesTable);
                     }
                     id = cursor.MoveNext();
                 }
@@ -248,7 +276,7 @@ namespace Frontenac.Grave
 
         public virtual IEnumerable<IEdge> GetEdges(string key, object value)
         {
-            if (!IndexingService.EdgeIndices.HasIndex(key))
+            if (!Context.IndexingService.EdgeIndices.HasIndex(key))
                 return new PropertyFilteredIterable<IEdge>(key, value, GetEdges());
 
             WaitForGeneration();
@@ -257,7 +285,7 @@ namespace Frontenac.Grave
 
         public virtual IEnumerable<IEdge> GetEdges(GraveVertex vertex, Direction direction, params string[] labels)
         {
-            var cursor = Context.GetVerticesCursor();
+            var cursor = Context.Context.GetVerticesCursor();
             try
             {
                 var columns = cursor.GetColumns().ToArray();
@@ -273,11 +301,11 @@ namespace Frontenac.Grave
                     {
                         var edgeId = (int)(edgeData >> 32);
                         var targetId = (int)(edgeData & 0xFFFF);
-                        var targetVertex = new GraveVertex(this, Context.VertexTable, targetId);
+                        var targetVertex = new GraveVertex(this, Context.Context.VertexTable, targetId);
                         var outVertex = isVertexIn ? targetVertex : vertex;
                         var inVertex = isVertexIn ? vertex : targetVertex;
                         yield return
-                            new GraveEdge(edgeId, outVertex, inVertex, labelName, this, Context.EdgesTable);
+                            new GraveEdge(edgeId, outVertex, inVertex, labelName, this, Context.Context.EdgesTable);
                     }
                 }
             }
@@ -367,30 +395,33 @@ namespace Frontenac.Grave
         public virtual IQuery Query()
         {
             WaitForGeneration();
-            return new GraveQuery(this, IndexingService);
+            return new GraveQuery(this, Context.IndexingService);
         }
 
         public virtual void Shutdown()
         {
-            //_factory.Destroy(Context);
-            Context.Dispose();
             _factory.Destroy(this);
+            //_factory.Destroy(Context);
+            foreach (var context in _contexts.Values)
+            {
+                context.Context.Dispose();    
+            }
         }
 
         internal void UpdateGeneration(long generation)
         {
-            _generation = generation;
-            _refreshRequired = true;
+            Context.Generation = generation;
+            Context.RefreshRequired = true;
         }
 
         internal void WaitForGeneration()
         {
-            if (!_refreshRequired) return;
-            IndexingService.WaitForGeneration(_generation);
-            _refreshRequired = false;
+            //if (!Context.RefreshRequired) return;
+            Context.IndexingService.WaitForGeneration(Context.Generation);
+            Context.RefreshRequired = false;
         }
 
-        private static int? TryToInt32(object value)
+        protected static int? TryToInt32(object value)
         {
             int? result;
 
@@ -425,17 +456,17 @@ namespace Frontenac.Grave
         {
             Contract.Requires(!String.IsNullOrWhiteSpace(key));
 
-            var cursor = Context.GetEdgesCursor();
+            var cursor = Context.Context.GetEdgesCursor();
             try
             {
-                var edgeIds = IndexingService.EdgeIndices.Get(key, key, value, int.MaxValue);
+                var edgeIds = Context.IndexingService.EdgeIndices.Get(key, key, value, int.MaxValue);
                 foreach (var edgeId in edgeIds)
                 {
                     Tuple<string, int, int> data;
                     if (!cursor.TryGetEdge(edgeId, out data)) continue;
-                    var vertexOut = new GraveVertex(this, Context.VertexTable, data.Item3);
-                    var vertexIn = new GraveVertex(this, Context.VertexTable, data.Item2);
-                    yield return new GraveEdge(edgeId, vertexOut, vertexIn, data.Item1, this, Context.EdgesTable);
+                    var vertexOut = new GraveVertex(this, Context.Context.VertexTable, data.Item3);
+                    var vertexIn = new GraveVertex(this, Context.Context.VertexTable, data.Item2);
+                    yield return new GraveEdge(edgeId, vertexOut, vertexIn, data.Item1, this, Context.Context.EdgesTable);
                 }
             }
             finally
@@ -454,17 +485,17 @@ namespace Frontenac.Grave
 
             if (isUserIndex)
                 return indexType == typeof (IVertex)
-                           ? IndexingService.UserVertexIndices
-                           : IndexingService.UserEdgeIndices;
+                           ? Context.IndexingService.UserVertexIndices
+                           : Context.IndexingService.UserEdgeIndices;
 
-            return indexType == typeof (IVertex) ? IndexingService.VertexIndices : IndexingService.EdgeIndices;
+            return indexType == typeof(IVertex) ? Context.IndexingService.VertexIndices : Context.IndexingService.EdgeIndices;
         }
 
         public override string ToString()
         {
             return this.GraphString(String.Format("vertices: {0} Edges: {1}",
-                                           Context.VertexTable.GetApproximateRecordCount(30),
-                                           Context.EdgesTable.GetApproximateRecordCount(30)));
+                                           Context.Context.VertexTable.GetApproximateRecordCount(30),
+                                           Context.Context.EdgesTable.GetApproximateRecordCount(30)));
         }
     }
 }

@@ -301,9 +301,9 @@ namespace Frontenac.Blueprints
                     graph.AddEdge(null, v1, graph.AddVertex(null), ConvertId(graph, "knows"));
 
                 var edges = v1.GetEdges(Direction.Out, ConvertId(graph, "knows")).ToArray();
-                Assert.AreEqual(Count(edges), 10);
-                Assert.AreEqual(Count(edges), 10);
-                Assert.AreEqual(Count(edges), 10);
+                Assert.AreEqual(10, Count(edges));
+                Assert.AreEqual(10, Count(edges));
+                Assert.AreEqual(10, Count(edges));
             }
             finally
             {
@@ -519,11 +519,11 @@ namespace Frontenac.Blueprints
                 for (var i = 0; i < 25; i++)
                     graph.AddVertex(null);
 
-                Assert.AreEqual(Count(graph.GetVertices()), 25);
+                Assert.AreEqual(25, Count(graph.GetVertices()));
                 foreach (var vertex in graph.GetVertices())
                     graph.RemoveVertex(vertex);
 
-                Assert.AreEqual(Count(graph.GetVertices()), 0);
+                Assert.AreEqual(0, Count(graph.GetVertices()));
             }
             finally
             {
@@ -546,15 +546,15 @@ namespace Frontenac.Blueprints
                 var z = graph.AddEdge(null, a, b, ConvertId(graph, "hates"));
                 var zz = graph.AddEdge(null, c, c, ConvertId(graph, "hates"));
 
-                Assert.AreEqual(Count(a.GetEdges(Direction.Out)), 3);
-                Assert.AreEqual(Count(a.GetEdges(Direction.Out, ConvertId(graph, "hates"))), 2);
-                Assert.AreEqual(Count(a.GetEdges(Direction.Out, ConvertId(graph, "knows"))), 1);
-                Assert.AreEqual(Count(a.GetVertices(Direction.Out)), 3);
-                Assert.AreEqual(Count(a.GetVertices(Direction.Out, ConvertId(graph, "hates"))), 2);
-                Assert.AreEqual(Count(a.GetVertices(Direction.Out, ConvertId(graph, "knows"))), 1);
-                Assert.AreEqual(Count(a.GetVertices(Direction.Both)), 3);
-                Assert.AreEqual(Count(a.GetVertices(Direction.Both, ConvertId(graph, "hates"))), 2);
-                Assert.AreEqual(Count(a.GetVertices(Direction.Both, ConvertId(graph, "knows"))), 1);
+                Assert.AreEqual(3, Count(a.GetEdges(Direction.Out)));
+                Assert.AreEqual(2, Count(a.GetEdges(Direction.Out, ConvertId(graph, "hates"))));
+                Assert.AreEqual(1, Count(a.GetEdges(Direction.Out, ConvertId(graph, "knows"))));
+                Assert.AreEqual(3, Count(a.GetVertices(Direction.Out)));
+                Assert.AreEqual(2, Count(a.GetVertices(Direction.Out, ConvertId(graph, "hates"))));
+                Assert.AreEqual(1, Count(a.GetVertices(Direction.Out, ConvertId(graph, "knows"))));
+                Assert.AreEqual(3, Count(a.GetVertices(Direction.Both)));
+                Assert.AreEqual(2, Count(a.GetVertices(Direction.Both, ConvertId(graph, "hates"))));
+                Assert.AreEqual(1, Count(a.GetVertices(Direction.Both, ConvertId(graph, "knows"))));
 
                 Assert.True(a.GetEdges(Direction.Out).Contains(w));
                 Assert.True(a.GetEdges(Direction.Out).Contains(y));
@@ -574,29 +574,29 @@ namespace Frontenac.Blueprints
                 Assert.True(a.GetVertices(Direction.Out, ConvertId(graph, "hates")).Contains(b));
                 Assert.True(a.GetVertices(Direction.Out, ConvertId(graph, "hates")).Contains(c));
 
-                Assert.AreEqual(Count(a.GetVertices(Direction.In)), 0);
-                Assert.AreEqual(Count(a.GetVertices(Direction.In, ConvertId(graph, "knows"))), 0);
-                Assert.AreEqual(Count(a.GetVertices(Direction.In, ConvertId(graph, "hates"))), 0);
+                Assert.AreEqual(0, Count(a.GetVertices(Direction.In)));
+                Assert.AreEqual(0, Count(a.GetVertices(Direction.In, ConvertId(graph, "knows"))));
+                Assert.AreEqual(0, Count(a.GetVertices(Direction.In, ConvertId(graph, "hates"))));
                 Assert.True(a.GetEdges(Direction.Out).Contains(w));
                 Assert.True(a.GetEdges(Direction.Out).Contains(y));
                 Assert.True(a.GetEdges(Direction.Out).Contains(z));
 
-                Assert.AreEqual(Count(b.GetEdges(Direction.Both)), 3);
-                Assert.AreEqual(Count(b.GetEdges(Direction.Both, ConvertId(graph, "knows"))), 2);
+                Assert.AreEqual(3, Count(b.GetEdges(Direction.Both)));
+                Assert.AreEqual(2, Count(b.GetEdges(Direction.Both, ConvertId(graph, "knows"))));
                 Assert.True(b.GetEdges(Direction.Both, ConvertId(graph, "knows")).Contains(x));
                 Assert.True(b.GetEdges(Direction.Both, ConvertId(graph, "knows")).Contains(w));
                 Assert.True(b.GetVertices(Direction.Both, ConvertId(graph, "knows")).Contains(a));
                 Assert.True(b.GetVertices(Direction.Both, ConvertId(graph, "knows")).Contains(c));
 
-                Assert.AreEqual(Count(c.GetEdges(Direction.Both, ConvertId(graph, "hates"))), 3);
-                Assert.AreEqual(Count(c.GetVertices(Direction.Both, ConvertId(graph, "hates"))), 3);
-                Assert.AreEqual(Count(c.GetEdges(Direction.Both, ConvertId(graph, "knows"))), 1);
+                Assert.AreEqual(3, Count(c.GetEdges(Direction.Both, ConvertId(graph, "hates"))));
+                Assert.AreEqual(3, Count(c.GetVertices(Direction.Both, ConvertId(graph, "hates"))));
+                Assert.AreEqual(1, Count(c.GetEdges(Direction.Both, ConvertId(graph, "knows"))));
                 Assert.True(c.GetEdges(Direction.Both, ConvertId(graph, "hates")).Contains(y));
                 Assert.True(c.GetEdges(Direction.Both, ConvertId(graph, "hates")).Contains(zz));
                 Assert.True(c.GetVertices(Direction.Both, ConvertId(graph, "hates")).Contains(a));
                 Assert.True(c.GetVertices(Direction.Both, ConvertId(graph, "hates")).Contains(c));
-                Assert.AreEqual(Count(c.GetEdges(Direction.In, ConvertId(graph, "hates"))), 2);
-                Assert.AreEqual(Count(c.GetEdges(Direction.Out, ConvertId(graph, "hates"))), 1);
+                Assert.AreEqual(2, Count(c.GetEdges(Direction.In, ConvertId(graph, "hates"))));
+                Assert.AreEqual(1, Count(c.GetEdges(Direction.Out, ConvertId(graph, "hates"))));
 
                 x.GetVertex(Direction.Both);
                 Assert.Fail();
@@ -715,7 +715,7 @@ namespace Frontenac.Blueprints
                 a.SetProperty("test2", 2);
                 a.SetProperty("test3", 3);
                 a.SetProperty("test4", 4);
-                foreach (var key in a.GetPropertyKeys())
+                foreach (var key in a.GetPropertyKeys().ToArray())
                     a.RemoveProperty(key);
             }
             finally

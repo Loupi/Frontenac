@@ -39,7 +39,6 @@ namespace Frontenac.Grave.Installers
 
                 Component.For<EsentConfigContext>()
                          .DependsOn(Dependency.OnConfigValue("databaseName", Settings.Default.DatabaseFilePath))
-                         .LifestyleTransient()
                          .Start(),
 
                 Component.For<IGraveGraphFactory>()
@@ -53,7 +52,8 @@ namespace Frontenac.Grave.Installers
                 Component.For<IGraph>()
                          .Forward<IKeyIndexableGraph, IIndexableGraph, ITransactionalGraph, GraveTransactionalGraph>()
                          .ImplementedBy<GraveTransactionalGraph>()
-                         .DependsOn(Dependency.OnComponent("indexingService", "TransactionalIndexingService"))
+                         .DependsOn(Dependency.OnComponent("indexCollectionFactory", "TransactionalIndexCollectionFactory"))
+                         .DependsOn(Dependency.OnComponent("indexingServiceFactory", "TransactionalIndexingServiceFactory"))
                          .LifestyleTransient()
                 );
         }
