@@ -10,36 +10,30 @@ namespace Frontenac.Gremlinq
     {
         private static readonly IDictionaryAdapterFactory DictionaryAdapterFactory = new DictionaryAdapterFactory();
 
-        public static IEdge<TModel> Wrap<TInModel, TOutModel, TModel>(
-            IVertex<TOutModel> outVertex,
-            Expression expression,
-            IVertex<TInModel> inVertex) 
-            where TModel : class
-        {
-            Contract.Requires(outVertex != null);
-            Contract.Requires(expression != null);
-            Contract.Requires(inVertex != null);
-            Contract.Ensures(Contract.Result<IEdge<TModel>>() != null);
-
-            var edge = outVertex.AddEdge(expression.Resolve(), inVertex);
-            var model = edge.Proxy<TModel>();
-            return new Edge<TModel>(edge, model);
-        }
-
-        public static IEdge<TModel> Wrap<TInModel, TOutModel, TModel>(
-            IVertex<TOutModel> outVertex,
-            Expression expression,
-            IVertex<TInModel> inVertex,
+        public static IVertex<TModel> Wrap<TModel>(
+            this IVertex vertex,
             Action<TModel> assignMembers)
             where TModel : class
         {
-            Contract.Requires(outVertex != null);
-            Contract.Requires(expression != null);
-            Contract.Requires(inVertex != null);
+            Contract.Requires(vertex != null);
+            Contract.Requires(assignMembers != null);
+            Contract.Ensures(Contract.Result<IVertex<TModel>>() != null);
+
+            var wrapper = vertex.As<TModel>();
+            assignMembers(wrapper.Model);
+            return wrapper;
+        }
+
+        public static IEdge<TModel> Wrap<TModel>(
+            this IEdge edge,
+            Action<TModel> assignMembers)
+            where TModel : class
+        {
+            Contract.Requires(edge != null);
             Contract.Requires(assignMembers != null);
             Contract.Ensures(Contract.Result<IEdge<TModel>>() != null);
 
-            var wrapper = Wrap<TInModel, TOutModel, TModel>(outVertex, expression, inVertex);
+            var wrapper = edge.As<TModel>();
             assignMembers(wrapper.Model);
             return wrapper;
         }
@@ -51,9 +45,11 @@ namespace Frontenac.Gremlinq
             Contract.Ensures(Contract.Result<TModel>() != null);
 
             object typeName;
+            
             var typeToProxy = element.TryGetValue(TypePropertyName, out typeName)
                                   ? System.Type.GetType(typeName.ToString())
                                   : typeof(TModel);
+
             var propsDesc = new PropertyDescriptor();
             propsDesc.AddBehavior(new DictionaryPropertyConverter());
             var proxy = (TModel)DictionaryAdapterFactory.GetAdapter(typeToProxy, element, propsDesc);

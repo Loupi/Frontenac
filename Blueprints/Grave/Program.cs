@@ -1,6 +1,7 @@
 ﻿using System.Diagnostics.Contracts;
 using System.Linq;
 using Frontenac.Blueprints;
+using Frontenac.Blueprints.Impls.TG;
 using Frontenac.Grave.Entities;
 using Frontenac.Grave.Geo;
 using Frontenac.Gremlinq;
@@ -9,8 +10,35 @@ namespace Frontenac.Grave
 {
     public static class Program
     {
+        public interface IPerson
+        {
+            string Name { get; set; }
+            int Age { get; set; }
+        }
+
+        private static void Test()
+        {
+            //Add a new vertex and set it'S properties through IPerson proxy
+            var g = new TinkerGraph();
+            var vertex = g.AddVertex(null);
+            var person = vertex.Proxy<IPerson>();
+            person.Name = "Loupi";
+            person.Age = 34;
+
+            //is equivalent to 
+            vertex.SetProperty("Name", "Saturn");
+            vertex.SetProperty("Age", 10000);
+
+
+
+            /*var saturn = graph.AddVertex<ITitan>(t => { t.Name = "Saturn"; t.Age = 10000; });
+            var jupiter = graph.AddVertex<IGod>(t => { t.Name = "Jupiter"; t.Age = 5000; });*/
+        }
+
         private static void Main()
         {
+            Test();
+
             var graph = GraveFactory.CreateTransactionalGraph();
             try
             {

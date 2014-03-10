@@ -19,9 +19,8 @@ namespace Frontenac.Gremlinq
             var vertex = graph.AddVertex(null);
             var typeName = typeof(TModel).AssemblyQualifiedName;
             vertex.Add(TypePropertyName, typeName);
-            var proxy = vertex.Proxy<TModel>();
-            assignMembers(proxy);
-            return new Vertex<TModel>(vertex, proxy);
+            var wrapper = vertex.Wrap(assignMembers);
+            return wrapper;
         }
 
         public static IEdge AddEdge<TOutModel, TInModel>(
@@ -60,7 +59,8 @@ namespace Frontenac.Gremlinq
             Contract.Requires(inVertex != null);
             Contract.Ensures(Contract.Result<IEdge<TModel>>() != null);
 
-            return Wrap<TInModel, TOutModel, TModel>(outVertex, edgePropertySelector, inVertex);
+            var edge = outVertex.AddEdge(edgePropertySelector.Resolve(), inVertex);
+            return edge.As<TModel>();
         }
 
         public static IEdge<TModel> AddEdge<TOutModel, TInModel, TModel>(
@@ -75,7 +75,8 @@ namespace Frontenac.Gremlinq
             Contract.Requires(assignMembers != null);
             Contract.Ensures(Contract.Result<IEdge<TModel>>() != null);
 
-            return Wrap(outVertex, edgePropertySelector, inVertex, assignMembers);
+            var edge = outVertex.AddEdge(edgePropertySelector.Resolve(), inVertex);
+            return Wrap(edge, assignMembers);
         }
 
         public static IEdge<TModel> AddEdge<TOutModel, TInModel, TModel>(
@@ -90,7 +91,8 @@ namespace Frontenac.Gremlinq
             Contract.Requires(assignMembers != null);
             Contract.Ensures(Contract.Result<IEdge<TModel>>() != null);
 
-            return Wrap(outVertex, edgePropertySelector, inVertex, assignMembers);
+            var edge = outVertex.AddEdge(edgePropertySelector.Resolve(), inVertex);
+            return Wrap(edge, assignMembers);
         }
     }
 }
