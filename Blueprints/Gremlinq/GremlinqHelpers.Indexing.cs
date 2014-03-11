@@ -8,9 +8,9 @@ namespace Frontenac.Gremlinq
 {
     public static partial class GremlinqHelpers
     {
-        public static void CreateIndex<TModel, TIndexType>(
+        public static void CreateIndex<TModel, TIndex>(
             this IKeyIndexableGraph graph,
-            Expression<Func<TModel, TIndexType>> propertySelector,
+            Expression<Func<TModel, TIndex>> propertySelector,
             Type indexType)
         {
             Contract.Requires(graph != null);

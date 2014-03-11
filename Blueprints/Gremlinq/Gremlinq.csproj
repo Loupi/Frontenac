@@ -123,6 +123,10 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Contracts\ElementTypeProviderContract.cs" />
+    <Compile Include="DictionaryElementTypeProvider.cs" />
+    <Compile Include="GraphBackedElementTypeProvider.cs" />
+    <Compile Include="GremlinqContext.cs" />
     <Compile Include="GremlinqHelpers.OutE.cs" />
     <Compile Include="GremlinqHelpers.InE.cs" />
     <Compile Include="DictionaryPropertyConverter.cs" />
@@ -139,6 +143,7 @@
     <Compile Include="GremlinqHelpers.V.cs" />
     <Compile Include="IEdge.cs" />
     <Compile Include="IElement.cs" />
+    <Compile Include="IElementTypeProvider.cs" />
     <Compile Include="IQuery.cs" />
     <Compile Include="IVertex.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
@@ -160,6 +165,7 @@
   <ItemGroup>
     <Content Include="FodyWeavers.xml" />
   </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Import Project="$(SolutionDir)\.nuget\NuGet.targets" Condition="Exists('$(SolutionDir)\.nuget\NuGet.targets')" />
   <Import Project="Fody.targets" />

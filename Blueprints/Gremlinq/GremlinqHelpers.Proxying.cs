@@ -1,15 +1,12 @@
 ﻿using System;
 using System.Diagnostics.Contracts;
 using System.Linq.Expressions;
-using Castle.Components.DictionaryAdapter;
 using Frontenac.Blueprints;
 
 namespace Frontenac.Gremlinq
 {
     public static partial class GremlinqHelpers
-    {
-        private static readonly IDictionaryAdapterFactory DictionaryAdapterFactory = new DictionaryAdapterFactory();
-
+    {   
         public static IVertex<TModel> Wrap<TModel>(
             this IVertex vertex,
             Action<TModel> assignMembers)
@@ -44,15 +41,12 @@ namespace Frontenac.Gremlinq
             Contract.Requires(element != null);
             Contract.Ensures(Contract.Result<TModel>() != null);
 
-            object typeName;
-            
-            var typeToProxy = element.TryGetValue(TypePropertyName, out typeName)
-                                  ? System.Type.GetType(typeName.ToString())
-                                  : typeof(TModel);
+            Type type;
+            if(!GremlinqContext.ElementTypeProvider.TryGetType(element, out type))
+                type = typeof(TModel);
 
-            var propsDesc = new PropertyDescriptor();
-            propsDesc.AddBehavior(new DictionaryPropertyConverter());
-            var proxy = (TModel)DictionaryAdapterFactory.GetAdapter(typeToProxy, element, propsDesc);
+            var proxy = (TModel)GremlinqContext.ElementTypeProvider.Proxy(element, type);
+
             return proxy;
         }
 
@@ -75,11 +69,11 @@ namespace Frontenac.Gremlinq
             Contract.Requires(element != null);
             Contract.Ensures(Contract.Result<Type>() != null);
 
-            object typeName;
-            if (!element.TryGetValue(TypePropertyName, out typeName))
-                throw new NullReferenceException();
+            Type type;
+            if (!GremlinqContext.ElementTypeProvider.TryGetType(element, out type))
+                throw new InvalidOperationException(string.Format("No type found for {0}", element));
 
-            return System.Type.GetType(typeName.ToString());
+            return type;
         }
     }
 }

@@ -78,6 +78,8 @@ namespace Frontenac.Grave
                         }
                     }
                 }
+
+                _transactionContexts.Dispose();
             }
 
             _disposed = true;

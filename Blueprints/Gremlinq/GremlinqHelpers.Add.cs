@@ -8,8 +8,6 @@ namespace Frontenac.Gremlinq
 {
     public static partial class GremlinqHelpers
     {
-        private const string TypePropertyName = "__type__";
-
         public static IVertex<TModel> AddVertex<TModel>(this IGraph graph, Action<TModel> assignMembers) where TModel : class
         {
             Contract.Requires(graph != null);
@@ -17,9 +15,9 @@ namespace Frontenac.Gremlinq
             Contract.Ensures(Contract.Result<IVertex<TModel>>() != null);
 
             var vertex = graph.AddVertex(null);
-            var typeName = typeof(TModel).AssemblyQualifiedName;
-            vertex.Add(TypePropertyName, typeName);
+            GremlinqContext.ElementTypeProvider.SetType(vertex, typeof(TModel));
             var wrapper = vertex.Wrap(assignMembers);
+
             return wrapper;
         }
 
