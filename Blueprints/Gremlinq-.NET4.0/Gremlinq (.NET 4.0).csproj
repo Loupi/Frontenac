@@ -212,11 +212,23 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="..\Gremlinq\Contracts\ElementTypeProviderContract.cs">
+      <Link>Contracts\ElementTypeProviderContract.cs</Link>
+    </Compile>
+    <Compile Include="..\Gremlinq\DictionaryElementTypeProvider.cs">
+      <Link>DictionaryElementTypeProvider.cs</Link>
+    </Compile>
     <Compile Include="..\Gremlinq\DictionaryPropertyConverter.cs">
       <Link>DictionaryPropertyConverter.cs</Link>
     </Compile>
     <Compile Include="..\Gremlinq\Edge.cs">
       <Link>Edge.cs</Link>
+    </Compile>
+    <Compile Include="..\Gremlinq\GraphBackedElementTypeProvider.cs">
+      <Link>GraphBackedElementTypeProvider.cs</Link>
+    </Compile>
+    <Compile Include="..\Gremlinq\GremlinqContext.cs">
+      <Link>GremlinqContext.cs</Link>
     </Compile>
     <Compile Include="..\Gremlinq\GremlinqHelpers.Add.cs">
       <Link>GremlinqHelpers.Add.cs</Link>
@@ -262,6 +274,9 @@
     </Compile>
     <Compile Include="..\Gremlinq\IElement.cs">
       <Link>IElement.cs</Link>
+    </Compile>
+    <Compile Include="..\Gremlinq\IElementTypeProvider.cs">
+      <Link>IElementTypeProvider.cs</Link>
     </Compile>
     <Compile Include="..\Gremlinq\IQuery.cs">
       <Link>IQuery.cs</Link>

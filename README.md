@@ -4,6 +4,25 @@ Frontenac
 A .NET port of the [Tinkerpop Stack](http://www.tinkerpop.com/).
 
 ## News
+* 2014-13-10
+ * Frontenac.Blueprints 2.3.7 released.
+ * Gremlinq proxy types are now stored in a more lightweight manner
+ * Introduces the IElementTypeProvider interface to instantiate proxies and get/store types
+ * Added a DictionaryElementTypeProvider that stores proxy types as integers on elements. It is initialized with a Dictionary<int, Type> on which you have control.
+ * Added a GraphBackedElementTypeProvider that stores types as simple ids on elements, and also store the type names in the graph.
+ * Corrected a missing Nuget dependency to Castle.Core.1
+ 
+* 2014-03-09
+ * Frontenac.Blueprints 2.3.6 released.
+ * Gremling (alpha) library now included in Nuget Package.
+ * Available operators are: Both, In, InE, Loop, Map, Out, OutE, V.
+ * Added proxy helpers to Gremlinq to ease mapping of entitites to edges and vertices.
+ 
+* 2013-12-09
+ * Frontenac.Blueprints 2.3.5 released.
+ * IElement now inherits from IDictionary<string, object> interface.
+ * Added DictionaryElement class to ease implementation of IElement.
+
 * 2013-09-09 
  * Frontenac.Blueprints 2.3.4 released.
  * Blueprint interfaces are now enforced with code contracts.

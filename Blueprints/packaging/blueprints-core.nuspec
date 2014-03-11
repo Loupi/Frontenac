@@ -2,13 +2,14 @@
 <package xmlns="http://schemas.microsoft.com/packaging/2010/07/nuspec.xsd">
 	<metadata>
 		<id>Frontenac.Blueprints</id>
-		<version>2.3.6</version>
+		<version>2.3.7</version>
 		<authors>Loupi</authors>
 		<projectUrl>https://github.com/Loupi/Frontenac</projectUrl>
 		<requireLicenseAcceptance>false</requireLicenseAcceptance>
 		<description>A .NET port of the Tinkerpop Stack. Blueprints provides a set of interfaces for the property graph data model.</description>
 		<dependencies>
 			<dependency id="Newtonsoft.Json" />
+			<dependency id="Castle.Core" />
 		</dependencies>
 		<references>
 			<reference file="Frontenac.Blueprints.dll" />

@@ -8,8 +8,6 @@ namespace Frontenac.Gremlinq
 {
     public static partial class GremlinqHelpers
     {
-        private const string TypePropertyName = "__type__";
-
         public static IVertex<TModel> AddVertex<TModel>(this IGraph graph, Action<TModel> assignMembers) where TModel : class
         {
             Contract.Requires(graph != null);
@@ -17,11 +15,10 @@ namespace Frontenac.Gremlinq
             Contract.Ensures(Contract.Result<IVertex<TModel>>() != null);
 
             var vertex = graph.AddVertex(null);
-            var typeName = typeof(TModel).AssemblyQualifiedName;
-            vertex.Add(TypePropertyName, typeName);
-            var proxy = vertex.Proxy<TModel>();
-            assignMembers(proxy);
-            return new Vertex<TModel>(vertex, proxy);
+            GremlinqContext.ElementTypeProvider.SetType(vertex, typeof(TModel));
+            var wrapper = vertex.Wrap(assignMembers);
+
+            return wrapper;
         }
 
         public static IEdge AddEdge<TOutModel, TInModel>(
@@ -60,7 +57,8 @@ namespace Frontenac.Gremlinq
             Contract.Requires(inVertex != null);
             Contract.Ensures(Contract.Result<IEdge<TModel>>() != null);
 
-            return Wrap<TInModel, TOutModel, TModel>(outVertex, edgePropertySelector, inVertex);
+            var edge = outVertex.AddEdge(edgePropertySelector.Resolve(), inVertex);
+            return edge.As<TModel>();
         }
 
         public static IEdge<TModel> AddEdge<TOutModel, TInModel, TModel>(
@@ -75,7 +73,8 @@ namespace Frontenac.Gremlinq
             Contract.Requires(assignMembers != null);
             Contract.Ensures(Contract.Result<IEdge<TModel>>() != null);
 
-            return Wrap(outVertex, edgePropertySelector, inVertex, assignMembers);
+            var edge = outVertex.AddEdge(edgePropertySelector.Resolve(), inVertex);
+            return Wrap(edge, assignMembers);
         }
 
         public static IEdge<TModel> AddEdge<TOutModel, TInModel, TModel>(
@@ -90,7 +89,8 @@ namespace Frontenac.Gremlinq
             Contract.Requires(assignMembers != null);
             Contract.Ensures(Contract.Result<IEdge<TModel>>() != null);
 
-            return Wrap(outVertex, edgePropertySelector, inVertex, assignMembers);
+            var edge = outVertex.AddEdge(edgePropertySelector.Resolve(), inVertex);
+            return Wrap(edge, assignMembers);
         }
     }
 }

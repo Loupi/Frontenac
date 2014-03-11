@@ -1,6 +1,9 @@
-﻿using System.Diagnostics.Contracts;
+﻿using System;
+using System.Collections.Generic;
+using System.Diagnostics.Contracts;
 using System.Linq;
 using Frontenac.Blueprints;
+using Frontenac.Blueprints.Impls.TG;
 using Frontenac.Grave.Entities;
 using Frontenac.Grave.Geo;
 using Frontenac.Gremlinq;
@@ -9,12 +12,61 @@ namespace Frontenac.Grave
 {
     public static class Program
     {
+        public interface IPerson
+        {
+            string Name { get; set; }
+            int Age { get; set; }
+        }
+
+        private static void Test()
+        {
+            //Add a new vertex and set it'S properties through IPerson proxy
+            var g = new TinkerGraph();
+            var vertex = g.AddVertex(null);
+            var person = vertex.Proxy<IPerson>();
+            person.Name = "Loupi";
+            person.Age = 34;
+
+            //is equivalent to 
+            vertex.SetProperty("Name", "Saturn");
+            vertex.SetProperty("Age", 10000);
+
+
+
+            /*var saturn = graph.AddVertex<ITitan>(t => { t.Name = "Saturn"; t.Age = 10000; });
+            var jupiter = graph.AddVertex<IGod>(t => { t.Name = "Jupiter"; t.Age = 5000; });*/
+        }
+
         private static void Main()
         {
+            
+            GremlinqContext.ElementTypeProvider = new DictionaryElementTypeProvider(
+                DictionaryElementTypeProvider.DefaulTypePropertyName, //The property name to use to store type id 
+                new Dictionary<int, Type> //The types that are allowed to be proxied
+                {
+                    {1, typeof(IAgedCharacter)},
+                    {2, typeof(IBattle)},
+                    {3, typeof(ICharacter)},
+                    {4, typeof(IContributor)},
+                    {5, typeof(IDemiGod)},
+                    {6, typeof(IGod)},
+                    {7, typeof(IHuman)},
+                    {8, typeof(ILive)},
+                    {9, typeof(ILocation)},
+                    {10, typeof(IMonster)},
+                    {11, typeof(INamedEntity)},
+                    {12, typeof(ITitan)},
+                    {13, typeof(IWeightedEntity)}
+                });
+
+            Test();
+
             var graph = GraveFactory.CreateTransactionalGraph();
             try
             {
-                if (!graph.GetVertices().Any())
+                GremlinqContext.ElementTypeProvider = new GraphBackedElementTypeProvider(DictionaryElementTypeProvider.DefaulTypePropertyName, graph);
+
+                if (!graph.V<ICharacter, string>(t => t.Name, "Saturn").Any())
                 {
                     CreateGraphOfTheGods(graph);
                     graph.Commit();
