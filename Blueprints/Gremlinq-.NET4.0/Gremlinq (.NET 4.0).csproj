@@ -212,20 +212,32 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="..\Gremlinq\Contracts\ElementTypeProviderContract.cs">
-      <Link>Contracts\ElementTypeProviderContract.cs</Link>
+    <Compile Include="..\Gremlinq\Contracts\GremlinqContextFactoryContract.cs">
+      <Link>Contracts\GremlinqContextFactoryContract.cs</Link>
     </Compile>
-    <Compile Include="..\Gremlinq\DictionaryElementTypeProvider.cs">
-      <Link>DictionaryElementTypeProvider.cs</Link>
+    <Compile Include="..\Gremlinq\Contracts\ProxyFactoryContract.cs">
+      <Link>Contracts\ProxyFactoryContract.cs</Link>
+    </Compile>
+    <Compile Include="..\Gremlinq\Contracts\TypeProviderContract.cs">
+      <Link>Contracts\TypeProviderContract.cs</Link>
+    </Compile>
+    <Compile Include="..\Gremlinq\DefaultGremlinqContextFactory.cs">
+      <Link>DefaultGremlinqContextFactory.cs</Link>
+    </Compile>
+    <Compile Include="..\Gremlinq\DictionaryAdapterProxyFactory.cs">
+      <Link>DictionaryAdapterProxyFactory.cs</Link>
     </Compile>
     <Compile Include="..\Gremlinq\DictionaryPropertyConverter.cs">
       <Link>DictionaryPropertyConverter.cs</Link>
     </Compile>
+    <Compile Include="..\Gremlinq\DictionaryTypeProvider.cs">
+      <Link>DictionaryTypeProvider.cs</Link>
+    </Compile>
     <Compile Include="..\Gremlinq\Edge.cs">
       <Link>Edge.cs</Link>
     </Compile>
-    <Compile Include="..\Gremlinq\GraphBackedElementTypeProvider.cs">
-      <Link>GraphBackedElementTypeProvider.cs</Link>
+    <Compile Include="..\Gremlinq\GraphBackedTypeProvider.cs">
+      <Link>GraphBackedTypeProvider.cs</Link>
     </Compile>
     <Compile Include="..\Gremlinq\GremlinqContext.cs">
       <Link>GremlinqContext.cs</Link>
@@ -275,11 +287,17 @@
     <Compile Include="..\Gremlinq\IElement.cs">
       <Link>IElement.cs</Link>
     </Compile>
-    <Compile Include="..\Gremlinq\IElementTypeProvider.cs">
-      <Link>IElementTypeProvider.cs</Link>
+    <Compile Include="..\Gremlinq\IGremlinqContextFactory.cs">
+      <Link>IGremlinqContextFactory.cs</Link>
+    </Compile>
+    <Compile Include="..\Gremlinq\IProxyFactory.cs">
+      <Link>IProxyFactory.cs</Link>
     </Compile>
     <Compile Include="..\Gremlinq\IQuery.cs">
       <Link>IQuery.cs</Link>
+    </Compile>
+    <Compile Include="..\Gremlinq\ITypeProvider.cs">
+      <Link>ITypeProvider.cs</Link>
     </Compile>
     <Compile Include="..\Gremlinq\IVertex.cs">
       <Link>IVertex.cs</Link>

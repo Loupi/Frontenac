@@ -4,7 +4,20 @@ Frontenac
 A .NET port of the [Tinkerpop Stack](http://www.tinkerpop.com/).
 
 ## News
-* 2014-13-10
+* 2014-03-22
+ * Frontenac.Blueprints 2.3.8 released.
+ * Half of [Gremlinq documentation](https://github.com/Loupi/Frontenac/wiki/Gremlinq) has been written.
+ * Breaking change: IElement has a new Graph property that returns the element's graph.
+ * IElementTypeProvider was renamed to ITypeProvider.
+ * Introduction of IProxyFactory to separate proxy creation from type type provider.
+ * Introduction of DictionaryAdapterProxy factory, which uses Castle DictionaryAdapter to create proxies.
+ * TinkerGraph is now thread safe (uses ConcurrentDictionary for all it's collections).
+ * GremlinqContext is now automatically created with GraphTypeProvider and DictionaryAdapterProxyFactory.
+ * IGremlinqContextFactory, ITypePovider and IProxyFactory interfaces are used to customize context creation. 
+ * GraphBackedTypeProvider automatically adjusts itself to the current graph.
+ * New Gremlinq OfType override.
+ 
+* 2014-03-10
  * Frontenac.Blueprints 2.3.7 released.
  * Gremlinq proxy types are now stored in a more lightweight manner
  * Introduces the IElementTypeProvider interface to instantiate proxies and get/store types

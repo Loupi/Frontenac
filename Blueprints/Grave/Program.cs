@@ -17,6 +17,8 @@ namespace Frontenac.Grave
 
         public StaticGremlinqContextFactory(IDictionary<int, Type> types)
         {
+            Contract.Requires(types != null);
+
             _typeProvider = new DictionaryTypeProvider(DictionaryTypeProvider.DefaulTypePropertyName, types);
         }
 
@@ -104,7 +106,7 @@ namespace Frontenac.Grave
 
         private static void Main()
         {
-            GremlinqContext.ContextFactory = new StaticGremlinqContextFactory(
+            /*GremlinqContext.ContextFactory = new StaticGremlinqContextFactory(
                 new Dictionary<int, Type> //The types that are allowed to be proxied
                     {
                         {1, typeof (IAgedCharacter)},
@@ -120,7 +122,7 @@ namespace Frontenac.Grave
                         {11, typeof (INamedEntity)},
                         {12, typeof (ITitan)},
                         {13, typeof (IWeightedEntity)}
-                    });
+                    });*/
             
             Test();
 
