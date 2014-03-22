@@ -22,7 +22,7 @@ namespace Frontenac.Blueprints.Impls.TG
             Label = label;
             _outVertex = outVertex;
             _inVertex = inVertex;
-            Graph.EdgeKeyIndex.AutoUpdate(StringFactory.Label, Label, null, this);
+            graph.EdgeKeyIndex.AutoUpdate(StringFactory.Label, Label, null, this);
         }
 
         public string Label { get; protected set; }

@@ -29,12 +29,12 @@ namespace Frontenac.Blueprints.Util.Wrappers.ReadOnly
         public IIndex GetIndex(string indexName, Type indexClass)
         {
             var index = _baseIndexableGraph.GetIndex(indexName, indexClass);
-            return new ReadOnlyIndex(index);
+            return new ReadOnlyIndex(this, index);
         }
 
         public IEnumerable<IIndex> GetIndices()
         {
-            return new ReadOnlyIndexIterable(_baseIndexableGraph.GetIndices());
+            return new ReadOnlyIndexIterable(this, _baseIndexableGraph.GetIndices());
         }
     }
 }

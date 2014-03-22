@@ -28,40 +28,43 @@ namespace Frontenac.Gremlinq
             return vertices.SelectMany(t => t.InE(branchFactor, labels));
         }
 
-        public static IEnumerable<IEdge<TInModel>> InE<TOutModel, TInModel>(
+        public static IEnumerable<IEdge<TEdgeModel>> InE<TEdgeModel, TOutModel>(
             this IVertex<TOutModel> vertex,
             int branchFactor,
-            Expression<Func<TOutModel, TInModel>> propertySelector) where TInModel : class
+            Expression<Func<TOutModel, TEdgeModel>> propertySelector)
+            where TEdgeModel : class
         {
             Contract.Requires(vertex != null);
             Contract.Requires(propertySelector != null);
-            Contract.Ensures(Contract.Result<IEnumerable<IEdge<TInModel>>>() != null);
+            Contract.Ensures(Contract.Result<IEnumerable<IEdge<TEdgeModel>>>() != null);
 
-            return vertex.InE(branchFactor, propertySelector.Resolve()).As<TInModel>();
+            return vertex.InE(branchFactor, propertySelector.Resolve()).As<TEdgeModel>();
         }
 
-        public static IEnumerable<IEdge<TInModel>> InE<TOutModel, TInModel>(
+        public static IEnumerable<IEdge<TEdgeModel>> InE<TEdgeModel, TOutModel>(
             this IEnumerable<IVertex<TOutModel>> vertices,
             int branchFactor,
-            Expression<Func<TOutModel, TInModel>> propertySelector) where TInModel : class
+            Expression<Func<TOutModel, TEdgeModel>> propertySelector)
+            where TEdgeModel : class
         {
             Contract.Requires(vertices != null);
             Contract.Requires(propertySelector != null);
-            Contract.Ensures(Contract.Result<IEnumerable<IEdge<TInModel>>>() != null);
+            Contract.Ensures(Contract.Result<IEnumerable<IEdge<TEdgeModel>>>() != null);
 
-            return vertices.SelectMany(t => t.InE(branchFactor, propertySelector)).As<TInModel>();
+            return vertices.SelectMany(t => t.InE(branchFactor, propertySelector));
         }
 
-        public static IEnumerable<IEdge<TInModel>> InE<TOutModel, TInModel>(
+        public static IEnumerable<IEdge<TEdgeModel>> InE<TEdgeModel, TOutModel>(
             this IEnumerable<IVertex<TOutModel>> vertices,
             int branchFactor,
-            Expression<Func<IVertex<TOutModel>, IVertex<TInModel>>> propertySelector) where TInModel : class
+            Expression<Func<IVertex<TOutModel>, IEdge<TEdgeModel>>> propertySelector)
+            where TEdgeModel : class
         {
             Contract.Requires(vertices != null);
             Contract.Requires(propertySelector != null);
-            Contract.Ensures(Contract.Result<IEnumerable<IEdge<TInModel>>>() != null);
+            Contract.Ensures(Contract.Result<IEnumerable<IEdge<TEdgeModel>>>() != null);
 
-            return vertices.InE(branchFactor, propertySelector.Resolve()).As<TInModel>();
+            return vertices.InE(branchFactor, propertySelector.Resolve()).As<TEdgeModel>();
         }
 
         public static IEnumerable<IEdge> InE(this IVertex vertex, params string[] labels)
@@ -82,50 +85,100 @@ namespace Frontenac.Gremlinq
             return vertices.SelectMany(t => t.InE(labels));
         }
 
-        public static IEnumerable<IEdge<TInModel>> InE<TOutModel, TInModel>(
+        public static IEnumerable<IEdge<TEdgeModel>> InE<TOutModel, TEdgeModel>(
             this IVertex<TOutModel> vertex,
-            Expression<Func<TOutModel, TInModel>> propertySelector) where TInModel : class
+            Expression<Func<TOutModel, TEdgeModel>> propertySelector)
+            where TEdgeModel : class
         {
             Contract.Requires(vertex != null);
             Contract.Requires(propertySelector != null);
-            Contract.Ensures(Contract.Result<IEnumerable<IEdge<TInModel>>>() != null);
+            Contract.Ensures(Contract.Result<IEnumerable<IEdge<TEdgeModel>>>() != null);
 
-            return vertex.InE(propertySelector.Resolve()).As<TInModel>();
+            return vertex.InE(propertySelector.Resolve()).As<TEdgeModel>();
         }
 
-        public static IEnumerable<IEdge<TInModel>> InE<TOutModel, TInModel>(
+        public static IEnumerable<IEdge<TEdgeModel>> InE<TOutModel, TEdgeModel>(
+            this IVertex<TOutModel> vertex,
+            Expression<Func<TOutModel, IEnumerable<TEdgeModel>>> propertySelector)
+            where TEdgeModel : class
+        {
+            Contract.Requires(vertex != null);
+            Contract.Requires(propertySelector != null);
+            Contract.Ensures(Contract.Result<IEnumerable<IEdge<TEdgeModel>>>() != null);
+
+            return vertex.InE(propertySelector.Resolve()).As<TEdgeModel>();
+        }
+
+        public static IEnumerable<IEdge<TEdgeModel>> InE<TInModel, TOutModel, TEdgeModel>(
+            this IVertex<TOutModel> vertex,
+            Expression<Func<TOutModel, IEnumerable<KeyValuePair<TEdgeModel, TInModel>>>> propertySelector)
+            where TEdgeModel : class
+        {
+            Contract.Requires(vertex != null);
+            Contract.Requires(propertySelector != null);
+            Contract.Ensures(Contract.Result<IEnumerable<IEdge<TEdgeModel>>>() != null);
+
+            return vertex.InE(propertySelector.Resolve()).As<TEdgeModel>();
+        }
+
+        public static IEnumerable<IEdge<TEdgeModel>> InE<TOutModel, TEdgeModel>(
+            this IVertex<TOutModel> vertex,
+            Expression<Func<KeyValuePair<TEdgeModel, TOutModel>, TEdgeModel>> propertySelector)
+            where TEdgeModel : class
+        {
+            Contract.Requires(vertex != null);
+            Contract.Requires(propertySelector != null);
+            Contract.Ensures(Contract.Result<IEnumerable<IEdge<TEdgeModel>>>() != null);
+
+            return vertex.InE(propertySelector.Resolve()).As<TEdgeModel>();
+        }
+
+        public static IEnumerable<IEdge<TEdgeModel>> InE<TEdgeModel, TOutModel>(
             this IEnumerable<IVertex<TOutModel>> vertices,
-            Expression<Func<TOutModel, TInModel>> propertySelector) where TInModel : class
+            Expression<Func<TOutModel, TEdgeModel>> propertySelector)
+            where TEdgeModel : class
         {
             Contract.Requires(vertices != null);
             Contract.Requires(propertySelector != null);
-            Contract.Ensures(Contract.Result<IEnumerable<IEdge<TInModel>>>() != null);
+            Contract.Ensures(Contract.Result<IEnumerable<IEdge<TEdgeModel>>>() != null);
 
-            return vertices.SelectMany(t => t.InE(propertySelector.Resolve())).As<TInModel>();
+            return vertices.SelectMany(t => t.InE(propertySelector.Resolve())).As<TEdgeModel>();
         }
 
-        public static IEnumerable<IEdge<TInModel>> InE<TOutModel, TInModel>(
+        public static IEnumerable<IEdge<TEdgeModel>> InE<TEdgeModel, TOutModel>(
             this IEnumerable<IVertex<TOutModel>> vertices,
-            Expression<Func<IVertex<TOutModel>, IVertex<TInModel>>> propertySelector) where TInModel : class
+            Expression<Func<IVertex<TOutModel>, IEdge<TEdgeModel>>> propertySelector)
+            where TEdgeModel : class
         {
             Contract.Requires(vertices != null);
             Contract.Requires(propertySelector != null);
-            Contract.Ensures(Contract.Result<IEnumerable<IEdge<TInModel>>>() != null);
+            Contract.Ensures(Contract.Result<IEnumerable<IEdge<TEdgeModel>>>() != null);
 
-            return vertices.SelectMany(t => t.InE(propertySelector.Resolve())).As<TInModel>();
+            return vertices.SelectMany(t => t.InE(propertySelector.Resolve())).As<TEdgeModel>();
         }
 
-        public static IEnumerable<IEdge<TInModel>> InE<TModel, TInModel>(
-            this IVertex<TModel> vertex,
-            params Expression<Func<TModel, TInModel>>[] edgePropertySelectors) where TInModel : class
+        public static IEnumerable<IEdge<TEdgeModel>> InE<TOutModel, TInModel, TEdgeModel>(
+            this IVertex<TOutModel> vertex,
+            params Expression<Func<TOutModel, KeyValuePair<TEdgeModel, TInModel>>>[] edgePropertySelectors)
+            where TEdgeModel : class
         {
             Contract.Requires(vertex != null);
             Contract.Requires(edgePropertySelectors != null);
-            Contract.Ensures(Contract.Result<IEnumerable<IEdge<TInModel>>>() != null);
+            Contract.Ensures(Contract.Result<IEnumerable<IEdge<TEdgeModel>>>() != null);
 
-            return vertex
-                .GetEdges(Direction.In, edgePropertySelectors.Select(Resolve).ToArray())
-                .As<TInModel>();
+            return vertex.GetEdges(Direction.In, edgePropertySelectors.Select(Resolve).ToArray()).As<TEdgeModel>();
+        }
+
+        public static IEnumerable<IEdge<TEdgeModel>> InE<TOutModel, TInModel, TEdgeModel>(
+            this IEnumerable<IVertex<TOutModel>> vertices,
+            params Expression<Func<TOutModel, KeyValuePair<TEdgeModel, TInModel>>>[] edgePropertySelectors)
+            where TEdgeModel : class
+        {
+            Contract.Requires(vertices != null);
+            Contract.Requires(edgePropertySelectors != null);
+            Contract.Ensures(Contract.Result<IEnumerable<IEdge<TEdgeModel>>>() != null);
+
+            return vertices.SelectMany(t => t.InE(edgePropertySelectors));
         }
     }
 }

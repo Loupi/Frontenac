@@ -6,9 +6,10 @@ namespace Frontenac.Blueprints.Util.Wrappers.ReadOnly
     {
         private readonly IEdge _baseEdge;
 
-        public ReadOnlyEdge(IEdge baseEdge)
-            : base(baseEdge)
+        public ReadOnlyEdge(ReadOnlyGraph graph, IEdge baseEdge)
+            : base(graph, baseEdge)
         {
+            Contract.Requires(graph != null);
             Contract.Requires(baseEdge != null);
 
             _baseEdge = baseEdge;
@@ -16,7 +17,7 @@ namespace Frontenac.Blueprints.Util.Wrappers.ReadOnly
 
         public IVertex GetVertex(Direction direction)
         {
-            return new ReadOnlyVertex(_baseEdge.GetVertex(direction));
+            return new ReadOnlyVertex(ReadOnlyGraph, _baseEdge.GetVertex(direction));
         }
 
         public string Label

@@ -7,37 +7,37 @@ namespace Frontenac.Blueprints.Util.Wrappers.Partition
     public abstract class PartitionElement : DictionaryElement
     {
         protected readonly IElement Element;
-        protected PartitionGraph Graph;
+        protected PartitionGraph PartitionGraph;
 
-        protected PartitionElement(IElement element, PartitionGraph partitionGraph)
+        protected PartitionElement(IElement element, PartitionGraph partitionGraph):base(partitionGraph)
         {
             Contract.Requires(element != null);
             Contract.Requires(partitionGraph != null);
 
             Element = element;
-            Graph = partitionGraph;
+            PartitionGraph = partitionGraph;
         }
 
         public override void SetProperty(string key, object value)
         {
-            if (!key.Equals(Graph.PartitionKey))
+            if (!key.Equals(PartitionGraph.PartitionKey))
                 Element.SetProperty(key, value);
         }
 
         public override object GetProperty(string key)
         {
-            return key.Equals(Graph.PartitionKey) ? null : Element.GetProperty(key);
+            return key.Equals(PartitionGraph.PartitionKey) ? null : Element.GetProperty(key);
         }
 
         public override object RemoveProperty(string key)
         {
-            return key.Equals(Graph.PartitionKey) ? null : Element.RemoveProperty(key);
+            return key.Equals(PartitionGraph.PartitionKey) ? null : Element.RemoveProperty(key);
         }
 
         public override IEnumerable<string> GetPropertyKeys()
         {
             return Element.GetPropertyKeys()
-                .Except(new[] { Graph.PartitionKey })
+                .Except(new[] { PartitionGraph.PartitionKey })
                 .ToArray();
         }
 
@@ -73,13 +73,13 @@ namespace Frontenac.Blueprints.Util.Wrappers.Partition
         public string GetPartition()
         {
             Contract.Ensures(!string.IsNullOrWhiteSpace(Contract.Result<string>()));
-            return (string) Element.GetProperty(Graph.PartitionKey);
+            return (string)Element.GetProperty(PartitionGraph.PartitionKey);
         }
 
         public void SetPartition(string partition)
         {
             Contract.Requires(!string.IsNullOrWhiteSpace(partition));
-            Element.SetProperty(Graph.PartitionKey, partition);
+            Element.SetProperty(PartitionGraph.PartitionKey, partition);
         }
 
         public override string ToString()

@@ -8,13 +8,16 @@ namespace Frontenac.Blueprints.Util.Wrappers.ReadOnly
 {
     internal class ReadOnlyEdgeIterable : ICloseableIterable<IEdge>
     {
+        private readonly ReadOnlyGraph _graph;
         private readonly IEnumerable<IEdge> _iterable;
         private bool _disposed;
 
-        public ReadOnlyEdgeIterable(IEnumerable<IEdge> iterable)
+        public ReadOnlyEdgeIterable(ReadOnlyGraph graph, IEnumerable<IEdge> iterable)
         {
+            Contract.Requires(graph != null);
             Contract.Requires(iterable != null);
 
+            _graph = graph;
             _iterable = iterable;
         }
 
@@ -26,7 +29,7 @@ namespace Frontenac.Blueprints.Util.Wrappers.ReadOnly
 
         public IEnumerator<IEdge> GetEnumerator()
         {
-            return _iterable.Select(edge => new ReadOnlyEdge(edge)).Cast<IEdge>().GetEnumerator();
+            return _iterable.Select(edge => new ReadOnlyEdge(_graph, edge)).Cast<IEdge>().GetEnumerator();
         }
 
         IEnumerator IEnumerable.GetEnumerator()

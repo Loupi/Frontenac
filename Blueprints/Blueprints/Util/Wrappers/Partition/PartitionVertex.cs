@@ -16,19 +16,19 @@ namespace Frontenac.Blueprints.Util.Wrappers.Partition
 
         public IEnumerable<IEdge> GetEdges(Direction direction, params string[] labels)
         {
-            return new PartitionEdgeIterable(Vertex.GetEdges(direction, labels), Graph);
+            return new PartitionEdgeIterable(Vertex.GetEdges(direction, labels), PartitionGraph);
         }
 
         public IEnumerable<IVertex> GetVertices(Direction direction, params string[] labels)
         {
-            return new PartitionVertexIterable(Vertex.GetVertices(direction, labels), Graph);
+            return new PartitionVertexIterable(Vertex.GetVertices(direction, labels), PartitionGraph);
         }
 
         public IVertexQuery Query()
         {
             return new WrapperVertexQuery(Vertex.Query(),
-                                          t => new PartitionEdgeIterable(t.Edges(), Graph),
-                                          t => new PartitionVertexIterable(t.Vertices(), Graph));
+                                          t => new PartitionEdgeIterable(t.Edges(), PartitionGraph),
+                                          t => new PartitionVertexIterable(t.Vertices(), PartitionGraph));
         }
 
         public IEdge AddEdge(string label, IVertex vertex)

@@ -5,11 +5,10 @@ using Frontenac.Gremlinq.Contracts;
 
 namespace Frontenac.Gremlinq
 {
-    [ContractClass(typeof(ElementTypeProviderContract))]
-    public interface IElementTypeProvider
+    [ContractClass(typeof(TypeProviderContract))]
+    public interface ITypeProvider
     {
         void SetType(IElement element, Type type);
         bool TryGetType(IElement element, out Type type);
-        object Proxy(IElement element, Type type);
     }
 }

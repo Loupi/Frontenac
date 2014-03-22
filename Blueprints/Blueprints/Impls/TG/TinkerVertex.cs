@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Diagnostics.Contracts;
 using System.Linq;
@@ -9,8 +10,8 @@ namespace Frontenac.Blueprints.Impls.TG
     [Serializable]
     internal class TinkerVertex : TinkerElement, IVertex
     {
-        public Dictionary<string, HashSet<IEdge>> InEdges = new Dictionary<string, HashSet<IEdge>>();
-        public Dictionary<string, HashSet<IEdge>> OutEdges = new Dictionary<string, HashSet<IEdge>>();
+        public ConcurrentDictionary<string, ConcurrentDictionary<string, IEdge>> InEdges = new ConcurrentDictionary<string, ConcurrentDictionary<string, IEdge>>();
+        public ConcurrentDictionary<string, ConcurrentDictionary<string, IEdge>> OutEdges = new ConcurrentDictionary<string, ConcurrentDictionary<string, IEdge>>();
 
         public TinkerVertex(string id, TinkerGraph graph)
             : base(id, graph)
@@ -48,7 +49,7 @@ namespace Frontenac.Blueprints.Impls.TG
             return Graph.AddEdge(null, this, inVertex, label);
         }
 
-        private static IEnumerable<IEdge> FilterEdgesByLabel(IDictionary<string, HashSet<IEdge>> edgesToGet,
+        private static IEnumerable<IEdge> FilterEdgesByLabel(IDictionary<string, ConcurrentDictionary<string, IEdge>> edgesToGet,
                                                              params string[] labels)
         {
             Contract.Requires(edgesToGet != null);
@@ -59,19 +60,19 @@ namespace Frontenac.Blueprints.Impls.TG
             {
                 var totalEdgesList = new List<IEdge>();
                 foreach (var edges in edgesToGet.Values)
-                    totalEdgesList.AddRange(edges);
+                    totalEdgesList.AddRange(edges.Values);
 
                 return totalEdgesList;
             }
             if (labels.Length == 1)
             {
                 var edges = edgesToGet.Get(labels[0]);
-                return null == edges ? Enumerable.Empty<IEdge>() : new List<IEdge>(edges);
+                return null == edges ? Enumerable.Empty<IEdge>() : new List<IEdge>(edges.Values);
             }
             var totalEdges = new List<IEdge>();
             foreach (var edges in labels.Select(edgesToGet.Get).Where(edges => null != edges))
             {
-                totalEdges.AddRange(edges);
+                totalEdges.AddRange(edges.Values);
             }
             return totalEdges;
         }
@@ -89,10 +90,10 @@ namespace Frontenac.Blueprints.Impls.TG
             var edges = OutEdges.Get(label);
             if (null == edges)
             {
-                edges = new HashSet<IEdge>();
+                edges = new ConcurrentDictionary<string, IEdge>();
                 OutEdges.Put(label, edges);
             }
-            edges.Add(edge);
+            edges.TryAdd(edge.Id.ToString(), edge);
         }
 
         public void AddInEdge(string label, IEdge edge)
@@ -103,10 +104,10 @@ namespace Frontenac.Blueprints.Impls.TG
             var edges = InEdges.Get(label);
             if (null == edges)
             {
-                edges = new HashSet<IEdge>();
+                edges = new ConcurrentDictionary<string, IEdge>();
                 InEdges.Put(label, edges);
             }
-            edges.Add(edge);
+            edges.TryAdd(edge.Id.ToString(), edge);
         }
     }
 }

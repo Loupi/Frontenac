@@ -10,7 +10,7 @@ namespace Frontenac.Blueprints.Util.Wrappers.Id
         protected readonly IdGraph IdGraph;
         protected readonly bool PropertyBased;
 
-        protected IdElement(IElement baseElement, IdGraph idGraph, bool propertyBased)
+        protected IdElement(IElement baseElement, IdGraph idGraph, bool propertyBased):base(idGraph)
         {
             Contract.Requires(baseElement != null);
             Contract.Requires(idGraph != null);

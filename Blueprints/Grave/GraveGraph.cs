@@ -213,7 +213,7 @@ namespace Frontenac.Grave
 
             WaitForGeneration();
             return Context.IndexingService.VertexIndices.Get(key, key, value, int.MaxValue)
-                                  .Select(vertexId => new GraveVertex(this, Context.Context.VertexTable, vertexId));
+                .Select(vertexId => new GraveVertex(this, Context.Context.VertexTable, vertexId));
         }
 
         public virtual IEdge AddEdge(object unused, IVertex outVertex, IVertex inVertex, string label)
@@ -304,8 +304,7 @@ namespace Frontenac.Grave
                         var targetVertex = new GraveVertex(this, Context.Context.VertexTable, targetId);
                         var outVertex = isVertexIn ? targetVertex : vertex;
                         var inVertex = isVertexIn ? vertex : targetVertex;
-                        yield return
-                            new GraveEdge(edgeId, outVertex, inVertex, labelName, this, Context.Context.EdgesTable);
+                        yield return new GraveEdge(edgeId, outVertex, inVertex, labelName, this, Context.Context.EdgesTable);
                     }
                 }
             }

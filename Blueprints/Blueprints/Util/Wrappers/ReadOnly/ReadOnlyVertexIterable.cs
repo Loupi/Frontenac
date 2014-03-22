@@ -8,13 +8,16 @@ namespace Frontenac.Blueprints.Util.Wrappers.ReadOnly
 {
     internal class ReadOnlyVertexIterable : ICloseableIterable<IVertex>
     {
+        private readonly ReadOnlyGraph _graph;
         private readonly IEnumerable<IVertex> _iterable;
         private bool _disposed;
 
-        public ReadOnlyVertexIterable(IEnumerable<IVertex> iterable)
+        public ReadOnlyVertexIterable(ReadOnlyGraph graph, IEnumerable<IVertex> iterable)
         {
+            Contract.Requires(graph != null);
             Contract.Requires(iterable != null);
 
+            _graph = graph;
             _iterable = iterable;
         }
 
@@ -26,7 +29,7 @@ namespace Frontenac.Blueprints.Util.Wrappers.ReadOnly
 
         public IEnumerator<IVertex> GetEnumerator()
         {
-            return _iterable.Select(v => new ReadOnlyVertex(v)).Cast<IVertex>().GetEnumerator();
+            return _iterable.Select(v => new ReadOnlyVertex(_graph, v)).Cast<IVertex>().GetEnumerator();
         }
 
         IEnumerator IEnumerable.GetEnumerator()

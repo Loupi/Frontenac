@@ -1,4 +1,4 @@
-﻿using System.Collections.Generic;
+﻿using System.Collections.Concurrent;
 using System.Diagnostics.Contracts;
 using System.IO;
 
@@ -151,7 +151,7 @@ namespace Frontenac.Blueprints.Impls.TG
 
                 graph.VertexKeyIndex.CreateKeyIndex(indexName);
 
-                var items = new Dictionary<object, HashSet<IElement>>();
+                var items = new ConcurrentDictionary<object, ConcurrentDictionary<string, IElement>>();
 
                 // Read the number of items associated with this key index name
                 var itemCount = reader.ReadInt32();
@@ -160,7 +160,7 @@ namespace Frontenac.Blueprints.Impls.TG
                     // Read the item key
                     var key = ReadTypedData(reader);
 
-                    var vertices = new HashSet<IElement>();
+                    var vertices = new ConcurrentDictionary<string, IElement>();
 
                     // Read the number of vertices in this item
                     var vertexCount = reader.ReadInt32();
@@ -169,7 +169,7 @@ namespace Frontenac.Blueprints.Impls.TG
                         // Read the vertex identifier
                         var v = graph.GetVertex(ReadTypedData(reader));
                         if (v != null)
-                            vertices.Add(v);
+                            vertices.TryAdd(v.Id.ToString(), v);
                     }
 
                     items.Put(key, vertices);
@@ -194,7 +194,7 @@ namespace Frontenac.Blueprints.Impls.TG
 
                 graph.EdgeKeyIndex.CreateKeyIndex(indexName);
 
-                var items = new Dictionary<object, HashSet<IElement>>();
+                var items = new ConcurrentDictionary<object, ConcurrentDictionary<string, IElement>>();
 
                 // Read the number of items associated with this key index name
                 var itemCount = reader.ReadInt32();
@@ -203,7 +203,7 @@ namespace Frontenac.Blueprints.Impls.TG
                     // Read the item key
                     var key = ReadTypedData(reader);
 
-                    var edges = new HashSet<IElement>();
+                    var edges = new ConcurrentDictionary<string, IElement>();
 
                     // Read the number of edges in this item
                     var edgeCount = reader.ReadInt32();
@@ -212,7 +212,7 @@ namespace Frontenac.Blueprints.Impls.TG
                         // Read the edge identifier
                         var e = graph.GetEdge(ReadTypedData(reader));
                         if (e != null)
-                            edges.Add(e);
+                            edges.TryAdd(e.Id.ToString(), e);
                     }
 
                     items.Put(key, edges);

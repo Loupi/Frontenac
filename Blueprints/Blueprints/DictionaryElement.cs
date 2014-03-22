@@ -8,6 +8,11 @@ namespace Frontenac.Blueprints
     [Serializable]
     public abstract class DictionaryElement : IElement
     {
+        protected DictionaryElement(IGraph graph)
+        {
+            Graph = graph;
+        }
+        
         public virtual IEnumerator<KeyValuePair<string, object>> GetEnumerator()
         {
             return GetPropertyKeys()
@@ -213,6 +218,7 @@ namespace Frontenac.Blueprints
         }
 
         public abstract object Id { get; }
+        public IGraph Graph { get; private set; }
         public abstract object GetProperty(string key);
         public abstract IEnumerable<string> GetPropertyKeys();
         public abstract void SetProperty(string key, object value);
