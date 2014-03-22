@@ -2,21 +2,19 @@
 using System.Collections.Generic;
 using System.Diagnostics.Contracts;
 using System.Linq;
-using Castle.Components.DictionaryAdapter;
 using Frontenac.Blueprints;
 
 namespace Frontenac.Gremlinq
 {
-    public class DictionaryElementTypeProvider : IElementTypeProvider
+    public class DictionaryTypeProvider : ITypeProvider
     {
         public const string DefaulTypePropertyName = "__type__";
 
         private readonly string _typePropertyName;
-        private readonly IDictionaryAdapterFactory _dictionaryAdapterFactory = new DictionaryAdapterFactory();
         private readonly Dictionary<int, Type> _elementIdsToTypes;
         private readonly Dictionary<Type, int> _elementTypesToIds;
 
-        public DictionaryElementTypeProvider(string typePropertyName, IDictionary<int, Type> elementTypes)
+        public DictionaryTypeProvider(string typePropertyName, IDictionary<int, Type> elementTypes)
         {
             Contract.Requires(!string.IsNullOrEmpty(typePropertyName));
             Contract.Requires(elementTypes != null);
@@ -48,13 +46,6 @@ namespace Frontenac.Gremlinq
                 throw new KeyNotFoundException(id.ToString());
 
             return true;
-        }
-
-        public virtual object Proxy(IElement element, Type type)
-        {
-            var propsDesc = new PropertyDescriptor();
-            propsDesc.AddBehavior(new DictionaryPropertyConverter());
-            return _dictionaryAdapterFactory.GetAdapter(type, element, propsDesc);
         }
     }
 }

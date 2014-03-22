@@ -27,6 +27,11 @@ namespace Frontenac.Blueprints
         object Id { get; }
 
         /// <summary>
+        ///     The graph that owns this IElement.
+        /// </summary>
+        IGraph Graph { get; }
+
+        /// <summary>
         ///     Return the object value associated with the provided string key.
         ///     If no value exists for that key, return null.
         /// </summary>

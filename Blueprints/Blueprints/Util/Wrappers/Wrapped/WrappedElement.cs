@@ -5,7 +5,7 @@ namespace Frontenac.Blueprints.Util.Wrappers.Wrapped
 {
     public abstract class WrappedElement : DictionaryElement
     {
-        protected WrappedElement(IElement element)
+        protected WrappedElement(IElement element):base(element.Graph)
         {
             Contract.Requires(element != null);
 

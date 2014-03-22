@@ -10,62 +10,123 @@ using Frontenac.Gremlinq;
 
 namespace Frontenac.Grave
 {
+    public class StaticGremlinqContextFactory : IGremlinqContextFactory
+    {
+        private readonly DictionaryAdapterProxyFactory _proxyFactory = new DictionaryAdapterProxyFactory();
+        private readonly DictionaryTypeProvider _typeProvider;
+
+        public StaticGremlinqContextFactory(IDictionary<int, Type> types)
+        {
+            _typeProvider = new DictionaryTypeProvider(DictionaryTypeProvider.DefaulTypePropertyName, types);
+        }
+
+        public GremlinqContext Create()
+        {
+            return new GremlinqContext(_typeProvider, _proxyFactory);
+        }
+    }
+
     public static class Program
     {
+        public interface IChildren
+        {
+            bool IsAdopted { get; set; }
+        }
+
+        public interface IHeirChildren : IChildren
+        {
+            float Heirloom { get; set; }
+        }
+
+        public interface IJob
+        {
+            string Title { get; set; }
+            string Domain { get; set; }
+        }
+
         public interface IPerson
         {
             string Name { get; set; }
             int Age { get; set; }
+
+            //A relation pointing to a father vertex. The edge is not typed, and it's in vertex is of type IPerson.
+            IPerson Father { get; set; }
+
+            //A relation pointing to a mother vertex. The edge is of type IChildren, and it's in vertex is of type IPerson.
+            KeyValuePair<IChildren, IPerson> Mother { get; set; }
+            
+            //A relation pointing to children vertices. The edge is of type IChildren, and it's in vertex is of type IPerson
+            IEnumerable<KeyValuePair<IChildren, IPerson>> Children { get; set; }
+            
+            //A relation pointing to job vertices. The edge is not typed, and it's in vertex is of type IJob
+            IEnumerable<IJob> Job { get; set; }
         }
 
         private static void Test()
         {
-            //Add a new vertex and set it'S properties through IPerson proxy
-            var g = new TinkerGraph();
-            var vertex = g.AddVertex(null);
-            var person = vertex.Proxy<IPerson>();
-            person.Name = "Loupi";
-            person.Age = 34;
+            var graph = new TinkerGraph();
 
-            //is equivalent to 
-            vertex.SetProperty("Name", "Saturn");
-            vertex.SetProperty("Age", 10000);
+            //Add 3 persons vertex in the graph.
+            var loupi = graph.AddVertex<IPerson>(person => { person.Name = "Loupi"; person.Age = 34; });
+            var pierre = graph.AddVertex<IPerson>(person => { person.Name = "Pierre"; person.Age = 62; });
+            var helene = graph.AddVertex<IPerson>(person => { person.Name = "Helene"; person.Age = 55; });
 
+            //Add 2 jobs vertex in the graph
+            var developer = graph.AddVertex<IJob>(job => { job.Title = "Developer"; job.Domain = "IT"; });
+            var scrumMaster = graph.AddVertex<IJob>(job => { job.Title = "ScrumMaster"; job.Domain = "IT"; });
+            
+            loupi.AddEdge(person => person.Father, pierre);
+            loupi.AddEdge(person => person.Mother, helene);
 
+            loupi.AddEdge(person => person.Job, developer);
+            loupi.AddEdge(person => person.Job, scrumMaster);
 
+            pierre.AddEdge(person => person.Children, loupi);
+            helene.AddEdge(person => person.Children, loupi, children => children.IsAdopted = false);
+            helene.AddEdge(person => person.Children, loupi, (IHeirChildren heir) => heir.Heirloom = 125000.0f);
+            
+            var rawPerson = graph.V("Name", "Loupi").Single();
+            var wrappedPerson = graph.V<IPerson, string>(p => p.Name, "Loupi").Single();
+
+            var rawFather = rawPerson.Out("Father").Single();
+            var father = wrappedPerson.Out(p => p.Father).Single();
+
+            var rawChildrens = rawPerson.In("Children").ToArray();
+            var childrens = wrappedPerson.In(p => p.Children).ToArray();
+
+            var rawChildsOfFather = pierre.In("Father").ToArray();
+            var childsOfFather = pierre.In(p => p.Father).ToArray();
+
+            
             /*var saturn = graph.AddVertex<ITitan>(t => { t.Name = "Saturn"; t.Age = 10000; });
             var jupiter = graph.AddVertex<IGod>(t => { t.Name = "Jupiter"; t.Age = 5000; });*/
         }
 
         private static void Main()
         {
-            
-            GremlinqContext.ElementTypeProvider = new DictionaryElementTypeProvider(
-                DictionaryElementTypeProvider.DefaulTypePropertyName, //The property name to use to store type id 
+            GremlinqContext.ContextFactory = new StaticGremlinqContextFactory(
                 new Dictionary<int, Type> //The types that are allowed to be proxied
-                {
-                    {1, typeof(IAgedCharacter)},
-                    {2, typeof(IBattle)},
-                    {3, typeof(ICharacter)},
-                    {4, typeof(IContributor)},
-                    {5, typeof(IDemiGod)},
-                    {6, typeof(IGod)},
-                    {7, typeof(IHuman)},
-                    {8, typeof(ILive)},
-                    {9, typeof(ILocation)},
-                    {10, typeof(IMonster)},
-                    {11, typeof(INamedEntity)},
-                    {12, typeof(ITitan)},
-                    {13, typeof(IWeightedEntity)}
-                });
-
+                    {
+                        {1, typeof (IAgedCharacter)},
+                        {2, typeof (IBattle)},
+                        {3, typeof (ICharacter)},
+                        {4, typeof (IContributor)},
+                        {5, typeof (IDemiGod)},
+                        {6, typeof (IGod)},
+                        {7, typeof (IHuman)},
+                        {8, typeof (ILive)},
+                        {9, typeof (ILocation)},
+                        {10, typeof (IMonster)},
+                        {11, typeof (INamedEntity)},
+                        {12, typeof (ITitan)},
+                        {13, typeof (IWeightedEntity)}
+                    });
+            
             Test();
 
             var graph = GraveFactory.CreateTransactionalGraph();
             try
             {
-                GremlinqContext.ElementTypeProvider = new GraphBackedElementTypeProvider(DictionaryElementTypeProvider.DefaulTypePropertyName, graph);
-
                 if (!graph.V<ICharacter, string>(t => t.Name, "Saturn").Any())
                 {
                     CreateGraphOfTheGods(graph);
@@ -89,8 +150,7 @@ namespace Frontenac.Grave
                 var fatherName = saturn
                     .In(t => t.Father)
                     .In(t => t.Father)
-                    .Select(t => t.Model.Name)
-                    .Single();
+                    .Single().Model.Name;
 
                 var eventsNearAthen = graph.Query<IBattle>()
                     .Has(t => t.Place, new GeoCircle(37.97, 23.72, 50))
@@ -106,7 +166,7 @@ namespace Frontenac.Grave
                     .ToArray();
 
                 var hercules = saturn
-                    .Loop(t => t.In(u => u.Father) , 2)
+                    .Loop(t => t.In(u => u.Father).SingleOrDefault() , 2)
                     .Single();
 
                 var parents = hercules
@@ -121,16 +181,20 @@ namespace Frontenac.Grave
                     .Select(t => t.Type())
                     .ToArray();
 
+                var humanParent = parents
+                    .OfType<IHuman>()
+                    .Single();
+
                 var battled = hercules
                     .Out(t => t.Battled)
                     .ToArray();
 
                 var opponentDetails = battled
-                    .Select(t => t.Element.ToDictionary(u => u.Key, u => u.Value))
+                    .Select(t => t.Element.Map())
                     .ToArray();
 
                 var v2 = hercules
-                    .Out(t => t.Battled)
+                    .OutE(t => t.Battled)
                     .Where(t => t.Model.Time > 1)
                     .Select(t => t.In(u => u.Opponent).Model.Name)
                     .ToArray();

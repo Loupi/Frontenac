@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Diagnostics.Contracts;
 using System.Globalization;
@@ -29,9 +30,9 @@ namespace Frontenac.Blueprints.Impls.TG
 
         internal long CurrentId = 0;
         internal TinkerKeyIndex EdgeKeyIndex;
-        protected Dictionary<string, IEdge> Edges = new Dictionary<string, IEdge>();
-        internal Dictionary<string, TinkerIndex> Indices = new Dictionary<string, TinkerIndex>();
-        protected Dictionary<string, IVertex> InnerVertices = new Dictionary<string, IVertex>();
+        protected ConcurrentDictionary<string, IEdge> Edges = new ConcurrentDictionary<string, IEdge>();
+        internal ConcurrentDictionary<string, TinkerIndex> Indices = new ConcurrentDictionary<string, TinkerIndex>();
+        protected ConcurrentDictionary<string, IVertex> InnerVertices = new ConcurrentDictionary<string, IVertex>();
 
         internal TinkerKeyIndex VertexKeyIndex;
 
@@ -156,7 +157,8 @@ namespace Frontenac.Blueprints.Impls.TG
 
         public virtual void DropIndex(string indexName)
         {
-            Indices.Remove(indexName);
+            TinkerIndex value;
+            Indices.TryRemove(indexName, out value);
         }
 
         public virtual IVertex AddVertex(object id)
@@ -220,7 +222,8 @@ namespace Frontenac.Blueprints.Impls.TG
                 idx.RemoveElement(vertex);
             }
 
-            InnerVertices.Remove(vertex.Id.ToString());
+            IVertex removedVertex;
+            InnerVertices.TryRemove(vertex.Id.ToString(), out removedVertex);
         }
 
         public virtual IEdge AddEdge(object id, IVertex outVertex, IVertex inVertex, string label)
@@ -261,17 +264,22 @@ namespace Frontenac.Blueprints.Impls.TG
         {
             var outVertex = (TinkerVertex) edge.GetVertex(Direction.Out);
             var inVertex = (TinkerVertex) edge.GetVertex(Direction.In);
+            IEdge removedEdge;
             if (null != outVertex && null != outVertex.OutEdges)
             {
                 var e = outVertex.OutEdges.Get(edge.Label);
                 if (null != e)
-                    e.Remove(edge);
+                {
+                    e.TryRemove(edge.Id.ToString(), out removedEdge);
+                }
             }
             if (null != inVertex && null != inVertex.InEdges)
             {
                 var e = inVertex.InEdges.Get(edge.Label);
                 if (null != e)
-                    e.Remove(edge);
+                {
+                    e.TryRemove(edge.Id.ToString(), out removedEdge);
+                }
             }
 
 
@@ -281,7 +289,7 @@ namespace Frontenac.Blueprints.Impls.TG
                 idx.RemoveElement(edge);
             }
 
-            Edges.Remove(edge.Id.ToString());
+            Edges.TryRemove(edge.Id.ToString(), out removedEdge);
         }
 
         public virtual IQuery Query()
@@ -422,7 +430,8 @@ namespace Frontenac.Blueprints.Impls.TG
                     return;
 
                 _indexedKeys.Remove(key);
-                Index.Remove(key);
+                ConcurrentDictionary<object, ConcurrentDictionary<string, IElement>> removedIndex;
+                Index.TryRemove(key, out removedIndex);
             }
 
             public IEnumerable<string> GetIndexedKeys()

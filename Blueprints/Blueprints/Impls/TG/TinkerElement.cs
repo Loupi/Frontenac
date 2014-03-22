@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Diagnostics.Contracts;
 using System.Linq;
@@ -9,16 +10,16 @@ namespace Frontenac.Blueprints.Impls.TG
     [Serializable]
     internal abstract class TinkerElement : DictionaryElement
     {
-        protected readonly TinkerGraph Graph;
+        protected readonly TinkerGraph TinkerGraph;
         protected readonly string RawId;
-        protected Dictionary<string, object> Properties = new Dictionary<string, object>();
+        protected ConcurrentDictionary<string, object> Properties = new ConcurrentDictionary<string, object>();
 
-        protected TinkerElement(string id, TinkerGraph graph)
+        protected TinkerElement(string id, TinkerGraph graph):base(graph)
         {
             Contract.Requires(id != null);
             Contract.Requires(graph != null);
 
-            Graph = graph;
+            TinkerGraph = graph;
             RawId = id;
         }
 
@@ -37,18 +38,18 @@ namespace Frontenac.Blueprints.Impls.TG
             this.ValidateProperty(key, value);
             var oldValue = Properties.Put(key, value);
             if (this is TinkerVertex)
-                Graph.VertexKeyIndex.AutoUpdate(key, value, oldValue, this);
+                TinkerGraph.VertexKeyIndex.AutoUpdate(key, value, oldValue, this);
             else
-                Graph.EdgeKeyIndex.AutoUpdate(key, value, oldValue, this);
+                TinkerGraph.EdgeKeyIndex.AutoUpdate(key, value, oldValue, this);
         }
 
         public override object RemoveProperty(string key)
         {
             var oldValue = Properties.JavaRemove(key);
             if (this is TinkerVertex)
-                Graph.VertexKeyIndex.AutoRemove(key, oldValue, this);
+                TinkerGraph.VertexKeyIndex.AutoRemove(key, oldValue, this);
             else
-                Graph.EdgeKeyIndex.AutoRemove(key, oldValue, this);
+                TinkerGraph.EdgeKeyIndex.AutoRemove(key, oldValue, this);
 
             return oldValue;
         }

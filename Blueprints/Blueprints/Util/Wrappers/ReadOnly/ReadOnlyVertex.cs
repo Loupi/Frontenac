@@ -8,9 +8,10 @@ namespace Frontenac.Blueprints.Util.Wrappers.ReadOnly
     {
         private readonly IVertex _baseVertex;
 
-        public ReadOnlyVertex(IVertex baseVertex)
-            : base(baseVertex)
+        public ReadOnlyVertex(ReadOnlyGraph graph, IVertex baseVertex)
+            : base(graph, baseVertex)
         {
+            Contract.Requires(graph != null);
             Contract.Requires(baseVertex != null);
 
             _baseVertex = baseVertex;
@@ -18,12 +19,12 @@ namespace Frontenac.Blueprints.Util.Wrappers.ReadOnly
 
         public IEnumerable<IEdge> GetEdges(Direction direction, params string[] labels)
         {
-            return new ReadOnlyEdgeIterable(((IVertex) BaseElement).GetEdges(direction, labels));
+            return new ReadOnlyEdgeIterable(ReadOnlyGraph, ((IVertex) BaseElement).GetEdges(direction, labels));
         }
 
         public IEnumerable<IVertex> GetVertices(Direction direction, params string[] labels)
         {
-            return new ReadOnlyVertexIterable(((IVertex) BaseElement).GetVertices(direction, labels));
+            return new ReadOnlyVertexIterable(ReadOnlyGraph, ((IVertex) BaseElement).GetVertices(direction, labels));
         }
 
         public IEdge AddEdge(string label, IVertex vertex)
@@ -34,8 +35,8 @@ namespace Frontenac.Blueprints.Util.Wrappers.ReadOnly
         public IVertexQuery Query()
         {
             return new WrapperVertexQuery(_baseVertex.Query(),
-                                          t => new ReadOnlyEdgeIterable(t.Edges()),
-                                          t => new ReadOnlyVertexIterable(t.Vertices()));
+                                          t => new ReadOnlyEdgeIterable(ReadOnlyGraph, t.Edges()),
+                                          t => new ReadOnlyVertexIterable(ReadOnlyGraph, t.Vertices()));
         }
     }
 }

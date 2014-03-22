@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Diagnostics.Contracts;
 using System.Linq;
@@ -12,8 +13,8 @@ namespace Frontenac.Blueprints.Impls.TG
         protected readonly Type IndexClass;
         protected readonly string IndexName;
 
-        internal Dictionary<string, Dictionary<object, HashSet<IElement>>> Index =
-            new Dictionary<string, Dictionary<object, HashSet<IElement>>>();
+        internal ConcurrentDictionary<string, ConcurrentDictionary<object, ConcurrentDictionary<string, IElement>>> Index =
+            new ConcurrentDictionary<string, ConcurrentDictionary<object, ConcurrentDictionary<string, IElement>>>();
 
         public TinkerIndex(string indexName, Type indexClass)
         {
@@ -40,16 +41,16 @@ namespace Frontenac.Blueprints.Impls.TG
             var keyMap = Index.Get(key);
             if (keyMap == null)
             {
-                keyMap = new Dictionary<object, HashSet<IElement>>();
+                keyMap = new ConcurrentDictionary<object, ConcurrentDictionary<string, IElement>>();
                 Index.Put(key, keyMap);
             }
             var objects = keyMap.Get(value);
             if (null == objects)
             {
-                objects = new HashSet<IElement>();
+                objects = new ConcurrentDictionary<string, IElement>();
                 keyMap.Put(value, objects);
             }
-            objects.Add(element);
+            objects.TryAdd(element.Id.ToString(), element);
         }
 
         public IEnumerable<IElement> Get(string key, object value)
@@ -61,7 +62,7 @@ namespace Frontenac.Blueprints.Impls.TG
             var set = keyMap.Get(value);
             return null == set
                        ? new WrappingCloseableIterable<IElement>(Enumerable.Empty<IElement>())
-                       : new WrappingCloseableIterable<IElement>(new List<IElement>(set));
+                       : new WrappingCloseableIterable<IElement>(new List<IElement>(set.Values));
         }
 
         public IEnumerable<IElement> Query(string key, object query)
@@ -86,9 +87,13 @@ namespace Frontenac.Blueprints.Impls.TG
                 var objects = keyMap.Get(value);
                 if (null != objects)
                 {
-                    objects.Remove(element);
+                    IElement removedElement;
+                    objects.TryRemove(element.Id.ToString(), out removedElement);
                     if (objects.Count == 0)
-                        keyMap.Remove(value);
+                    {
+                        ConcurrentDictionary<string, IElement> removedElements;
+                        keyMap.TryRemove(value, out removedElements);
+                    }
                 }
             }
         }
@@ -97,12 +102,14 @@ namespace Frontenac.Blueprints.Impls.TG
         {
             Contract.Requires(element != null);
 
-            if (IndexClass.IsInstanceOfType(element))
+            if (!IndexClass.IsInstanceOfType(element)) return;
+
+            foreach (var map in Index.Values)
             {
-                foreach (var map in Index.Values)
+                foreach (var set in map.Values)
                 {
-                    foreach (var set in map.Values)
-                        set.Remove(element);
+                    IElement removedElement;
+                    set.TryRemove(element.Id.ToString(), out removedElement);
                 }
             }
         }

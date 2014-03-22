@@ -23,7 +23,7 @@ namespace Frontenac.Grave
 
         public IEnumerable<IEdge> GetEdges(Direction direction, params string[] labels)
         {
-            return Graph.GetEdges(this, direction, labels);
+            return GraveGraph.GetEdges(this, direction, labels);
         }
 
         public IEnumerable<IVertex> GetVertices(Direction direction, params string[] labels)

@@ -29,7 +29,7 @@ namespace Frontenac.Gremlinq
 
         public static IEnumerable<IVertex<TInModel>> Loop<TInModel>(
             this IVertex<TInModel> element,
-            Func<IVertex<TInModel>, IEnumerable<IVertex<TInModel>>> loopFunction,
+            Func<IVertex<TInModel>, IVertex<TInModel>> loopFunction,
             int nbIterations)
         {
             Contract.Requires(element != null);
@@ -40,14 +40,14 @@ namespace Frontenac.Gremlinq
             var next = (IEnumerable<IVertex<TInModel>>)new[] { element };
 
             for (var i = 0; i < nbIterations; i++)
-                next = next.SelectMany(loopFunction);
+                next = next.Select(loopFunction);
 
             return next;
         }
 
         public static IEnumerable<IVertex<TInModel>> Loop<TInModel>(
             this IEnumerable<IVertex<TInModel>> elements,
-            Func<IVertex<TInModel>, IEnumerable<IVertex<TInModel>>> loopFunction,
+            Func<IVertex<TInModel>, IVertex<TInModel>> loopFunction,
             int nbIterations)
         {
             Contract.Requires(elements != null);

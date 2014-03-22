@@ -35,7 +35,7 @@ namespace Frontenac.Blueprints.Util.Wrappers.ReadOnly
         public IVertex GetVertex(object id)
         {
             var vertex = BaseGraph.GetVertex(id);
-            return null == vertex ? null : new ReadOnlyVertex(vertex);
+            return null == vertex ? null : new ReadOnlyVertex(this, vertex);
         }
 
         public void RemoveEdge(IEdge edge)
@@ -45,28 +45,28 @@ namespace Frontenac.Blueprints.Util.Wrappers.ReadOnly
 
         public IEnumerable<IEdge> GetEdges()
         {
-            return new ReadOnlyEdgeIterable(BaseGraph.GetEdges());
+            return new ReadOnlyEdgeIterable(this, BaseGraph.GetEdges());
         }
 
         public IEnumerable<IEdge> GetEdges(string key, object value)
         {
-            return new ReadOnlyEdgeIterable(BaseGraph.GetEdges(key, value));
+            return new ReadOnlyEdgeIterable(this, BaseGraph.GetEdges(key, value));
         }
 
         public IEdge GetEdge(object id)
         {
             var edge = BaseGraph.GetEdge(id);
-            return null == edge ? null : new ReadOnlyEdge(edge);
+            return null == edge ? null : new ReadOnlyEdge(this, edge);
         }
 
         public IEnumerable<IVertex> GetVertices()
         {
-            return new ReadOnlyVertexIterable(BaseGraph.GetVertices());
+            return new ReadOnlyVertexIterable(this, BaseGraph.GetVertices());
         }
 
         public IEnumerable<IVertex> GetVertices(string key, object value)
         {
-            return new ReadOnlyVertexIterable(BaseGraph.GetVertices(key, value));
+            return new ReadOnlyVertexIterable(this, BaseGraph.GetVertices(key, value));
         }
 
         public IVertex AddVertex(object id)
@@ -77,8 +77,8 @@ namespace Frontenac.Blueprints.Util.Wrappers.ReadOnly
         public IQuery Query()
         {
             return new WrappedQuery(BaseGraph.Query(),
-                                    t => new ReadOnlyEdgeIterable(t.Edges()),
-                                    t => new ReadOnlyVertexIterable(t.Vertices()));
+                                    t => new ReadOnlyEdgeIterable(this, t.Edges()),
+                                    t => new ReadOnlyVertexIterable(this, t.Vertices()));
         }
 
         public Features Features

@@ -13,7 +13,7 @@ namespace Frontenac.Blueprints.Util.Wrappers.Event
         protected readonly IElement Element;
         protected readonly EventGraph EventGraph;
 
-        protected EventElement(IElement element, EventGraph eventGraph)
+        protected EventElement(IElement element, EventGraph eventGraph):base(eventGraph)
         {
             Contract.Requires(element != null);
             Contract.Requires(eventGraph != null);

@@ -6,12 +6,15 @@ namespace Frontenac.Blueprints.Util.Wrappers.ReadOnly
 {
     public class ReadOnlyIndex : IIndex
     {
+        private readonly ReadOnlyGraph _graph;
         protected IIndex RawIndex;
 
-        public ReadOnlyIndex(IIndex rawIndex)
+        public ReadOnlyIndex(ReadOnlyGraph graph, IIndex rawIndex)
         {
+            Contract.Requires(graph != null);
             Contract.Requires(rawIndex != null);
 
+            _graph = graph;
             RawIndex = rawIndex;
         }
 
@@ -28,15 +31,15 @@ namespace Frontenac.Blueprints.Util.Wrappers.ReadOnly
         public IEnumerable<IElement> Get(string key, object value)
         {
             if (typeof (IVertex).IsAssignableFrom(Type))
-                return new ReadOnlyVertexIterable((IEnumerable<IVertex>) RawIndex.Get(key, value));
-            return new ReadOnlyEdgeIterable((IEnumerable<IEdge>) RawIndex.Get(key, value));
+                return new ReadOnlyVertexIterable(_graph, (IEnumerable<IVertex>)RawIndex.Get(key, value));
+            return new ReadOnlyEdgeIterable(_graph, (IEnumerable<IEdge>) RawIndex.Get(key, value));
         }
 
         public IEnumerable<IElement> Query(string key, object value)
         {
             if (typeof (IVertex).IsAssignableFrom(Type))
-                return new ReadOnlyVertexIterable((IEnumerable<IVertex>) RawIndex.Query(key, value));
-            return new ReadOnlyEdgeIterable((IEnumerable<IEdge>) RawIndex.Query(key, value));
+                return new ReadOnlyVertexIterable(_graph, (IEnumerable<IVertex>) RawIndex.Query(key, value));
+            return new ReadOnlyEdgeIterable(_graph, (IEnumerable<IEdge>) RawIndex.Query(key, value));
         }
 
         public long Count(string key, object value)

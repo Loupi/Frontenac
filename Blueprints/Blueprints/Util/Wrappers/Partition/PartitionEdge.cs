@@ -17,7 +17,7 @@ namespace Frontenac.Blueprints.Util.Wrappers.Partition
 
         public IVertex GetVertex(Direction direction)
         {
-            return new PartitionVertex(_edge.GetVertex(direction), Graph);
+            return new PartitionVertex(_edge.GetVertex(direction), PartitionGraph);
         }
 
         public string Label
