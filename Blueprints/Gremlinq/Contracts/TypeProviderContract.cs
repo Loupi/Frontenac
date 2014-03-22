@@ -4,8 +4,8 @@ using Frontenac.Blueprints;
 
 namespace Frontenac.Gremlinq.Contracts
 {
-    [ContractClassFor(typeof (IElementTypeProvider))]
-    public abstract class ElementTypeProviderContract : IElementTypeProvider
+    [ContractClassFor(typeof (ITypeProvider))]
+    public abstract class TypeProviderContract : ITypeProvider
     {
         public void SetType(IElement element, Type type)
         {
@@ -18,14 +18,6 @@ namespace Frontenac.Gremlinq.Contracts
             Contract.Requires(element != null);
             type = null;
             return false;
-        }
-
-        public object Proxy(IElement element, Type type)
-        {
-            Contract.Requires(element != null);
-            Contract.Requires(type != null);
-            Contract.Ensures(Contract.Result<object>() != null);
-            return null;
         }
     }
 }

@@ -416,7 +416,7 @@ namespace Frontenac.Blueprints.Util.Wrappers.Batch
         {
             private readonly BatchGraph _batchGraph;
 
-            public BatchEdge(BatchGraph batchGraph)
+            public BatchEdge(BatchGraph batchGraph):base(batchGraph)
             {
                 Contract.Requires(batchGraph != null);
 
@@ -482,7 +482,7 @@ namespace Frontenac.Blueprints.Util.Wrappers.Batch
             private readonly BatchGraph _batchGraph;
             private readonly object _externalId;
 
-            public BatchVertex(object id, BatchGraph batchGraph)
+            public BatchVertex(object id, BatchGraph batchGraph):base(batchGraph)
             {
                 Contract.Requires(id != null);
                 Contract.Requires(batchGraph != null);

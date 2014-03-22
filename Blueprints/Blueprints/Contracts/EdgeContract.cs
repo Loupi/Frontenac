@@ -32,6 +32,7 @@ namespace Frontenac.Blueprints.Contracts
         public abstract object RemoveProperty(string key);
         public abstract void Remove();
         public abstract object Id { get; }
+        public abstract IGraph Graph { get; }
         public abstract IEnumerator<KeyValuePair<string, object>> GetEnumerator();
         public abstract void Remove(object key);
 

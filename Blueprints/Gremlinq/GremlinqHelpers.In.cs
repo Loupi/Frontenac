@@ -31,7 +31,8 @@ namespace Frontenac.Gremlinq
         public static IEnumerable<IVertex<TInModel>> In<TOutModel, TInModel>(
             this IVertex<TOutModel> vertex,
             int branchFactor,
-            Expression<Func<TOutModel, TInModel>> propertySelector) where TInModel : class
+            Expression<Func<TOutModel, TInModel>> propertySelector) 
+            where TInModel : class
         {
             Contract.Requires(vertex != null);
             Contract.Requires(propertySelector != null);
@@ -43,19 +44,21 @@ namespace Frontenac.Gremlinq
         public static IEnumerable<IVertex<TInModel>> In<TOutModel, TInModel>(
             this IEnumerable<IVertex<TOutModel>> vertices,
             int branchFactor,
-            Expression<Func<TOutModel, TInModel>> propertySelector) where TInModel : class
+            Expression<Func<TOutModel, TInModel>> propertySelector) 
+            where TInModel : class
         {
             Contract.Requires(vertices != null);
             Contract.Requires(propertySelector != null);
             Contract.Ensures(Contract.Result<IEnumerable<IVertex<TInModel>>>() != null);
 
-            return vertices.SelectMany(t => t.In(branchFactor, propertySelector)).As<TInModel>();
+            return vertices.SelectMany(t => t.In(branchFactor, propertySelector));
         }
 
         public static IEnumerable<IVertex<TInModel>> In<TOutModel, TInModel>(
             this IEnumerable<IVertex<TOutModel>> vertices,
             int branchFactor,
-            Expression<Func<IVertex<TOutModel>, IVertex<TInModel>>> propertySelector) where TInModel : class
+            Expression<Func<IVertex<TOutModel>, IVertex<TInModel>>> propertySelector) 
+            where TInModel : class
         {
             Contract.Requires(vertices != null);
             Contract.Requires(propertySelector != null);
@@ -84,7 +87,8 @@ namespace Frontenac.Gremlinq
 
         public static IEnumerable<IVertex<TInModel>> In<TOutModel, TInModel>(
             this IVertex<TOutModel> vertex,
-            Expression<Func<TOutModel, TInModel>> propertySelector) where TInModel : class
+            Expression<Func<TOutModel, TInModel>> propertySelector) 
+            where TInModel : class
         {
             Contract.Requires(vertex != null);
             Contract.Requires(propertySelector != null);
@@ -94,8 +98,57 @@ namespace Frontenac.Gremlinq
         }
 
         public static IEnumerable<IVertex<TInModel>> In<TOutModel, TInModel>(
+            this IVertex<TOutModel> vertex,
+            Expression<Func<TOutModel, IEnumerable<TInModel>>> propertySelector) 
+            where TInModel : class
+        {
+            Contract.Requires(vertex != null);
+            Contract.Requires(propertySelector != null);
+            Contract.Ensures(Contract.Result<IEnumerable<IVertex<TInModel>>>() != null);
+
+            return vertex.In(propertySelector.Resolve()).As<TInModel>();
+        }
+
+        public static IEnumerable<IVertex<TInModel>> In<TInModel, TOutModel, TEdgeModel>(
+            this IVertex<TOutModel> vertex,
+            Expression<Func<TOutModel, IEnumerable<KeyValuePair<TEdgeModel, TInModel>>>> propertySelector)
+            where TInModel : class
+        {
+            Contract.Requires(vertex != null);
+            Contract.Requires(propertySelector != null);
+            Contract.Ensures(Contract.Result<IEnumerable<IVertex<TInModel>>>() != null);
+
+            return vertex.In(propertySelector.Resolve()).As<TInModel>();
+        }
+
+        public static IEnumerable<IVertex<TInModel>> In<TInModel, TOutModel, TEdgeModel>(
+            this IVertex<TOutModel> vertex,
+            Expression<Func<KeyValuePair<TEdgeModel, TOutModel>, TInModel>> propertySelector) 
+            where TInModel : class
+        {
+            Contract.Requires(vertex != null);
+            Contract.Requires(propertySelector != null);
+            Contract.Ensures(Contract.Result<IEnumerable<IVertex<TInModel>>>() != null);
+
+            return vertex.In(propertySelector.Resolve()).As<TInModel>();
+        }
+
+        public static IEnumerable<IVertex<TInModel>> In<TInModel, TOutModel, TEdgeModel>(
+            this IVertex<TOutModel> vertex,
+            Expression<Func<IEnumerable<KeyValuePair<TEdgeModel, TOutModel>>, TInModel>> propertySelector)
+            where TInModel : class
+        {
+            Contract.Requires(vertex != null);
+            Contract.Requires(propertySelector != null);
+            Contract.Ensures(Contract.Result<IEnumerable<IVertex<TInModel>>>() != null);
+
+            return vertex.In(propertySelector.Resolve()).As<TInModel>();
+        }
+
+        public static IEnumerable<IVertex<TInModel>> In<TInModel, TOutModel>(
             this IEnumerable<IVertex<TOutModel>> vertices,
-            Expression<Func<TOutModel, TInModel>> propertySelector) where TInModel : class
+            Expression<Func<TOutModel, TInModel>> propertySelector) 
+            where TInModel : class
         {
             Contract.Requires(vertices != null);
             Contract.Requires(propertySelector != null);
@@ -104,9 +157,10 @@ namespace Frontenac.Gremlinq
             return vertices.SelectMany(t => t.In(propertySelector.Resolve())).As<TInModel>();
         }
 
-        public static IEnumerable<IVertex<TInModel>> In<TOutModel, TInModel>(
+        public static IEnumerable<IVertex<TInModel>> In<TInModel, TOutModel>(
             this IEnumerable<IVertex<TOutModel>> vertices,
-            Expression<Func<IVertex<TOutModel>, IVertex<TInModel>>> propertySelector) where TInModel : class
+            Expression<Func<IVertex<TOutModel>, IVertex<TInModel>>> propertySelector) 
+            where TInModel : class
         {
             Contract.Requires(vertices != null);
             Contract.Requires(propertySelector != null);
@@ -117,7 +171,8 @@ namespace Frontenac.Gremlinq
 
         public static IVertex<TInModel> In<TModel, TInModel>(
             this IEdge<TModel> edge,
-            Expression<Func<TModel, TInModel>> edgePropertySelector) where TInModel : class
+            Expression<Func<TModel, TInModel>> edgePropertySelector) 
+            where TInModel : class
         {
             Contract.Requires(edge != null);
             Contract.Requires(edgePropertySelector != null);
@@ -129,15 +184,26 @@ namespace Frontenac.Gremlinq
 
         public static IEnumerable<IVertex<TInModel>> In<TModel, TInModel>(
             this IVertex<TModel> vertex,
-            params Expression<Func<TModel, TInModel>>[] edgePropertySelectors) where TInModel : class
+            params Expression<Func<TModel, TInModel>>[] edgePropertySelectors) 
+            where TInModel : class
         {
             Contract.Requires(vertex != null);
             Contract.Requires(edgePropertySelectors != null);
             Contract.Ensures(Contract.Result<IEnumerable<IVertex<TInModel>>>() != null);
 
-            return vertex
-                .GetVertices(Direction.In, edgePropertySelectors.Select(Resolve).ToArray())
-                .As<TInModel>();
+            return vertex.GetVertices(Direction.In, edgePropertySelectors.Select(Resolve).ToArray()).As<TInModel>();
+        }
+
+        public static IEnumerable<IVertex<TInModel>> In<TOutModel, TInModel>(
+            this IEnumerable<IVertex<TOutModel>> vertices,
+            params Expression<Func<TOutModel, TInModel>>[] edgePropertySelectors)
+            where TInModel : class
+        {
+            Contract.Requires(vertices != null);
+            Contract.Requires(edgePropertySelectors != null);
+            Contract.Ensures(Contract.Result<IEnumerable<IVertex<TInModel>>>() != null);
+
+            return vertices.SelectMany(t => t.In(edgePropertySelectors));
         }
     }
 }

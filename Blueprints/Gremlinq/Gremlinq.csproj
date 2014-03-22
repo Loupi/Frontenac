@@ -123,10 +123,14 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Contracts\ElementTypeProviderContract.cs" />
-    <Compile Include="DictionaryElementTypeProvider.cs" />
-    <Compile Include="GraphBackedElementTypeProvider.cs" />
+    <Compile Include="Contracts\ProxyFactoryContract.cs" />
+    <Compile Include="Contracts\TypeProviderContract.cs" />
+    <Compile Include="DefaultGremlinqContextFactory.cs" />
+    <Compile Include="DictionaryAdapterProxyFactory.cs" />
+    <Compile Include="DictionaryTypeProvider.cs" />
+    <Compile Include="GraphBackedTypeProvider.cs" />
     <Compile Include="GremlinqContext.cs" />
+    <Compile Include="Contracts\GremlinqContextFactoryContract.cs" />
     <Compile Include="GremlinqHelpers.OutE.cs" />
     <Compile Include="GremlinqHelpers.InE.cs" />
     <Compile Include="DictionaryPropertyConverter.cs" />
@@ -143,7 +147,9 @@
     <Compile Include="GremlinqHelpers.V.cs" />
     <Compile Include="IEdge.cs" />
     <Compile Include="IElement.cs" />
-    <Compile Include="IElementTypeProvider.cs" />
+    <Compile Include="IGremlinqContextFactory.cs" />
+    <Compile Include="IProxyFactory.cs" />
+    <Compile Include="ITypeProvider.cs" />
     <Compile Include="IQuery.cs" />
     <Compile Include="IVertex.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

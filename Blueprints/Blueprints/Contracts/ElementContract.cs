@@ -42,7 +42,16 @@ namespace Frontenac.Blueprints.Contracts
             get
             {
                 Contract.Ensures(Contract.Result<object>() != null);
-                return default(object);
+                return null;
+            }
+        }
+
+        public IGraph Graph
+        {
+            get
+            {
+                Contract.Ensures(Contract.Result<IGraph>() != null);
+                return null;
             }
         }
 

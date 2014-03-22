@@ -8,38 +8,38 @@ namespace Frontenac.Grave
 {
     public abstract class GraveElement : DictionaryElement
     {
-        protected readonly GraveGraph Graph;
+        protected readonly GraveGraph GraveGraph;
         internal readonly int RawId;
         internal readonly EsentTable Table;
 
-        protected GraveElement(GraveGraph graph, EsentTable table, int id)
+        protected GraveElement(GraveGraph graph, EsentTable table, int id):base(graph)
         {
             Contract.Requires(graph != null);
             Contract.Requires(table != null);
 
-            Graph = graph;
+            GraveGraph = graph;
             Table = table;
             RawId = id;
         }
 
         public override object GetProperty(string key)
         {
-            return Graph.GetProperty(this, key);
+            return GraveGraph.GetProperty(this, key);
         }
 
         public override IEnumerable<string> GetPropertyKeys()
         {
-            return Graph.GetPropertyKeys(this);
+            return GraveGraph.GetPropertyKeys(this);
         }
 
         public override void SetProperty(string key, object value)
         {
-            Graph.SetProperty(this, key, value);
+            GraveGraph.SetProperty(this, key, value);
         }
 
         public override object RemoveProperty(string key)
         {
-            return Graph.RemoveProperty(this, key);
+            return GraveGraph.RemoveProperty(this, key);
         }
 
         public override void Remove()
@@ -61,10 +61,10 @@ namespace Frontenac.Grave
             Contract.Requires(!string.IsNullOrWhiteSpace(key));
 
             var type = this is IVertex ? typeof (IVertex) : typeof (IEdge);
-            var indices = Graph.GetIndices(type, false);
+            var indices = GraveGraph.GetIndices(type, false);
             if (!indices.HasIndex(key)) return;
             var generation = indices.Set(RawId, key, key, value);
-            Graph.UpdateGeneration(generation);
+            GraveGraph.UpdateGeneration(generation);
         }
 
         public override int GetHashCode()

@@ -121,7 +121,7 @@ namespace Frontenac.Blueprints.Impls.TG
                             foreach (var v in vertices)
                             {
                                 // Write the vertex identifier
-                                WriteTypedData(writer, v.Id);
+                                WriteTypedData(writer, v.Value.Id);
                             }
                         }
                         else if (indexClass == typeof (IEdge))
@@ -133,7 +133,7 @@ namespace Frontenac.Blueprints.Impls.TG
                             foreach (var e in edges)
                             {
                                 // Write the edge identifier
-                                WriteTypedData(writer, e.Id);
+                                WriteTypedData(writer, e.Value.Id);
                             }
                         }
                     }
@@ -166,7 +166,7 @@ namespace Frontenac.Blueprints.Impls.TG
                     foreach (var v in item.Value)
                     {
                         // Write the vertex identifier
-                        WriteTypedData(writer, v.Id);
+                        WriteTypedData(writer, v.Value.Id);
                     }
                 }
             }
@@ -197,7 +197,7 @@ namespace Frontenac.Blueprints.Impls.TG
                     foreach (var e in item.Value)
                     {
                         // Write the edge identifier
-                        WriteTypedData(writer, e.Id);
+                        WriteTypedData(writer, e.Value.Id);
                     }
                 }
             }

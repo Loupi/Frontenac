@@ -36,5 +36,13 @@ namespace Frontenac.Gremlinq
 
             return query.InnerQuery.Edges().As<TModel>();
         }
+
+        public static IEnumerable<IVertex<TModel>> Vertices<TModel>(this IQuery<TModel> query) where TModel : class
+        {
+            Contract.Requires(query != null);
+            Contract.Ensures(Contract.Result<IEnumerable<IVertex<TModel>>>() != null);
+
+            return query.InnerQuery.Vertices().As<TModel>();
+        }
     }
 }

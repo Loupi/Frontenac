@@ -1,15 +1,49 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Runtime.Remoting.Messaging;
 
 namespace Frontenac.Gremlinq
 {
-    public static class GremlinqContext
+    public class GremlinqContext
     {
-        public static IElementTypeProvider ElementTypeProvider { get; set; }
+        static readonly string LocalStorageSlotName = typeof (GremlinqContext).Name;
+
+        public GremlinqContext(ITypeProvider typeProvider, IProxyFactory proxyFactory)
+        {
+            TypeProvider = typeProvider;
+            ProxyFactory = proxyFactory;
+        }
+
+        public ITypeProvider TypeProvider { get; private set; }
+        public IProxyFactory ProxyFactory { get; private set; }
 
         static GremlinqContext()
         {
-            ElementTypeProvider = new DictionaryElementTypeProvider(DictionaryElementTypeProvider.DefaulTypePropertyName, new Dictionary<int, Type>());
+            ContextFactory = new DefaultGremlinqContextFactory();
+        }
+
+        public static IGremlinqContextFactory ContextFactory
+        {
+            get { return _factory; }
+            set
+            {
+                CallContext.FreeNamedDataSlot(LocalStorageSlotName);
+                _factory = value;
+            }
+        }
+
+        private static IGremlinqContextFactory _factory;
+
+        public static GremlinqContext Current
+        {
+            get
+            {
+                var context = CallContext.LogicalGetData(LocalStorageSlotName) as GremlinqContext;
+                if (context != null)
+                    return context;
+
+                context = ContextFactory.Create();
+                CallContext.LogicalSetData(LocalStorageSlotName, context);
+                return context;
+            }
         }
     }
 }
