@@ -4,6 +4,11 @@ Frontenac
 A .NET port of the [Tinkerpop Stack](http://www.tinkerpop.com/).
 
 ## News
+* 2014-03-29
+ * Frontenac.Blueprints 2.3.9 released.
+ * Gremlinq ORM now supports relations. You can user IEnumerable&lt;T&gt; to read, and ICollection&lt;T&gt; to add/remove edges.
+ * Frontenac.Gremlinq.dll is now automatically references when installing nuget package.
+
 * 2014-03-22
  * Frontenac.Blueprints 2.3.8 released.
  * Half of [Gremlinq documentation](https://github.com/Loupi/Frontenac/wiki/Gremlinq) has been written.

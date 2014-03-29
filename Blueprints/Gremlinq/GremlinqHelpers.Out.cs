@@ -111,8 +111,9 @@ namespace Frontenac.Gremlinq
 
         public static IEnumerable<IVertex<TOutModel>> Out<TInModel, TOutModel, TEdgeModel>(
             this IVertex<TInModel> vertex,
-            Expression<Func<TInModel, IEnumerable<KeyValuePair<TEdgeModel, TOutModel>>>> propertySelector) 
+            Expression<Func<TInModel, IEnumerable<KeyValuePair<TEdgeModel, TOutModel>>>> propertySelector)
             where TOutModel : class
+            where TEdgeModel : class 
         {
             Contract.Requires(vertex != null);
             Contract.Requires(propertySelector != null);
@@ -123,8 +124,10 @@ namespace Frontenac.Gremlinq
 
         public static IEnumerable<IVertex<TOutModel>> Out<TOutModel, TInModel, TEdgeModel>(
             this IVertex<TInModel> vertex,
-            Expression<Func<KeyValuePair<TEdgeModel, TInModel>, TOutModel>> propertySelector) 
+            Expression<Func<KeyValuePair<TEdgeModel, TInModel>, TOutModel>> propertySelector)
             where TOutModel : class
+            where TEdgeModel : class
+            where TInModel : class  
         {
             Contract.Requires(vertex != null);
             Contract.Requires(propertySelector != null);
@@ -135,8 +138,10 @@ namespace Frontenac.Gremlinq
 
         public static IEnumerable<IVertex<TOutModel>> Out<TOutModel, TInModel, TEdgeModel>(
             this IVertex<TInModel> vertex,
-            Expression<Func<IEnumerable<KeyValuePair<TEdgeModel, TInModel>>, TOutModel>> propertySelector) 
+            Expression<Func<IEnumerable<KeyValuePair<TEdgeModel, TInModel>>, TOutModel>> propertySelector)
             where TOutModel : class
+            where TEdgeModel : class 
+            where TInModel : class 
         {
             Contract.Requires(vertex != null);
             Contract.Requires(propertySelector != null);
@@ -172,6 +177,19 @@ namespace Frontenac.Gremlinq
         public static IVertex<TOutModel> Out<TModel, TOutModel>(
             this IEdge<TModel> edge,
             Expression<Func<TModel, TOutModel>> edgePropertySelector) 
+            where TOutModel : class
+        {
+            Contract.Requires(edge != null);
+            Contract.Requires(edgePropertySelector != null);
+            Contract.Ensures(Contract.Result<IVertex<TOutModel>>() != null);
+
+            var vertex = edge.GetVertex(Direction.Out);
+            return new Vertex<TOutModel>(vertex, vertex.Proxy<TOutModel>());
+        }
+
+        public static IVertex<TOutModel> Out<TModel, TOutModel>(
+            this IEdge<TModel> edge,
+            Expression<Func<TModel, IEnumerable<TOutModel>>> edgePropertySelector)
             where TOutModel : class
         {
             Contract.Requires(edge != null);

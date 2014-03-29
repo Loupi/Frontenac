@@ -111,8 +111,9 @@ namespace Frontenac.Gremlinq
 
         public static IEnumerable<IEdge<TEdgeModel>> OutE<TInModel, TOutModel, TEdgeModel>(
             this IVertex<TInModel> vertex,
-            Expression<Func<TInModel, IEnumerable<KeyValuePair<TEdgeModel, TOutModel>>>> propertySelector) 
+            Expression<Func<TInModel, IEnumerable<KeyValuePair<TEdgeModel, TOutModel>>>> propertySelector)
             where TEdgeModel : class
+            where TOutModel : class 
         {
             Contract.Requires(vertex != null);
             Contract.Requires(propertySelector != null);
@@ -123,8 +124,9 @@ namespace Frontenac.Gremlinq
 
         public static IEnumerable<IEdge<TEdgeModel>> OutE<TInModel, TEdgeModel>(
             this IVertex<TInModel> vertex,
-            Expression<Func<KeyValuePair<TEdgeModel, TInModel>, TEdgeModel>> propertySelector) 
+            Expression<Func<KeyValuePair<TEdgeModel, TInModel>, TEdgeModel>> propertySelector)
             where TEdgeModel : class
+            where TInModel : class 
         {
             Contract.Requires(vertex != null);
             Contract.Requires(propertySelector != null);
@@ -159,8 +161,9 @@ namespace Frontenac.Gremlinq
 
         public static IEnumerable<IEdge<TEdgeModel>> OutE<TInModel, TOutModel, TEdgeModel>(
             this IVertex<TInModel> vertex,
-            params Expression<Func<TInModel, KeyValuePair<TEdgeModel, TOutModel>>>[] edgePropertySelectors) 
+            params Expression<Func<TInModel, KeyValuePair<TEdgeModel, TOutModel>>>[] edgePropertySelectors)
             where TEdgeModel : class
+            where TOutModel : class 
         {
             Contract.Requires(vertex != null);
             Contract.Requires(edgePropertySelectors != null);
@@ -171,8 +174,9 @@ namespace Frontenac.Gremlinq
 
         public static IEnumerable<IEdge<TEdgeModel>> OutE<TInModel, TOutModel, TEdgeModel>(
             this IEnumerable<IVertex<TInModel>> vertices,
-            params Expression<Func<TInModel, KeyValuePair<TEdgeModel, TOutModel>>>[] edgePropertySelectors) 
+            params Expression<Func<TInModel, KeyValuePair<TEdgeModel, TOutModel>>>[] edgePropertySelectors)
             where TEdgeModel : class
+            where TOutModel : class 
         {
             Contract.Requires(vertices != null);
             Contract.Requires(edgePropertySelectors != null);

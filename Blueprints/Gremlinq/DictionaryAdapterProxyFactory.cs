@@ -1,6 +1,7 @@
 ﻿using System;
+using System.Collections;
 using Castle.Components.DictionaryAdapter;
-using Frontenac.Blueprints;
+using Frontenac.Gremlinq.RelationAccessors;
 
 namespace Frontenac.Gremlinq
 {
@@ -11,10 +12,10 @@ namespace Frontenac.Gremlinq
 
         public DictionaryAdapterProxyFactory()
         {
-            _propsDesc.AddBehavior(new DictionaryPropertyConverter());
+            _propsDesc.AddBehavior(new ElementPropertyGetterBehavior());
         }
 
-        public object Create(IElement element, Type proxyType)
+        public object Create(IDictionary element, Type proxyType)
         {
             return _dictionaryAdapterFactory.GetAdapter(proxyType, element, _propsDesc);
         }

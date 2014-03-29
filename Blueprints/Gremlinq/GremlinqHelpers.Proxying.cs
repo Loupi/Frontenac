@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Diagnostics.Contracts;
 using System.Linq;
@@ -61,16 +62,55 @@ namespace Frontenac.Gremlinq
             Contract.Requires(element != null);
             Contract.Ensures(Contract.Result<TModel>() != null);
 
-            Type type;
-            var proxyType = GremlinqContext.Current.TypeProvider.TryGetType(element, out type) ? type : typeof(TModel);
+            var proxy = (TModel)element.ProxyBestFit(typeof(TModel));
+            return proxy;
+        }
 
-            if(proxyType == null)
+        public static TModel Transient<TModel>()
+            where TModel : class
+        {
+            Contract.Ensures(Contract.Result<TModel>() != null);
+
+            var dictionary = new Dictionary<string, object>();
+            var proxy = (TModel)GremlinqContext.Current.ProxyFactory.Create(dictionary, typeof(TModel));
+            return proxy;
+        }
+
+        public static TModel Transient<TModel>(this IGraph graph)
+            where TModel : class
+        {
+            Contract.Ensures(Contract.Result<TModel>() != null);
+
+            return Transient<TModel>();
+        }
+
+        public static TModel Transient<TModel>(this IGraph graph, Action<TModel> assignMembers)
+            where TModel : class
+        {
+            Contract.Requires(assignMembers != null);
+            Contract.Ensures(Contract.Result<TModel>() != null);
+
+            var proxy = Transient<TModel>(graph);
+            assignMembers(proxy);
+            return proxy;
+        }
+
+        public static object ProxyBestFit(this IElement element, Type baseType)
+        {
+            Contract.Requires(element != null);
+            Contract.Requires(baseType != null);
+            Contract.Ensures(Contract.Result<object>() != null);
+
+            Type type;
+            var proxyType = GremlinqContext.Current.TypeProvider.TryGetType(element, out type) ? type : baseType;
+
+            if (proxyType == null)
                 throw new NullReferenceException("No type present on element");
 
-            if(!typeof(TModel).IsAssignableFrom(proxyType)) 
-                throw  new InvalidOperationException(string.Format("Element type {0} does not match TModel {1}.", type, typeof(TModel)));
+            if (!baseType.IsAssignableFrom(proxyType))
+                throw new InvalidOperationException(string.Format("Element type {0} does not match TModel {1}.", type, baseType));
 
-            var proxy = (TModel)GremlinqContext.Current.ProxyFactory.Create(element, proxyType);
+            var proxy = GremlinqContext.Current.ProxyFactory.Create(element, proxyType);
             return proxy;
         }
 

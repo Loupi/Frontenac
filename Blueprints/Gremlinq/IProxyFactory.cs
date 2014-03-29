@@ -1,6 +1,6 @@
 ﻿using System;
+using System.Collections;
 using System.Diagnostics.Contracts;
-using Frontenac.Blueprints;
 using Frontenac.Gremlinq.Contracts;
 
 namespace Frontenac.Gremlinq
@@ -8,6 +8,6 @@ namespace Frontenac.Gremlinq
     [ContractClass(typeof(ProxyFactoryContract))]
     public interface  IProxyFactory
     {
-        object Create(IElement element, Type proxyType);
+        object Create(IDictionary element, Type proxyType);
     }
 }

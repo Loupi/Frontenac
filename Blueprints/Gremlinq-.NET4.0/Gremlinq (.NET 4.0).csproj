@@ -227,9 +227,6 @@
     <Compile Include="..\Gremlinq\DictionaryAdapterProxyFactory.cs">
       <Link>DictionaryAdapterProxyFactory.cs</Link>
     </Compile>
-    <Compile Include="..\Gremlinq\DictionaryPropertyConverter.cs">
-      <Link>DictionaryPropertyConverter.cs</Link>
-    </Compile>
     <Compile Include="..\Gremlinq\DictionaryTypeProvider.cs">
       <Link>DictionaryTypeProvider.cs</Link>
     </Compile>
@@ -287,6 +284,9 @@
     <Compile Include="..\Gremlinq\IElement.cs">
       <Link>IElement.cs</Link>
     </Compile>
+    <Compile Include="..\Gremlinq\IgnoreAttribute.cs">
+      <Link>IgnoreAttribute.cs</Link>
+    </Compile>
     <Compile Include="..\Gremlinq\IGremlinqContextFactory.cs">
       <Link>IGremlinqContextFactory.cs</Link>
     </Compile>
@@ -304,6 +304,33 @@
     </Compile>
     <Compile Include="..\Gremlinq\Query.cs">
       <Link>Query.cs</Link>
+    </Compile>
+    <Compile Include="..\Gremlinq\RelationAccessors\EdgeRelationAccessor.cs">
+      <Link>RelationAccessors\EdgeRelationAccessor.cs</Link>
+    </Compile>
+    <Compile Include="..\Gremlinq\RelationAccessors\EdgeVertexPairRelationAccessor.cs">
+      <Link>RelationAccessors\EdgeVertexPairRelationAccessor.cs</Link>
+    </Compile>
+    <Compile Include="..\Gremlinq\RelationAccessors\EdgeVertexRelationAccessor.cs">
+      <Link>RelationAccessors\EdgeVertexRelationAccessor.cs</Link>
+    </Compile>
+    <Compile Include="..\Gremlinq\RelationAccessors\EdgeVertexRelationCollection.cs">
+      <Link>RelationAccessors\EdgeVertexRelationCollection.cs</Link>
+    </Compile>
+    <Compile Include="..\Gremlinq\RelationAccessors\ElementPropertyGetterBehavior.cs">
+      <Link>RelationAccessors\ElementPropertyGetterBehavior.cs</Link>
+    </Compile>
+    <Compile Include="..\Gremlinq\RelationAccessors\RelationAccessor.cs">
+      <Link>RelationAccessors\RelationAccessor.cs</Link>
+    </Compile>
+    <Compile Include="..\Gremlinq\RelationAccessors\VertexRelationAccessor.cs">
+      <Link>RelationAccessors\VertexRelationAccessor.cs</Link>
+    </Compile>
+    <Compile Include="..\Gremlinq\RelationAccessors\VertexRelationCollection.cs">
+      <Link>RelationAccessors\VertexRelationCollection.cs</Link>
+    </Compile>
+    <Compile Include="..\Gremlinq\RelationAttribute.cs">
+      <Link>RelationAttribute.cs</Link>
     </Compile>
     <Compile Include="..\Gremlinq\Vertex.cs">
       <Link>Vertex.cs</Link>

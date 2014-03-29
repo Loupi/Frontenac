@@ -1,4 +1,5 @@
-﻿using Frontenac.Grave.Geo;
+﻿using System.Collections.Generic;
+using Frontenac.Grave.Geo;
 
 namespace Frontenac.Grave.Entities
 {
@@ -8,5 +9,6 @@ namespace Frontenac.Grave.Entities
         GeoPoint Place { get; set; }
 
         ICharacter Opponent { get; }
+        IEnumerable<ICharacter> BothOpponent { get; }
     }
 }

@@ -30,7 +30,14 @@ namespace Frontenac.Grave
 
     public static class Program
     {
-        public interface IChildren
+        public interface IEntityWithId
+        {
+            //Id is a special property. It maps directly to the enderlying vertex/edge id.
+            //You can adjust the type to the one used by your graph database implementation.
+            int Id { get; }
+        }
+
+        public interface IChildren : IEntityWithId
         {
             bool IsAdopted { get; set; }
         }
@@ -40,31 +47,46 @@ namespace Frontenac.Grave
             float Heirloom { get; set; }
         }
 
-        public interface IJob
+        public interface IJob : IEntityWithId
         {
             string Title { get; set; }
             string Domain { get; set; }
+
+            //A relation pointing to the persons with this job.
+            //The direction is overriden to In, and the label is overriden with "Job".
+            [Relation(Direction.In, "Job")]
+            IEnumerable<IPerson> Persons { get; set; }
         }
 
-        public interface IPerson
+        public interface IPerson : IEntityWithId
         {
             string Name { get; set; }
             int Age { get; set; }
 
-            //A relation pointing to a father vertex. The edge is not typed, and it's in vertex is of type IPerson.
+            //A relation pointing to a father vertex. The edge is not typed, and it's out vertex is of type IPerson.
+            //Default direction is Out. Uses the property name "Children" for label.
             IPerson Father { get; set; }
 
             //A relation pointing to a mother vertex. The edge is of type IChildren, and it's in vertex is of type IPerson.
             KeyValuePair<IChildren, IPerson> Mother { get; set; }
             
             //A relation pointing to children vertices. The edge is of type IChildren, and it's in vertex is of type IPerson
-            IEnumerable<KeyValuePair<IChildren, IPerson>> Children { get; set; }
+            //Default direction is Out. Uses the property name "Children" for label.
+            ICollection<KeyValuePair<IChildren, IPerson>> Children { get; set; }
+
+            //Relation direction and label is overriden with RelationAttribute.
+            [Relation(Direction.In, "Children")]
+            IEnumerable<IPerson> Parents { get; set; }
+
+            //You can override the same relation with wrapped models too.
+            [Relation(Direction.In, "Children")]
+            IEnumerable<IVertex<IPerson>> WrappedParents { get; set; }
             
             //A relation pointing to job vertices. The edge is not typed, and it's in vertex is of type IJob
-            IEnumerable<IJob> Job { get; set; }
+            ICollection<IJob> Job { get; set; }
         }
 
-        private static void Test()
+        private static void TestLambda()
         {
             var graph = new TinkerGraph();
 
@@ -72,36 +94,74 @@ namespace Frontenac.Grave
             var loupi = graph.AddVertex<IPerson>(person => { person.Name = "Loupi"; person.Age = 34; });
             var pierre = graph.AddVertex<IPerson>(person => { person.Name = "Pierre"; person.Age = 62; });
             var helene = graph.AddVertex<IPerson>(person => { person.Name = "Helene"; person.Age = 55; });
+            var claude = graph.AddVertex<IPerson>(person => { person.Name = "Claude"; person.Age = 57; });
+            var mimi = graph.AddVertex<IPerson>(person => { person.Name = "Mimi"; person.Age = 3; });
+
 
             //Add 2 jobs vertex in the graph
             var developer = graph.AddVertex<IJob>(job => { job.Title = "Developer"; job.Domain = "IT"; });
             var scrumMaster = graph.AddVertex<IJob>(job => { job.Title = "ScrumMaster"; job.Domain = "IT"; });
-            
-            loupi.AddEdge(person => person.Father, pierre);
-            loupi.AddEdge(person => person.Mother, helene);
 
+            //Loupi is both a developer and a scrummaster.
             loupi.AddEdge(person => person.Job, developer);
             loupi.AddEdge(person => person.Job, scrumMaster);
 
+            //Helene and Pierre are Loupi's parents. Note that they are divorced.
+            loupi.AddEdge(person => person.Father, pierre);
+            loupi.AddEdge(person => person.Mother, helene);
             pierre.AddEdge(person => person.Children, loupi);
-            helene.AddEdge(person => person.Children, loupi, children => children.IsAdopted = false);
             helene.AddEdge(person => person.Children, loupi, (IHeirChildren heir) => heir.Heirloom = 125000.0f);
-            
-            var rawPerson = graph.V("Name", "Loupi").Single();
-            var wrappedPerson = graph.V<IPerson, string>(p => p.Name, "Loupi").Single();
 
-            var rawFather = rawPerson.Out("Father").Single();
-            var father = wrappedPerson.Out(p => p.Father).Single();
+            //Helene is now with Claude, and they adopted Mimi.
+            mimi.AddEdge(person => person.Father, claude);
+            mimi.AddEdge(person => person.Mother, helene);
+            claude.AddEdge(person => person.Children, mimi, children => children.IsAdopted = true);
+            helene.AddEdge(person => person.Children, mimi, children => children.IsAdopted = true);
+        }
 
-            var rawChildrens = rawPerson.In("Children").ToArray();
-            var childrens = wrappedPerson.In(p => p.Children).ToArray();
+        private static void Test()
+        {
+            var graph = new TinkerGraph();
+            try
+            {
+                //Add 3 persons vertex in the graph.
+                var loupi = graph.AddVertex<IPerson>(person => { person.Name = "Loupi"; person.Age = 34; }).Model;
+                var pierre = graph.AddVertex<IPerson>(person => { person.Name = "Pierre"; person.Age = 62; }).Model;
+                var helene = graph.AddVertex<IPerson>(person => { person.Name = "Helene"; person.Age = 55; }).Model;
+                var claude = graph.AddVertex<IPerson>(person => { person.Name = "Claude"; person.Age = 57; }).Model;
+                var mimi = graph.AddVertex<IPerson>(person => { person.Name = "Mimi"; person.Age = 3; }).Model;
 
-            var rawChildsOfFather = pierre.In("Father").ToArray();
-            var childsOfFather = pierre.In(p => p.Father).ToArray();
+                //Add 2 jobs vertex in the graph
+                var developer = graph.AddVertex<IJob>(job => { job.Title = "Developer"; job.Domain = "IT"; }).Model;
+                var scrumMaster = graph.AddVertex<IJob>(job => { job.Title = "ScrumMaster"; job.Domain = "IT"; }).Model;
 
-            
-            /*var saturn = graph.AddVertex<ITitan>(t => { t.Name = "Saturn"; t.Age = 10000; });
-            var jupiter = graph.AddVertex<IGod>(t => { t.Name = "Jupiter"; t.Age = 5000; });*/
+                //Loupi is both a developer and a scrummaster.
+                loupi.Job.Add(developer);
+                loupi.Job.Add(scrumMaster);
+
+                //Helene and Pierre are Loupi's parents. Note that they are divorced.
+                loupi.Father = pierre;
+                loupi.Mother = new KeyValuePair<IChildren, IPerson>(null, helene);
+                pierre.Children.Add(loupi);
+                helene.Children.Add(loupi, (IHeirChildren heir) => heir.Heirloom = 125000.0f);
+
+                //Helene is now with Claude, and they adopted Mimi.
+                mimi.Father = claude;
+                mimi.Mother = new KeyValuePair<IChildren, IPerson>(null, helene);
+                claude.Children.Add(mimi, children => children.IsAdopted = true);
+                helene.Children.Add(graph.Transient<IChildren>(children => children.IsAdopted = true), mimi);
+
+                var allDevelopers = developer.Persons.ToList();
+                var heleneChildrenIds = helene.Children.Select(pair => pair.Value.Id).ToList();
+                var mimiParents = mimi.Parents.ToList();
+                var loupiParents = loupi.Parents.ToList();
+                var intersectedParents = loupi.WrappedParents.Intersect(mimi.WrappedParents).ToList();
+                var joinedParents = mimiParents.Join(loupiParents, person => person.Id, person => person.Id, (person, person1) => person).ToList();
+            }
+            finally
+            {
+                graph.Shutdown();
+            }
         }
 
         private static void Main()
@@ -158,6 +218,11 @@ namespace Frontenac.Grave
                     .Has(t => t.Place, new GeoCircle(37.97, 23.72, 50))
                     .Edges()
                     .ToArray();
+
+                var opps = eventsNearAthen[0].Model.Opponent;
+                var oopps = eventsNearAthen[0].Model.BothOpponent.ToArray();
+                var vvv = eventsNearAthen[0].Model.BothOpponent.ElementAt(0);
+                var vvv1 = eventsNearAthen[0].Model.BothOpponent.ElementAt(1);
                 
                 var opponents = eventsNearAthen
                     .Select(t => new[]

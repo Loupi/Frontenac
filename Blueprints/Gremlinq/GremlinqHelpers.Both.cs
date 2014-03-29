@@ -24,5 +24,23 @@ namespace Frontenac.Gremlinq
 
             return vertex.In(branchFactor, labels).Concat(vertex.Out(branchFactor, labels));
         }
+
+        public static IEnumerable<IEdge> BothE(this IVertex vertex, params string[] labels)
+        {
+            Contract.Requires(vertex != null);
+            Contract.Requires(labels != null);
+            Contract.Ensures(Contract.Result<IEnumerable<IEdge>>() != null);
+
+            return vertex.InE(labels).Concat(vertex.OutE(labels));
+        }
+
+        public static IEnumerable<IEdge> BothE(this IVertex vertex, int branchFactor, params string[] labels)
+        {
+            Contract.Requires(vertex != null);
+            Contract.Requires(labels != null);
+            Contract.Ensures(Contract.Result<IEnumerable<IEdge>>() != null);
+
+            return vertex.InE(branchFactor, labels).Concat(vertex.OutE(branchFactor, labels));
+        }
     }
 }
