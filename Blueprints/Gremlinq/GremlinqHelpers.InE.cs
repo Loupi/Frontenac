@@ -113,6 +113,7 @@ namespace Frontenac.Gremlinq
             this IVertex<TOutModel> vertex,
             Expression<Func<TOutModel, IEnumerable<KeyValuePair<TEdgeModel, TInModel>>>> propertySelector)
             where TEdgeModel : class
+            where TInModel : class 
         {
             Contract.Requires(vertex != null);
             Contract.Requires(propertySelector != null);
@@ -161,6 +162,7 @@ namespace Frontenac.Gremlinq
             this IVertex<TOutModel> vertex,
             params Expression<Func<TOutModel, KeyValuePair<TEdgeModel, TInModel>>>[] edgePropertySelectors)
             where TEdgeModel : class
+            where TInModel : class 
         {
             Contract.Requires(vertex != null);
             Contract.Requires(edgePropertySelectors != null);
@@ -173,6 +175,7 @@ namespace Frontenac.Gremlinq
             this IEnumerable<IVertex<TOutModel>> vertices,
             params Expression<Func<TOutModel, KeyValuePair<TEdgeModel, TInModel>>>[] edgePropertySelectors)
             where TEdgeModel : class
+            where TInModel : class 
         {
             Contract.Requires(vertices != null);
             Contract.Requires(edgePropertySelectors != null);

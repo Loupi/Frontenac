@@ -111,7 +111,7 @@ namespace Frontenac.Gremlinq
             LoadTypesVertex(element.Graph);
 
             object id;
-            if (!element.TryGetValue(_typePropertyName, out id) || !Portability.IsNumber(id))
+            if (!element.TryGetValue(_typePropertyName, out id))
             {
                 type = null;
                 return false;
@@ -127,6 +127,11 @@ namespace Frontenac.Gremlinq
                 throw new KeyNotFoundException(id.ToString());
 
             return true;
+        }
+
+        public virtual bool Knows(Type type)
+        {
+            return _typesBuffer.ContainsKey(type) || _typesBuffer.Keys.Any(t => t.IsAssignableFrom(type));
         }
     }
 }

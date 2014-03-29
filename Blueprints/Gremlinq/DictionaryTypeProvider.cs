@@ -47,5 +47,10 @@ namespace Frontenac.Gremlinq
 
             return true;
         }
+
+        public virtual bool Knows(Type type)
+        {
+            return _elementTypesToIds.ContainsKey(type) || _elementTypesToIds.Keys.Any(t => t.IsAssignableFrom(type));
+        }
     }
 }

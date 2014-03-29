@@ -13,6 +13,7 @@
 		</dependencies>
 		<references>
 			<reference file="Frontenac.Blueprints.dll" />
+			<reference file="Frontenac.Gremlinq.dll" />
 		</references>
 	</metadata>
 	<files>

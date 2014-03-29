@@ -8,7 +8,8 @@ namespace Frontenac.Gremlinq
 {
     public static partial class GremlinqHelpers
     {
-        public static IVertex<TModel> AddVertex<TModel>(this IGraph graph) where TModel : class
+        public static IVertex<TModel> AddVertex<TModel>(this IGraph graph) 
+            where TModel : class
         {
             Contract.Requires(graph != null);
             Contract.Ensures(Contract.Result<IVertex<TModel>>() != null);
@@ -18,7 +19,8 @@ namespace Frontenac.Gremlinq
             return vertex.As<TModel>();
         }
 
-        public static IVertex<TModel> AddVertex<TModel>(this IGraph graph, Action<TModel> assignMembers) where TModel : class
+        public static IVertex<TModel> AddVertex<TModel>(this IGraph graph, Action<TModel> assignMembers) 
+            where TModel : class
         {
             Contract.Requires(graph != null);
             Contract.Requires(assignMembers != null);
@@ -58,7 +60,9 @@ namespace Frontenac.Gremlinq
         public static IEdge<TModel> AddEdge<TOutModel, TInModel, TModel>(
             this IVertex<TOutModel> outVertex,
             Expression<Func<TOutModel, KeyValuePair<TModel, TInModel>>> edgePropertySelector,
-            IVertex<TInModel> inVertex) where TModel : class
+            IVertex<TInModel> inVertex) 
+            where TModel : class
+            where TInModel : class 
         {
             Contract.Requires(outVertex != null);
             Contract.Requires(edgePropertySelector != null);
@@ -73,7 +77,9 @@ namespace Frontenac.Gremlinq
         public static IEdge<TModel> AddEdge<TOutModel, TInModel, TModel>(
             this IVertex<TOutModel> outVertex,
             Expression<Func<TOutModel, IEnumerable<KeyValuePair<TModel, TInModel>>>> edgePropertySelector,
-            IVertex<TInModel> inVertex) where TModel : class
+            IVertex<TInModel> inVertex) 
+            where TModel : class
+            where TInModel : class 
         {
             Contract.Requires(outVertex != null);
             Contract.Requires(edgePropertySelector != null);
@@ -91,6 +97,7 @@ namespace Frontenac.Gremlinq
             IVertex<TInModel> inVertex,
             Action<TModel> assignMembers) 
             where TModel : class
+            where TInModel : class 
         {
             Contract.Requires(outVertex != null);
             Contract.Requires(edgePropertySelector != null);
@@ -109,6 +116,7 @@ namespace Frontenac.Gremlinq
             IVertex<TInModel> inVertex,
             Action<TEdgeModel> assignMembers)
             where TModel : class
+            where TInModel : class 
             where TEdgeModel : class, TModel
         {
             Contract.Requires(outVertex != null);
@@ -126,7 +134,9 @@ namespace Frontenac.Gremlinq
             this IVertex<TOutModel> outVertex,
             Expression<Func<TOutModel, IEnumerable<KeyValuePair<TModel, TInModel>>>> edgePropertySelector,
             IVertex<TInModel> inVertex,
-            Action<TModel> assignMembers) where TModel : class
+            Action<TModel> assignMembers)
+            where TModel : class
+            where TInModel : class 
         {
             Contract.Requires(outVertex != null);
             Contract.Requires(edgePropertySelector != null);
@@ -143,8 +153,9 @@ namespace Frontenac.Gremlinq
             this IVertex<TOutModel> outVertex,
             Expression<Func<TOutModel, IEnumerable<KeyValuePair<TModel, TInModel>>>> edgePropertySelector,
             IVertex<TInModel> inVertex,
-            Action<TEdgeModel> assignMembers) 
+            Action<TEdgeModel> assignMembers)
             where TModel : class
+            where TInModel : class 
             where TEdgeModel : class, TModel
         {
             Contract.Requires(outVertex != null);
@@ -155,6 +166,55 @@ namespace Frontenac.Gremlinq
             var edge = outVertex.AddEdge(edgePropertySelector.Resolve(), inVertex);
             GremlinqContext.Current.TypeProvider.SetType(edge, typeof(TEdgeModel));
             return edge.As<TEdgeModel>();
+        }
+
+        public static void Add<TEdgeModel, TVertexModel>(this ICollection<KeyValuePair<TEdgeModel, TVertexModel>> relation,
+                                                         TVertexModel vertex)
+            where TEdgeModel : class
+            where TVertexModel : class
+        {
+            Contract.Requires(relation != null);
+
+            relation.Add(new KeyValuePair<TEdgeModel, TVertexModel>(null, vertex));
+        }
+
+        public static void Add<TEdgeModel, TVertexModel>(this ICollection<KeyValuePair<TEdgeModel, TVertexModel>> relation, 
+                                                         TEdgeModel edge, TVertexModel vertex)
+            where TEdgeModel : class
+            where TVertexModel : class
+        {
+            Contract.Requires(relation != null);
+
+            relation.Add(new KeyValuePair<TEdgeModel, TVertexModel>(edge, vertex));
+        }
+
+        public static void Add<TEdgeModel, TVertexModel>(this ICollection<KeyValuePair<TEdgeModel, TVertexModel>> relation,
+                                                         TVertexModel vertex, Action<TEdgeModel> assignEdge)
+            where TEdgeModel : class
+            where TVertexModel : class
+        {
+            Contract.Requires(relation != null);
+            Contract.Requires(assignEdge != null);
+
+            var edgeModel = Transient<TEdgeModel>();
+            assignEdge(edgeModel);
+
+            relation.Add(new KeyValuePair<TEdgeModel, TVertexModel>(edgeModel, vertex));
+        }
+
+        public static void Add<TEdgeModel, TDerivedEdgeModel, TVertexModel>(this ICollection<KeyValuePair<TEdgeModel, TVertexModel>> relation,
+                                                                            TVertexModel vertex, Action<TDerivedEdgeModel> assignEdge)
+            where TEdgeModel : class
+            where TVertexModel : class
+            where TDerivedEdgeModel: class, TEdgeModel
+        {
+            Contract.Requires(relation != null);
+            Contract.Requires(assignEdge != null);
+
+            var edgeModel = Transient<TDerivedEdgeModel>();
+            assignEdge(edgeModel);
+
+            relation.Add(new KeyValuePair<TEdgeModel, TVertexModel>(edgeModel, vertex));
         }
     }
 }

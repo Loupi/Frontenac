@@ -1,13 +1,13 @@
 ﻿using System;
+using System.Collections;
 using System.Diagnostics.Contracts;
-using Frontenac.Blueprints;
 
 namespace Frontenac.Gremlinq.Contracts
 {
     [ContractClassFor(typeof(IProxyFactory))]
     public abstract class ProxyFactoryContract : IProxyFactory
     {
-        public object Create(IElement element, Type type)
+        public object Create(IDictionary element, Type type)
         {
             Contract.Requires(element != null);
             Contract.Requires(type != null);
