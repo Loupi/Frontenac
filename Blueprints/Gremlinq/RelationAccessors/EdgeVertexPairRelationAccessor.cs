@@ -12,15 +12,15 @@ namespace Frontenac.Gremlinq.RelationAccessors
     internal class EdgeVertexPairRelationAccessor : RelationAccessor
     {
         delegate void AccessCollectionDelegate(IElement element, string key, RelationAccessor accessor, object value);
-        readonly AccessCollectionDelegate AddMethod;
-        readonly AccessCollectionDelegate RemoveMethod;
+        readonly AccessCollectionDelegate _addMethod;
+        readonly AccessCollectionDelegate _removeMethod;
 
         public EdgeVertexPairRelationAccessor(Type modelType, Type edgeType, bool isEnumerable, bool isWrapped, bool isCollection)
             : base(modelType, isEnumerable, isCollection, isWrapped, new[] { edgeType, modelType })
         {
             var models = new[] {edgeType, modelType};
-            AddMethod = (AccessCollectionDelegate)CreateMagicMethod("Add", typeof(AccessCollectionDelegate), models);
-            RemoveMethod = (AccessCollectionDelegate)CreateMagicMethod("Remove", typeof(AccessCollectionDelegate), models);
+            _addMethod = (AccessCollectionDelegate)CreateMagicMethod("Add", typeof(AccessCollectionDelegate), models);
+            _removeMethod = (AccessCollectionDelegate)CreateMagicMethod("Remove", typeof(AccessCollectionDelegate), models);
         }
 
         private static object Convert<TEdgeModel, TVertexModel>(IEnumerable elements, bool isWrapped, bool isEnumerable)
@@ -104,7 +104,7 @@ namespace Frontenac.Gremlinq.RelationAccessors
 
             var oldValue = dictionaryAdapter.GetProperty(key, false) as IDictionaryAdapter;
             if (oldValue != null)
-                RemoveMethod(element, key, this, oldValue);
+                _removeMethod(element, key, this, oldValue);
 
             string label;
             var direction = DirectionFromKey(key, out label);
@@ -134,7 +134,7 @@ namespace Frontenac.Gremlinq.RelationAccessors
                 vertex.Graph.RemoveEdge(edge);
             }
 
-            AddMethod(element, key, this, value);
+            _addMethod(element, key, this, value);
         }
     }
 }

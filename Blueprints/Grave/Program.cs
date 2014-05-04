@@ -32,7 +32,7 @@ namespace Frontenac.Grave
     {
         public interface IEntityWithId
         {
-            //Id is a special property. It maps directly to the enderlying vertex/edge id.
+            //Id is a special property. It maps directly to the underlying vertex/edge id.
             //You can adjust the type to the one used by your graph database implementation.
             int Id { get; }
         }
@@ -219,10 +219,10 @@ namespace Frontenac.Grave
                     .Edges()
                     .ToArray();
 
-                var opps = eventsNearAthen[0].Model.Opponent;
+                /*var opps = eventsNearAthen[0].Model.Opponent;
                 var oopps = eventsNearAthen[0].Model.BothOpponent.ToArray();
                 var vvv = eventsNearAthen[0].Model.BothOpponent.ElementAt(0);
-                var vvv1 = eventsNearAthen[0].Model.BothOpponent.ElementAt(1);
+                var vvv1 = eventsNearAthen[0].Model.BothOpponent.ElementAt(1);*/
                 
                 var opponents = eventsNearAthen
                     .Select(t => new[]

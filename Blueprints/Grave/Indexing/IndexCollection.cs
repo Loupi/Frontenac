@@ -12,8 +12,7 @@ namespace Frontenac.Grave.Indexing
         private readonly string _indicesColumnName;
         private readonly bool _isUserIndex;
 
-        public IndexCollection(string indicesColumnName, Type indexType, bool isUserIndex,
-                               IndexingService indexingService)
+        public IndexCollection(string indicesColumnName, Type indexType, bool isUserIndex, IndexingService indexingService)
         {
             Contract.Requires(!string.IsNullOrWhiteSpace(indicesColumnName));
             Contract.Requires(IndexingService.IsValidIndexType(indexType));

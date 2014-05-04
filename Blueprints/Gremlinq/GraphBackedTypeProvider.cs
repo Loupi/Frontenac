@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Diagnostics.Contracts;
 using System.Linq;
+using System.Runtime.CompilerServices;
 using Frontenac.Blueprints;
 
 namespace Frontenac.Gremlinq
@@ -11,14 +12,79 @@ namespace Frontenac.Gremlinq
     {
         private const string GremlinqVertexProperty = "Frontenac_Gremlinq";
         private const string TypesIndexName = "Types";
-        private const string TypeLabelName = "__type__";
-        private const string TypePropertyName = "__type__";
-
-        private readonly Dictionary<Type, object> _typesBuffer = new Dictionary<Type, object>();
+        private const string TypeLabelName = "__gtype__";
+        private const string TypePropertyName = "__gtype__";
         private readonly string _typePropertyName;
 
-        private IGraph _graph;
-        private IVertex _typesVertex;
+        readonly ConditionalWeakTable<IGraph, PerGraphInstanceTypes>  _perGraphInstanceTypes 
+            = new ConditionalWeakTable<IGraph, PerGraphInstanceTypes>();
+        
+// ReSharper disable ClassNeverInstantiated.Local
+        class PerGraphInstanceTypes
+// ReSharper restore ClassNeverInstantiated.Local
+        {
+            public readonly Dictionary<Type, object> TypesBuffer = new Dictionary<Type, object>();
+            public IVertex TypesVertex;
+
+            private static IVertex GetTypesVertex(IGraph graph, string typePropertyName)
+            {
+                IVertex vertex = null;
+                var indexableGraph = graph as IIndexableGraph;
+                var keyIndexableGraph = graph as IKeyIndexableGraph;
+
+                if (indexableGraph != null && graph.Features.SupportsVertexIndex)
+                {
+                    var index = indexableGraph.GetIndex(GremlinqVertexProperty, typeof(IVertex)) ??
+                                indexableGraph.CreateIndex(GremlinqVertexProperty, typeof(IVertex));
+
+                    vertex = Enumerable.OfType<IVertex>(index.Get(TypesIndexName, typePropertyName)).SingleOrDefault();
+                    if (vertex == null)
+                    {
+                        vertex = graph.AddVertex(null);
+                        index.Put(TypesIndexName, typePropertyName, vertex);
+                    }
+                }
+                else if (keyIndexableGraph != null && graph.Features.SupportsVertexKeyIndex)
+                {
+                    if (!keyIndexableGraph.GetIndexedKeys(typeof(IVertex)).Contains(GremlinqVertexProperty))
+                        keyIndexableGraph.CreateKeyIndex(GremlinqVertexProperty, typeof(IVertex));
+                }
+
+                return vertex ?? (graph.V(GremlinqVertexProperty, typePropertyName).SingleOrDefault());
+            }
+
+            public void LoadTypesVertex(IGraph graph, string typePropertyName)
+            {
+                if (TypesVertex != null) return;
+
+                var vertex = GetTypesVertex(graph, typePropertyName);
+
+                if (vertex == null)
+                {
+                    vertex = graph.AddVertex(null);
+                    vertex.SetProperty(GremlinqVertexProperty, typePropertyName);
+                }
+                else
+                {
+                    foreach (var typeVertex in vertex.Out(TypeLabelName))
+                    {
+                        var property = typeVertex.GetProperty(TypePropertyName);
+                        if (property == null) continue;
+                        var type = Type.GetType(property.ToString(), false);
+                        if (type != null && !TypesBuffer.Keys.Contains(type))
+                        {
+                            TypesBuffer.Add(type, typeVertex.Id);
+                        }
+                        else
+                        {
+                            Debug.WriteLine("Cannot load type from {0} {1}", typeVertex, property);
+                        }
+                    }
+                }
+
+                TypesVertex = vertex;
+            }
+        }
 
         public GraphBackedTypeProvider(string typePropertyName)
         {
@@ -27,80 +93,22 @@ namespace Frontenac.Gremlinq
             _typePropertyName = typePropertyName;
         }
 
-        IVertex GetTypesVertex()
-        {
-            IVertex vertex = null;
-            var indexableGraph = _graph as IIndexableGraph;
-            var keyIndexableGraph = _graph as IKeyIndexableGraph;
-
-            if (indexableGraph != null && _graph.Features.SupportsVertexIndex)
-            {
-                var index = indexableGraph.GetIndex(GremlinqVertexProperty, typeof(IVertex)) ??
-                            indexableGraph.CreateIndex(GremlinqVertexProperty, typeof(IVertex));
-
-                vertex = Enumerable.OfType<IVertex>(index.Get(TypesIndexName, _typePropertyName)).SingleOrDefault();
-                if (vertex == null)
-                {
-                    vertex = _graph.AddVertex(null);
-                    index.Put(TypesIndexName, _typePropertyName, vertex);
-                }
-            }
-            else if (keyIndexableGraph != null && _graph.Features.SupportsVertexKeyIndex)
-            {
-                if (!keyIndexableGraph.GetIndexedKeys(typeof(IVertex)).Contains(GremlinqVertexProperty))
-                    keyIndexableGraph.CreateKeyIndex(GremlinqVertexProperty, typeof(IVertex));
-            }
-
-            return vertex ?? (_graph.V(GremlinqVertexProperty, _typePropertyName).SingleOrDefault());
-        }
-
-        void LoadTypesVertex(IGraph graph)
-        {
-            if (ReferenceEquals(_graph, graph)) return;
-
-            _graph = graph;
-            var vertex = GetTypesVertex();
-
-            if (vertex == null)
-            {
-                vertex = _graph.AddVertex(null);
-                vertex.SetProperty(GremlinqVertexProperty, _typePropertyName);
-            }
-            else
-            {
-                foreach (var typeVertex in vertex.Out(TypeLabelName))
-                {
-                    var property = typeVertex.GetProperty(TypePropertyName);
-                    if (property == null) continue;
-                    var type = Type.GetType(property.ToString(), false);
-                    if (type != null)
-                    {
-                        _typesBuffer.Add(type, typeVertex.Id);
-                    }
-                    else
-                    {
-                        Debug.WriteLine("Cannot load type from {0} {1}", typeVertex, property);
-                    }
-                }
-            }
-
-            _typesVertex = vertex;
-        }
-
         public virtual void SetType(IElement element, Type type)
         {
-            LoadTypesVertex(element.Graph);
+            var graph = element.Graph;
+            var instanceTypes = _perGraphInstanceTypes.GetOrCreateValue(graph);
+            instanceTypes.LoadTypesVertex(graph, _typePropertyName);
 
-            if (!_typesBuffer.ContainsKey(type))
+            if (!instanceTypes.TypesBuffer.ContainsKey(type))
             {
-                var typeVertex = _graph.AddVertex(null);
+                var typeVertex = graph.AddVertex(null);
                 typeVertex.SetProperty(TypePropertyName, type.AssemblyQualifiedName);
-                _typesVertex.AddEdge(TypeLabelName, typeVertex);
-                _typesBuffer.Add(type, typeVertex.Id);
+                instanceTypes.TypesVertex.AddEdge(TypeLabelName, typeVertex);
+                instanceTypes.TypesBuffer.Add(type, typeVertex.Id);
             }
 
             object id;
-            if (!_typesBuffer.TryGetValue(type, out id))
+            if (!instanceTypes.TypesBuffer.TryGetValue(type, out id))
                 throw new KeyNotFoundException(type.AssemblyQualifiedName);
 
             element.SetProperty(_typePropertyName, id);
@@ -108,7 +116,9 @@ namespace Frontenac.Gremlinq
 
         public virtual bool TryGetType(IElement element, out Type type)
         {
-            LoadTypesVertex(element.Graph);
+            var graph = element.Graph;
+            var instanceTypes = _perGraphInstanceTypes.GetOrCreateValue(graph);
+            instanceTypes.LoadTypesVertex(graph, _typePropertyName);
 
             object id;
             if (!element.TryGetValue(_typePropertyName, out id))
@@ -117,9 +127,10 @@ namespace Frontenac.Gremlinq
                 return false;
             }
 
-            var kp = _typesBuffer.SingleOrDefault(pair => Portability.IsNumber(pair.Value) && Portability.IsNumber(id)
-                                                              ? Convert.ToDouble(pair.Value).CompareTo(Convert.ToDouble(id)) == 0
-                                                              : pair.Value != null && pair.Value.Equals(id));
+            var kp = instanceTypes.TypesBuffer
+                .SingleOrDefault(pair => Portability.IsNumber(pair.Value) && Portability.IsNumber(id)
+                    ? Convert.ToDouble(pair.Value).CompareTo(Convert.ToDouble(id)) == 0
+                    : pair.Value != null && pair.Value.Equals(id));
             
             if (kp.Value != null)
                 type = kp.Key;
@@ -127,11 +138,6 @@ namespace Frontenac.Gremlinq
                 throw new KeyNotFoundException(id.ToString());
 
             return true;
-        }
-
-        public virtual bool Knows(Type type)
-        {
-            return _typesBuffer.ContainsKey(type) || _typesBuffer.Keys.Any(t => t.IsAssignableFrom(type));
         }
     }
 }

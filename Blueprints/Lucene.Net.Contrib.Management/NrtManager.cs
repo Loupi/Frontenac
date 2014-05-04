@@ -18,13 +18,20 @@ namespace Lucene.Net.Contrib.Management
         private readonly List<IWaitingListener> _waitingListeners = new List<IWaitingListener>();
         private readonly SearcherManagerRef _withDeletes;
         private readonly SearcherManagerRef _withoutDeletes;
-        private readonly IndexWriter _writer;
+        private readonly SearcherManager _searcherManager;
+        private readonly Directory _directory;
+        private readonly Analyzer _analyzer;
+        private IndexWriter _writer;
         private long _indexingGen = 1;
 
-        public NrtManager(IndexWriter writer, ISearcherWarmer warmer = null)
+        public NrtManager(Directory directory, Analyzer analyzer)
         {
-            _writer = writer;
-            _withDeletes = _withoutDeletes = new SearcherManagerRef(0, new SearcherManager(writer, warmer));
+            _directory = directory;
+            _analyzer = analyzer;
+
+            _writer = new IndexWriter(_directory, _analyzer, IndexWriter.MaxFieldLength.UNLIMITED);
+            _searcherManager = new SearcherManager(new IndexSearcher(_writer.GetReader()));
+            _withDeletes = _withoutDeletes = new SearcherManagerRef(0, _searcherManager);
         }
 
         #region IDisposable
@@ -53,6 +60,8 @@ namespace Lucene.Net.Contrib.Management
                 {
                     try
                     {
+                        _writer.Dispose();
+
                         var disposeActions = new List<Action>
                             {
                                 _withDeletes.Dispose
@@ -78,6 +87,29 @@ namespace Lucene.Net.Contrib.Management
 
         #endregion
 
+        public IndexReader GetReader()
+        {
+            return _writer.GetReader();
+        }
+
+        public void Prepare()
+        {
+            _writer.PrepareCommit();
+        }
+
+        public void Commit()
+        {
+            _writer.Commit();
+            MaybeReopen(true);
+        }
+
+        public void Rollback()
+        {
+            _writer.Rollback();
+            _writer = new IndexWriter(_directory, _analyzer, IndexWriter.MaxFieldLength.UNLIMITED);
+            _searcherManager.SwapSearcher(new IndexSearcher(_writer.GetReader()));
+        }
+        
         public void AddWaitingListener(IWaitingListener listener)
         {
             lock (_waitingListeners)
@@ -168,9 +200,9 @@ namespace Lucene.Net.Contrib.Management
             var curGen = _indexingGen;
             if (targetGen > curGen)
             {
-                throw new ArgumentException("targetGen=" + targetGen +
-                                            " was never returned by this NRTManager instance (current gen=" + curGen +
-                                            ")");
+                throw new ArgumentException(string.Concat("targetGen=", targetGen,
+                                                          " was never returned by this NRTManager instance (current gen=",
+                                                          curGen, ")"));
             }
 
             lock (_reopenLock)
@@ -236,8 +268,7 @@ namespace Lucene.Net.Contrib.Management
                     if (setSearchGen)
                     {
                         reference.Generation = newSearcherGen; // update searcher gen
-                        Monitor.PulseAll(_reopenLock);
-                            // wake up threads if we have a new generation                    
+                        Monitor.PulseAll(_reopenLock);// wake up threads if we have a new generation                    
                     }
                     return setSearchGen;
                 }

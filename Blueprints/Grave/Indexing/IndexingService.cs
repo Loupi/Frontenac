@@ -17,10 +17,10 @@ namespace Frontenac.Grave.Indexing
         public const int ConfigVertexId = 1;
 
         internal readonly ReaderWriterLockSlim IndicesLock = new ReaderWriterLockSlim();
-        private readonly EsentConfigContext _context;
+        private readonly EsentContext _context;
         private readonly IIndexCollectionFactory _indexCollectionFactory;
 
-        protected IndexingService(EsentConfigContext context, IIndexCollectionFactory indexCollectionFactory)
+        protected IndexingService(EsentContext context, IIndexCollectionFactory indexCollectionFactory)
         {
             Contract.Requires(context != null);
             Contract.Requires(indexCollectionFactory != null);

@@ -31,6 +31,31 @@ namespace Frontenac.Gremlinq
             return vertex.Wrap(assignMembers);
         }
 
+        public static IVertex<TModel> AddVertex<TModel>(this IGraph graph, object id)
+            where TModel : class
+        {
+            Contract.Requires(graph != null);
+            Contract.Requires(id != null);
+            Contract.Ensures(Contract.Result<IVertex<TModel>>() != null);
+
+            var vertex = graph.AddVertex(id);
+            GremlinqContext.Current.TypeProvider.SetType(vertex, typeof(TModel));
+            return vertex.As<TModel>();
+        }
+
+        public static IVertex<TModel> AddVertex<TModel>(this IGraph graph, object id, Action<TModel> assignMembers)
+            where TModel : class
+        {
+            Contract.Requires(graph != null);
+            Contract.Requires(id != null);
+            Contract.Requires(assignMembers != null);
+            Contract.Ensures(Contract.Result<IVertex<TModel>>() != null);
+
+            var vertex = graph.AddVertex(id);
+            GremlinqContext.Current.TypeProvider.SetType(vertex, typeof(TModel));
+            return vertex.Wrap(assignMembers);
+        }
+
         public static IEdge AddEdge<TOutModel, TInModel>(
             this IVertex<TOutModel> outVertex,
             Expression<Func<TOutModel, TInModel>> edgePropertySelector,

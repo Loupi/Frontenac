@@ -214,7 +214,7 @@ namespace Frontenac.Grave.Tests
 
         public static string GetGraveGraphDirectory()
         {
-            return Path.Combine(Directory.GetCurrentDirectory(), "Data");
+            return Path.Combine(Directory.GetCurrentDirectory(), "GraveGraph");
         }
     }
 

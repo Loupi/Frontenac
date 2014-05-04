@@ -10,6 +10,5 @@ namespace Frontenac.Gremlinq
     {
         void SetType(IElement element, Type type);
         bool TryGetType(IElement element, out Type type);
-        bool Knows(Type type);
     }
 }

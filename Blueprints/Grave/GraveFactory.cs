@@ -5,6 +5,7 @@ using Castle.Facilities.TypedFactory;
 using Castle.Windsor;
 using Castle.Windsor.Installer;
 using Frontenac.Grave.Entities;
+using Frontenac.Grave.Esent;
 using Frontenac.Gremlinq;
 
 namespace Frontenac.Grave
@@ -118,6 +119,9 @@ namespace Frontenac.Grave
 
                 if (disposing)
                 {
+                    var instance = _container.Resolve<EsentInstance>();
+                    if(instance != null)
+                        instance.Dispose();
                     _container.Release(GraphFactory);
                     _container.Dispose();
                 }

@@ -19,11 +19,5 @@ namespace Frontenac.Gremlinq.Contracts
             type = null;
             return false;
         }
-
-        public bool Knows(Type type)
-        {
-            Contract.Requires(type != null);
-            return false;
-        }
     }
 }

@@ -146,6 +146,8 @@ namespace Frontenac.Grave.Indexing
             _deletedIndices.Clear();
             _newIndices.Clear();
             _setIndices.Clear();
+
+            _indexCollection.Rollback();
         }
     }
 }

@@ -1,18 +1,107 @@
-﻿using System.Diagnostics.Contracts;
+﻿using System;
+using System.Diagnostics.Contracts;
 using Frontenac.Grave.Esent.Serializers;
 using Microsoft.Isam.Esent.Interop;
 
 namespace Frontenac.Grave.Esent
 {
-    public class EsentContext : EsentContextBase
+    public class EsentContext : IDisposable
     {
-        public EsentContext(Session session, string databaseName, IContentSerializer contentSerializer) :
-            base(session, databaseName, contentSerializer)
-        {
-            Contract.Requires(session != null);
-            Contract.Requires(contentSerializer != null);
+        private readonly EsentInstance _instance;
+        private readonly IContentSerializer _contentSerializer;
+        private readonly Session _session;
+        private readonly JET_DBID _dbid;
 
-            OpenDatabase();
+        public EsentContext(EsentInstance instance, string databaseName, IContentSerializer contentSerializer)
+        {
+            Contract.Requires(instance != null);
+            Contract.Requires(contentSerializer != null);
+            Contract.Requires(!string.IsNullOrEmpty(databaseName));
+
+            _instance = instance;
+            _session = _instance.CreateSession();
+            _contentSerializer = contentSerializer;
+
+            OpenDatabase(databaseName, out _dbid);
+        }
+
+        #region IDisposable
+
+        private bool _disposed;
+
+        ~EsentContext()
+        {
+            Dispose(false);
+        }
+
+        public void Dispose()
+        {
+            Dispose(true);
+            GC.SuppressFinalize(this);
+        }
+
+        protected virtual void Dispose(bool disposing)
+        {
+            if (_disposed)
+                return;
+
+            if (disposing)
+            {
+                CloseDatabase();
+            }
+
+            _disposed = true;
+        }
+
+        #endregion
+
+        public EsentVertexTable VertexTable { get; private set; }
+        public EsentEdgesTable EdgesTable { get; private set; }
+        public EsentConfigTable ConfigTable { get; private set; }
+
+        public EsentVertexTable GetVerticesCursor()
+        {
+            Contract.Ensures(Contract.Result<EsentVertexTable>() != null);
+
+            var cursor = new EsentVertexTable(_session, _contentSerializer);
+            cursor.Open(_dbid);
+            return cursor;
+        }
+
+        public EsentEdgesTable GetEdgesCursor()
+        {
+            Contract.Ensures(Contract.Result<EsentEdgesTable>() != null);
+
+            var cursor = new EsentEdgesTable(_session, _contentSerializer);
+            cursor.Open(_dbid);
+            return cursor;
+        }
+
+        private void OpenDatabase(string databaseName, out JET_DBID dbid)
+        {
+            VertexTable = new EsentVertexTable(_session, _contentSerializer);
+            EdgesTable = new EsentEdgesTable(_session, _contentSerializer);
+            ConfigTable = new EsentConfigTable(_session, _contentSerializer);
+
+            Api.JetAttachDatabase(_session, databaseName, AttachDatabaseGrbit.DeleteCorruptIndexes);
+            Api.JetOpenDatabase(_session, databaseName, null, out dbid, OpenDatabaseGrbit.None);
+
+            VertexTable.Open(_dbid);
+            EdgesTable.Open(_dbid);
+            ConfigTable.Open(_dbid);
+        }
+
+        private void CloseDatabase()
+        {
+            VertexTable.Close();
+            EdgesTable.Close();
+            ConfigTable.Close();
+            _session.Dispose();
+        }
+
+        public EsentTransaction CreateTransaction()
+        {
+            return _instance.CreateTransaction(_session);
         }
     }
 }
