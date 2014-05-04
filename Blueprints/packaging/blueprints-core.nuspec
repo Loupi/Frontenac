@@ -2,7 +2,7 @@
 <package xmlns="http://schemas.microsoft.com/packaging/2010/07/nuspec.xsd">
 	<metadata>
 		<id>Frontenac.Blueprints</id>
-		<version>2.3.9</version>
+		<version>2.3.10</version>
 		<authors>Loupi</authors>
 		<projectUrl>https://github.com/Loupi/Frontenac</projectUrl>
 		<requireLicenseAcceptance>false</requireLicenseAcceptance>
