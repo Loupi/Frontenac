@@ -4,6 +4,15 @@ Frontenac
 A .NET port of the [Tinkerpop Stack](http://www.tinkerpop.com/).
 
 ## News
+* 2014-05-10
+ * Frontenac.Blueprints 2.3.10 released.
+ * GraphBackedTypeProvider now supports multiple graph instances correctly.
+ * The default column name for type information vertices is now __g_type__, due to a name clash.
+ * New Gremlinq AddVertex overloads that allow to specify the id.
+ * NuGet package now only includes .NET 4.0 assemblies. A new package for .NET 4.5 will be released soon.
+ * Grave Transactions now serialize write access to LuceneIndex.
+ * Introduction of GraveInstance class for better separation of concerns.
+
 * 2014-03-29
  * Frontenac.Blueprints 2.3.9 released.
  * Gremlinq ORM now supports relations. You can user IEnumerable&lt;T&gt; to read, and ICollection&lt;T&gt; to add/remove edges.

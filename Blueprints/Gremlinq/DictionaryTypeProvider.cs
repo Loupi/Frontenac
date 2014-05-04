@@ -8,7 +8,7 @@ namespace Frontenac.Gremlinq
 {
     public class DictionaryTypeProvider : ITypeProvider
     {
-        public const string DefaulTypePropertyName = "__type__";
+        public const string DefaulTypePropertyName = "__g_type__";
 
         private readonly string _typePropertyName;
         private readonly Dictionary<int, Type> _elementIdsToTypes;
@@ -46,11 +46,6 @@ namespace Frontenac.Gremlinq
                 throw new KeyNotFoundException(id.ToString());
 
             return true;
-        }
-
-        public virtual bool Knows(Type type)
-        {
-            return _elementTypesToIds.ContainsKey(type) || _elementTypesToIds.Keys.Any(t => t.IsAssignableFrom(type));
         }
     }
 }

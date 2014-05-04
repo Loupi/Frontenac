@@ -27,9 +27,11 @@
 		<file src="..\Gremlinq-.NET4.0\bin\Release\net40-client\Frontenac.Gremlinq.dll" target="lib\net40-client\Frontenac.Gremlinq.dll" />
 		<file src="..\Gremlinq-.NET4.0\bin\Release\net40-client\CodeContracts\Frontenac.Gremlinq.Contracts.dll" target="lib\net40-client\CodeContracts\Gremlinq.Blueprints.Contracts.dll" />
 
+		<!--
 		<file src="..\Blueprints\bin\Release\net45\Frontenac.Blueprints.dll" target="lib\net45\Frontenac.Blueprints.dll" />
 		<file src="..\Blueprints\bin\Release\net45\CodeContracts\Frontenac.Blueprints.Contracts.dll" target="lib\net45\CodeContracts\Frontenac.Blueprints.Contracts.dll" />
 		<file src="..\Gremlinq\bin\Release\net45\Frontenac.Gremlinq.dll" target="lib\net45\Frontenac.Gremlinq.dll" />
 		<file src="..\Gremlinq\bin\Release\net45\CodeContracts\Frontenac.Gremlinq.Contracts.dll" target="lib\net45\CodeContracts\Frontenac.Gremlinq.Contracts.dll" />
+		-->
 	</files>
 </package>
