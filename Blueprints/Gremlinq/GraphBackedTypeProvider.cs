@@ -11,8 +11,8 @@ namespace Frontenac.Gremlinq
     {
         private const string GremlinqVertexProperty = "Frontenac_Gremlinq";
         private const string TypesIndexName = "Types";
-        private const string TypeLabelName = "__type__";
-        private const string TypePropertyName = "__type__";
+        private const string TypeLabelName = "__gtype__";
+        private const string TypePropertyName = "__gtype__";
 
         private readonly Dictionary<Type, object> _typesBuffer = new Dictionary<Type, object>();
         private readonly string _typePropertyName;

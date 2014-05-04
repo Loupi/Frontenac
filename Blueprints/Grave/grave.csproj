@@ -143,7 +143,7 @@
     </Reference>
     <Reference Include="Newtonsoft.Json, Version=6.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\packages\Newtonsoft.Json.6.0.1\lib\net45\Newtonsoft.Json.dll</HintPath>
+      <HintPath>..\packages\Newtonsoft.Json.6.0.2\lib\net45\Newtonsoft.Json.dll</HintPath>
     </Reference>
     <Reference Include="Spatial4n.Core">
       <HintPath>..\packages\Spatial4n.Core.0.3\lib\net40\Spatial4n.Core.dll</HintPath>
@@ -163,8 +163,8 @@
     <Compile Include="Entities\IContributor.cs" />
     <Compile Include="Entities\IWeightedEntity.cs" />
     <Compile Include="Esent\DisposableAction.cs" />
-    <Compile Include="Esent\EsentConfigContext.cs" />
-    <Compile Include="Esent\EsentContextBase.cs" />
+    <Compile Include="Esent\EsentContext.cs" />
+    <Compile Include="Esent\EsentInstance.cs" />
     <Compile Include="Esent\EsentTransaction.cs" />
     <Compile Include="Esent\Serializers\BsonContentSerializer.cs" />
     <Compile Include="Esent\EsentConfigTable.cs" />
@@ -207,7 +207,6 @@
     <Compile Include="Indexing\TransactionalIndexCollection.cs" />
     <Compile Include="Indexing\TransactionalIndexCollectionFactory.cs" />
     <Compile Include="Installers\GraveInstaller.cs" />
-    <Compile Include="Esent\EsentContext.cs" />
     <Compile Include="GraveIndex.cs" />
     <Compile Include="Esent\EsentTable.cs" />
     <Compile Include="Esent\EsentEdgesTable.cs" />
@@ -225,18 +224,19 @@
     <Compile Include="Indexing\Lucene\LuceneIndexingServiceParameters.cs" />
     <Compile Include="Indexing\Indexers\ObjectIndexer.cs" />
     <Compile Include="Entities\ITitan.cs" />
-    <Compile Include="Installers\InstanceStarter.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Installers\LuceneInstaller.cs" />
     <Compile Include="Properties\Settings.Designer.cs">
       <AutoGen>True</AutoGen>
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
       <DependentUpon>Settings.settings</DependentUpon>
     </Compile>
-    <Compile Include="Installers\LuceneInstaller.cs" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="App.config" />
+    <None Include="App.config">
+      <SubType>Designer</SubType>
+    </None>
     <None Include="key.snk" />
     <None Include="packages.config" />
     <None Include="Properties\Settings.settings">

@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Threading;
-using Lucene.Net.Index;
 using Lucene.Net.Search;
 using Lucene.Net.Store;
 
@@ -12,14 +11,10 @@ namespace Lucene.Net.Contrib.Management
         private readonly ISearcherWarmer _warmer;
         private volatile IndexSearcher _currentSearcher;
 
-        public SearcherManager(IndexWriter writer, ISearcherWarmer warmer = null)
+        public SearcherManager(IndexSearcher searcher, ISearcherWarmer warmer = null)
         {
             _warmer = warmer;
-            _currentSearcher = new IndexSearcher(writer.GetReader());
-            if (_warmer != null)
-            {
-                writer.MergedSegmentWarmer = new WarmerWrapper(_warmer);
-            }
+            _currentSearcher = searcher;
         }
 
         #region IDisposable
@@ -79,6 +74,7 @@ namespace Lucene.Net.Contrib.Management
                 var newReader = _currentSearcher.IndexReader.Reopen();
                 if (newReader != currentReader)
                 {
+                    var oldSearcher = _currentSearcher;
                     var newSearcher = new IndexSearcher(newReader);
                     var success = false;
                     try
@@ -88,6 +84,7 @@ namespace Lucene.Net.Contrib.Management
                             _warmer.Warm(newSearcher);
                         }
                         SwapSearcher(newSearcher);
+                        oldSearcher.Dispose();
                         success = true;
                     }
                     finally
@@ -95,6 +92,7 @@ namespace Lucene.Net.Contrib.Management
                         if (!success)
                         {
                             ReleaseSearcher(newSearcher);
+                            newSearcher.Dispose();
                         }
                     }
                 }
@@ -133,7 +131,7 @@ namespace Lucene.Net.Contrib.Management
             }
         }
 
-        private void SwapSearcher(IndexSearcher newSearcher)
+        internal void SwapSearcher(IndexSearcher newSearcher)
         {
             EnsureOpen();
             var oldSearcher = _currentSearcher;
@@ -181,19 +179,6 @@ namespace Lucene.Net.Contrib.Management
             public IndexSearcher Searcher { get; private set; }
         }
 
-        private class WarmerWrapper : IndexWriter.IndexReaderWarmer
-        {
-            private readonly ISearcherWarmer _searcher;
-
-            public WarmerWrapper(ISearcherWarmer searcher)
-            {
-                _searcher = searcher;
-            }
-
-            public override void Warm(IndexReader reader)
-            {
-                _searcher.Warm(new IndexSearcher(reader));
-            }
-        }
+        
     }
 }

@@ -10,7 +10,5 @@ namespace Frontenac.Grave
         GraveGraph Create();
         GraveTransactionalGraph CreateTransactional();
         void Destroy(GraveGraph graph);
-        EsentContext GetEsentContext();
-        void Destroy(EsentContext context);
     }
 }

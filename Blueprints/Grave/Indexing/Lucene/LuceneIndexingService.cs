@@ -24,26 +24,24 @@ namespace Frontenac.Grave.Indexing.Lucene
 {
     public class LuceneIndexingService : IndexingService
     {
-        public readonly NrtManager NrtManager;
-        private readonly IndexWriter _writer;
+        private readonly NrtManager _nrtManager;
         private readonly SearcherManager _searcherManager;
         private readonly IIndexerFactory _indexerFactory;
 
-        public LuceneIndexingService(EsentConfigContext configContext,
+        public LuceneIndexingService(EsentContext context,
                                      IIndexerFactory indexerFactory,
-                                     IndexWriter indexWriter,
+                                     NrtManager nrtManager,
                                      IIndexCollectionFactory indexCollectionFactory)
-            : base(configContext, indexCollectionFactory)
+            : base(context, indexCollectionFactory)
         {
-            Contract.Requires(configContext != null);
+            Contract.Requires(context != null);
             Contract.Requires(indexerFactory != null);
-            Contract.Requires(indexWriter != null);
+            Contract.Requires(nrtManager != null);
             Contract.Requires(indexCollectionFactory != null);
 
             _indexerFactory = indexerFactory;
-            _writer = indexWriter;
-            NrtManager = new NrtManager(_writer);
-            _searcherManager = NrtManager.GetSearcherManager();
+            _nrtManager = nrtManager;
+            _searcherManager = _nrtManager.GetSearcherManager();
         }
 
         #region IDisposable
@@ -55,7 +53,7 @@ namespace Frontenac.Grave.Indexing.Lucene
             if (!disposing) return;
 
             _searcherManager.Dispose();
-            NrtManager.Dispose();
+            _nrtManager.Dispose();
         }
 
         #endregion
@@ -150,7 +148,7 @@ namespace Frontenac.Grave.Indexing.Lucene
 
         public override long DeleteIndex(Type indexType, string indexName, bool isUserIndex)
         {
-            return NrtManager.DeleteDocuments(new TermQuery(new Term(isUserIndex ? GetIndexColumn(indexType)
+            return _nrtManager.DeleteDocuments(new TermQuery(new Term(isUserIndex ? GetIndexColumn(indexType)
                                                                                   : GetKeyColumn(indexType), indexName)));
         }
 
@@ -222,19 +220,18 @@ namespace Frontenac.Grave.Indexing.Lucene
             return Fetch(indexType, queryToRun, hitsLimit);
         }
 
-        public override void Commit()
+        public override void Prepare()
         {
             VertexIndices.Commit();
             EdgeIndices.Commit();
             UserVertexIndices.Commit();
             UserEdgeIndices.Commit();
-            _writer.Commit();
-            NrtManager.MaybeReopen(true);
+            _nrtManager.Prepare();
         }
 
-        public override void Prepare()
+        public override void Commit()
         {
-            _writer.PrepareCommit();
+            _nrtManager.Commit();
         }
 
         public override void Rollback()
@@ -243,9 +240,7 @@ namespace Frontenac.Grave.Indexing.Lucene
             EdgeIndices.Rollback();
             UserVertexIndices.Rollback();
             UserEdgeIndices.Rollback();
-
-            //We are not calling _writer.Rollback because 
-            //it closes the writer and would create multithreading issues.
+            _nrtManager.Rollback();
         }
 
         static Query CreateGeoQuery(Type indexType, string key, IGeoShape geoShape)
@@ -357,7 +352,7 @@ namespace Frontenac.Grave.Indexing.Lucene
 
         public override long DeleteDocuments(Type indexType, int id)
         {
-            return NrtManager.DeleteDocuments(NumericRangeQuery.NewIntRange(GetIdColumn(indexType), id, id, true, true));
+            return _nrtManager.DeleteDocuments(NumericRangeQuery.NewIntRange(GetIdColumn(indexType), id, id, true, true));
         }
 
         public override long DeleteUserDocuments(Type indexType, int id, string key, object value)
@@ -368,33 +363,31 @@ namespace Frontenac.Grave.Indexing.Lucene
                     new BooleanClause(WrapQuery(indexType, CreateQuery(key, value, value, value, true, true), 
                         GetIndexColumn(indexType), true), Occur.MUST)
                 };
-            return NrtManager.DeleteDocuments(query);
+            return _nrtManager.DeleteDocuments(query);
         }
 
-        public override long Set(Type indexType, int id, string indexName, string propertyName, object value,
-                                 bool isUserIndex)
+        public override long Set(Type indexType, int id, string indexName, string propertyName, object value, bool isUserIndex)
         {
             var idColumn = GetIdColumn(indexType);
             var keyColumn = isUserIndex ? GetIndexColumn(indexType) : GetKeyColumn(indexType);
-            var generation = NrtManager.DeleteDocuments(CreateKeyQuery(idColumn, keyColumn, id, indexName));
+            var generation = _nrtManager.DeleteDocuments(CreateKeyQuery(idColumn, keyColumn, id, indexName));
             if (value == null) return generation;
 
             var rawDocument = CreateDocument(idColumn, keyColumn, id, indexName);
             var document = new LuceneDocument(rawDocument);
             var indexer = _indexerFactory.Create(value, document);
             indexer.Index(propertyName);
-            generation = NrtManager.AddDocument(rawDocument);
+            generation = _nrtManager.AddDocument(rawDocument);
 
             return generation;
         }
 
         public override void WaitForGeneration(long generation)
         {
-            NrtManager.WaitForGeneration(generation);
+            _nrtManager.WaitForGeneration(generation);
         }
 
-        private static Query CreateQuery(string key, object value, object minValue, object maxValue,
-                                         bool minInclusive, bool maxInclusive)
+        private static Query CreateQuery(string key, object value, object minValue, object maxValue, bool minInclusive, bool maxInclusive)
         {
             Contract.Requires(((((!(Portability.IsNumber(value)) || !(string.IsNullOrWhiteSpace(key))) || key == null) || key.Length != 0) || value != null));
             Contract.Ensures(Contract.Result<Query>() != null);
@@ -425,13 +418,7 @@ namespace Frontenac.Grave.Indexing.Lucene
             return query;
         }
 
-        public override IEnumerable<int> Get(
-            Type indexType, 
-            string indexName, 
-            string key, 
-            object value,
-            bool isUserIndex, 
-            int hitsLimit = 1000)
+        public override IEnumerable<int> Get(Type indexType, string indexName, string key, object value, bool isUserIndex, int hitsLimit = 1000)
         {
             var query = WrapQuery(indexType, CreateQuery(key, value, value, value, true, true), indexName, isUserIndex);
             return Fetch(indexType, query, hitsLimit);
@@ -453,13 +440,7 @@ namespace Frontenac.Grave.Indexing.Lucene
             }
         }
 
-        private static Query CreateRangeQuery(
-            string term, 
-            object value, 
-            object min, 
-            object max, 
-            bool minInclusive,
-            bool maxInclusive)
+        private static Query CreateRangeQuery(string term, object value, object min, object max, bool minInclusive, bool maxInclusive)
         {
             Contract.Requires(!string.IsNullOrWhiteSpace(term));
             Contract.Requires(value != null);

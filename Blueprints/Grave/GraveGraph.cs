@@ -12,6 +12,8 @@ namespace Frontenac.Grave
 {
     public class GraveGraph : IKeyIndexableGraph, IIndexableGraph
     {
+        private readonly IGraveGraphFactory _factory;
+        protected readonly EsentInstance Instance;
         private const string EdgeInPrefix = "$e_i_";
         private const string EdgeOutPrefix = "$e_o_";
 
@@ -51,8 +53,6 @@ namespace Frontenac.Grave
                 SupportsLabelProperty = true
             };
 
-        private readonly IGraveGraphFactory _factory;
-
         /*internal readonly EsentContext Context;
         internal readonly IndexingService IndexingService;
         private readonly Dictionary<string, GraveIndex> _indices = new Dictionary<string, GraveIndex>();
@@ -73,26 +73,34 @@ namespace Frontenac.Grave
             public bool RefreshRequired { get; set; }
         }
 
-        private readonly ThreadLocal<ThreadContext> _contexts;
+        protected readonly ThreadLocal<ThreadContext> Contexts;
 
-        public GraveGraph(IGraveGraphFactory factory, 
+        public GraveGraph(IGraveGraphFactory factory,
+                          EsentInstance instance, 
                           IIndexingServiceFactory indexingServiceFactory)
         {
             Contract.Requires(factory != null);
+            Contract.Requires(instance != null);
             Contract.Requires(indexingServiceFactory != null);
 
             _factory = factory;
+            Instance = instance;
 
-            _contexts = new ThreadLocal<ThreadContext>(() => new ThreadContext
+            Contexts = new ThreadLocal<ThreadContext>(() =>
                 {
-                    Context = _factory.GetEsentContext(),
-                    IndexingService = indexingServiceFactory.Create()
-                }, true);
+                    var context = Instance.CreateContext();
+                    return new ThreadContext()
+                        {
+                            Context = context,
+                            IndexingService = indexingServiceFactory.Create(context)
+                        };
+                } 
+                , true);
         }
 
         public ThreadContext Context
         {
-            get { return _contexts.Value; }
+            get { return Contexts.Value; }
         }
 
         public virtual IIndex CreateIndex(string indexName, Type indexClass, params Parameter[] indexParameters)
@@ -400,8 +408,7 @@ namespace Frontenac.Grave
         public virtual void Shutdown()
         {
             _factory.Destroy(this);
-            //_factory.Destroy(Context);
-            foreach (var context in _contexts.Values)
+            foreach (var context in Contexts.Values)
             {
                 context.Context.Dispose();    
             }

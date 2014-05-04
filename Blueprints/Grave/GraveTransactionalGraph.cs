@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics.Contracts;
+using System.Linq;
 using System.Threading;
 using System.Transactions;
 using Frontenac.Blueprints;
@@ -9,9 +10,10 @@ using Frontenac.Grave.Indexing;
 
 namespace Frontenac.Grave
 {
-    public class GraveTransactionalGraph : GraveGraph, ITransactionalGraph, IEnlistmentNotification, IDisposable
+    public class GraveTransactionalGraph : GraveGraph, ITransactionalGraph, ISinglePhaseNotification, IPromotableSinglePhaseNotification, IDisposable
     {
-        private static int _transactionNumber = 1;
+        private static readonly Mutex TransactionMutex = new Mutex(false);
+        
 
         private readonly ThreadLocal<TransactionContext> _transactionContexts 
             = new ThreadLocal<TransactionContext>(() => new TransactionContext(), true);
@@ -33,13 +35,11 @@ namespace Frontenac.Grave
             get { return _transactionContexts.Value; }
         }
 
-        public GraveTransactionalGraph(IGraveGraphFactory factory, 
-                                       EsentContext context, 
-                                       IIndexingServiceFactory indexingServiceFactory)
-            : base(factory, indexingServiceFactory)
+        public GraveTransactionalGraph(IGraveGraphFactory factory, EsentInstance instance, IIndexingServiceFactory indexingServiceFactory)
+            : base(factory, instance, indexingServiceFactory)
         {
             Contract.Requires(factory != null);
-            Contract.Requires(context != null);
+            Contract.Requires(instance != null);
             Contract.Requires(indexingServiceFactory != null);
         }
 
@@ -68,7 +68,11 @@ namespace Frontenac.Grave
                 foreach (var transaction in _transactionContexts.Values)
                 {
                     if (transaction.TransactionScope != null)
+                    {
+                        //Transaction.TransactionScope.Rollback();
                         transaction.TransactionScope.Dispose();
+                        Transaction.TransactionScope = null;
+                    }
                     else
                     {
                         Rollback();
@@ -79,7 +83,7 @@ namespace Frontenac.Grave
                     }
                 }
 
-                _transactionContexts.Dispose();
+                //_transactionContexts.Dispose();
             }
 
             _disposed = true;
@@ -89,49 +93,33 @@ namespace Frontenac.Grave
 
         public override void Shutdown()
         {
-            foreach (var transaction in _transactionContexts.Values)
+            foreach (var transaction in _transactionContexts.Values.Where(transaction => transaction != null))
             {
-                if (transaction != null)
-                {
-                    Commit();
-                    if (transaction.Transaction != null)
-                    {
-                        transaction.Transaction.Dispose();
-                        transaction.Transaction = null;
-                    }
-                }
+                Commit();
+                if (transaction.Transaction == null) continue;
+                transaction.Transaction.Dispose();
+                transaction.Transaction = null;
             }
-            
+
+            //_transactionContexts.Dispose();
+
             //Commit();
             base.Shutdown();
         }
 
         public void Commit()
         {
-            if (Transaction.Transaction != null)
-                Transaction.Transaction.Commit();
-
-            foreach (var index in Transaction.TransactionalIndices.Values)
-            {
-                index.Commit();
-                index.Clear();
-            }
-
-            Context.IndexingService.Commit();
+            if (Transaction.TransactionScope == null) return;
+            Transaction.TransactionScope.Complete();
+            Transaction.TransactionScope.Dispose();
+            Transaction.TransactionScope = null;
         }
 
         public void Rollback()
         {
-            if (Transaction.Transaction != null)
-                Transaction.Transaction.Rollback();
-
-            foreach (var index in Transaction.TransactionalIndices.Values)
-                index.Clear();
-
-            Context.IndexingService.Rollback();
-            
-            Context.Context.VertexTable.RefreshColumns();
-            Context.Context.EdgesTable.RefreshColumns();
+            if (Transaction.TransactionScope == null) return;
+            Transaction.TransactionScope.Dispose();
+            Transaction.TransactionScope = null;
         }
 
         public override IEdge AddEdge(object unused, IVertex outVertex, IVertex inVertex, string label)
@@ -228,20 +216,22 @@ namespace Frontenac.Grave
 
         private IDisposable EnterTransactionContext()
         {
-            if (Transaction.TransactionScope == null)
-            {
-                if (System.Transactions.Transaction.Current != null)
-                {
-                    Transaction.TransactionScope = new TransactionScope(System.Transactions.Transaction.Current);
-                    System.Transactions.Transaction.Current.EnlistVolatile(this, EnlistmentOptions.None);
-                }
-            }
+            if (Transaction.TransactionScope != null)
+                return Transaction.Transaction.EnterSessionContext();
 
-            if (Transaction.Transaction == null)
+// ReSharper disable UnusedVariable
+            var scope = System.Transactions.Transaction.Current != null
+// ReSharper restore UnusedVariable
+                ? new TransactionScope(System.Transactions.Transaction.Current)
+                : new TransactionScope(TransactionScopeOption.RequiresNew);
+
+            if (System.Transactions.Transaction.Current != null)
             {
-                var transactionNumber = Interlocked.Increment(ref _transactionNumber);
-                Transaction.Transaction = new EsentTransaction(Context.Context.Session, transactionNumber);
+                Transaction.TransactionScope = scope;
+                System.Transactions.Transaction.Current.EnlistPromotableSinglePhase(this);
             }
+            
+            Transaction.Transaction = Context.Context.CreateTransaction();
 
             return Transaction.Transaction.EnterSessionContext();
         }
@@ -354,30 +344,6 @@ namespace Frontenac.Grave
             }
         }
 
-        public void Prepare(PreparingEnlistment preparingEnlistment)
-        {
-            Context.IndexingService.Prepare();
-            preparingEnlistment.Prepared();
-        }
-
-        public void Commit(Enlistment enlistment)
-        {
-            Commit();
-            enlistment.Done();
-        }
-
-        public void Rollback(Enlistment enlistment)
-        {
-            Rollback();
-
-            enlistment.Done();
-        }
-
-        public void InDoubt(Enlistment enlistment)
-        {
-            enlistment.Done();
-        }
-
         protected override IIndex CreateIndexObject(string indexName, Type indexType, IIndexCollection indexCollection, IIndexCollection userIndexCollection)
         {
             var key = string.Concat(indexName, indexType);
@@ -390,6 +356,148 @@ namespace Frontenac.Grave
                 Transaction.TransactionalIndices.Add(key, index);
             }
             return index;
+        }
+
+        public void Prepare(PreparingEnlistment preparingEnlistment)
+        {
+            try
+            {
+                PrepareInternal();
+                preparingEnlistment.Prepared();
+            }
+            catch (Exception x)
+            {
+                preparingEnlistment.ForceRollback(x);
+            }
+        }
+
+        public void Commit(Enlistment enlistment)
+        {
+            CommitInternal();
+            enlistment.Done();
+        }
+
+        public void Rollback(Enlistment enlistment)
+        {
+            RollbackInternal();
+            enlistment.Done();
+        }
+
+        public void InDoubt(Enlistment enlistment)
+        {
+            enlistment.Done();
+        }
+
+        public byte[] Promote()
+        {
+            return TransactionInterop.GetTransmitterPropagationToken(System.Transactions.Transaction.Current);
+        }
+
+        public void Initialize()
+        {
+            
+        }
+
+        public void SinglePhaseCommit(SinglePhaseEnlistment singlePhaseEnlistment)
+        {
+            try
+            {
+                PrepareInternal();
+                CommitInternal();
+                singlePhaseEnlistment.Committed();
+            }
+            catch (Exception x)
+            {
+                singlePhaseEnlistment.Aborted(x);
+            }
+        }
+
+        public void Rollback(SinglePhaseEnlistment singlePhaseEnlistment)
+        {
+            try
+            {
+                RollbackInternal();
+                singlePhaseEnlistment.Aborted();
+            }
+            catch (Exception x)
+            {
+                singlePhaseEnlistment.Aborted(x);
+            }
+        }
+
+        private void PrepareInternal()
+        {
+            using (EnterTransactionContext())
+            {
+                if (!TransactionMutex.WaitOne(TimeSpan.FromSeconds(20)))
+                    throw new TimeoutException("Could not acquire transaction mutex.");
+
+                foreach (var index in Transaction.TransactionalIndices.Values)
+                {
+                    index.Commit();
+                    index.Clear();
+                }
+
+                Context.IndexingService.Prepare();
+            }
+        }
+
+        private void CommitInternal()
+        {
+            if (TransactionMutex.WaitOne(0))
+            {
+                try
+                {
+                    using (EnterTransactionContext())
+                    {
+                        if (Transaction.Transaction != null)
+                        {
+                            Transaction.Transaction.Commit();
+                            Transaction.TransactionScope.Dispose();
+                            Transaction.TransactionScope = null;
+                            Transaction.Transaction = null;
+                        }
+                        Context.IndexingService.Commit();
+                    }
+                }
+                finally
+                {
+                    TransactionMutex.ReleaseMutex();
+                }
+            }
+
+            System.Transactions.Transaction.Current = null;
+        }
+
+        private void RollbackInternal()
+        {
+            if (TransactionMutex.WaitOne(0))
+            {
+                try
+                {
+                    Context.IndexingService.Rollback();
+                }
+                finally
+                {
+                    TransactionMutex.ReleaseMutex();
+                }
+            }
+
+            if (Transaction.Transaction != null)
+            {
+                Transaction.Transaction.Rollback();
+                Transaction.TransactionScope.Dispose();
+                Transaction.TransactionScope = null;
+                Transaction.Transaction = null;
+            }
+            
+            foreach (var index in Transaction.TransactionalIndices.Values)
+                index.Clear();
+            
+            Context.Context.VertexTable.RefreshColumns();
+            Context.Context.EdgesTable.RefreshColumns();
+
+            System.Transactions.Transaction.Current = null;
         }
     }
 }

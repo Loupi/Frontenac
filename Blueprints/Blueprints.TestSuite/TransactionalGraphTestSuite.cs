@@ -708,6 +708,8 @@ namespace Frontenac.Blueprints
                             latchSecondRead.Wait();
                         }
 
+                        graph.Rollback();
+
                         Console.WriteLine("reading vertex after tx");
                         Assert.True(graph.GetVertices().Any());
                         Console.WriteLine("read vertex after tx");
