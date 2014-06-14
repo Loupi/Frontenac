@@ -12,8 +12,8 @@ namespace Frontenac.Grave
 {
     public class GraveTransactionalGraph : GraveGraph, ITransactionalGraph, ISinglePhaseNotification, IPromotableSinglePhaseNotification, IDisposable
     {
+        private const int TransactionTimeout = 60;
         private static readonly Mutex TransactionMutex = new Mutex(false);
-        
 
         private readonly ThreadLocal<TransactionContext> _transactionContexts 
             = new ThreadLocal<TransactionContext>(() => new TransactionContext(), true);
@@ -33,6 +33,47 @@ namespace Frontenac.Grave
         public TransactionContext Transaction
         {
             get { return _transactionContexts.Value; }
+        }
+
+        private static readonly Features GraveTransactionalGraphFeatures = new Features
+        {
+            SupportsDuplicateEdges = true,
+            SupportsSelfLoops = true,
+            SupportsSerializableObjectProperty = true,
+            SupportsBooleanProperty = true,
+            SupportsDoubleProperty = true,
+            SupportsFloatProperty = true,
+            SupportsIntegerProperty = true,
+            SupportsPrimitiveArrayProperty = true,
+            SupportsUniformListProperty = true,
+            SupportsMixedListProperty = true,
+            SupportsLongProperty = true,
+            SupportsMapProperty = true,
+            SupportsStringProperty = true,
+            IgnoresSuppliedIds = true,
+            IsPersistent = true,
+            IsRdfModel = false,
+            IsWrapper = false,
+            SupportsIndices = true,
+            SupportsKeyIndices = true,
+            SupportsVertexKeyIndex = true,
+            SupportsEdgeKeyIndex = true,
+            SupportsVertexIndex = true,
+            SupportsEdgeIndex = true,
+            SupportsTransactions = true,
+            SupportsVertexIteration = true,
+            SupportsEdgeIteration = true,
+            SupportsEdgeRetrieval = true,
+            SupportsVertexProperties = true,
+            SupportsEdgeProperties = true,
+            SupportsThreadedTransactions = false,
+            SupportsIdProperty = true,
+            SupportsLabelProperty = true
+        };
+
+        public override Features Features
+        {
+            get { return GraveTransactionalGraphFeatures; }
         }
 
         public GraveTransactionalGraph(IGraveGraphFactory factory, EsentInstance instance, IIndexingServiceFactory indexingServiceFactory)
@@ -113,6 +154,8 @@ namespace Frontenac.Grave
             Transaction.TransactionScope.Complete();
             Transaction.TransactionScope.Dispose();
             Transaction.TransactionScope = null;
+            Context.NewVertices.Clear();
+            Context.NewEdges.Clear();
         }
 
         public void Rollback()
@@ -120,6 +163,8 @@ namespace Frontenac.Grave
             if (Transaction.TransactionScope == null) return;
             Transaction.TransactionScope.Dispose();
             Transaction.TransactionScope = null;
+            Context.NewVertices.Clear();
+            Context.NewEdges.Clear();
         }
 
         public override IEdge AddEdge(object unused, IVertex outVertex, IVertex inVertex, string label)
@@ -219,11 +264,9 @@ namespace Frontenac.Grave
             if (Transaction.TransactionScope != null)
                 return Transaction.Transaction.EnterSessionContext();
 
-// ReSharper disable UnusedVariable
             var scope = System.Transactions.Transaction.Current != null
-// ReSharper restore UnusedVariable
-                ? new TransactionScope(System.Transactions.Transaction.Current)
-                : new TransactionScope(TransactionScopeOption.RequiresNew);
+                ? new TransactionScope(System.Transactions.Transaction.Current, TransactionScopeAsyncFlowOption.Enabled)
+                : new TransactionScope(TransactionScopeOption.RequiresNew, TransactionScopeAsyncFlowOption.Enabled);
 
             if (System.Transactions.Transaction.Current != null)
             {
@@ -427,11 +470,11 @@ namespace Frontenac.Grave
 
         private void PrepareInternal()
         {
+            if (!TransactionMutex.WaitOne(TimeSpan.FromSeconds(TransactionTimeout)))
+                throw new TimeoutException("Could not acquire transaction mutex.");
+
             using (EnterTransactionContext())
             {
-                if (!TransactionMutex.WaitOne(TimeSpan.FromSeconds(20)))
-                    throw new TimeoutException("Could not acquire transaction mutex.");
-
                 foreach (var index in Transaction.TransactionalIndices.Values)
                 {
                     index.Commit();

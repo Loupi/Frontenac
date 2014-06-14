@@ -32,8 +32,12 @@ namespace Frontenac.Grave.Installers
                 Component.For<Lucene.Net.Store.Directory>()
                          .UsingFactoryMethod(t =>
                              {
-                                 var path = Path.Combine(AppDomain.CurrentDomain.BaseDirectory,
-                                                         string.Concat(EsentInstance.CleanDatabaseName(Settings.Default.InstanceName), "\\Lucene"));
+                                 var databaseName = EsentInstance.CleanDatabaseName(Settings.Default.InstanceName);
+                                 var databasePath = Path.GetDirectoryName(Settings.Default.InstanceName);
+                                 if (string.IsNullOrWhiteSpace(databasePath))
+                                     databasePath = Path.GetFileNameWithoutExtension(databaseName);
+                                 
+                                 var path = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, string.Concat(databasePath, "\\Lucene"));
                                  return LuceneIndexingService.CreateMMapDirectory(path);
                              }),
 

@@ -615,7 +615,7 @@ namespace Frontenac.Blueprints
                         Interlocked.Increment(ref completedThreads);
                     });
 
-                Assert.AreEqual(completedThreads, 250);
+                Assert.AreEqual(completedThreads, totalThreads);
                 EdgeCount(graph, edges);
                 VertexCount(graph, vertices);
             }

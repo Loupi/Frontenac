@@ -265,11 +265,21 @@ namespace Frontenac.Grave.Esent
             int sz;
             Api.JetGetBookmark(Session, TableId, bookmark, bookmark.Length, out sz);
 
-            Api.JetAddColumn(Session, TableId, columnName, new JET_COLUMNDEF
+            try
+            {
+                Api.JetAddColumn(Session, TableId, columnName, new JET_COLUMNDEF
                 {
                     coltyp = _contentSerializer.IsBinary ? JET_coltyp.LongBinary : JET_coltyp.LongText,
                     grbit = ColumndefGrbit.ColumnMaybeNull | ColumndefGrbit.ColumnTagged
                 }, null, 0, out columnId);
+            }
+            catch (EsentColumnDuplicateException)
+            {
+                var columns = Api.GetTableColumns(Session, TableId).ToList();
+                columnId = columns.Single(info => info.Name == columnName).Columnid;
+
+                //columnId = Api.GetTableColumnid(Session, TableId, columnName);
+            }
 
             Columns.Add(columnName, columnId);
 

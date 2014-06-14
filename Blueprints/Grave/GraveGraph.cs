@@ -64,6 +64,8 @@ namespace Frontenac.Grave
             public ThreadContext()
             {
                 Indices = new Dictionary<string, GraveIndex>();
+                NewVertices = new List<int>();
+                NewEdges = new List<int>();
             }
 
             public EsentContext Context { get; set; }
@@ -71,6 +73,8 @@ namespace Frontenac.Grave
             public Dictionary<string, GraveIndex> Indices { get; private set; }
             public long Generation { get; set; }
             public bool RefreshRequired { get; set; }
+            public List<int> NewVertices { get; private set; }
+            public List<int> NewEdges { get; private set; }
         }
 
         protected readonly ThreadLocal<ThreadContext> Contexts;
@@ -170,6 +174,11 @@ namespace Frontenac.Grave
         public virtual IVertex AddVertex(object unused)
         {
             var id = Context.Context.VertexTable.AddRow();
+            //if (Features.SupportsTransactions) 
+                Context.NewVertices.Add(id);
+            //else
+            //    Context.IndexingService.Commit();
+            
             return new GraveVertex(this, Context.Context.VertexTable, id);
         }
 
@@ -192,6 +201,7 @@ namespace Frontenac.Grave
 
             var vertexId = (int) vertex.Id;
             Context.Context.VertexTable.DeleteRow(vertexId);
+            //if (Context.NewVertices.Contains(vertexId)) return;
             var generation = Context.IndexingService.VertexIndices.DeleteDocuments(vertexId);
             UpdateGeneration(generation);
         }
@@ -231,6 +241,10 @@ namespace Frontenac.Grave
             var edgeId = Context.Context.EdgesTable.AddEdge(label, inVertexId, outVertexId);
             Context.Context.VertexTable.AddEdge(inVertexId, Direction.In, label, edgeId, outVertexId);
             Context.Context.VertexTable.AddEdge(outVertexId, Direction.Out, label, edgeId, inVertexId);
+            //if(Features.SupportsTransactions) 
+                //Context.NewEdges.Add(edgeId);
+            //else
+            //    Context.IndexingService.Commit();
             return new GraveEdge(edgeId, outVertex, inVertex, label, this, Context.Context.EdgesTable);
         }
 
@@ -254,6 +268,7 @@ namespace Frontenac.Grave
             var outVertexId = (int) edge.GetVertex(Direction.Out).Id;
             Context.Context.VertexTable.DeleteEdge(inVertexId, Direction.In, edge.Label, edgeId, outVertexId);
             Context.Context.VertexTable.DeleteEdge(outVertexId, Direction.Out, edge.Label, edgeId, inVertexId);
+            //if (Context.NewEdges.Contains(edgeId)) return;
             var generation = Context.IndexingService.EdgeIndices.DeleteDocuments(edgeId);
             UpdateGeneration(generation);
         }
