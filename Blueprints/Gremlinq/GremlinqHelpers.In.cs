@@ -16,7 +16,7 @@ namespace Frontenac.Gremlinq
             Contract.Ensures(Contract.Result<IEnumerable<IVertex>>() != null);
 
             var finalLabels = labels.Length == 0 ? vertex.GetPropertyKeys() : labels;
-            return finalLabels.SelectMany(t => vertex.In(t).Take(branchFactor));
+            return finalLabels.SelectMany(t => vertex.In(t).Take(branchFactor)).Take(branchFactor);
         }
 
         public static IEnumerable<IVertex> In(this IEnumerable<IVertex> vertices, int branchFactor, params string[] labels)
@@ -25,7 +25,7 @@ namespace Frontenac.Gremlinq
             Contract.Requires(labels != null);
             Contract.Ensures(Contract.Result<IEnumerable<IVertex>>() != null);
 
-            return vertices.SelectMany(t => t.In(branchFactor, labels));
+            return vertices.SelectMany(t => t.In(branchFactor, labels)).Take(branchFactor);
         }
 
         public static IEnumerable<IVertex<TInModel>> In<TOutModel, TInModel>(
@@ -51,7 +51,7 @@ namespace Frontenac.Gremlinq
             Contract.Requires(propertySelector != null);
             Contract.Ensures(Contract.Result<IEnumerable<IVertex<TInModel>>>() != null);
 
-            return vertices.SelectMany(t => t.In(branchFactor, propertySelector));
+            return vertices.SelectMany(t => t.In(branchFactor, propertySelector)).Take(branchFactor);
         }
 
         public static IEnumerable<IVertex<TInModel>> In<TOutModel, TInModel>(

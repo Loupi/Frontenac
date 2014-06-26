@@ -9,6 +9,13 @@ namespace Frontenac.Blueprints.Impls.TG
             Contract.Ensures(Contract.Result<TinkerGraph>() != null);
 
             var graph = new TinkerGraph();
+            CreateTinkerGraph(graph);
+            return graph;
+        }
+
+        public static void CreateTinkerGraph(IGraph graph)
+        {
+            Contract.Requires(graph != null);
 
             var marko = graph.AddVertex("1");
             marko.SetProperty("name", "marko");
@@ -47,8 +54,6 @@ namespace Frontenac.Blueprints.Impls.TG
             graph.AddEdge("11", josh, lop, "created").SetProperty("weight", 0.4);
 
             graph.AddEdge("12", peter, lop, "created").SetProperty("weight", 0.2);
-
-            return graph;
         }
     }
 }

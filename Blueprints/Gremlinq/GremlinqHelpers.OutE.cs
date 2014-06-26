@@ -16,7 +16,7 @@ namespace Frontenac.Gremlinq
             Contract.Ensures(Contract.Result<IEnumerable<IEdge>>() != null);
 
             var finalLabels = labels.Length == 0 ? vertex.GetPropertyKeys() : labels;
-            return finalLabels.SelectMany(t => vertex.OutE(t).Take(branchFactor));
+            return finalLabels.SelectMany(t => vertex.OutE(t).Take(branchFactor)).Take(branchFactor);
         }
 
         public static IEnumerable<IEdge> OutE(this IEnumerable<IVertex> vertices, int branchFactor, params string[] labels)
@@ -25,7 +25,7 @@ namespace Frontenac.Gremlinq
             Contract.Requires(labels != null);
             Contract.Ensures(Contract.Result<IEnumerable<IEdge>>() != null);
 
-            return vertices.SelectMany(t => t.OutE(branchFactor, labels));
+            return vertices.SelectMany(t => t.OutE(branchFactor, labels)).Take(branchFactor);
         }
 
         public static IEnumerable<IEdge<TEdgeModel>> OutE<TEdgeModel, TInModel>(
@@ -51,7 +51,7 @@ namespace Frontenac.Gremlinq
             Contract.Requires(propertySelector != null);
             Contract.Ensures(Contract.Result<IEnumerable<IEdge<TEdgeModel>>>() != null);
 
-            return vertices.SelectMany(t => t.OutE(branchFactor, propertySelector));
+            return vertices.SelectMany(t => t.OutE(branchFactor, propertySelector)).Take(branchFactor);
         }
 
         public static IEnumerable<IEdge<TEdgeModel>> OutE<TEdgeModel, TInModel>(

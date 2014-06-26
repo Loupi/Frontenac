@@ -22,7 +22,7 @@ namespace Frontenac.Gremlinq
             Contract.Requires(labels != null);
             Contract.Ensures(Contract.Result<IEnumerable<IVertex>>() != null);
 
-            return vertex.In(branchFactor, labels).Concat(vertex.Out(branchFactor, labels));
+            return vertex.In(branchFactor, labels).Concat(vertex.Out(branchFactor, labels)).Take(branchFactor);
         }
 
         public static IEnumerable<IEdge> BothE(this IVertex vertex, params string[] labels)
@@ -40,7 +40,7 @@ namespace Frontenac.Gremlinq
             Contract.Requires(labels != null);
             Contract.Ensures(Contract.Result<IEnumerable<IEdge>>() != null);
 
-            return vertex.InE(branchFactor, labels).Concat(vertex.OutE(branchFactor, labels));
+            return vertex.InE(branchFactor, labels).Concat(vertex.OutE(branchFactor, labels)).Take(branchFactor);
         }
     }
 }

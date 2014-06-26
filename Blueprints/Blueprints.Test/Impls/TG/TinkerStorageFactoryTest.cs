@@ -21,7 +21,7 @@ namespace Frontenac.Blueprints.Impls.TG
 
         private string GetDirectory()
         {
-            String directory = Environment.GetEnvironmentVariable("tinkerGraphDirectory") ?? GetWorkingDirectory();
+            var directory = Environment.GetEnvironmentVariable("tinkerGraphDirectory") ?? GetWorkingDirectory();
             return directory;
         }
 
@@ -38,18 +38,18 @@ namespace Frontenac.Blueprints.Impls.TG
         [Test]
         public void StorageFactoryIsSingleton()
         {
-            TinkerStorageFactory factory = TinkerStorageFactory.GetInstance();
+            var factory = TinkerStorageFactory.GetInstance();
             Assert.AreSame(factory, TinkerStorageFactory.GetInstance());
         }
 
         [Test]
         public void TestDotNetStorageFactory()
         {
-            string path = GetDirectory() + "/" + "storage-test-dotnet";
+            var path = GetDirectory() + "/" + "storage-test-dotnet";
             CreateDirectory(path);
 
-            ITinkerStorage storage = TinkerStorageFactory.GetInstance().GetTinkerStorage(TinkerGraph.FileType.DotNet);
-            TinkerGraph graph = TinkerGraphFactory.CreateTinkerGraph();
+            var storage = TinkerStorageFactory.GetInstance().GetTinkerStorage(TinkerGraph.FileType.DotNet);
+            var graph = TinkerGraphFactory.CreateTinkerGraph();
             storage.Save(graph, path);
 
             Assert.AreEqual(1, FindFilesByExt(path, "dat").Count());
@@ -58,11 +58,11 @@ namespace Frontenac.Blueprints.Impls.TG
         [Test]
         public void TestGmlStorage()
         {
-            string path = GetDirectory() + "/" + "storage-test-gml";
+            var path = GetDirectory() + "/" + "storage-test-gml";
             CreateDirectory(path);
 
-            ITinkerStorage storage = TinkerStorageFactory.GetInstance().GetTinkerStorage(TinkerGraph.FileType.Gml);
-            TinkerGraph graph = TinkerGraphFactory.CreateTinkerGraph();
+            var storage = TinkerStorageFactory.GetInstance().GetTinkerStorage(TinkerGraph.FileType.Gml);
+            var graph = TinkerGraphFactory.CreateTinkerGraph();
             storage.Save(graph, path);
 
             Assert.AreEqual(1, FindFilesByExt(path, "gml").Count());
@@ -72,11 +72,11 @@ namespace Frontenac.Blueprints.Impls.TG
         [Test]
         public void TestGraphMlStorage()
         {
-            string path = GetDirectory() + "/" + "storage-test-graphml";
+            var path = GetDirectory() + "/" + "storage-test-graphml";
             CreateDirectory(path);
 
-            ITinkerStorage storage = TinkerStorageFactory.GetInstance().GetTinkerStorage(TinkerGraph.FileType.Graphml);
-            TinkerGraph graph = TinkerGraphFactory.CreateTinkerGraph();
+            var storage = TinkerStorageFactory.GetInstance().GetTinkerStorage(TinkerGraph.FileType.Graphml);
+            var graph = TinkerGraphFactory.CreateTinkerGraph();
             storage.Save(graph, path);
 
             Assert.AreEqual(1, FindFilesByExt(path, "xml").Count());
@@ -86,11 +86,11 @@ namespace Frontenac.Blueprints.Impls.TG
         [Test]
         public void TestGraphSonStorageFactory()
         {
-            string path = GetDirectory() + "/" + "storage-test-graphson";
+            var path = GetDirectory() + "/" + "storage-test-graphson";
             CreateDirectory(path);
 
-            ITinkerStorage storage = TinkerStorageFactory.GetInstance().GetTinkerStorage(TinkerGraph.FileType.Graphson);
-            TinkerGraph graph = TinkerGraphFactory.CreateTinkerGraph();
+            var storage = TinkerStorageFactory.GetInstance().GetTinkerStorage(TinkerGraph.FileType.Graphson);
+            var graph = TinkerGraphFactory.CreateTinkerGraph();
             storage.Save(graph, path);
 
             Assert.AreEqual(1, FindFilesByExt(path, "json").Count());

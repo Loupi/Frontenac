@@ -25,7 +25,7 @@ namespace Frontenac.Gremlinq
             Contract.Requires(labels != null);
             Contract.Ensures(Contract.Result<IEnumerable<IVertex>>() != null);
 
-            return vertices.SelectMany(t => t.Out(branchFactor, labels));
+            return vertices.SelectMany(t => t.Out(branchFactor, labels)).Take(branchFactor);
         }
 
         public static IEnumerable<IVertex<TOutModel>> Out<TOutModel, TInModel>(
@@ -51,7 +51,7 @@ namespace Frontenac.Gremlinq
             Contract.Requires(propertySelector != null);
             Contract.Ensures(Contract.Result<IEnumerable<IVertex<TOutModel>>>() != null);
 
-            return vertices.SelectMany(t => t.Out(branchFactor, propertySelector));
+            return vertices.SelectMany(t => t.Out(branchFactor, propertySelector)).Take(branchFactor);
         }
 
         public static IEnumerable<IVertex<TOutModel>> Out<TOutModel, TInModel>(
