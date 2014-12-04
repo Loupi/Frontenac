@@ -14,6 +14,9 @@ namespace Frontenac.Gremlinq.Test
         {
         }
 
+        /// <summary>
+        /// Get both adjacent vertices of the vertex, the in and the out.
+        /// </summary>
         [Test]
         public void TestBoth()
         {
@@ -49,6 +52,9 @@ namespace Frontenac.Gremlinq.Test
             }
         }
 
+        /// <summary>
+        /// Get both incoming and outgoing edges of the vertex.
+        /// </summary>
         [Test]
         public void TestBothE()
         {
@@ -84,6 +90,9 @@ namespace Frontenac.Gremlinq.Test
             }
         }
 
+        /// <summary>
+        /// Get both incoming and outgoing vertices of the edge.
+        /// </summary>
         [Test]
         public void TestBothV()
         {
@@ -106,6 +115,24 @@ namespace Frontenac.Gremlinq.Test
                 Assert.AreEqual(2, bothV.Length);
                 Assert.AreEqual("v[6]", bothV[0].ToString());
                 Assert.AreEqual("v[3]", bothV[1].ToString());
+            }
+            finally
+            {
+                g.Shutdown();
+            }
+        }
+
+        /// <summary>
+        /// In Gremlinq, there is no Cap operator. Instead, LINQ operators like ToList(), ToArray(), and ToDictionary() can be used to get the 
+        /// value of the previous step.
+        /// </summary>
+        [Test]
+        public void TestCap()
+        {
+            var g = GraphTest.GenerateGraph();
+            try
+            {
+                g.V("lang", "java").In("created").Select(vertex =>  vertex.GetProperty("")).GroupCount();
             }
             finally
             {

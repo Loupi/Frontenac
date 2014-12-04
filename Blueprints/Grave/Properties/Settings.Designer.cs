@@ -31,14 +31,5 @@ namespace Frontenac.Grave.Properties {
                 return ((string)(this["InstanceName"]));
             }
         }
-        
-        [global::System.Configuration.ApplicationScopedSettingAttribute()]
-        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("10")]
-        public uint ObjectIndexerMaxDepth {
-            get {
-                return ((uint)(this["ObjectIndexerMaxDepth"]));
-            }
-        }
     }
 }

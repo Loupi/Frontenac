@@ -6,7 +6,7 @@ using System.Threading;
 using System.Transactions;
 using Frontenac.Blueprints;
 using Frontenac.Grave.Esent;
-using Frontenac.Grave.Indexing;
+using Frontenac.Infrastructure.Indexing;
 
 namespace Frontenac.Grave
 {
@@ -393,7 +393,7 @@ namespace Frontenac.Grave
             GraveTransactionalIndex index;
             if (!Transaction.TransactionalIndices.TryGetValue(key, out index))
             {
-                index = new GraveTransactionalIndex((GraveIndex)base.CreateIndexObject(indexName, indexType, indexCollection, userIndexCollection),
+                index = new GraveTransactionalIndex((Index)base.CreateIndexObject(indexName, indexType, indexCollection, userIndexCollection),
                                                     (TransactionalIndexCollection)indexCollection,
                                                     (TransactionalIndexCollection)userIndexCollection);
                 Transaction.TransactionalIndices.Add(key, index);

@@ -2,8 +2,8 @@
 using System.Diagnostics.Contracts;
 using System.Linq.Expressions;
 using Frontenac.Blueprints;
-using Frontenac.Grave.Geo;
 using Frontenac.Gremlinq;
+using Frontenac.Infrastructure.Geo;
 
 namespace Frontenac.Grave
 {

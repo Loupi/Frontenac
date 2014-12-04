@@ -6,11 +6,11 @@ using System.Threading;
 using Frontenac.Blueprints;
 using Frontenac.Blueprints.Util;
 using Frontenac.Grave.Esent;
-using Frontenac.Grave.Indexing;
+using Frontenac.Infrastructure.Indexing;
 
 namespace Frontenac.Grave
 {
-    public class GraveGraph : IKeyIndexableGraph, IIndexableGraph
+    public class GraveGraph : IKeyIndexableGraph, IIndexableGraph, IGenerationBasedIndex
     {
         private readonly IGraveGraphFactory _factory;
         protected readonly EsentInstance Instance;
@@ -53,24 +53,18 @@ namespace Frontenac.Grave
                 SupportsLabelProperty = true
             };
 
-        /*internal readonly EsentContext Context;
-        internal readonly IndexingService IndexingService;
-        private readonly Dictionary<string, GraveIndex> _indices = new Dictionary<string, GraveIndex>();
-        private long _generation;
-        private bool _refreshRequired;*/
-
         public class ThreadContext
         {
             public ThreadContext()
             {
-                Indices = new Dictionary<string, GraveIndex>();
+                Indices = new Dictionary<string, Index>();
                 NewVertices = new List<int>();
                 NewEdges = new List<int>();
             }
 
             public EsentContext Context { get; set; }
             public IndexingService IndexingService { get; set; }
-            public Dictionary<string, GraveIndex> Indices { get; private set; }
+            public Dictionary<string, Index> Indices { get; private set; }
             public long Generation { get; set; }
             public bool RefreshRequired { get; set; }
             public List<int> NewVertices { get; private set; }
@@ -93,10 +87,13 @@ namespace Frontenac.Grave
             Contexts = new ThreadLocal<ThreadContext>(() =>
                 {
                     var context = Instance.CreateContext();
+                    var indexing = indexingServiceFactory.Create();
+                    indexing.LoadFromStore(new EsentIndexStore(context));
+
                     return new ThreadContext()
                         {
                             Context = context,
-                            IndexingService = indexingServiceFactory.Create(context)
+                            IndexingService = indexing
                         };
                 } 
                 , true);
@@ -145,10 +142,10 @@ namespace Frontenac.Grave
         protected virtual IIndex CreateIndexObject(string indexName, Type indexType, IIndexCollection indexCollection, IIndexCollection userIndexCollection)
         {
             var key = string.Concat(indexName, indexType);
-            GraveIndex index;
+            Index index;
             if (!Context.Indices.TryGetValue(key, out index))
             {
-                index = new GraveIndex(indexName, indexType, this, Context.IndexingService);
+                index = new Index(indexName, indexType, this, this, Context.IndexingService);
                 Context.Indices.Add(key, index);
             }
             return index;
@@ -231,7 +228,7 @@ namespace Frontenac.Grave
 
             WaitForGeneration();
             return Context.IndexingService.VertexIndices.Get(key, key, value, int.MaxValue)
-                .Select(vertexId => new GraveVertex(this, Context.Context.VertexTable, vertexId));
+                .Select(vertexId => new GraveVertex(this, Context.Context.VertexTable, (int)vertexId));
         }
 
         public virtual IEdge AddEdge(object unused, IVertex outVertex, IVertex inVertex, string label)
@@ -417,7 +414,7 @@ namespace Frontenac.Grave
         public virtual IQuery Query()
         {
             WaitForGeneration();
-            return new GraveQuery(this, Context.IndexingService);
+            return new IndexQuery(this, Context.IndexingService);
         }
 
         public virtual void Shutdown()
@@ -429,17 +426,17 @@ namespace Frontenac.Grave
             }
         }
 
-        internal void UpdateGeneration(long generation)
+        public void UpdateGeneration(long generation)
         {
             Context.Generation = generation;
-            Context.RefreshRequired = true;
+            //Context.RefreshRequired = true;
         }
 
-        internal void WaitForGeneration()
+        public void WaitForGeneration()
         {
             //if (!Context.RefreshRequired) return;
             Context.IndexingService.WaitForGeneration(Context.Generation);
-            Context.RefreshRequired = false;
+            //Context.RefreshRequired = false;
         }
 
         protected static int? TryToInt32(object value)
@@ -484,10 +481,10 @@ namespace Frontenac.Grave
                 foreach (var edgeId in edgeIds)
                 {
                     Tuple<string, int, int> data;
-                    if (!cursor.TryGetEdge(edgeId, out data)) continue;
+                    if (!cursor.TryGetEdge((int)edgeId, out data)) continue;
                     var vertexOut = new GraveVertex(this, Context.Context.VertexTable, data.Item3);
                     var vertexIn = new GraveVertex(this, Context.Context.VertexTable, data.Item2);
-                    yield return new GraveEdge(edgeId, vertexOut, vertexIn, data.Item1, this, Context.Context.EdgesTable);
+                    yield return new GraveEdge((int)edgeId, vertexOut, vertexIn, data.Item1, this, Context.Context.EdgesTable);
                 }
             }
             finally

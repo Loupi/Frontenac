@@ -4,7 +4,7 @@ using System.Diagnostics.Contracts;
 using System.Linq;
 using System.Runtime.InteropServices;
 using System.Text;
-using Frontenac.Grave.Esent.Serializers;
+using Frontenac.Infrastructure.Serializers;
 using Microsoft.Isam.Esent.Interop;
 
 namespace Frontenac.Grave.Esent
@@ -251,6 +251,7 @@ namespace Frontenac.Grave.Esent
 
         public void CreateColumn(string columnName)
         {
+            Contract.Requires(!string.IsNullOrWhiteSpace(columnName));
             CreateColumn(columnName, _contentSerializer.IsBinary ? JET_coltyp.LongBinary : JET_coltyp.LongText,
                          ColumndefGrbit.ColumnMaybeNull);
         }

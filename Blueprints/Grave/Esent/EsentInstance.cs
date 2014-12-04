@@ -2,7 +2,7 @@
 using System.Diagnostics.Contracts;
 using System.IO;
 using System.Threading;
-using Frontenac.Grave.Esent.Serializers;
+using Frontenac.Infrastructure.Serializers;
 using Microsoft.Isam.Esent.Interop;
 
 namespace Frontenac.Grave.Esent
@@ -17,6 +17,7 @@ namespace Frontenac.Grave.Esent
 
         public EsentInstance(string instanceName, IContentSerializer contentSerializer)
         {
+            Contract.Requires(!string.IsNullOrWhiteSpace(instanceName));
             Contract.Ensures(!string.IsNullOrWhiteSpace(_databaseName));
 
             _databaseName = CleanDatabaseName(instanceName);

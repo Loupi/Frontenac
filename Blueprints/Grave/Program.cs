@@ -5,8 +5,8 @@ using System.Linq;
 using Frontenac.Blueprints;
 using Frontenac.Blueprints.Impls.TG;
 using Frontenac.Grave.Entities;
-using Frontenac.Grave.Geo;
 using Frontenac.Gremlinq;
+using Frontenac.Infrastructure.Geo;
 
 namespace Frontenac.Grave
 {

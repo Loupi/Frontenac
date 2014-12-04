@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Diagnostics.Contracts;
-using Frontenac.Grave.Esent;
 
 namespace Frontenac.Grave
 {

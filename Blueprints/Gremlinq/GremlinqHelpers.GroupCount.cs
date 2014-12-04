@@ -5,6 +5,19 @@ namespace Frontenac.Gremlinq
 {
     public static partial class GremlinqHelpers
     {
+        public static IDictionary<T, int> GroupCount<T>(
+            this IEnumerable<T> source)
+        {
+            var dic = new Dictionary<T, int>();
+#pragma warning disable 168
+            foreach (var source1 in source.GroupCount(dic))
+#pragma warning restore 168
+            {
+                
+            }
+            return dic;
+        }
+
         public static IEnumerable<T> GroupCount<T>(
             this IEnumerable<T> source,
             IDictionary<T, int> m)

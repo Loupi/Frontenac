@@ -24,6 +24,12 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Gremlinq", "Gremlinq\Gremli
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Gremlinq.Test", "Gremlinq.Test\Gremlinq.Test.csproj", "{E56BA77A-8BB0-4572-878A-3EBAB7A1B921}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Infrastructure", "Infrastructure\Infrastructure.csproj", "{F3A4E6DC-BB03-409D-9BDE-71BC122D9008}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BlueRed", "BlueRed\BlueRed.csproj", "{8C80B2EB-F101-4082-8B60-50AB34AEB689}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BlueRed.Test", "BlueRed.Test\BlueRed.Test.csproj", "{1B7B96D7-6E15-43E5-A7D9-C516F414AA77}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug (.NET 4.0)|Any CPU = Debug (.NET 4.0)|Any CPU
@@ -96,6 +102,30 @@ Global
 		{E56BA77A-8BB0-4572-878A-3EBAB7A1B921}.Release (.NET 4.0)|Any CPU.Build.0 = Release|Any CPU
 		{E56BA77A-8BB0-4572-878A-3EBAB7A1B921}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{E56BA77A-8BB0-4572-878A-3EBAB7A1B921}.Release|Any CPU.Build.0 = Release|Any CPU
+		{F3A4E6DC-BB03-409D-9BDE-71BC122D9008}.Debug (.NET 4.0)|Any CPU.ActiveCfg = Debug|Any CPU
+		{F3A4E6DC-BB03-409D-9BDE-71BC122D9008}.Debug (.NET 4.0)|Any CPU.Build.0 = Debug|Any CPU
+		{F3A4E6DC-BB03-409D-9BDE-71BC122D9008}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{F3A4E6DC-BB03-409D-9BDE-71BC122D9008}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{F3A4E6DC-BB03-409D-9BDE-71BC122D9008}.Release (.NET 4.0)|Any CPU.ActiveCfg = Release|Any CPU
+		{F3A4E6DC-BB03-409D-9BDE-71BC122D9008}.Release (.NET 4.0)|Any CPU.Build.0 = Release|Any CPU
+		{F3A4E6DC-BB03-409D-9BDE-71BC122D9008}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{F3A4E6DC-BB03-409D-9BDE-71BC122D9008}.Release|Any CPU.Build.0 = Release|Any CPU
+		{8C80B2EB-F101-4082-8B60-50AB34AEB689}.Debug (.NET 4.0)|Any CPU.ActiveCfg = Debug|Any CPU
+		{8C80B2EB-F101-4082-8B60-50AB34AEB689}.Debug (.NET 4.0)|Any CPU.Build.0 = Debug|Any CPU
+		{8C80B2EB-F101-4082-8B60-50AB34AEB689}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{8C80B2EB-F101-4082-8B60-50AB34AEB689}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{8C80B2EB-F101-4082-8B60-50AB34AEB689}.Release (.NET 4.0)|Any CPU.ActiveCfg = Release|Any CPU
+		{8C80B2EB-F101-4082-8B60-50AB34AEB689}.Release (.NET 4.0)|Any CPU.Build.0 = Release|Any CPU
+		{8C80B2EB-F101-4082-8B60-50AB34AEB689}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{8C80B2EB-F101-4082-8B60-50AB34AEB689}.Release|Any CPU.Build.0 = Release|Any CPU
+		{1B7B96D7-6E15-43E5-A7D9-C516F414AA77}.Debug (.NET 4.0)|Any CPU.ActiveCfg = Debug|Any CPU
+		{1B7B96D7-6E15-43E5-A7D9-C516F414AA77}.Debug (.NET 4.0)|Any CPU.Build.0 = Debug|Any CPU
+		{1B7B96D7-6E15-43E5-A7D9-C516F414AA77}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{1B7B96D7-6E15-43E5-A7D9-C516F414AA77}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{1B7B96D7-6E15-43E5-A7D9-C516F414AA77}.Release (.NET 4.0)|Any CPU.ActiveCfg = Release|Any CPU
+		{1B7B96D7-6E15-43E5-A7D9-C516F414AA77}.Release (.NET 4.0)|Any CPU.Build.0 = Release|Any CPU
+		{1B7B96D7-6E15-43E5-A7D9-C516F414AA77}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{1B7B96D7-6E15-43E5-A7D9-C516F414AA77}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

@@ -1,5 +1,5 @@
 ﻿using System.Collections.Generic;
-using Frontenac.Grave.Geo;
+using Frontenac.Infrastructure.Geo;
 
 namespace Frontenac.Grave.Entities
 {

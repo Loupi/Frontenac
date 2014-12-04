@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Diagnostics.Contracts;
 using Frontenac.Blueprints;
-using Frontenac.Grave.Esent.Serializers;
+using Frontenac.Infrastructure.Serializers;
 using Microsoft.Isam.Esent.Interop;
 using Microsoft.Isam.Esent.Interop.Vista;
 

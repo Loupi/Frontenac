@@ -94,6 +94,7 @@ namespace Frontenac.Grave
                 _container.AddFacility<StartableFacility>(f => f.DeferredStart());
                 _container.AddFacility<TypedFactoryFacility>();
                 _container.Install(FromAssembly.Named("Frontenac.Grave"));
+                _container.Install(FromAssembly.Named("Frontenac.Infrastructure"));
                 GraphFactory = _container.Resolve<IGraveGraphFactory>();
             }
 

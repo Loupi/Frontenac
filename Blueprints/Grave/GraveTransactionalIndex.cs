@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Diagnostics.Contracts;
 using System.Linq;
 using Frontenac.Blueprints;
-using Frontenac.Grave.Indexing;
+using Frontenac.Infrastructure.Indexing;
 
 namespace Frontenac.Grave
 {
@@ -15,11 +15,11 @@ namespace Frontenac.Grave
         readonly Dictionary<string, List<KeyValuePair<object, IElement>>> _removeBuffer =
             new Dictionary<string, List<KeyValuePair<object, IElement>>>();
 
-        private readonly GraveIndex _index;
+        private readonly Index _index;
         private readonly TransactionalIndexCollection _indexCollection;
         private readonly TransactionalIndexCollection _userIndexCollection;
 
-        public GraveTransactionalIndex(GraveIndex index, TransactionalIndexCollection indexCollection, 
+        public GraveTransactionalIndex(Index index, TransactionalIndexCollection indexCollection, 
                                        TransactionalIndexCollection userIndexCollection)
         {
             Contract.Requires(index != null);
@@ -122,7 +122,7 @@ namespace Frontenac.Grave
                 }
             }
 
-            _index.Graph.WaitForGeneration();
+            _index.GenBasedIndex.WaitForGeneration();
         }
 
         public void Clear()

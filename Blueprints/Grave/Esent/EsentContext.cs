@@ -1,6 +1,6 @@
 ﻿using System;
 using System.Diagnostics.Contracts;
-using Frontenac.Grave.Esent.Serializers;
+using Frontenac.Infrastructure.Serializers;
 using Microsoft.Isam.Esent.Interop;
 
 namespace Frontenac.Grave.Esent
