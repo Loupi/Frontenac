@@ -2,16 +2,16 @@
 using System.Collections.Generic;
 using System.Diagnostics.Contracts;
 using System.Linq;
-using System.Threading;
 using Frontenac.Blueprints;
 using Frontenac.Blueprints.Util;
+using Frontenac.Infrastructure;
 using Frontenac.Infrastructure.Indexing;
 using Frontenac.Infrastructure.Serializers;
 using StackExchange.Redis;
 
 namespace Frontenac.BlueRed
 {
-    public class RedisGraph : IKeyIndexableGraph, IIndexableGraph, IGenerationBasedIndex
+    public class RedisGraph : IndexedGraph
     {
         private static readonly Features RedisGraphFeatures = new Features
         {
@@ -52,24 +52,10 @@ namespace Frontenac.BlueRed
         internal readonly IContentSerializer Serializer;
         internal readonly ConnectionMultiplexer Multiplexer;
 
-        public class ThreadContext
-        {
-            public ThreadContext()
-            {
-                Indices = new Dictionary<string, Index>();
-            }
-
-            public IndexingService IndexingService { get; set; }
-            public Dictionary<string, Index> Indices { get; private set; }
-            public long Generation { get; set; }
-            public bool RefreshRequired { get; set; }
-        }
-
-        protected readonly ThreadLocal<ThreadContext> Contexts;
-
         public RedisGraph(IContentSerializer serializer, 
                           ConnectionMultiplexer multiplexer, 
                           IIndexingServiceFactory indexingServiceFactory)
+            :base(indexingServiceFactory)
         {
             Contract.Requires(serializer != null);
             Contract.Requires(multiplexer != null);
@@ -77,149 +63,26 @@ namespace Frontenac.BlueRed
 
             Serializer = serializer;
             Multiplexer = multiplexer;
-
-            Contexts = new ThreadLocal<ThreadContext>(() =>
-            {
-                var indexing = indexingServiceFactory.Create();
-                indexing.LoadFromStore(new RedisIndexStore(multiplexer));
-
-                return new ThreadContext()
-                {
-                    IndexingService = indexing
-                };
-            }, true);
         }
 
-        public ThreadContext Context
+        protected override ThreadContext CreateThreadContext(IIndexingServiceFactory indexingServiceFactory)
         {
-            get { return Contexts.Value; }
+            var indexing = indexingServiceFactory.Create();
+            indexing.LoadFromStore(new RedisIndexStore(Multiplexer));
+            return new ThreadContext { IndexingService = indexing };
         }
 
-        public virtual IIndex CreateIndex(string indexName, Type indexClass, params Parameter[] indexParameters)
+        protected override IVertex GetVertexInstance(long vertexId)
         {
-            if (GetIndices(typeof(IVertex), true).HasIndex(indexName) ||
-                GetIndices(typeof(IEdge), true).HasIndex(indexName))
-                throw ExceptionFactory.IndexAlreadyExists(indexName);
-
-            var indexCollection = GetIndices(indexClass, true);
-            var userIndexCollection = GetIndices(indexClass, false);
-            indexCollection.CreateIndex(indexName);
-            return CreateIndexObject(indexName, indexClass, indexCollection, userIndexCollection);
+            return new RedisVertex(vertexId, this);
         }
 
-        public virtual IIndex GetIndex(string indexName, Type indexClass)
-        {
-            var indexCollection = GetIndices(indexClass, true);
-            var userIndexCollection = GetIndices(indexClass, false);
-            return indexCollection.HasIndex(indexName)
-                       ? CreateIndexObject(indexName, indexClass, indexCollection, userIndexCollection)
-                       : null;
-        }
-
-        public virtual IEnumerable<IIndex> GetIndices()
-        {
-            var vertexIndexCollection = GetIndices(typeof(IVertex), true);
-            var edgeIndexCollection = GetIndices(typeof(IEdge), true);
-
-            var userVertexIndexCollection = GetIndices(typeof(IVertex), false);
-            var userEdgeIndexCollection = GetIndices(typeof(IEdge), false);
-
-            return vertexIndexCollection.GetIndices()
-                .Select(t => CreateIndexObject(t, typeof(IVertex), vertexIndexCollection, userVertexIndexCollection))
-                .Concat(edgeIndexCollection.GetIndices()
-                        .Select(t => CreateIndexObject(t, typeof(IEdge), edgeIndexCollection, userEdgeIndexCollection)));
-        }
-
-        protected virtual IIndex CreateIndexObject(string indexName, Type indexType, IIndexCollection indexCollection, IIndexCollection userIndexCollection)
-        {
-            var key = string.Concat(indexName, indexType);
-            Index index;
-            if (!Context.Indices.TryGetValue(key, out index))
-            {
-                index = new Index(indexName, indexType, this, this, Context.IndexingService);
-                Context.Indices.Add(key, index);
-            }
-            return index;
-        }
-
-        public virtual void DropIndex(string indexName)
-        {
-            long generation = -1;
-            if (GetIndices(typeof(IVertex), true).HasIndex(indexName))
-                generation = GetIndices(typeof(IVertex), true).DropIndex(indexName);
-            else if (GetIndices(typeof(IEdge), true).HasIndex(indexName))
-                generation = GetIndices(typeof(IEdge), true).DropIndex(indexName);
-
-            if (generation != -1)
-                UpdateGeneration(generation);
-        }
-
-        internal IIndexCollection GetIndices(Type indexType, bool isUserIndex)
-        {
-            Contract.Requires(indexType != null);
-            Contract.Requires(indexType.IsAssignableFrom(typeof(IVertex)) || indexType.IsAssignableFrom(typeof(IEdge)));
-
-            if (indexType == null)
-                throw new ArgumentNullException("indexType");
-
-            if (isUserIndex)
-                return indexType == typeof(IVertex)
-                           ? Context.IndexingService.UserVertexIndices
-                           : Context.IndexingService.UserEdgeIndices;
-
-            return indexType == typeof(IVertex) ? Context.IndexingService.VertexIndices : Context.IndexingService.EdgeIndices;
-        }
-
-        public void UpdateGeneration(long generation)
-        {
-            Context.Generation = generation;
-            //Context.RefreshRequired = true;
-        }
-
-        public void WaitForGeneration()
-        {
-            //if (!Context.RefreshRequired) return;
-            Context.IndexingService.WaitForGeneration(Context.Generation);
-            //Context.RefreshRequired = false;
-        }
-
-        protected static long? TryToInt64(object value)
-        {
-            long? result;
-
-            if (value is long)
-                result = (long)value;
-            else if (value is string)
-            {
-                long intVal;
-                result = Int64.TryParse(value as string, out intVal) ? (long?)intVal : null;
-            }
-            else if (value == null)
-                result = null;
-            else
-            {
-                try
-                {
-                    result = Convert.ToInt64(value);
-                }
-                catch (Exception ex)
-                {
-                    if (ex is FormatException || ex is InvalidCastException || ex is OverflowException)
-                        result = null;
-                    else
-                        throw;
-                }
-            }
-
-            return result;
-        }
-
-        public Features Features
+        public override Features Features
         {
             get { return RedisGraphFeatures; }
         }
 
-        public IVertex AddVertex(object id)
+        public override IVertex AddVertex(object id)
         {
             var db = Multiplexer.GetDatabase();
             var nextId = db.StringIncrement("globals:next_vertex_id");
@@ -229,9 +92,9 @@ namespace Frontenac.BlueRed
             return vertex;
         }
 
-        public IVertex GetVertex(object id)
+        public override IVertex GetVertex(object id)
         {
-            var vertexId = TryToInt64(id);
+            var vertexId = id.TryToInt64();
             if (!vertexId.HasValue) return null;
 
             var db = Multiplexer.GetDatabase();
@@ -239,7 +102,7 @@ namespace Frontenac.BlueRed
             return val != RedisValue.Null ? new RedisVertex(vertexId.Value, this) : null;
         }
 
-        public void RemoveVertex(IVertex vertex)
+        public override void RemoveVertex(IVertex vertex)
         {
             var redisVertex = (RedisVertex) vertex;
             foreach (var edge in redisVertex.GetEdges(Direction.Both))
@@ -269,8 +132,7 @@ namespace Frontenac.BlueRed
 
             db.SortedSetRemove("globals:vertices", (long)redisVertex.Id);
 
-            var generation = Context.IndexingService.VertexIndices.DeleteDocuments((long)redisVertex.Id);
-            UpdateGeneration(generation);
+            base.RemoveVertex(vertex);
         }
 
         enum CollectionType
@@ -296,24 +158,14 @@ namespace Frontenac.BlueRed
             return string.Empty;
         }
 
-        public IEnumerable<IVertex> GetVertices()
+        public override IEnumerable<IVertex> GetVertices()
         {
             var db = Multiplexer.GetDatabase();
             var key = GetCollectionKey(CollectionType.Vertex, null);
             return db.SortedSetScan(key).Select(entry => new RedisVertex((long)entry.Element, this));
         }
 
-        public IEnumerable<IVertex> GetVertices(string key, object value)
-        {
-            if (!Context.IndexingService.VertexIndices.HasIndex(key))
-                return new PropertyFilteredIterable<IVertex>(key, value, GetVertices());
-
-            WaitForGeneration();
-            return Context.IndexingService.VertexIndices.Get(key, key, value, int.MaxValue)
-                .Select(vertexId => new RedisVertex(vertexId, this));
-        }
-
-        public IEdge AddEdge(object id, IVertex outVertex, IVertex inVertex, string label)
+        public override IEdge AddEdge(object id, IVertex outVertex, IVertex inVertex, string label)
         {
             var db = Multiplexer.GetDatabase();
             var nextId = db.StringIncrement("globals:next_edge_id");
@@ -339,9 +191,9 @@ namespace Frontenac.BlueRed
             return edge;
         }
 
-        public IEdge GetEdge(object id)
+        public override IEdge GetEdge(object id)
         {
-            var edgeId = TryToInt64(id);
+            var edgeId = id.TryToInt64();
             if (!edgeId.HasValue) return null;
 
             var db = Multiplexer.GetDatabase();
@@ -357,7 +209,7 @@ namespace Frontenac.BlueRed
             return new RedisEdge(edgeId.Value, vout, vin, label, this);
         }
 
-        public void RemoveEdge(IEdge edge)
+        public override void RemoveEdge(IEdge edge)
         {
             var redisEdge = (RedisEdge) edge;
             var vin = (RedisVertex)edge.GetVertex(Direction.In);
@@ -386,24 +238,14 @@ namespace Frontenac.BlueRed
 
             db.SortedSetRemove("globals:edges", redisEdge.RawId);
 
-            var generation = Context.IndexingService.EdgeIndices.DeleteDocuments(redisEdge.RawId);
-            UpdateGeneration(generation);
+            base.RemoveEdge(edge);
         }
 
-        public IEnumerable<IEdge> GetEdges()
+        public override IEnumerable<IEdge> GetEdges()
         {
             var db = Multiplexer.GetDatabase();
             var key = GetCollectionKey(CollectionType.Edge, null);
             return db.SortedSetScan(key).Select(entry => GetEdge((long)entry.Element));
-        }
-
-        public IEnumerable<IEdge> GetEdges(string key, object value)
-        {
-            if (!Context.IndexingService.EdgeIndices.HasIndex(key))
-                return new PropertyFilteredIterable<IEdge>(key, value, GetEdges());
-
-            WaitForGeneration();
-            return IterateEdges(key, value);
         }
 
         public virtual IEnumerable<IEdge> GetEdges(RedisVertex vertex, Direction direction, params string[] labels)
@@ -446,48 +288,9 @@ namespace Frontenac.BlueRed
             }
         }
 
-        public virtual void DropKeyIndex(string key, Type elementClass)
-        {
-            var generation = GetIndices(elementClass, false).DropIndex(key);
-            if (generation != -1)
-                UpdateGeneration(generation);
-        }
-
-        public virtual void CreateKeyIndex(string key, Type elementClass, params Parameter[] indexParameters)
-        {
-            var indices = GetIndices(elementClass, false);
-            if (indices.HasIndex(key)) return;
-
-            indices.CreateIndex(key);
-
-            if (elementClass == typeof(IVertex))
-                this.ReIndexElements(GetVertices(), new[] { key });
-            else
-                this.ReIndexElements(GetEdges(), new[] { key });
-        }
-
-        public virtual IEnumerable<string> GetIndexedKeys(Type elementClass)
-        {
-            return GetIndices(elementClass, false).GetIndices();
-        }
-
-        public IQuery Query()
-        {
-            WaitForGeneration();
-            return new IndexQuery(this, Context.IndexingService);
-        }
-
-        public void Shutdown()
+        public override void Shutdown()
         {
             
-        }
-
-        private IEnumerable<IEdge> IterateEdges(string key, object value)
-        {
-            Contract.Requires(!String.IsNullOrWhiteSpace(key));
-
-            var edgeIds = Context.IndexingService.EdgeIndices.Get(key, key, value, int.MaxValue);
-            return edgeIds.Select(edgeId => GetEdge(edgeId)).Where(edge => edge != null);
         }
 
         public override string ToString()

@@ -110,10 +110,12 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="ExtensionMethods.cs" />
     <Compile Include="Geo\GeoCircle.cs" />
     <Compile Include="Geo\GeoPoint.cs" />
     <Compile Include="Geo\GeoRectangle.cs" />
     <Compile Include="Geo\IGeoShape.cs" />
+    <Compile Include="IndexedGraph.cs" />
     <Compile Include="Indexing\DocumentContract.cs" />
     <Compile Include="Indexing\DocumentFactoryContract.cs" />
     <Compile Include="Indexing\ComparableQueryElement.cs" />
@@ -121,7 +123,7 @@
     <Compile Include="Indexing\Index.cs" />
     <Compile Include="Indexing\IndexQuery.cs" />
     <Compile Include="Indexing\IndexStoreContract.cs" />
-    <Compile Include="Indexing\Interface1.cs" />
+    <Compile Include="Indexing\IGenerationBasedIndex.cs" />
     <Compile Include="Indexing\QueryElement.cs" />
     <Compile Include="Indexing\IDocument.cs" />
     <Compile Include="Indexing\IDocumentFactory.cs" />
@@ -154,6 +156,7 @@
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
       <DependentUpon>Settings.settings</DependentUpon>
     </Compile>
+    <Compile Include="ThreadContext.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Blueprints\Blueprints.csproj">

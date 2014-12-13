@@ -110,7 +110,6 @@ namespace Frontenac.Grave
                 {
                     if (transaction.TransactionScope != null)
                     {
-                        //Transaction.TransactionScope.Rollback();
                         transaction.TransactionScope.Dispose();
                         Transaction.TransactionScope = null;
                     }
@@ -123,8 +122,6 @@ namespace Frontenac.Grave
                         }
                     }
                 }
-
-                //_transactionContexts.Dispose();
             }
 
             _disposed = true;
@@ -142,9 +139,6 @@ namespace Frontenac.Grave
                 transaction.Transaction = null;
             }
 
-            //_transactionContexts.Dispose();
-
-            //Commit();
             base.Shutdown();
         }
 
@@ -154,8 +148,6 @@ namespace Frontenac.Grave
             Transaction.TransactionScope.Complete();
             Transaction.TransactionScope.Dispose();
             Transaction.TransactionScope = null;
-            Context.NewVertices.Clear();
-            Context.NewEdges.Clear();
         }
 
         public void Rollback()
@@ -163,8 +155,6 @@ namespace Frontenac.Grave
             if (Transaction.TransactionScope == null) return;
             Transaction.TransactionScope.Dispose();
             Transaction.TransactionScope = null;
-            Context.NewVertices.Clear();
-            Context.NewEdges.Clear();
         }
 
         public override IEdge AddEdge(object unused, IVertex outVertex, IVertex inVertex, string label)
@@ -274,7 +264,7 @@ namespace Frontenac.Grave
                 System.Transactions.Transaction.Current.EnlistPromotableSinglePhase(this);
             }
             
-            Transaction.Transaction = Context.Context.CreateTransaction();
+            Transaction.Transaction = EsentContext.CreateTransaction();
 
             return Transaction.Transaction.EnterSessionContext();
         }
@@ -536,9 +526,10 @@ namespace Frontenac.Grave
             
             foreach (var index in Transaction.TransactionalIndices.Values)
                 index.Clear();
-            
-            Context.Context.VertexTable.RefreshColumns();
-            Context.Context.EdgesTable.RefreshColumns();
+
+            var esentContext = EsentContext;
+            esentContext.VertexTable.RefreshColumns();
+            esentContext.EdgesTable.RefreshColumns();
 
             System.Transactions.Transaction.Current = null;
         }

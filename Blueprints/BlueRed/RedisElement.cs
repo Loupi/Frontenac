@@ -60,7 +60,7 @@ namespace Frontenac.BlueRed
             var raw = _graph.Serializer.Serialize(value);
             var db = _graph.Multiplexer.GetDatabase();
             db.HashSet(GetIdentifier("properties"), key, raw);
-            SetIndexedKeyValue(key, value);
+            _graph.SetIndexedKeyValue(this, key, value);
         }
 
         public override object RemoveProperty(string key)
@@ -68,19 +68,8 @@ namespace Frontenac.BlueRed
             var result = GetProperty(key);
             var db = _graph.Multiplexer.GetDatabase();
             db.HashDelete(GetIdentifier("properties"), key);
-            SetIndexedKeyValue(key, null);
+            _graph.SetIndexedKeyValue(this, key, null);
             return result;
-        }
-
-        private void SetIndexedKeyValue(string key, object value)
-        {
-            Contract.Requires(!string.IsNullOrWhiteSpace(key));
-
-            var type = this is IVertex ? typeof(IVertex) : typeof(IEdge);
-            var indices = _graph.GetIndices(type, false);
-            if (!indices.HasIndex(key)) return;
-            var generation = indices.Set(RawId, key, key, value);
-            _graph.UpdateGeneration(generation);
         }
 
         public override int GetHashCode()

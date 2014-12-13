@@ -56,17 +56,6 @@ namespace Frontenac.Grave
             get { return RawId; }
         }
 
-        internal void SetIndexedKeyValue(string key, object value)
-        {
-            Contract.Requires(!string.IsNullOrWhiteSpace(key));
-
-            var type = this is IVertex ? typeof (IVertex) : typeof (IEdge);
-            var indices = GraveGraph.GetIndices(type, false);
-            if (!indices.HasIndex(key)) return;
-            var generation = indices.Set(RawId, key, key, value);
-            GraveGraph.UpdateGeneration(generation);
-        }
-
         public override int GetHashCode()
         {
             return RawId.GetHashCode();

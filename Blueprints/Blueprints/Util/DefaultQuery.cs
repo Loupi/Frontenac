@@ -59,6 +59,7 @@ namespace Frontenac.Blueprints.Util
             public bool IsLegal(IElement element)
             {
                 Contract.Requires(element != null);
+                Contract.Requires(!string.IsNullOrWhiteSpace(Key));
 
                 var elementValue = element.GetProperty(Key);
                 switch (Compare)

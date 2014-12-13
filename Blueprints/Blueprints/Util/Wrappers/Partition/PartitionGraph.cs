@@ -32,6 +32,8 @@ namespace Frontenac.Blueprints.Util.Wrappers.Partition
             this(baseGraph, partitionKey, readWritePartition, new[] {readWritePartition})
         {
             Contract.Requires(baseGraph != null);
+            Contract.Requires(!string.IsNullOrWhiteSpace(partitionKey));
+            Contract.Requires(!string.IsNullOrWhiteSpace(readWritePartition));
         }
 
         public string WritePartition
