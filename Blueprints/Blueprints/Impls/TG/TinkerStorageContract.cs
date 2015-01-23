@@ -5,16 +5,16 @@ namespace Frontenac.Blueprints.Impls.TG
     [ContractClassFor(typeof (ITinkerStorage))]
     public abstract class TinkerStorageContract : ITinkerStorage
     {
-        public TinkerGraph Load(string directory)
+        public TinkerGraĥ Load(string directory)
         {
             Contract.Requires(!string.IsNullOrWhiteSpace(directory));
-            Contract.Ensures(Contract.Result<TinkerGraph>() != null);
+            Contract.Ensures(Contract.Result<TinkerGraĥ>() != null);
             return null;
         }
 
-        public void Save(TinkerGraph graph, string directory)
+        public void Save(TinkerGraĥ tinkerGraĥ, string directory)
         {
-            Contract.Requires(graph != null);
+            Contract.Requires(tinkerGraĥ != null);
             Contract.Requires(!string.IsNullOrWhiteSpace(directory));
         }
     }

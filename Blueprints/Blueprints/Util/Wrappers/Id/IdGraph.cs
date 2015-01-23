@@ -12,7 +12,7 @@ namespace Frontenac.Blueprints.Util.Wrappers.Id
     ///     It *may* be an instance of IIndexableGraph, in which case its indices will be wrapped appropriately.
     ///     It *may* be an instance of TransactionalGraph, in which case transaction operations will be passed through.
     ///     For those graphs which support vertex indices but not edge indices (or vice versa),
-    ///     you may configure IdGraph to use custom IDs only for vertices or only for edges.
+    ///     you may configure idInnerTinkerGraĥ to use custom IDs only for vertices or only for edges.
     /// </summary>
     public class IdGraph : IKeyIndexableGraph, IWrapperGraph, IIndexableGraph, ITransactionalGraph
     {
@@ -123,7 +123,7 @@ namespace Frontenac.Blueprints.Util.Wrappers.Id
 
         public IEnumerable<IIndex> GetIndices()
         {
-            throw new NotImplementedException("sorry, you currently can't get a list of indexes through IdGraph");
+            throw new NotImplementedException("sorry, you currently can't get a list of indexes through idInnerTinkerGraĥ");
         }
 
         public void DropIndex(string indexName)
@@ -192,7 +192,7 @@ namespace Frontenac.Blueprints.Util.Wrappers.Id
         public IEnumerable<IVertex> GetVertices(string key, object value)
         {
             if (_supportVertexIds && key == Id)
-                throw new ArgumentException(string.Concat("index key ", Id, " is reserved by IdGraph"));
+                throw new ArgumentException(string.Concat("index key ", Id, " is reserved by idInnerTinkerGraĥ"));
             return new IdVertexIterable(_baseGraph.GetVertices(key, value), this);
         }
 
@@ -251,7 +251,7 @@ namespace Frontenac.Blueprints.Util.Wrappers.Id
         public IEnumerable<IEdge> GetEdges(string key, object value)
         {
             if (_supportEdgeIds && key == Id)
-                throw new ArgumentException(string.Concat("index key ", Id, " is reserved by IdGraph"));
+                throw new ArgumentException(string.Concat("index key ", Id, " is reserved by idInnerTinkerGraĥ"));
             return new IdEdgeIterable(_baseGraph.GetEdges(key, value), this);
         }
 

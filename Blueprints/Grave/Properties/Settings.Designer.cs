@@ -25,7 +25,7 @@ namespace Frontenac.Grave.Properties {
         
         [global::System.Configuration.ApplicationScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("GraveGraph")]
+        [global::System.Configuration.DefaultSettingValueAttribute("Grave")]
         public string InstanceName {
             get {
                 return ((string)(this["InstanceName"]));

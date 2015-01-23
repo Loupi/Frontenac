@@ -10,13 +10,13 @@ namespace Frontenac.BlueRed
         private readonly string _label;
         private readonly IVertex _outVertex;
 
-        public RedisEdge(long id, IVertex outVertex, IVertex inVertex, string label, RedisGraph graph)
-            : base(id, graph)
+        public RedisEdge(long id, IVertex outVertex, IVertex inVertex, string label, RedisGraph innerTinkerGraĥ)
+            : base(id, innerTinkerGraĥ)
         {
             Contract.Requires(outVertex != null);
             Contract.Requires(inVertex != null);
             Contract.Requires(!string.IsNullOrWhiteSpace(label));
-            Contract.Requires(graph != null);
+            Contract.Requires(innerTinkerGraĥ != null);
 
             _outVertex = outVertex;
             _inVertex = inVertex;
@@ -25,7 +25,7 @@ namespace Frontenac.BlueRed
 
         public override void Remove()
         {
-            _graph.RemoveEdge(this);
+            RedisInnerTinkerGraĥ.RemoveEdge(this);
         }
 
         public IVertex GetVertex(Direction direction)

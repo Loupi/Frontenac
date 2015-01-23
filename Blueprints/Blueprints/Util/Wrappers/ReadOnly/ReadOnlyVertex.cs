@@ -8,10 +8,10 @@ namespace Frontenac.Blueprints.Util.Wrappers.ReadOnly
     {
         private readonly IVertex _baseVertex;
 
-        public ReadOnlyVertex(ReadOnlyGraph graph, IVertex baseVertex)
-            : base(graph, baseVertex)
+        public ReadOnlyVertex(ReadOnlyGraph innerTinkerGraĥ, IVertex baseVertex)
+            : base(innerTinkerGraĥ, baseVertex)
         {
-            Contract.Requires(graph != null);
+            Contract.Requires(innerTinkerGraĥ != null);
             Contract.Requires(baseVertex != null);
 
             _baseVertex = baseVertex;
@@ -19,12 +19,12 @@ namespace Frontenac.Blueprints.Util.Wrappers.ReadOnly
 
         public IEnumerable<IEdge> GetEdges(Direction direction, params string[] labels)
         {
-            return new ReadOnlyEdgeIterable(ReadOnlyGraph, ((IVertex) BaseElement).GetEdges(direction, labels));
+            return new ReadOnlyEdgeIterable(ReadOnlyInnerTinkerGraĥ, ((IVertex) BaseElement).GetEdges(direction, labels));
         }
 
         public IEnumerable<IVertex> GetVertices(Direction direction, params string[] labels)
         {
-            return new ReadOnlyVertexIterable(ReadOnlyGraph, ((IVertex) BaseElement).GetVertices(direction, labels));
+            return new ReadOnlyVertexIterable(ReadOnlyInnerTinkerGraĥ, ((IVertex) BaseElement).GetVertices(direction, labels));
         }
 
         public IEdge AddEdge(string label, IVertex vertex)
@@ -35,8 +35,8 @@ namespace Frontenac.Blueprints.Util.Wrappers.ReadOnly
         public IVertexQuery Query()
         {
             return new WrapperVertexQuery(_baseVertex.Query(),
-                                          t => new ReadOnlyEdgeIterable(ReadOnlyGraph, t.Edges()),
-                                          t => new ReadOnlyVertexIterable(ReadOnlyGraph, t.Vertices()));
+                                          t => new ReadOnlyEdgeIterable(ReadOnlyInnerTinkerGraĥ, t.Edges()),
+                                          t => new ReadOnlyVertexIterable(ReadOnlyInnerTinkerGraĥ, t.Vertices()));
         }
     }
 }

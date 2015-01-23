@@ -1,58 +1,59 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Diagnostics.Contracts;
 using System.Security.Principal;
 using System.Text;
 using Fasterflect;
+using Frontenac.Infrastructure.Properties;
 
 namespace Frontenac.Infrastructure.Indexing.Indexers
 {
     public class ObjectIndexer : Indexer
     {
-        private readonly object _content;
         private readonly IIndexerFactory _indexerFactory;
-        private readonly uint _maxDepth;
-        private readonly StringBuilder _nameBuilder = new StringBuilder();
+        private static readonly uint MaxDepth = Settings.Default.ObjectIndexerMaxDepth;
 
-        public ObjectIndexer(object content, IDocument document, IIndexerFactory indexerFactory, uint maxDepth)
-            : base(document)
+        public ObjectIndexer(IIndexerFactory indexerFactory)
         {
-            Contract.Requires(document != null);
-            Contract.Requires(content != null);
             Contract.Requires(indexerFactory != null);
-            Contract.Requires(maxDepth > 0);
-
-            _content = content;
+            
             _indexerFactory = indexerFactory;
-            _maxDepth = maxDepth;
         }
 
-        public override void Index(string name)
+        public override void Index(IDocument document, string name, object content)
         {
-            _nameBuilder.Append(name);
-            Recurse(0, _content);
+            var nameBuilder = new StringBuilder(name);
+            Recurse(0, document, content, nameBuilder);
         }
 
-        private void Recurse(uint depth, object value)
+        private void Recurse(uint depth, IDocument document, object value, StringBuilder nameBuilder)
         {
             Contract.Requires(value != null);
 
             var type = value.GetType();
 
-            if (!type.IsValueType && Document.Present(value))
+            if (!type.IsValueType && document.Present(value))
                 return;
 
-            var name = _nameBuilder.ToString();
+            var name = nameBuilder.ToString();
 
-            if (Document.Write(name, value))
+            if (document.Write(name, value))
                 return;
 
-            var indexer = _indexerFactory.Create(value, Document);
-            if (!(indexer is ObjectIndexer))
+            var indexer = _indexerFactory.Create(type);
+            try
             {
-                indexer.Index(name);
-                return;
+                if (!(indexer is ObjectIndexer))
+                {
+                    indexer.Index(document, name, value);
+                    return;
+                }
             }
-
+            finally 
+            {
+                _indexerFactory.Destroy(indexer);
+            }
+            
             if ((type.IsValueType && type.FullName == string.Concat("System.", type.Name)) ||
                 (type.FullName == string.Concat("System.Reflection.", type.Name)) ||
                 (value is SecurityIdentifier))
@@ -62,7 +63,7 @@ namespace Frontenac.Infrastructure.Indexing.Indexers
             {
                 foreach (var obj in value as IEnumerable)
                 {
-                    Recurse(depth + 1, obj);
+                    Recurse(depth + 1, document, obj, nameBuilder);
                 }
                 return;
             }
@@ -74,27 +75,27 @@ namespace Frontenac.Infrastructure.Indexing.Indexers
             {
                 var stringValue = value.ToString();
                 if (stringValue != type.FullName)
-                    Document.Write(name, stringValue);
+                    document.Write(name, stringValue);
             }
 
-            if (depth >= _maxDepth) return;
+            if (depth >= MaxDepth) return;
 
             foreach (var property in properties)
             {
-                if (_nameBuilder.Length > 0)
-                    _nameBuilder.Append(".");
-                _nameBuilder.Append(property.Name);
-                Recurse(depth + 1, value.GetPropertyValue(property.Name));
-                _nameBuilder.Remove(name.Length, _nameBuilder.Length - name.Length);
+                if (nameBuilder.Length > 0)
+                    nameBuilder.Append(".");
+                nameBuilder.Append(property.Name);
+                Recurse(depth + 1, document, value.GetPropertyValue(property.Name), nameBuilder);
+                nameBuilder.Remove(name.Length, nameBuilder.Length - name.Length);
             }
 
             foreach (var field in fields)
             {
-                if (_nameBuilder.Length > 0)
-                    _nameBuilder.Append(".");
-                _nameBuilder.Append(field.Name);
-                Recurse(depth + 1, value.GetFieldValue(field.Name));
-                _nameBuilder.Remove(name.Length, _nameBuilder.Length - name.Length);
+                if (nameBuilder.Length > 0)
+                    nameBuilder.Append(".");
+                nameBuilder.Append(field.Name);
+                Recurse(depth + 1, document, value.GetFieldValue(field.Name), nameBuilder);
+                nameBuilder.Remove(name.Length, nameBuilder.Length - name.Length);
             }
         }
     }

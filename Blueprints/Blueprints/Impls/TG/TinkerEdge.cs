@@ -10,19 +10,19 @@ namespace Frontenac.Blueprints.Impls.TG
         private readonly IVertex _inVertex;
         private readonly IVertex _outVertex;
 
-        public TinkerEdge(string id, IVertex outVertex, IVertex inVertex, string label, TinkerGraph graph)
-            : base(id, graph)
+        public TinkerEdge(string id, IVertex outVertex, IVertex inVertex, string label, TinkerGraĥ tinkerGraĥ)
+            : base(id, tinkerGraĥ)
         {
             Contract.Requires(id != null);
             Contract.Requires(outVertex != null);
             Contract.Requires(inVertex != null);
             Contract.Requires(!string.IsNullOrWhiteSpace(label));
-            Contract.Requires(graph != null);
+            Contract.Requires(tinkerGraĥ != null);
 
             Label = label;
             _outVertex = outVertex;
             _inVertex = inVertex;
-            graph.EdgeKeyIndex.AutoUpdate(StringFactory.Label, Label, null, this);
+            tinkerGraĥ.EdgeKeyIndex.AutoUpdate(StringFactory.Label, Label, null, this);
         }
 
         public string Label { get; protected set; }

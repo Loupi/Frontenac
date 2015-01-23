@@ -6,18 +6,18 @@ namespace Frontenac.Blueprints.Util.Wrappers.Partition
     {
         private readonly IEdge _edge;
 
-        public PartitionEdge(IEdge edge, PartitionGraph graph)
-            : base(edge, graph)
+        public PartitionEdge(IEdge edge, PartitionGraph innerTinkerGraĥ)
+            : base(edge, innerTinkerGraĥ)
         {
             Contract.Requires(edge != null);
-            Contract.Requires(graph != null);
+            Contract.Requires(innerTinkerGraĥ != null);
 
             _edge = edge;
         }
 
         public IVertex GetVertex(Direction direction)
         {
-            return new PartitionVertex(_edge.GetVertex(direction), PartitionGraph);
+            return new PartitionVertex(_edge.GetVertex(direction), PartitionInnerTinkerGraĥ);
         }
 
         public string Label

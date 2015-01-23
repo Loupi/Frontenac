@@ -45,7 +45,7 @@ namespace Frontenac.Blueprints.Util.Wrappers.Batch.Cache
 
         private static long GetId(object externalId)
         {
-            Contract.Requires(Portability.IsNumber(externalId));
+            Contract.Requires(Blueprints.GraphHelpers.IsNumber(externalId));
 
             return Convert.ToInt64(externalId);
         }

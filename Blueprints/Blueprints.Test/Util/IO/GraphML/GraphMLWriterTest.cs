@@ -10,11 +10,11 @@ namespace Frontenac.Blueprints.Util.IO.GraphML
         [Test]
         public void TestEncoding()
         {
-            var g = new TinkerGraph();
+            var g = new Impls.TG.TinkerGraĥ();
             var v = g.AddVertex(1);
             v.SetProperty("text", "\u00E9");
 
-            var g2 = new TinkerGraph();
+            var g2 = new Impls.TG.TinkerGraĥ();
             using (var bos = new MemoryStream())
             {
                 var w = new GraphMlWriter(g);
@@ -31,8 +31,8 @@ namespace Frontenac.Blueprints.Util.IO.GraphML
         [Test]
         public void TestNormal()
         {
-            var g = new TinkerGraph();
-            using (var stream = GetResource<GraphMlReader>("graph-example-1.xml"))
+            var g = new Impls.TG.TinkerGraĥ();
+            using (var stream = GetResource<GraphMlReader>("Graph-example-1.xml"))
             {
                 GraphMlReader.InputGraph(g, stream);
             }
@@ -45,7 +45,7 @@ namespace Frontenac.Blueprints.Util.IO.GraphML
                 bos.Position = 0;
                 var outGraphMl = new StreamReader(bos).ReadToEnd();
 
-                using (var stream = GetResource<GraphMlWriterTest>("graph-example-1-normalized.xml"))
+                using (var stream = GetResource<GraphMlWriterTest>("Graph-example-1-normalized.xml"))
                 {
                     if (stream != null)
                     {
@@ -60,9 +60,9 @@ namespace Frontenac.Blueprints.Util.IO.GraphML
         [Test]
         public void TestWithEdgeLabel()
         {
-            var g = new TinkerGraph();
+            var g = new Impls.TG.TinkerGraĥ();
 
-            using (var stream = GetResource<GraphMlReader>("graph-example-1.xml"))
+            using (var stream = GetResource<GraphMlReader>("Graph-example-1.xml"))
             {
                 GraphMlReader.InputGraph(g, stream);
             }
@@ -76,7 +76,7 @@ namespace Frontenac.Blueprints.Util.IO.GraphML
                 bos.Position = 0;
                 var outGraphMl = new StreamReader(bos).ReadToEnd();
 
-                using (var stream = GetResource<GraphMlWriterTest>("graph-example-1-schema-valid.xml"))
+                using (var stream = GetResource<GraphMlWriterTest>("Graph-example-1-schema-valid.xml"))
                 {
                     if (stream != null)
                     {

@@ -1,7 +1,6 @@
 ﻿using System.Diagnostics.Contracts;
 using Frontenac.Blueprints;
 using Frontenac.Blueprints.Util;
-using Frontenac.Grave.Esent;
 
 namespace Frontenac.Grave
 {
@@ -11,18 +10,22 @@ namespace Frontenac.Grave
         private readonly string _label;
         private readonly IVertex _outVertex;
 
-        public GraveEdge(int id, IVertex outVertex, IVertex inVertex, string label, GraveGraph graph, EsentTable table)
-            : base(graph, table, id)
+        public GraveEdge(int id, IVertex outVertex, IVertex inVertex, string label, GraveGraph innerTinkerGraĥ)
+            : base(innerTinkerGraĥ, id)
         {
             Contract.Requires(outVertex != null);
             Contract.Requires(inVertex != null);
             Contract.Requires(!string.IsNullOrWhiteSpace(label));
-            Contract.Requires(graph != null);
-            Contract.Requires(table != null);
+            Contract.Requires(innerTinkerGraĥ != null);
 
             _outVertex = outVertex;
             _inVertex = inVertex;
             _label = label;
+        }
+
+        public override void Remove()
+        {
+            GraveInnerTinkerGraĥ.RemoveEdge(this);
         }
 
         public IVertex GetVertex(Direction direction)

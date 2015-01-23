@@ -4,27 +4,27 @@ using System.IO;
 namespace Frontenac.Blueprints.Impls.TG
 {
     /// <summary>
-    ///     Writes TinkerGraph metadata to an OutputStream.
+    ///     Writes TinkerGraĥ metadata to an OutputStream.
     /// </summary>
     internal class TinkerMetadataWriter
     {
-        private readonly TinkerGraph _graph;
+        private readonly TinkerGraĥ _tinkerGraĥ;
 
         /// <summary>
-        ///     the TinkerGraph to pull the data from
+        ///     the TinkerGraĥ to pull the data from
         /// </summary>
-        /// <param name="graph"></param>
-        public TinkerMetadataWriter(TinkerGraph graph)
+        /// <param name="tinkerGraĥ"></param>
+        public TinkerMetadataWriter(TinkerGraĥ tinkerGraĥ)
         {
-            Contract.Requires(graph != null);
+            Contract.Requires(tinkerGraĥ != null);
 
-            _graph = graph;
+            _tinkerGraĥ = tinkerGraĥ;
         }
 
         /// <summary>
-        ///     Write TinkerGraph metadata to a file.
+        ///     Write TinkerGraĥ metadata to a file.
         /// </summary>
-        /// <param name="filename">the name of the file to write the TinkerGraph metadata to</param>
+        /// <param name="filename">the name of the file to write the TinkerGraĥ metadata to</param>
         public void Save(string filename)
         {
             Contract.Requires(!string.IsNullOrWhiteSpace(filename));
@@ -36,59 +36,59 @@ namespace Frontenac.Blueprints.Impls.TG
         }
 
         /// <summary>
-        ///     Write TinkerGraph metadata to an OutputStream.
+        ///     Write TinkerGraĥ metadata to an OutputStream.
         /// </summary>
-        /// <param name="outputStream">the OutputStream to write the TinkerGraph metadata to</param>
+        /// <param name="outputStream">the OutputStream to write the TinkerGraĥ metadata to</param>
         public void Save(Stream outputStream)
         {
             Contract.Requires(outputStream != null);
 
             using (var writer = new BinaryWriter(outputStream))
             {
-                writer.Write(_graph.CurrentId);
-                WriteIndices(writer, _graph);
-                WriteVertexKeyIndices(writer, _graph);
-                WriteEdgeKeyIndices(writer, _graph);
+                writer.Write(_tinkerGraĥ.CurrentId);
+                WriteIndices(writer, _tinkerGraĥ);
+                WriteVertexKeyIndices(writer, _tinkerGraĥ);
+                WriteEdgeKeyIndices(writer, _tinkerGraĥ);
             }
         }
 
         /// <summary>
-        ///     Write TinkerGraph metadata to an OutputStream.
+        ///     Write TinkerGraĥ metadata to an OutputStream.
         /// </summary>
-        /// <param name="graph">the TinkerGraph to pull the metadata from</param>
-        /// <param name="outputStream">the OutputStream to write the TinkerGraph metadata to</param>
-        public static void Save(TinkerGraph graph, Stream outputStream)
+        /// <param name="tinkerGraĥ">the TinkerGraĥ to pull the metadata from</param>
+        /// <param name="outputStream">the OutputStream to write the TinkerGraĥ metadata to</param>
+        public static void Save(TinkerGraĥ tinkerGraĥ, Stream outputStream)
         {
-            Contract.Requires(graph != null);
+            Contract.Requires(tinkerGraĥ != null);
             Contract.Requires(outputStream != null);
 
-            var writer = new TinkerMetadataWriter(graph);
+            var writer = new TinkerMetadataWriter(tinkerGraĥ);
             writer.Save(outputStream);
         }
 
         /// <summary>
-        ///     Write TinkerGraph metadata to a file.
+        ///     Write TinkerGraĥ metadata to a file.
         /// </summary>
-        /// <param name="graph">the TinkerGraph to pull the data from</param>
-        /// <param name="filename">the name of the file to write the TinkerGraph metadata to</param>
-        public static void Save(TinkerGraph graph, string filename)
+        /// <param name="tinkerGraĥ">the TinkerGraĥ to pull the data from</param>
+        /// <param name="filename">the name of the file to write the TinkerGraĥ metadata to</param>
+        public static void Save(TinkerGraĥ tinkerGraĥ, string filename)
         {
-            Contract.Requires(graph != null);
+            Contract.Requires(tinkerGraĥ != null);
             Contract.Requires(!string.IsNullOrWhiteSpace(filename));
 
-            var writer = new TinkerMetadataWriter(graph);
+            var writer = new TinkerMetadataWriter(tinkerGraĥ);
             writer.Save(filename);
         }
 
-        private static void WriteIndices(BinaryWriter writer, TinkerGraph graph)
+        private static void WriteIndices(BinaryWriter writer, TinkerGraĥ tinkerGraĥ)
         {
             Contract.Requires(writer != null);
-            Contract.Requires(graph != null);
+            Contract.Requires(tinkerGraĥ != null);
 
             // Write the number of indices
-            writer.Write(graph.Indices.Count);
+            writer.Write(tinkerGraĥ.Indices.Count);
 
-            foreach (var index in graph.Indices)
+            foreach (var index in tinkerGraĥ.Indices)
             {
                 // Write the index name
                 writer.Write(index.Key);
@@ -141,15 +141,15 @@ namespace Frontenac.Blueprints.Impls.TG
             }
         }
 
-        private static void WriteVertexKeyIndices(BinaryWriter writer, TinkerGraph graph)
+        private static void WriteVertexKeyIndices(BinaryWriter writer, TinkerGraĥ tinkerGraĥ)
         {
             Contract.Requires(writer != null);
-            Contract.Requires(graph != null);
+            Contract.Requires(tinkerGraĥ != null);
 
             // Write the number of vertex key indices
-            writer.Write(graph.VertexKeyIndex.Index.Count);
+            writer.Write(tinkerGraĥ.VertexKeyIndex.Index.Count);
 
-            foreach (var index in graph.VertexKeyIndex.Index)
+            foreach (var index in tinkerGraĥ.VertexKeyIndex.Index)
             {
                 // Write the key index name
                 writer.Write(index.Key);
@@ -172,15 +172,15 @@ namespace Frontenac.Blueprints.Impls.TG
             }
         }
 
-        private static void WriteEdgeKeyIndices(BinaryWriter writer, TinkerGraph graph)
+        private static void WriteEdgeKeyIndices(BinaryWriter writer, TinkerGraĥ tinkerGraĥ)
         {
             Contract.Requires(writer != null);
-            Contract.Requires(graph != null);
+            Contract.Requires(tinkerGraĥ != null);
 
             // Write the number of edge key indices
-            writer.Write(graph.EdgeKeyIndex.Index.Count);
+            writer.Write(tinkerGraĥ.EdgeKeyIndex.Index.Count);
 
-            foreach (var index in graph.EdgeKeyIndex.Index)
+            foreach (var index in tinkerGraĥ.EdgeKeyIndex.Index)
             {
                 // Write the key index name
                 writer.Write(index.Key);

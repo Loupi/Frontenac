@@ -27,7 +27,7 @@ namespace Frontenac.Blueprints.Util.Wrappers.Batch
     ///     <br />
     ///     BatchGraph can also automatically set the provided element ids as properties on the respective element. Use
     ///     setVertexIdKey and setEdgeIdKey to set the keys for the vertex and edge properties
-    ///     respectively. This allows to make the loaded baseGraph compatible for later wrapping with IdGraph.
+    ///     respectively. This allows to make the loaded baseGraph compatible for later wrapping with idInnerTinkerGraĥ.
     /// </summary>
     public class BatchGraph : ITransactionalGraph, IWrapperGraph
     {
@@ -278,7 +278,7 @@ namespace Frontenac.Blueprints.Util.Wrappers.Batch
         /// <summary>
         ///     Sets the key to be used when setting the vertex id as a property on the respective vertex.
         ///     If the key is null, then no property will be set.
-        ///     If the loaded baseGraph should later be wrapped with IdGraph use IdGraph.ID.
+        ///     If the loaded baseGraph should later be wrapped with idInnerTinkerGraĥ use idInnerTinkerGraĥ.ID.
         /// </summary>
         /// <param name="key">key Key to be used.</param>
         public void SetVertexIdKey(string key)
@@ -303,7 +303,7 @@ namespace Frontenac.Blueprints.Util.Wrappers.Batch
         /// <summary>
         ///     Sets the key to be used when setting the edge id as a property on the respective edge.
         ///     If the key is null, then no property will be set.
-        ///     If the loaded baseGraph should later be wrapped with IdGraphuse IdGraph.ID.
+        ///     If the loaded baseGraph should later be wrapped with IdGraphuse idInnerTinkerGraĥ.ID.
         /// </summary>
         /// <param name="key">Key to be used.</param>
         public void SetEdgeIdKey(string key)
@@ -322,32 +322,32 @@ namespace Frontenac.Blueprints.Util.Wrappers.Batch
         }
 
         /// <summary>
-        ///     Sets whether the graph loaded through this instance of BatchGraph is loaded from scratch
-        ///     (i.e. the wrapped graph is initially empty) or whether graph is loaded incrementally into an
-        ///     existing graph.
+        ///     Sets whether the Graph loaded through this instance of BatchGraph is loaded from scratch
+        ///     (i.e. the wrapped Graph is initially empty) or whether Graph is loaded incrementally into an
+        ///     existing Graph.
         ///     In the former case, BatchGraph does not need to check for the existence of vertices with the wrapped
-        ///     graph but only needs to consult its own cache which can be significantly faster. In the latter case,
-        ///     the cache is checked first but an additional check against the wrapped graph may be necessary if
+        ///     Graph but only needs to consult its own cache which can be significantly faster. In the latter case,
+        ///     the cache is checked first but an additional check against the wrapped Graph may be necessary if
         ///     the vertex does not exist.
         ///     By default, BatchGraph assumes that the data is loaded from scratch.
         ///     When setting loading from scratch to false, a vertex id key must be specified first using
         ///     setVertexIdKey - otherwise an exception is thrown.
         /// </summary>
-        /// <param name="fromScratch">Sets whether the graph loaded through this instance of BatchGraph is loaded from scratch</param>
+        /// <param name="fromScratch">Sets whether the Graph loaded through this instance of BatchGraph is loaded from scratch</param>
         public void SetLoadingFromScratch(bool fromScratch)
         {
             if (_baseGraph.Features.IgnoresSuppliedIds && (fromScratch == false && _vertexIdKey == null))
                 throw new InvalidOperationException(
-                    "Vertex id key is required to query existing vertices in wrapped graph.");
+                    "Vertex id key is required to query existing vertices in wrapped Graph.");
             _loadingFromScratch = fromScratch;
         }
 
         /// <summary>
-        ///     Whether this BatchGraph is loading data from scratch or incrementally into an existing graph.
+        ///     Whether this BatchGraph is loading data from scratch or incrementally into an existing Graph.
         ///     By default, this returns true.
         ///     see setLoadingFromScratch
         /// </summary>
-        /// <returns>Whether this BatchGraph is loading data from scratch or incrementally into an existing graph.</returns>
+        /// <returns>Whether this BatchGraph is loading data from scratch or incrementally into an existing Graph.</returns>
         public bool IsLoadingFromScratch()
         {
             return _loadingFromScratch;
@@ -414,13 +414,13 @@ namespace Frontenac.Blueprints.Util.Wrappers.Batch
 
         private class BatchEdge : DictionaryElement, IEdge
         {
-            private readonly BatchGraph _batchGraph;
+            private readonly BatchGraph _batchInnerTinkerGraĥ;
 
-            public BatchEdge(BatchGraph batchGraph):base(batchGraph)
+            public BatchEdge(BatchGraph batchInnerTinkerGraĥ):base(batchInnerTinkerGraĥ)
             {
-                Contract.Requires(batchGraph != null);
+                Contract.Requires(batchInnerTinkerGraĥ != null);
 
-                _batchGraph = batchGraph;
+                _batchInnerTinkerGraĥ = batchInnerTinkerGraĥ;
             }
 
             public IVertex GetVertex(Direction direction)
@@ -460,15 +460,15 @@ namespace Frontenac.Blueprints.Util.Wrappers.Batch
 
             public override void Remove()
             {
-                _batchGraph.RemoveEdge(this);
+                _batchInnerTinkerGraĥ.RemoveEdge(this);
             }
 
             private IEdge GetWrappedEdge()
             {
-                Contract.Requires(this == _batchGraph._currentEdge);
+                Contract.Requires(this == _batchInnerTinkerGraĥ._currentEdge);
                 Contract.Ensures(Contract.Result<IEdge>() != null);
 
-                return _batchGraph._currentEdgeCached;
+                return _batchInnerTinkerGraĥ._currentEdgeCached;
             }
 
             public override string ToString()
@@ -479,18 +479,18 @@ namespace Frontenac.Blueprints.Util.Wrappers.Batch
 
         private class BatchVertex : DictionaryElement, IVertex
         {
-            private readonly BatchGraph _batchGraph;
+            private readonly BatchGraph _batchInnerTinkerGraĥ;
             private readonly object _externalId;
 
-            public BatchVertex(object id, BatchGraph batchGraph):base(batchGraph)
+            public BatchVertex(object id, BatchGraph batchInnerTinkerGraĥ):base(batchInnerTinkerGraĥ)
             {
                 Contract.Requires(id != null);
-                Contract.Requires(batchGraph != null);
-                Contract.Ensures(_batchGraph != null);
+                Contract.Requires(batchInnerTinkerGraĥ != null);
+                Contract.Ensures(_batchInnerTinkerGraĥ != null);
 
                 if (id == null) throw new ArgumentNullException("id");
                 _externalId = id;
-                _batchGraph = batchGraph;
+                _batchInnerTinkerGraĥ = batchInnerTinkerGraĥ;
             }
 
             public IEnumerable<IEdge> GetEdges(Direction direction, params string[] labels)
@@ -510,12 +510,12 @@ namespace Frontenac.Blueprints.Util.Wrappers.Batch
 
             public IEdge AddEdge(string label, IVertex inVertex)
             {
-                return _batchGraph.AddEdgeSupport(this, inVertex, label);
+                return _batchInnerTinkerGraĥ.AddEdgeSupport(this, inVertex, label);
             }
 
             public override void SetProperty(string key, object value)
             {
-                var cachedVertex = _batchGraph.GetCachedVertex(_externalId);
+                var cachedVertex = _batchInnerTinkerGraĥ.GetCachedVertex(_externalId);
                 if(cachedVertex != null)
                     cachedVertex.SetProperty(key, value);
             }
@@ -528,7 +528,7 @@ namespace Frontenac.Blueprints.Util.Wrappers.Batch
             public override object GetProperty(string key)
             {
                 object result  = null;
-                var chachedVertex = _batchGraph.GetCachedVertex(_externalId);
+                var chachedVertex = _batchInnerTinkerGraĥ.GetCachedVertex(_externalId);
                 if(chachedVertex != null)
                     result = chachedVertex.GetProperty(key);
                 return result;
@@ -536,14 +536,14 @@ namespace Frontenac.Blueprints.Util.Wrappers.Batch
 
             public override IEnumerable<string> GetPropertyKeys()
             {
-                var chachedVertex = _batchGraph.GetCachedVertex(_externalId);
+                var chachedVertex = _batchInnerTinkerGraĥ.GetCachedVertex(_externalId);
                 return chachedVertex != null ? chachedVertex.GetPropertyKeys() : Enumerable.Empty<string>();
             }
 
             public override object RemoveProperty(string key)
             {
                 object result = null;
-                var cachedVertex = _batchGraph.GetCachedVertex(_externalId);
+                var cachedVertex = _batchInnerTinkerGraĥ.GetCachedVertex(_externalId);
                 if(cachedVertex != null)
                     result = cachedVertex.RemoveProperty(key);
                 return result;
@@ -551,7 +551,7 @@ namespace Frontenac.Blueprints.Util.Wrappers.Batch
 
             public override void Remove()
             {
-                _batchGraph.RemoveVertex(this);
+                _batchInnerTinkerGraĥ.RemoveVertex(this);
             }
 
             public override string ToString()

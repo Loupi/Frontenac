@@ -9,35 +9,35 @@ namespace Frontenac.Blueprints.Util.Wrappers.Event
     /// </summary>
     public class EventVertex : EventElement, IVertex
     {
-        public EventVertex(IVertex vertex, EventGraph eventGraph)
-            : base(vertex, eventGraph)
+        public EventVertex(IVertex vertex, EventGraph eventInnerTinkerGraĥ)
+            : base(vertex, eventInnerTinkerGraĥ)
         {
             Contract.Requires(vertex != null);
-            Contract.Requires(eventGraph != null);
+            Contract.Requires(eventInnerTinkerGraĥ != null);
 
             Vertex = vertex;
         }
 
         public IEnumerable<IEdge> GetEdges(Direction direction, params string[] labels)
         {
-            return new EventEdgeIterable(Vertex.GetEdges(direction, labels), EventGraph);
+            return new EventEdgeIterable(Vertex.GetEdges(direction, labels), EventInnerTinkerGraĥ);
         }
 
         public IEnumerable<IVertex> GetVertices(Direction direction, params string[] labels)
         {
-            return new EventVertexIterable(Vertex.GetVertices(direction, labels), EventGraph);
+            return new EventVertexIterable(Vertex.GetVertices(direction, labels), EventInnerTinkerGraĥ);
         }
 
         public IVertexQuery Query()
         {
             return new WrapperVertexQuery(Vertex.Query(),
-                                          t => new EventEdgeIterable(t.Edges(), EventGraph),
-                                          t => new EventVertexIterable(t.Vertices(), EventGraph));
+                                          t => new EventEdgeIterable(t.Edges(), EventInnerTinkerGraĥ),
+                                          t => new EventVertexIterable(t.Vertices(), EventInnerTinkerGraĥ));
         }
 
         public IEdge AddEdge(string label, IVertex vertex)
         {
-            return EventGraph.AddEdge(null, this, vertex, label);
+            return EventInnerTinkerGraĥ.AddEdge(null, this, vertex, label);
         }
 
         public IVertex Vertex { get; protected set; }

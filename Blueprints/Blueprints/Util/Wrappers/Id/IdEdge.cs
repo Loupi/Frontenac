@@ -6,18 +6,18 @@ namespace Frontenac.Blueprints.Util.Wrappers.Id
     {
         private readonly IEdge _baseEdge;
 
-        public IdEdge(IEdge baseEdge, IdGraph idGraph)
-            : base(baseEdge, idGraph, idGraph.GetSupportEdgeIds())
+        public IdEdge(IEdge baseEdge, IdGraph idInnerTinkerGraĥ)
+            : base(baseEdge, idInnerTinkerGraĥ, idInnerTinkerGraĥ.GetSupportEdgeIds())
         {
             Contract.Requires(baseEdge != null);
-            Contract.Requires(idGraph != null);
+            Contract.Requires(idInnerTinkerGraĥ != null);
 
             _baseEdge = baseEdge;
         }
 
         public IVertex GetVertex(Direction direction)
         {
-            return new IdVertex(((IEdge) BaseElement).GetVertex(direction), IdGraph);
+            return new IdVertex(((IEdge) BaseElement).GetVertex(direction), IdInnerTinkerGraĥ);
         }
 
         public string Label

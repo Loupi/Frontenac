@@ -1,39 +1,27 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Diagnostics.Contracts;
 using System.Linq;
 using Frontenac.Blueprints;
 using Frontenac.Blueprints.Impls.TG;
 using Frontenac.Grave.Entities;
+using Frontenac.Grave.Esent;
 using Frontenac.Gremlinq;
+using Frontenac.Infrastructure;
+using Frontenac.Infrastructure.CastleWindsor;
 using Frontenac.Infrastructure.Geo;
+using Frontenac.Infrastructure.Indexing;
+using Frontenac.Infrastructure.Indexing.Indexers;
+using Frontenac.Infrastructure.Indexing.Lucene;
+using Frontenac.Infrastructure.Serializers;
 
 namespace Frontenac.Grave
 {
-    public class StaticGremlinqContextFactory : IGremlinqContextFactory
-    {
-        private readonly DictionaryAdapterProxyFactory _proxyFactory = new DictionaryAdapterProxyFactory();
-        private readonly DictionaryTypeProvider _typeProvider;
-
-        public StaticGremlinqContextFactory(IDictionary<int, Type> types)
-        {
-            Contract.Requires(types != null);
-
-            _typeProvider = new DictionaryTypeProvider(DictionaryTypeProvider.DefaulTypePropertyName, types);
-        }
-
-        public GremlinqContext Create()
-        {
-            return new GremlinqContext(_typeProvider, _proxyFactory);
-        }
-    }
-
     public static class Program
     {
         public interface IEntityWithId
         {
             //Id is a special property. It maps directly to the underlying vertex/edge id.
-            //You can adjust the type to the one used by your graph database implementation.
+            //You can adjust the type to the one used by your InnerGraph database implementation.
             int Id { get; }
         }
 
@@ -86,11 +74,9 @@ namespace Frontenac.Grave
             ICollection<IJob> Job { get; set; }
         }
 
-        private static void TestLambda()
+        private static void TestLambda(Blueprints.IGraph graph)
         {
-            var graph = new TinkerGraph();
-
-            //Add 3 persons vertex in the graph.
+            //Add 3 persons vertex in the InnerGraph.
             var loupi = graph.AddVertex<IPerson>(person => { person.Name = "Loupi"; person.Age = 34; });
             var pierre = graph.AddVertex<IPerson>(person => { person.Name = "Pierre"; person.Age = 62; });
             var helene = graph.AddVertex<IPerson>(person => { person.Name = "Helene"; person.Age = 55; });
@@ -98,7 +84,7 @@ namespace Frontenac.Grave
             var mimi = graph.AddVertex<IPerson>(person => { person.Name = "Mimi"; person.Age = 3; });
 
 
-            //Add 2 jobs vertex in the graph
+            //Add 2 jobs vertex in the InnerGraph
             var developer = graph.AddVertex<IJob>(job => { job.Title = "Developer"; job.Domain = "IT"; });
             var scrumMaster = graph.AddVertex<IJob>(job => { job.Title = "ScrumMaster"; job.Domain = "IT"; });
 
@@ -119,53 +105,82 @@ namespace Frontenac.Grave
             helene.AddEdge(person => person.Children, mimi, children => children.IsAdopted = true);
         }
 
-        private static void Test()
+        private static void Test(Blueprints.IGraph graph)
         {
-            var graph = new TinkerGraph();
-            try
-            {
-                //Add 3 persons vertex in the graph.
-                var loupi = graph.AddVertex<IPerson>(person => { person.Name = "Loupi"; person.Age = 34; }).Model;
-                var pierre = graph.AddVertex<IPerson>(person => { person.Name = "Pierre"; person.Age = 62; }).Model;
-                var helene = graph.AddVertex<IPerson>(person => { person.Name = "Helene"; person.Age = 55; }).Model;
-                var claude = graph.AddVertex<IPerson>(person => { person.Name = "Claude"; person.Age = 57; }).Model;
-                var mimi = graph.AddVertex<IPerson>(person => { person.Name = "Mimi"; person.Age = 3; }).Model;
+            //Add 3 persons vertex in the InnerGraph.
+            var loupi = graph.AddVertex<IPerson>(person => { person.Name = "Loupi"; person.Age = 34; }).Model;
+            var pierre = graph.AddVertex<IPerson>(person => { person.Name = "Pierre"; person.Age = 62; }).Model;
+            var helene = graph.AddVertex<IPerson>(person => { person.Name = "Helene"; person.Age = 55; }).Model;
+            var claude = graph.AddVertex<IPerson>(person => { person.Name = "Claude"; person.Age = 57; }).Model;
+            var mimi = graph.AddVertex<IPerson>(person => { person.Name = "Mimi"; person.Age = 3; }).Model;
 
-                //Add 2 jobs vertex in the graph
-                var developer = graph.AddVertex<IJob>(job => { job.Title = "Developer"; job.Domain = "IT"; }).Model;
-                var scrumMaster = graph.AddVertex<IJob>(job => { job.Title = "ScrumMaster"; job.Domain = "IT"; }).Model;
+            //Add 2 jobs vertex in the InnerGraph
+            var developer = graph.AddVertex<IJob>(job => { job.Title = "Developer"; job.Domain = "IT"; }).Model;
+            var scrumMaster = graph.AddVertex<IJob>(job => { job.Title = "ScrumMaster"; job.Domain = "IT"; }).Model;
 
-                //Loupi is both a developer and a scrummaster.
-                loupi.Job.Add(developer);
-                loupi.Job.Add(scrumMaster);
+            //Loupi is both a developer and a scrummaster.
+            loupi.Job.Add(developer);
+            loupi.Job.Add(scrumMaster);
 
-                //Helene and Pierre are Loupi's parents. Note that they are divorced.
-                loupi.Father = pierre;
-                loupi.Mother = new KeyValuePair<IChildren, IPerson>(null, helene);
-                pierre.Children.Add(loupi);
-                helene.Children.Add(loupi, (IHeirChildren heir) => heir.Heirloom = 125000.0f);
+            //Helene and Pierre are Loupi's parents. Note that they are divorced.
+            loupi.Father = pierre;
+            loupi.Mother = new KeyValuePair<IChildren, IPerson>(null, helene);
+            pierre.Children.Add(loupi);
+            helene.Children.Add(loupi, (IHeirChildren heir) => heir.Heirloom = 125000.0f);
 
-                //Helene is now with Claude, and they adopted Mimi.
-                mimi.Father = claude;
-                mimi.Mother = new KeyValuePair<IChildren, IPerson>(null, helene);
-                claude.Children.Add(mimi, children => children.IsAdopted = true);
-                helene.Children.Add(graph.Transient<IChildren>(children => children.IsAdopted = true), mimi);
+            //Helene is now with Claude, and they adopted Mimi.
+            mimi.Father = claude;
+            mimi.Mother = new KeyValuePair<IChildren, IPerson>(null, helene);
+            claude.Children.Add(mimi, children => children.IsAdopted = true);
+            helene.Children.Add(graph.Transient<IChildren>(children => children.IsAdopted = true), mimi);
 
-                var allDevelopers = developer.Persons.ToList();
-                var heleneChildrenIds = helene.Children.Select(pair => pair.Value.Id).ToList();
-                var mimiParents = mimi.Parents.ToList();
-                var loupiParents = loupi.Parents.ToList();
-                var intersectedParents = loupi.WrappedParents.Intersect(mimi.WrappedParents).ToList();
-                var joinedParents = mimiParents.Join(loupiParents, person => person.Id, person => person.Id, (person, person1) => person).ToList();
-            }
-            finally
-            {
-                graph.Shutdown();
-            }
+            var allDevelopers = developer.Persons.ToList();
+            var heleneChildrenIds = helene.Children.Select(pair => pair.Value.Id).ToList();
+            var mimiParents = mimi.Parents.ToList();
+            var loupiParents = loupi.Parents.ToList();
+            var intersectedParents = loupi.WrappedParents.Intersect(mimi.WrappedParents).ToList();
+            var joinedParents = mimiParents.Join(loupiParents, person => person.Id, person => person.Id, (person, person1) => person).ToList();
+        }
+
+        public static void SetupGrave(this IContainer container)
+        {
+            Contract.Requires(container != null);
+
+            container.Register(LifeStyle.Singleton, typeof(ObjectIndexer), typeof(Indexer));
+            container.Register(LifeStyle.Singleton, typeof(DefaultIndexerFactory), typeof(IIndexerFactory));
+            container.Register(LifeStyle.Singleton, typeof(DefaultGraphFactory), typeof(IGraphFactory));
+
+            container.Register(LifeStyle.Singleton, typeof(JsonContentSerializer), typeof(IContentSerializer));
+
+            container.Register(LifeStyle.Transient, typeof(LuceneIndexingService), typeof(IndexingService));
+
+            container.Register(LifeStyle.Transient, typeof(EsentInstance));
+
+            //passer config par factory a la place
+            container.Register(LifeStyle.Singleton, typeof(GraveGraphConfiguration), typeof(IGraphConfiguration));
+
+            container.Register(LifeStyle.Transient, typeof(GraveGraph), typeof(Blueprints.IGraph), typeof(IKeyIndexableGraph), typeof(IIndexableGraph));
+
+
+            container.Register(LifeStyle.Transient, typeof(TinkerGraĥ), typeof(Blueprints.IGraph));
         }
 
         private static void Main()
         {
+            using (var container = new CastleWindsorContainer())
+            {
+                container.SetupGrave();
+
+                using (var factory = container.Resolve<IGraphFactory>())
+                {
+                    var graph = factory.Create<IKeyIndexableGraph>();
+                    TestGraphOfTheGods(graph);  
+                    container.Release(factory);
+                }
+            }
+
+            //GraphFactory.Setup(container);
+
             /*GremlinqContext.ContextFactory = new StaticGremlinqContextFactory(
                 new Dictionary<int, Type> //The types that are allowed to be proxied
                     {
@@ -184,93 +199,91 @@ namespace Frontenac.Grave
                         {13, typeof (IWeightedEntity)}
                     });*/
             
-            Test();
+            //Test();
 
-            var graph = GraveFactory.CreateTransactionalGraph();
-            try
+                     
+        }
+
+        public static void TestGraphOfTheGods(IKeyIndexableGraph graph)
+        {
+            Contract.Requires(graph != null);
+
+            if (!graph.V<ICharacter, string>(t => t.Name, "Saturn").Any())
             {
-                if (!graph.V<ICharacter, string>(t => t.Name, "Saturn").Any())
-                {
-                    CreateGraphOfTheGods(graph);
-                    graph.Commit();
-                }
-
-                var saturn = graph
-                    .V<ICharacter, string>(t => t.Name, "Saturn")
-                    .Single();
-
-                var jupiter = graph
-                    .V<ICharacter, string>(t => t.Name, "Jupiter")
-                    .Single();
-
-                var both = jupiter.Both().ToArray();
-                var sIn = jupiter.In();
-                var sOut = jupiter.Out();
-                
-                var map = saturn.Element.Map();
-
-                var fatherName = saturn
-                    .In(t => t.Father)
-                    .In(t => t.Father)
-                    .Single().Model.Name;
-
-                var eventsNearAthen = graph.Query<IBattle>()
-                    .Has(t => t.Place, new GeoCircle(37.97, 23.72, 50))
-                    .Edges()
-                    .ToArray();
-
-                /*var opps = eventsNearAthen[0].Model.Opponent;
-                var oopps = eventsNearAthen[0].Model.BothOpponent.ToArray();
-                var vvv = eventsNearAthen[0].Model.BothOpponent.ElementAt(0);
-                var vvv1 = eventsNearAthen[0].Model.BothOpponent.ElementAt(1);*/
-                
-                var opponents = eventsNearAthen
-                    .Select(t => new[]
-                        {
-                            t.Out(u => u.Opponent).Model.Name,
-                            t.In(u => u.Opponent).Model.Name
-                        })
-                    .ToArray();
-
-                var hercules = saturn
-                    .Loop(t => t.In(u => u.Father).SingleOrDefault() , 2)
-                    .Single();
-
-                var parents = hercules
-                    .Out(t => t.Father, t => t.Mother)
-                    .ToArray();
-
-                var parentNames = parents
-                    .Select(t => t.Model.Name)
-                    .ToArray();
-
-                var parentTypes = parents
-                    .Select(t => t.Type())
-                    .ToArray();
-
-                var humanParent = parents
-                    .OfType<IHuman>()
-                    .Single();
-
-                var battled = hercules
-                    .Out(t => t.Battled)
-                    .ToArray();
-
-                var opponentDetails = battled
-                    .Select(t => t.Element.Map())
-                    .ToArray();
-
-                var v2 = hercules
-                    .OutE(t => t.Battled)
-                    .Where(t => t.Model.Time > 1)
-                    .Select(t => t.In(u => u.Opponent).Model.Name)
-                    .ToArray();
+                CreateGraphOfTheGods(graph);
+                //InnerGraph.Commit();
             }
-            finally
-            {
-                graph.Shutdown();
-                GraveFactory.Release();
-            }
+
+            var saturn = graph
+                .V<ICharacter, string>(t => t.Name, "Saturn")
+                .Single();
+
+            var jupiter = graph
+                .V<ICharacter, string>(t => t.Name, "Jupiter")
+                .Single();
+
+            var both = jupiter.Both().ToArray();
+            var sIn = jupiter.In();
+            var sOut = jupiter.Out();
+
+            var map = saturn.Element.Map();
+
+            var fatherName = saturn
+                .In(t => t.Father)
+                .In(t => t.Father)
+                .Single().Model.Name;
+
+            var eventsNearAthen = graph.Query<IBattle>()
+                .Has(t => t.Place, new GeoCircle(37.97, 23.72, 50))
+                .Edges()
+                .ToArray();
+
+            /*var opps = eventsNearAthen[0].Model.Opponent;
+            var oopps = eventsNearAthen[0].Model.BothOpponent.ToArray();
+            var vvv = eventsNearAthen[0].Model.BothOpponent.ElementAt(0);
+            var vvv1 = eventsNearAthen[0].Model.BothOpponent.ElementAt(1);*/
+
+            var opponents = eventsNearAthen
+                .Select(t => new[]
+                    {
+                        t.Out(u => u.Opponent).Model.Name,
+                        t.In(u => u.Opponent).Model.Name
+                    })
+                .ToArray();
+
+            var hercules = saturn
+                .Loop(t => t.In(u => u.Father).SingleOrDefault(), 2)
+                .Single();
+
+            var parents = hercules
+                .Out(t => t.Father, t => t.Mother)
+                .ToArray();
+
+            var parentNames = parents
+                .Select(t => t.Model.Name)
+                .ToArray();
+
+            var parentTypes = parents
+                .Select(t => t.Type())
+                .ToArray();
+
+            var humanParent = parents
+                .OfType<IHuman>()
+                .Single();
+
+            var battled = hercules
+                .Out(t => t.Battled)
+                .ToArray();
+
+            var opponentDetails = battled
+                .Select(t => t.Element.Map())
+                .ToArray();
+
+            var v2 = hercules
+                .OutE(t => t.Battled)
+                .Where(t => t.Model.Time > 1)
+                .Select(t => t.In(u => u.Opponent).Model.Name)
+                .ToArray();
         }
 
         public static void CreateGraphOfTheGods(IKeyIndexableGraph graph)

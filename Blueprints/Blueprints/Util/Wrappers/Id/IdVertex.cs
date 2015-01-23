@@ -7,35 +7,35 @@ namespace Frontenac.Blueprints.Util.Wrappers.Id
     {
         private readonly IVertex _baseVertex;
 
-        public IdVertex(IVertex baseVertex, IdGraph idGraph)
-            : base(baseVertex, idGraph, idGraph.GetSupportVertexIds())
+        public IdVertex(IVertex baseVertex, IdGraph idInnerTinkerGraĥ)
+            : base(baseVertex, idInnerTinkerGraĥ, idInnerTinkerGraĥ.GetSupportVertexIds())
         {
             Contract.Requires(baseVertex != null);
-            Contract.Requires(idGraph != null);
+            Contract.Requires(idInnerTinkerGraĥ != null);
 
             _baseVertex = baseVertex;
         }
 
         public IEnumerable<IEdge> GetEdges(Direction direction, params string[] labels)
         {
-            return new IdEdgeIterable(_baseVertex.GetEdges(direction, labels), IdGraph);
+            return new IdEdgeIterable(_baseVertex.GetEdges(direction, labels), IdInnerTinkerGraĥ);
         }
 
         public IEnumerable<IVertex> GetVertices(Direction direction, params string[] labels)
         {
-            return new IdVertexIterable(_baseVertex.GetVertices(direction, labels), IdGraph);
+            return new IdVertexIterable(_baseVertex.GetVertices(direction, labels), IdInnerTinkerGraĥ);
         }
 
         public IVertexQuery Query()
         {
             return new WrapperVertexQuery(_baseVertex.Query(),
-                                          t => new IdEdgeIterable(t.Edges(), IdGraph),
-                                          t => new IdVertexIterable(t.Vertices(), IdGraph));
+                                          t => new IdEdgeIterable(t.Edges(), IdInnerTinkerGraĥ),
+                                          t => new IdVertexIterable(t.Vertices(), IdInnerTinkerGraĥ));
         }
 
         public IEdge AddEdge(string label, IVertex vertex)
         {
-            return IdGraph.AddEdge(null, this, vertex, label);
+            return IdInnerTinkerGraĥ.AddEdge(null, this, vertex, label);
         }
 
         public IVertex GetBaseVertex()

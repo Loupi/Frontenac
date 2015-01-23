@@ -13,11 +13,11 @@ namespace Frontenac.Blueprints.Impls.TG
         public ConcurrentDictionary<string, ConcurrentDictionary<string, IEdge>> InEdges = new ConcurrentDictionary<string, ConcurrentDictionary<string, IEdge>>();
         public ConcurrentDictionary<string, ConcurrentDictionary<string, IEdge>> OutEdges = new ConcurrentDictionary<string, ConcurrentDictionary<string, IEdge>>();
 
-        public TinkerVertex(string id, TinkerGraph graph)
-            : base(id, graph)
+        public TinkerVertex(string id, TinkerGraĥ tinkerGraĥ)
+            : base(id, tinkerGraĥ)
         {
             Contract.Requires(id != null);
-            Contract.Requires(graph != null);
+            Contract.Requires(tinkerGraĥ != null);
         }
 
         public IEnumerable<IEdge> GetEdges(Direction direction, params string[] labels)
@@ -46,7 +46,7 @@ namespace Frontenac.Blueprints.Impls.TG
 
         public IEdge AddEdge(string label, IVertex inVertex)
         {
-            return Graph.AddEdge(null, this, inVertex, label);
+            return ((DictionaryElement) this).Graph.AddEdge(null, this, inVertex, label);
         }
 
         private static IEnumerable<IEdge> FilterEdgesByLabel(IDictionary<string, ConcurrentDictionary<string, IEdge>> edgesToGet,

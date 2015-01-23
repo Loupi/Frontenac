@@ -3,18 +3,18 @@
 namespace Frontenac.Blueprints.Impls.TG
 {
     /// <summary>
-    ///     Mocking TinkerGraph as a transactional graph for testing purposes. This implementation does not actually
+    ///     Mocking TinkerGraĥ as a transactional graph for testing purposes. This implementation does not actually
     ///     implement transactional behavior but only counts transaction starts, successes and failures so that
     ///     these can be compared to expected behavior.
     ///     This class is only meant for testing.
     /// </summary>
     public class MockTransactionalGraph : ITransactionalGraph
     {
-        private readonly IGraph _graph;
+        private readonly Blueprints.IGraph _graph;
         private int _numTransactionsAborted;
         private int _numTransactionsCommitted;
 
-        public MockTransactionalGraph(IGraph graph)
+        public MockTransactionalGraph(Blueprints.IGraph graph)
         {
             _graph = graph;
         }

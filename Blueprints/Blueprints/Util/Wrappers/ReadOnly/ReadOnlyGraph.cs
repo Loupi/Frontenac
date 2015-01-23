@@ -5,8 +5,8 @@ using System.Diagnostics.Contracts;
 namespace Frontenac.Blueprints.Util.Wrappers.ReadOnly
 {
     /// <summary>
-    ///     A ReadOnlyGraph wraps a Graph and overrides the underlying graph's mutating methods.
-    ///     In this way, a ReadOnlyGraph can only be read from, not written to.
+    ///     A ReadOnlyInnerTinkerGraĥ wraps a Graph and overrides the underlying Graph's mutating methods.
+    ///     In this way, a ReadOnlyInnerTinkerGraĥ can only be read from, not written to.
     /// </summary>
     public class ReadOnlyGraph : IGraph, IWrapperGraph
     {

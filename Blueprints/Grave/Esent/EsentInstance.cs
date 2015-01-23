@@ -2,6 +2,7 @@
 using System.Diagnostics.Contracts;
 using System.IO;
 using System.Threading;
+using Frontenac.Grave.Properties;
 using Frontenac.Infrastructure.Serializers;
 using Microsoft.Isam.Esent.Interop;
 
@@ -15,11 +16,11 @@ namespace Frontenac.Grave.Esent
         private readonly string _databaseName;
         private int _transactionNumber = 1;
 
-        public EsentInstance(string instanceName, IContentSerializer contentSerializer)
+        public EsentInstance(IContentSerializer contentSerializer)
         {
-            Contract.Requires(!string.IsNullOrWhiteSpace(instanceName));
             Contract.Ensures(!string.IsNullOrWhiteSpace(_databaseName));
 
+            string instanceName = Settings.Default.InstanceName;
             _databaseName = CleanDatabaseName(instanceName);
             _databasePath = Path.GetDirectoryName(instanceName);
             if (string.IsNullOrWhiteSpace(_databasePath))

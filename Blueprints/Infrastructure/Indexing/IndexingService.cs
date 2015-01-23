@@ -14,12 +14,11 @@ namespace Frontenac.Infrastructure.Indexing
         private const string UserEdgeIndicesColumnName = "UserEdgeIndices";
 
         internal IIndexStore IndexStore;
-        private readonly IIndexCollectionFactory _indexCollectionFactory;
 
-        protected IndexingService(IIndexCollectionFactory indexCollectionFactory)
+        public IIndexCollection Create(string indicesColumnName, Type indexType, bool isUserIndex)
         {
-            Contract.Requires(indexCollectionFactory != null);
-            _indexCollectionFactory = indexCollectionFactory;
+            Contract.Requires(!string.IsNullOrWhiteSpace(indicesColumnName));
+            return new IndexCollection(indicesColumnName, indexType, isUserIndex, this);
         }
 
         public IIndexCollection VertexIndices { get; private set; }
@@ -27,16 +26,18 @@ namespace Frontenac.Infrastructure.Indexing
         public IIndexCollection UserVertexIndices { get; private set; }
         public IIndexCollection UserEdgeIndices { get; private set; }
 
+        public abstract void Initialize(string databasePath);
+
         public void LoadFromStore(IIndexStore indexStore)
         {
             Contract.Requires(indexStore != null);
             IndexStore = indexStore;
             IndexStore.Load();
 
-            VertexIndices = _indexCollectionFactory.Create(VertexIndicesColumnName, typeof (IVertex), false, this);
-            EdgeIndices = _indexCollectionFactory.Create(EdgeIndicesColumnName, typeof(IEdge), false, this);
-            UserVertexIndices = _indexCollectionFactory.Create(UserVertexIndicesColumnName, typeof(IVertex), true, this);
-            UserEdgeIndices = _indexCollectionFactory.Create(UserEdgeIndicesColumnName, typeof(IEdge), true, this);
+            VertexIndices = Create(VertexIndicesColumnName, typeof (IVertex), false);
+            EdgeIndices = Create(EdgeIndicesColumnName, typeof(IEdge), false);
+            UserVertexIndices = Create(UserVertexIndicesColumnName, typeof(IVertex), true);
+            UserEdgeIndices = Create(UserEdgeIndicesColumnName, typeof(IEdge), true);
         }
 
         public void CreateIndexOfType(string indexName, string indexColumn, List<string> indices)
@@ -104,7 +105,7 @@ namespace Frontenac.Infrastructure.Indexing
             if (_disposed)
                 return;
 
-            if (disposing)
+            if (disposing && IndexStore != null)
                 IndexStore.Dispose();
 
             _disposed = true;

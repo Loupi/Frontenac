@@ -5,23 +5,23 @@ using System.IO;
 namespace Frontenac.Blueprints.Impls.TG
 {
     /// <summary>
-    ///     Reads TinkerGraph metadata from a Stream.
+    ///     Reads TinkerGraĥ metadata from a Stream.
     /// </summary>
     public class TinkerMetadataReader
     {
-        private readonly TinkerGraph _graph;
+        private readonly TinkerGraĥ _tinkerGraĥ;
 
-        public TinkerMetadataReader(TinkerGraph graph)
+        public TinkerMetadataReader(TinkerGraĥ tinkerGraĥ)
         {
-            Contract.Requires(graph != null);
+            Contract.Requires(tinkerGraĥ != null);
 
-            _graph = graph;
+            _tinkerGraĥ = tinkerGraĥ;
         }
 
         /// <summary>
-        ///     Read TinkerGraph metadata from a file.
+        ///     Read TinkerGraĥ metadata from a file.
         /// </summary>
-        /// <param name="filename">the name of the file to read the TinkerGraph metadata from</param>
+        /// <param name="filename">the name of the file to read the TinkerGraĥ metadata from</param>
         public void Load(string filename)
         {
             Contract.Requires(!string.IsNullOrWhiteSpace(filename));
@@ -33,54 +33,54 @@ namespace Frontenac.Blueprints.Impls.TG
         }
 
         /// <summary>
-        ///     Read TinkerGraph metadata from a Stream.
+        ///     Read TinkerGraĥ metadata from a Stream.
         /// </summary>
-        /// <param name="inputStream">the Stream to read the TinkerGraph metadata from</param>
+        /// <param name="inputStream">the Stream to read the TinkerGraĥ metadata from</param>
         public void Load(Stream inputStream)
         {
             Contract.Requires(inputStream != null);
 
             using (var reader = new BinaryReader(inputStream))
             {
-                _graph.CurrentId = reader.ReadInt64();
-                ReadIndices(reader, _graph);
-                ReadVertexKeyIndices(reader, _graph);
-                ReadEdgeKeyIndices(reader, _graph);
+                _tinkerGraĥ.CurrentId = reader.ReadInt64();
+                ReadIndices(reader, _tinkerGraĥ);
+                ReadVertexKeyIndices(reader, _tinkerGraĥ);
+                ReadEdgeKeyIndices(reader, _tinkerGraĥ);
             }
         }
 
         /// <summary>
-        ///     Read TinkerGraph metadata from a Stream.
+        ///     Read TinkerGraĥ metadata from a Stream.
         /// </summary>
-        /// <param name="graph">the TinkerGraph to push the metadata to</param>
-        /// <param name="inputStream">the Stream to read the TinkerGraph metadata from</param>
-        public static void Load(TinkerGraph graph, Stream inputStream)
+        /// <param name="tinkerGraĥ">the IGraph to push the metadata to</param>
+        /// <param name="inputStream">the Stream to read the TinkerGraĥ metadata from</param>
+        public static void Load(TinkerGraĥ tinkerGraĥ, Stream inputStream)
         {
-            Contract.Requires(graph != null);
+            Contract.Requires(tinkerGraĥ != null);
             Contract.Requires(inputStream != null);
 
-            var reader = new TinkerMetadataReader(graph);
+            var reader = new TinkerMetadataReader(tinkerGraĥ);
             reader.Load(inputStream);
         }
 
         /// <summary>
-        ///     Read TinkerGraph metadata from a file.
+        ///     Read TinkerGraĥ metadata from a file.
         /// </summary>
-        /// <param name="graph">the TinkerGraph to push the data to</param>
-        /// <param name="filename">the name of the file to read the TinkerGraph metadata from</param>
-        public static void Load(TinkerGraph graph, string filename)
+        /// <param name="tinkerGraĥ">the TinkerGraĥ to push the data to</param>
+        /// <param name="filename">the name of the file to read the TinkerGraĥ metadata from</param>
+        public static void Load(TinkerGraĥ tinkerGraĥ, string filename)
         {
-            Contract.Requires(graph != null);
+            Contract.Requires(tinkerGraĥ != null);
             Contract.Requires(!string.IsNullOrWhiteSpace(filename));
 
-            var reader = new TinkerMetadataReader(graph);
+            var reader = new TinkerMetadataReader(tinkerGraĥ);
             reader.Load(filename);
         }
 
-        private static void ReadIndices(BinaryReader reader, TinkerGraph graph)
+        private static void ReadIndices(BinaryReader reader, TinkerGraĥ tinkerGraĥ)
         {
             Contract.Requires(reader != null);
-            Contract.Requires(graph != null);
+            Contract.Requires(tinkerGraĥ != null);
 
             // Read the number of indices
             var indexCount = reader.ReadInt32();
@@ -118,13 +118,13 @@ namespace Frontenac.Blueprints.Impls.TG
                             // Read the vertex or edge identifier
                             if (indexType == 1)
                             {
-                                var v = graph.GetVertex(ReadTypedData(reader));
+                                var v = tinkerGraĥ.GetVertex(ReadTypedData(reader));
                                 if (v != null)
                                     tinkerIndex.Put(indexItemKey, v.GetProperty(indexItemKey), v);
                             }
                             else if (indexType == 2)
                             {
-                                var e = graph.GetEdge(ReadTypedData(reader));
+                                var e = tinkerGraĥ.GetEdge(ReadTypedData(reader));
                                 if (e != null)
                                     tinkerIndex.Put(indexItemKey, e.GetProperty(indexItemKey), e);
                             }
@@ -132,14 +132,14 @@ namespace Frontenac.Blueprints.Impls.TG
                     }
                 }
 
-                graph.Indices.Put(indexName, tinkerIndex);
+                tinkerGraĥ.Indices.Put(indexName, tinkerIndex);
             }
         }
 
-        private static void ReadVertexKeyIndices(BinaryReader reader, TinkerGraph graph)
+        private static void ReadVertexKeyIndices(BinaryReader reader, TinkerGraĥ tinkerGraĥ)
         {
             Contract.Requires(reader != null);
-            Contract.Requires(graph != null);
+            Contract.Requires(tinkerGraĥ != null);
 
             // Read the number of vertex key indices
             var indexCount = reader.ReadInt32();
@@ -149,7 +149,7 @@ namespace Frontenac.Blueprints.Impls.TG
                 // Read the key index name
                 var indexName = reader.ReadString();
 
-                graph.VertexKeyIndex.CreateKeyIndex(indexName);
+                tinkerGraĥ.VertexKeyIndex.CreateKeyIndex(indexName);
 
                 var items = new ConcurrentDictionary<object, ConcurrentDictionary<string, IElement>>();
 
@@ -167,7 +167,7 @@ namespace Frontenac.Blueprints.Impls.TG
                     for (var k = 0; k < vertexCount; k++)
                     {
                         // Read the vertex identifier
-                        var v = graph.GetVertex(ReadTypedData(reader));
+                        var v = tinkerGraĥ.GetVertex(ReadTypedData(reader));
                         if (v != null)
                             vertices.TryAdd(v.Id.ToString(), v);
                     }
@@ -175,14 +175,14 @@ namespace Frontenac.Blueprints.Impls.TG
                     items.Put(key, vertices);
                 }
 
-                graph.VertexKeyIndex.Index.Put(indexName, items);
+                tinkerGraĥ.VertexKeyIndex.Index.Put(indexName, items);
             }
         }
 
-        private static void ReadEdgeKeyIndices(BinaryReader reader, TinkerGraph graph)
+        private static void ReadEdgeKeyIndices(BinaryReader reader, TinkerGraĥ tinkerGraĥ)
         {
             Contract.Requires(reader != null);
-            Contract.Requires(graph != null);
+            Contract.Requires(tinkerGraĥ != null);
 
             // Read the number of edge key indices
             var indexCount = reader.ReadInt32();
@@ -192,7 +192,7 @@ namespace Frontenac.Blueprints.Impls.TG
                 // Read the key index name
                 var indexName = reader.ReadString();
 
-                graph.EdgeKeyIndex.CreateKeyIndex(indexName);
+                tinkerGraĥ.EdgeKeyIndex.CreateKeyIndex(indexName);
 
                 var items = new ConcurrentDictionary<object, ConcurrentDictionary<string, IElement>>();
 
@@ -210,7 +210,7 @@ namespace Frontenac.Blueprints.Impls.TG
                     for (var k = 0; k < edgeCount; k++)
                     {
                         // Read the edge identifier
-                        var e = graph.GetEdge(ReadTypedData(reader));
+                        var e = tinkerGraĥ.GetEdge(ReadTypedData(reader));
                         if (e != null)
                             edges.TryAdd(e.Id.ToString(), e);
                     }
@@ -218,7 +218,7 @@ namespace Frontenac.Blueprints.Impls.TG
                     items.Put(key, edges);
                 }
 
-                graph.EdgeKeyIndex.Index.Put(indexName, items);
+                tinkerGraĥ.EdgeKeyIndex.Index.Put(indexName, items);
             }
         }
 

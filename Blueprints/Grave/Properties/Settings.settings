@@ -3,7 +3,7 @@
   <Profiles />
   <Settings>
     <Setting Name="InstanceName" Type="System.String" Scope="Application">
-      <Value Profile="(Default)">GraveGraph</Value>
+      <Value Profile="(Default)">Grave</Value>
     </Setting>
   </Settings>
 </SettingsFile>

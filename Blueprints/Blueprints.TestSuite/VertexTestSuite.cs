@@ -122,7 +122,7 @@ namespace Frontenac.Blueprints
             }
             catch (Exception x)
             {
-                if (x.GetType().FullName != Portability.ContractExceptionName)
+                if (x.GetType().FullName != GraphHelpers.ContractExceptionName)
                 {
                     throw;
                 }
@@ -603,7 +603,7 @@ namespace Frontenac.Blueprints
             }
             catch (Exception x)
             {
-                if (x.GetType().FullName != Portability.ContractExceptionName)
+                if (x.GetType().FullName != GraphHelpers.ContractExceptionName)
                 {
                     throw;
                 }
@@ -620,7 +620,7 @@ namespace Frontenac.Blueprints
             var graph = GraphTest.GenerateGraph();
             try
             {
-                // no point in testing graph features for setting string properties because the intent is for it to
+                // no point in testing InnerGraph features for setting string properties because the intent is for it to
                 // fail based on the empty key.
                 if (graph.Features.SupportsVertexProperties)
                 {
@@ -631,7 +631,7 @@ namespace Frontenac.Blueprints
             }
             catch (Exception x)
             {
-                if (x.GetType().FullName != Portability.ContractExceptionName)
+                if (x.GetType().FullName != GraphHelpers.ContractExceptionName)
                 {
                     throw;
                 }

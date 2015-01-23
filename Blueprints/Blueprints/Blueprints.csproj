@@ -114,7 +114,7 @@
   <ItemGroup>
     <Reference Include="Newtonsoft.Json, Version=6.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\packages\Newtonsoft.Json.6.0.3\lib\net45\Newtonsoft.Json.dll</HintPath>
+      <HintPath>..\packages\Newtonsoft.Json.6.0.8\lib\net45\Newtonsoft.Json.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
@@ -145,7 +145,7 @@
     <Compile Include="ICloseableIterable.cs" />
     <Compile Include="Impls\TG\TinkerEdge.cs" />
     <Compile Include="Impls\TG\TinkerElement.cs" />
-    <Compile Include="Impls\TG\TinkerGraph.cs" />
+    <Compile Include="Impls\TG\TinkerGraĥ.cs" />
     <Compile Include="Impls\TG\TinkerGraphFactory.cs" />
     <Compile Include="Impls\TG\TinkerIndex.cs" />
     <Compile Include="Impls\TG\TinkerMetadataReader.cs" />
@@ -158,7 +158,7 @@
     <Compile Include="IIndexableGraph.cs" />
     <Compile Include="IKeyIndexableGraph.cs" />
     <Compile Include="Parameter.cs" />
-    <Compile Include="Portability.cs" />
+    <Compile Include="GraphHelpers.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="IQuery.cs" />
     <Compile Include="IThreadedTransactionalGraph.cs" />
@@ -301,12 +301,13 @@
   <Target Name="AfterBuild">
   </Target>
   -->
-  <Import Project="..\packages\GitFlowVersionTask.0.14.0\Build\GitFlowVersionTask.targets" Condition="Exists('..\packages\GitFlowVersionTask.0.14.0\Build\GitFlowVersionTask.targets')" />
-  <Import Project="..\packages\Fody.1.26.1\build\Fody.targets" Condition="Exists('..\packages\Fody.1.26.1\build\Fody.targets')" />
+  <Import Project="..\packages\Fody.1.26.4\build\Fody.targets" Condition="Exists('..\packages\Fody.1.26.4\build\Fody.targets')" />
   <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">
     <PropertyGroup>
       <ErrorText>This project references NuGet package(s) that are missing on this computer. Enable NuGet Package Restore to download them.  For more information, see http://go.microsoft.com/fwlink/?LinkID=322105. The missing file is {0}.</ErrorText>
     </PropertyGroup>
-    <Error Condition="!Exists('..\packages\Fody.1.26.1\build\Fody.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\Fody.1.26.1\build\Fody.targets'))" />
+    <Error Condition="!Exists('..\packages\Fody.1.26.4\build\Fody.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\Fody.1.26.4\build\Fody.targets'))" />
+    <Error Condition="!Exists('..\packages\GitVersionTask.2.0.1\Build\GitVersionTask.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\GitVersionTask.2.0.1\Build\GitVersionTask.targets'))" />
   </Target>
+  <Import Project="..\packages\GitVersionTask.2.0.1\Build\GitVersionTask.targets" Condition="Exists('..\packages\GitVersionTask.2.0.1\Build\GitVersionTask.targets')" />
 </Project>

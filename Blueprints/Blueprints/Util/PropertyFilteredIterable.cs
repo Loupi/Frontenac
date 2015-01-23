@@ -8,7 +8,7 @@ namespace Frontenac.Blueprints.Util
 {
     /// <summary>
     ///     This is a helper class for filtering an IEnumerable of elements by their key/value.
-    ///     Useful for graph implementations that do no support automatic key indices and need to filter on Graph.getVertices/Edges(key,value).
+    ///     Useful for Graph implementations that do no support automatic key indices and need to filter on Graph.getVertices/Edges(key,value).
     /// </summary>
     /// <typeparam name="T"></typeparam>
     public class PropertyFilteredIterable<T> : ICloseableIterable<T> where T : class, IElement
@@ -142,7 +142,7 @@ namespace Frontenac.Blueprints.Util
                     return true;
                 if ((aVal == null) || (bVal == null))
                     return false;
-                if (Portability.IsNumber(aVal) && Portability.IsNumber(bVal))
+                if (Blueprints.GraphHelpers.IsNumber(aVal) && Blueprints.GraphHelpers.IsNumber(bVal))
                     return Convert.ToDouble(aVal).CompareTo(Convert.ToDouble(bVal)) == 0;
                 return aVal.Equals(bVal);
             }

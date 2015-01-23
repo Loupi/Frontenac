@@ -1,5 +1,6 @@
 ﻿using Frontenac.Blueprints;
 using Frontenac.Blueprints.Impls.TG;
+using IGraph = Frontenac.Blueprints.IGraph;
 
 namespace Frontenac.Gremlinq.Test
 {

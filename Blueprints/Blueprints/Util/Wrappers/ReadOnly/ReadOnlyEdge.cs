@@ -6,10 +6,10 @@ namespace Frontenac.Blueprints.Util.Wrappers.ReadOnly
     {
         private readonly IEdge _baseEdge;
 
-        public ReadOnlyEdge(ReadOnlyGraph graph, IEdge baseEdge)
-            : base(graph, baseEdge)
+        public ReadOnlyEdge(ReadOnlyGraph innerTinkerGraĥ, IEdge baseEdge)
+            : base(innerTinkerGraĥ, baseEdge)
         {
-            Contract.Requires(graph != null);
+            Contract.Requires(innerTinkerGraĥ != null);
             Contract.Requires(baseEdge != null);
 
             _baseEdge = baseEdge;
@@ -17,7 +17,7 @@ namespace Frontenac.Blueprints.Util.Wrappers.ReadOnly
 
         public IVertex GetVertex(Direction direction)
         {
-            return new ReadOnlyVertex(ReadOnlyGraph, _baseEdge.GetVertex(direction));
+            return new ReadOnlyVertex(ReadOnlyInnerTinkerGraĥ, _baseEdge.GetVertex(direction));
         }
 
         public string Label

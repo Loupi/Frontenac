@@ -7,23 +7,115 @@ using Frontenac.Blueprints.Util;
 using Frontenac.Blueprints.Util.IO.GML;
 using Frontenac.Blueprints.Util.IO.GraphML;
 using Frontenac.Blueprints.Util.IO.GraphSON;
+using Frontenac.Infrastructure;
+using Frontenac.Infrastructure.CastleWindsor;
 using NUnit.Framework;
 
 namespace Frontenac.BlueRed.Tests
 {
-    [TestFixture(Category = "BlueRedGraphGraphTestSuite")]
-    public class BlueRedGraphGraphTestSuite : GraphTestSuite
+    public class BlueRedGraphTest : GraphTest
     {
+        public IGraphFactory Factory { get; set; }
+
+        public override IGraph GenerateGraph()
+        {
+            return GenerateGraph("BlueRed");
+        }
+
+        public override IGraph GenerateGraph(string graphDirectoryName)
+        {
+            return Factory.Create<IGraph>();
+        }
+
+        public static string GetBlueRedGraphDirectory()
+        {
+            return Path.Combine(Directory.GetCurrentDirectory(), "BlueRed");
+        }
+    }
+
+    public class BlueRedGraphTestSuite
+    {
+        private IContainer _container;
+        private IGraphFactory _factory;
+
+        public void SetUp(GraphTest graphTest)
+        {
+            RedisGraph.DeleteDb();
+            DeleteDirectory(BlueRedGraphTest.GetBlueRedGraphDirectory());
+
+            _container = new CastleWindsorContainer();
+            _container.SetupBlueRed();
+            _factory = _container.Resolve<IGraphFactory>();
+
+            ((BlueRedGraphTest)graphTest).Factory = _factory;
+        }
+
+        static void DeleteDirectory(string directory)
+        {
+            if (Directory.Exists(directory))
+                Directory.Delete(directory, true);
+        }
+
+        public void TearDown()
+        {
+            _container.Release(_factory);
+            _factory.Dispose();
+            _container.Dispose();
+            RedisGraph.DeleteDb();
+        }
+
+        
+
+        public IGraphFactory Factory { get { return _factory; } }
+    }
+
+    [TestFixture(Category = "BlueRedGraphGraphTestSuite")]
+    public class BlueRedStorageTestSuite : StorageTestSuite
+    {
+        private readonly BlueRedGraphTestSuite _suite = new BlueRedGraphTestSuite();
+
         [SetUp]
         public void SetUp()
         {
-            BlueRedFactory.DeleteDb();
-            BlueRedFactory.Release();
-            DeleteDirectory(BlueRedGraphTestImpl.GetBlueRedGraphDirectory());
+            _suite.SetUp(GraphTest);
+        }
+
+        [TearDown]
+        public void TearDown()
+        {
+            _suite.TearDown();
+        }
+
+        public BlueRedStorageTestSuite()
+            : base(new BlueRedGraphTest())
+        {
+        }
+
+        public BlueRedStorageTestSuite(GraphTest graphTest)
+            : base(graphTest)
+        {
+        }
+    }
+
+    [TestFixture(Category = "BlueRedGraphGraphTestSuite")]
+    public class BlueRedGraphGraphTestSuite : GraphTestSuite
+    {
+        private readonly BlueRedGraphTestSuite _suite = new BlueRedGraphTestSuite();
+
+        [SetUp]
+        public void SetUp()
+        {
+            _suite.SetUp(GraphTest);
+        }
+
+        [TearDown]
+        public void TearDown()
+        {
+            _suite.TearDown();
         }
 
         public BlueRedGraphGraphTestSuite()
-            : base(new BlueRedGraphTestImpl())
+            : base(new BlueRedGraphTest())
         {
         }
 
@@ -36,16 +128,22 @@ namespace Frontenac.BlueRed.Tests
     [TestFixture(Category = "BlueRedGraphGraphTestSuite")]
     public class BlueRedGraphVertexTestSuite : VertexTestSuite
     {
+        private readonly BlueRedGraphTestSuite _suite = new BlueRedGraphTestSuite();
+
         [SetUp]
         public void SetUp()
         {
-            BlueRedFactory.DeleteDb();
-            BlueRedFactory.Release();
-            DeleteDirectory(BlueRedGraphTestImpl.GetBlueRedGraphDirectory());
+            _suite.SetUp(GraphTest);
+        }
+
+        [TearDown]
+        public void TearDown()
+        {
+            _suite.TearDown();
         }
 
         public BlueRedGraphVertexTestSuite()
-            : base(new BlueRedGraphTestImpl())
+            : base(new BlueRedGraphTest())
         {
         }
 
@@ -58,16 +156,22 @@ namespace Frontenac.BlueRed.Tests
     [TestFixture(Category = "BlueRedGraphGraphTestSuite")]
     public class BlueRedGraphEdgeTestSuite : EdgeTestSuite
     {
+        private readonly BlueRedGraphTestSuite _suite = new BlueRedGraphTestSuite();
+
         [SetUp]
         public void SetUp()
         {
-            BlueRedFactory.DeleteDb();
-            BlueRedFactory.Release();
-            DeleteDirectory(BlueRedGraphTestImpl.GetBlueRedGraphDirectory());
+            _suite.SetUp(GraphTest);
+        }
+
+        [TearDown]
+        public void TearDown()
+        {
+            _suite.TearDown();
         }
 
         public BlueRedGraphEdgeTestSuite()
-            : base(new BlueRedGraphTestImpl())
+            : base(new BlueRedGraphTest())
         {
         }
 
@@ -80,16 +184,22 @@ namespace Frontenac.BlueRed.Tests
     [TestFixture(Category = "BlueRedGraphGraphTestSuite")]
     public class BlueRedGraphKeyIndexableGraphTestSuite : KeyIndexableGraphTestSuite
     {
+        private readonly BlueRedGraphTestSuite _suite = new BlueRedGraphTestSuite();
+
         [SetUp]
         public void SetUp()
         {
-            BlueRedFactory.DeleteDb();
-            BlueRedFactory.Release();
-            DeleteDirectory(BlueRedGraphTestImpl.GetBlueRedGraphDirectory());
+            _suite.SetUp(GraphTest);
+        }
+
+        [TearDown]
+        public void TearDown()
+        {
+            _suite.TearDown();
         }
 
         public BlueRedGraphKeyIndexableGraphTestSuite()
-            : base(new BlueRedGraphTestImpl())
+            : base(new BlueRedGraphTest())
         {
         }
 
@@ -102,16 +212,22 @@ namespace Frontenac.BlueRed.Tests
     [TestFixture(Category = "BlueRedGraphGraphTestSuite")]
     public class BlueRedGraphIndexableGraphTestSuite : IndexableGraphTestSuite
     {
+        private readonly BlueRedGraphTestSuite _suite = new BlueRedGraphTestSuite();
+
         [SetUp]
         public void SetUp()
         {
-            BlueRedFactory.DeleteDb();
-            BlueRedFactory.Release();
-            DeleteDirectory(BlueRedGraphTestImpl.GetBlueRedGraphDirectory());
+            _suite.SetUp(GraphTest);
+        }
+
+        [TearDown]
+        public void TearDown()
+        {
+            _suite.TearDown();
         }
 
         public BlueRedGraphIndexableGraphTestSuite()
-            : base(new BlueRedGraphTestImpl())
+            : base(new BlueRedGraphTest())
         {
         }
 
@@ -124,16 +240,22 @@ namespace Frontenac.BlueRed.Tests
     [TestFixture(Category = "BlueRedGraphGraphTestSuite")]
     public class BlueRedGraphIndexTestSuite : IndexTestSuite
     {
+        private readonly BlueRedGraphTestSuite _suite = new BlueRedGraphTestSuite();
+
         [SetUp]
         public void SetUp()
         {
-            BlueRedFactory.DeleteDb();
-            BlueRedFactory.Release();
-            DeleteDirectory(BlueRedGraphTestImpl.GetBlueRedGraphDirectory());
+            _suite.SetUp(GraphTest);
+        }
+
+        [TearDown]
+        public void TearDown()
+        {
+            _suite.TearDown();
         }
 
         public BlueRedGraphIndexTestSuite()
-            : base(new BlueRedGraphTestImpl())
+            : base(new BlueRedGraphTest())
         {
         }
 
@@ -147,16 +269,22 @@ namespace Frontenac.BlueRed.Tests
     [TestFixture(Category = "BlueRedGraphGraphTestSuite")]
     public class BlueRedGraphGmlReaderTestSuite : GmlReaderTestSuite
     {
+        private readonly BlueRedGraphTestSuite _suite = new BlueRedGraphTestSuite();
+
         [SetUp]
         public void SetUp()
         {
-            BlueRedFactory.DeleteDb();
-            BlueRedFactory.Release();
-            DeleteDirectory(BlueRedGraphTestImpl.GetBlueRedGraphDirectory());
+            _suite.SetUp(GraphTest);
+        }
+
+        [TearDown]
+        public void TearDown()
+        {
+            _suite.TearDown();
         }
 
         public BlueRedGraphGmlReaderTestSuite()
-            : base(new BlueRedGraphTestImpl())
+            : base(new BlueRedGraphTest())
         {
         }
 
@@ -169,16 +297,22 @@ namespace Frontenac.BlueRed.Tests
     [TestFixture(Category = "BlueRedGraphGraphTestSuite")]
     public class BlueRedGraphGraphMlReaderTestSuite : GraphMlReaderTestSuite
     {
+        private readonly BlueRedGraphTestSuite _suite = new BlueRedGraphTestSuite();
+
         [SetUp]
         public void SetUp()
         {
-            BlueRedFactory.DeleteDb();
-            BlueRedFactory.Release();
-            DeleteDirectory(BlueRedGraphTestImpl.GetBlueRedGraphDirectory());
+            _suite.SetUp(GraphTest);
+        }
+
+        [TearDown]
+        public void TearDown()
+        {
+            _suite.TearDown();
         }
 
         public BlueRedGraphGraphMlReaderTestSuite()
-            : base(new BlueRedGraphTestImpl())
+            : base(new BlueRedGraphTest())
         {
         }
 
@@ -191,16 +325,22 @@ namespace Frontenac.BlueRed.Tests
     [TestFixture(Category = "BlueRedGraphGraphTestSuite")]
     public class BlueRedGraphGraphSonReaderTestSuite : GraphSonReaderTestSuite
     {
+        private readonly BlueRedGraphTestSuite _suite = new BlueRedGraphTestSuite();
+
         [SetUp]
         public void SetUp()
         {
-            BlueRedFactory.DeleteDb();
-            BlueRedFactory.Release();
-            DeleteDirectory(BlueRedGraphTestImpl.GetBlueRedGraphDirectory());
+            _suite.SetUp(GraphTest);
+        }
+
+        [TearDown]
+        public void TearDown()
+        {
+            _suite.TearDown();
         }
 
         public BlueRedGraphGraphSonReaderTestSuite()
-            : base(new BlueRedGraphTestImpl())
+            : base(new BlueRedGraphTest())
         {
         }
 
@@ -210,37 +350,27 @@ namespace Frontenac.BlueRed.Tests
         }
     }
 
-    public class BlueRedGraphTestImpl : GraphTest
-    {
-        public override IGraph GenerateGraph()
-        {
-            return GenerateGraph("graph");
-        }
-
-        public override IGraph GenerateGraph(string graphDirectoryName)
-        {
-            return BlueRedFactory.CreateGraph();
-        }
-
-        public static string GetBlueRedGraphDirectory()
-        {
-            return Path.Combine(Directory.GetCurrentDirectory(), "BlueRed");
-        }
-    }
+    
 
     [TestFixture(Category = "BlueRedGraphGraphTestSuite")]
     public class BlueRedGraphTestGeneral : TestSuite
     {
+        private readonly BlueRedGraphTestSuite _suite = new BlueRedGraphTestSuite();
+
         [SetUp]
         public void SetUp()
         {
-            BlueRedFactory.DeleteDb();
-            BlueRedFactory.Release();
-            DeleteDirectory(BlueRedGraphTestImpl.GetBlueRedGraphDirectory());
+            _suite.SetUp(GraphTest);
+        }
+
+        [TearDown]
+        public void TearDown()
+        {
+            _suite.TearDown();
         }
 
         public BlueRedGraphTestGeneral()
-            : this(new BlueRedGraphTestImpl())
+            : this(new BlueRedGraphTest())
         {
         }
 
@@ -253,32 +383,32 @@ namespace Frontenac.BlueRed.Tests
         public void TestClear()
         {
             DeleteDirectory(GraveGraphTestImpl.GetGraveGraphDirectory());
-            using (var graph = (GraveIndexedGraph)GraphTest.GenerateGraph())
+            using (var InnerGraph = (GraveIndexedGraph)GraphTest.GenerateGraph())
             {
                 StopWatch();
                 for (int i = 0; i < 25; i++)
                 {
-                    IVertex a = graph.AddVertex(null);
-                    IVertex b = graph.AddVertex(null);
-                    graph.AddEdge(null, a, b, "knows");
+                    IVertex a = InnerGraph.AddVertex(null);
+                    IVertex b = InnerGraph.AddVertex(null);
+                    InnerGraph.AddEdge(null, a, b, "knows");
                 }
-                PrintPerformance(graph.ToString(), 75, "elements added", StopWatch());
+                PrintPerformance(InnerGraph.ToString(), 75, "elements added", StopWatch());
 
-                Assert.AreEqual(50, Count(graph.GetVertices()));
-                Assert.AreEqual(25, Count(graph.GetEdges()));
+                Assert.AreEqual(50, Count(InnerGraph.GetVertices()));
+                Assert.AreEqual(25, Count(InnerGraph.GetEdges()));
 
                 StopWatch();
-                graph.Clear();
-                PrintPerformance(graph.ToString(), 75, "elements deleted", StopWatch());
+                InnerGraph.Clear();
+                PrintPerformance(InnerGraph.ToString(), 75, "elements deleted", StopWatch());
 
-                Assert.AreEqual(0, Count(graph.GetVertices()));
-                Assert.AreEqual(0, Count(graph.GetEdges()));
+                Assert.AreEqual(0, Count(InnerGraph.GetVertices()));
+                Assert.AreEqual(0, Count(InnerGraph.GetEdges()));
             }
         }*/
 
         private void TestGraphFileType(string directory, FileType fileType)
         {
-            var path = BlueRedGraphTestImpl.GetBlueRedGraphDirectory() + "/" + directory;
+            var path = BlueRedGraphTest.GetBlueRedGraphDirectory() + "/" + directory;
             DeleteDirectory(path);
 
             /*using (var sourceGraph = GraveFactory.CreateTinkerGraph())
@@ -299,7 +429,7 @@ namespace Frontenac.BlueRed.Tests
 
                     using (var compareGraph = new GraveIndexedGraph(path, fileType))
                     {
-                        PrintTestPerformance("load graph: " + fileType.ToString(), StopWatch());
+                        PrintTestPerformance("load InnerGraph: " + fileType.ToString(), StopWatch());
 
                         CompareGraphs(targetGraph, compareGraph, fileType);
                     }
@@ -369,7 +499,7 @@ namespace Frontenac.BlueRed.Tests
                 {
                     // For GML we need to iterate the properties manually to catch the
                     // case where the property returned from GML is an integer
-                    // while the target graph property is a float.
+                    // while the target InnerGraph property is a float.
                     foreach (var p in e1.GetPropertyKeys())
                     {
                         var v1 = e1.GetProperty(p);
@@ -438,25 +568,25 @@ namespace Frontenac.BlueRed.Tests
         [Test]
         public void TestGraphFileTypeDotNet()
         {
-            TestGraphFileType("graph-test-dotnet", FileType.DotNet);
+            TestGraphFileType("InnerGraph-test-dotnet", FileType.DotNet);
         }
 
         [Test]
         public void TestGraphFileTypeGml()
         {
-            TestGraphFileType("graph-test-gml", FileType.Gml);
+            TestGraphFileType("InnerGraph-test-gml", FileType.Gml);
         }
 
         [Test]
         public void TestGraphFileTypeGraphMl()
         {
-            TestGraphFileType("graph-test-graphml", FileType.Graphml);
+            TestGraphFileType("InnerGraph-test-graphml", FileType.Graphml);
         }
 
         [Test]
         public void TestGraphFileTypeGraphSon()
         {
-            TestGraphFileType("graph-test-graphson", FileType.Graphson);
+            TestGraphFileType("InnerGraph-test-graphson", FileType.Graphson);
         }
 
         [Test]

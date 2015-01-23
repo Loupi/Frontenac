@@ -49,27 +49,33 @@ namespace Frontenac.BlueRed
             SupportsLabelProperty = true
         };
 
+        private readonly IGraphFactory _factory;
         internal readonly IContentSerializer Serializer;
+
         internal readonly ConnectionMultiplexer Multiplexer;
 
-        public RedisGraph(IContentSerializer serializer, 
+        public RedisGraph(IGraphFactory factory,
+                          IContentSerializer serializer, 
                           ConnectionMultiplexer multiplexer, 
-                          IIndexingServiceFactory indexingServiceFactory)
-            :base(indexingServiceFactory)
+                          IndexingService indexingService,
+                          IGraphConfiguration configuration)
+            :base(indexingService, configuration)
         {
+            Contract.Requires(factory != null);
             Contract.Requires(serializer != null);
             Contract.Requires(multiplexer != null);
-            Contract.Requires(indexingServiceFactory != null);
+            Contract.Requires(indexingService != null);
+            Contract.Requires(configuration != null);
 
+            _factory = factory;
             Serializer = serializer;
             Multiplexer = multiplexer;
         }
 
-        protected override ThreadContext CreateThreadContext(IIndexingServiceFactory indexingServiceFactory)
+        protected override ThreadContext CreateThreadContext(IndexingService indexingService)
         {
-            var indexing = indexingServiceFactory.Create();
-            indexing.LoadFromStore(new RedisIndexStore(Multiplexer));
-            return new ThreadContext { IndexingService = indexing };
+            indexingService.LoadFromStore(new RedisIndexStore(Multiplexer));
+            return new ThreadContext { IndexingService = indexingService };
         }
 
         protected override IVertex GetVertexInstance(long vertexId)
@@ -88,7 +94,7 @@ namespace Frontenac.BlueRed
             var nextId = db.StringIncrement("globals:next_vertex_id");
             db.SortedSetAdd("globals:vertices", nextId, nextId);
             var vertex = new RedisVertex(nextId, this);
-            db.StringSet(vertex.GetIdentifier(null), nextId);
+            db.StringSet(GetIdentifier(vertex, null), nextId);
             return vertex;
         }
 
@@ -98,7 +104,7 @@ namespace Frontenac.BlueRed
             if (!vertexId.HasValue) return null;
 
             var db = Multiplexer.GetDatabase();
-            var val = db.StringGet(string.Format("vertex:{0}", vertexId));
+            var val = db.StringGet(String.Format("vertex:{0}", vertexId));
             return val != RedisValue.Null ? new RedisVertex(vertexId.Value, this) : null;
         }
 
@@ -111,22 +117,22 @@ namespace Frontenac.BlueRed
             }
 
             var db = Multiplexer.GetDatabase();
-            db.KeyDelete(redisVertex.GetIdentifier(null));
-            db.KeyDelete(redisVertex.GetIdentifier("properties"));
-            db.KeyDelete(redisVertex.GetIdentifier("edges:in"));
-            db.KeyDelete(redisVertex.GetIdentifier("edges:out"));
+            db.KeyDelete(GetIdentifier(redisVertex, null));
+            db.KeyDelete(GetIdentifier(redisVertex, "properties"));
+            db.KeyDelete(GetIdentifier(redisVertex, "edges:in"));
+            db.KeyDelete(GetIdentifier(redisVertex, "edges:out"));
 
-            var labelsIn = redisVertex.GetIdentifier("labels_in");
+            var labelsIn = GetIdentifier(redisVertex, "labels_in");
             foreach (var inLabel in db.SortedSetScan(labelsIn))
             {
-                db.KeyDelete(redisVertex.GetLabeledIdentifier("edges:in", inLabel.Element));
+                db.KeyDelete(GetLabeledIdentifier(redisVertex, "edges:in", inLabel.Element));
             }
             db.KeyDelete(labelsIn);
 
-            var labelsOut = redisVertex.GetIdentifier("labels_out");
+            var labelsOut = GetIdentifier(redisVertex, "labels_out");
             foreach (var outLabel in db.SortedSetScan(labelsOut))
             {
-                db.KeyDelete(redisVertex.GetLabeledIdentifier("edges:out", outLabel.Element));
+                db.KeyDelete(GetLabeledIdentifier(redisVertex, "edges:out", outLabel.Element));
             }
             db.KeyDelete(labelsOut);
 
@@ -143,7 +149,7 @@ namespace Frontenac.BlueRed
             EdgesOut
         }
 
-        static string GetCollectionKey(CollectionType type, RedisElement element)
+        static string GetCollectionKey(RedisGraph graph, CollectionType type, RedisElement element)
         {
             if (element == null)
             {
@@ -152,16 +158,16 @@ namespace Frontenac.BlueRed
             }
             else if (element is IVertex)
             {
-                if (type == CollectionType.EdgesIn) return element.GetIdentifier("edges:in");
-                if (type == CollectionType.EdgesOut) return element.GetIdentifier("edges:out");
+                if (type == CollectionType.EdgesIn) return graph.GetIdentifier(element, "edges:in");
+                if (type == CollectionType.EdgesOut) return graph.GetIdentifier(element, "edges:out");
             }
-            return string.Empty;
+            return String.Empty;
         }
 
         public override IEnumerable<IVertex> GetVertices()
         {
             var db = Multiplexer.GetDatabase();
-            var key = GetCollectionKey(CollectionType.Vertex, null);
+            var key = GetCollectionKey(this, CollectionType.Vertex, null);
             return db.SortedSetScan(key).Select(entry => new RedisVertex((long)entry.Element, this));
         }
 
@@ -170,22 +176,22 @@ namespace Frontenac.BlueRed
             var db = Multiplexer.GetDatabase();
             var nextId = db.StringIncrement("globals:next_edge_id");
             var edge = new RedisEdge(nextId, outVertex, inVertex, label, this);
-            db.StringSet(edge.GetIdentifier("out"), (long)outVertex.Id);
-            db.StringSet(edge.GetIdentifier("in"), (long)inVertex.Id);
-            db.StringSet(edge.GetIdentifier("label"), label);
+            db.StringSet(GetIdentifier(edge, "out"), (long)outVertex.Id);
+            db.StringSet(GetIdentifier(edge, "in"), (long)inVertex.Id);
+            db.StringSet(GetIdentifier(edge, "label"), label);
 
             var vin = (RedisVertex) inVertex;
             var vout = (RedisVertex) outVertex;
-            db.SortedSetAdd(vin.GetIdentifier("edges:in"), nextId, vout.RawId);
-            db.SortedSetAdd(vout.GetIdentifier("edges:out"), nextId, vin.RawId);
+            db.SortedSetAdd(GetIdentifier(vin, "edges:in"), nextId, vout.RawId);
+            db.SortedSetAdd(GetIdentifier(vout, "edges:out"), nextId, vin.RawId);
 
-            db.SortedSetAdd(vin.GetLabeledIdentifier("edges:in", label), nextId, vout.RawId);
-            db.SortedSetAdd(vout.GetLabeledIdentifier("edges:out", label), nextId, vin.RawId);
+            db.SortedSetAdd(GetLabeledIdentifier(vin, "edges:in", label), nextId, vout.RawId);
+            db.SortedSetAdd(GetLabeledIdentifier(vout, "edges:out", label), nextId, vin.RawId);
 
-            db.SortedSetIncrement(vin.GetIdentifier("labels_in"), label, 1);
-            db.SortedSetIncrement(vout.GetIdentifier("labels_out"), label, 1);
+            db.SortedSetIncrement(GetIdentifier(vin, "labels_in"), label, 1);
+            db.SortedSetIncrement(GetIdentifier(vout, "labels_out"), label, 1);
 
-            db.StringSet(edge.GetIdentifier(null), nextId);
+            db.StringSet(GetIdentifier(edge, null), nextId);
             db.SortedSetAdd("globals:edges", nextId, nextId);
 
             return edge;
@@ -197,12 +203,12 @@ namespace Frontenac.BlueRed
             if (!edgeId.HasValue) return null;
 
             var db = Multiplexer.GetDatabase();
-            var val = db.StringGet(string.Format("edge:{0}", edgeId));
+            var val = db.StringGet(String.Format("edge:{0}", edgeId));
             if (val == RedisValue.Null) return null;
 
-            var idIn = (long)db.StringGet(string.Format("edge:{0}:in", edgeId));
-            var idOut = (long)db.StringGet(string.Format("edge:{0}:out", edgeId));
-            var label = (string)db.StringGet(string.Format("edge:{0}:label", edgeId));
+            var idIn = (long)db.StringGet(String.Format("edge:{0}:in", edgeId));
+            var idOut = (long)db.StringGet(String.Format("edge:{0}:out", edgeId));
+            var label = (string)db.StringGet(String.Format("edge:{0}:label", edgeId));
             var vin = new RedisVertex(idIn, this);
             var vout = new RedisVertex(idOut, this);
 
@@ -216,23 +222,23 @@ namespace Frontenac.BlueRed
             var vout = (RedisVertex)edge.GetVertex(Direction.Out);
             var db = Multiplexer.GetDatabase();
 
-            db.KeyDelete(redisEdge.GetIdentifier(null));
-            db.KeyDelete(redisEdge.GetIdentifier("in"));
-            db.KeyDelete(redisEdge.GetIdentifier("out"));
-            db.KeyDelete(redisEdge.GetIdentifier("label"));
-            db.KeyDelete(redisEdge.GetIdentifier("properties"));
+            db.KeyDelete(GetIdentifier(redisEdge, null));
+            db.KeyDelete(GetIdentifier(redisEdge, "in"));
+            db.KeyDelete(GetIdentifier(redisEdge, "out"));
+            db.KeyDelete(GetIdentifier(redisEdge, "label"));
+            db.KeyDelete(GetIdentifier(redisEdge, "properties"));
 
-            db.SortedSetRemove(vout.GetIdentifier("edges:out"), redisEdge.RawId);
-            db.SortedSetRemove(vin.GetIdentifier("edges:in"), redisEdge.RawId);
+            db.SortedSetRemove(GetIdentifier(vout, "edges:out"), redisEdge.RawId);
+            db.SortedSetRemove(GetIdentifier(vin, "edges:in"), redisEdge.RawId);
 
-            db.SortedSetRemove(vout.GetLabeledIdentifier("edges:out", redisEdge.Label), redisEdge.RawId);
-            db.SortedSetRemove(vin.GetLabeledIdentifier("edges:in", redisEdge.Label), redisEdge.RawId);
+            db.SortedSetRemove(GetLabeledIdentifier(vout, "edges:out", redisEdge.Label), redisEdge.RawId);
+            db.SortedSetRemove(GetLabeledIdentifier(vin, "edges:in", redisEdge.Label), redisEdge.RawId);
 
-            var outLabels = vout.GetIdentifier("labels_out");
+            var outLabels = GetIdentifier(vout, "labels_out");
             db.SortedSetDecrement(outLabels, redisEdge.Label, 1);
             db.SortedSetRemoveRangeByScore(outLabels, -1, 0);
 
-            var inLabels = vin.GetIdentifier("labels_in");
+            var inLabels = GetIdentifier(vin, "labels_in");
             db.SortedSetDecrement(inLabels, redisEdge.Label, 1);
             db.SortedSetRemoveRangeByScore(inLabels, -1, 0);
 
@@ -244,7 +250,7 @@ namespace Frontenac.BlueRed
         public override IEnumerable<IEdge> GetEdges()
         {
             var db = Multiplexer.GetDatabase();
-            var key = GetCollectionKey(CollectionType.Edge, null);
+            var key = GetCollectionKey(this, CollectionType.Edge, null);
             return db.SortedSetScan(key).Select(entry => GetEdge((long)entry.Element));
         }
 
@@ -254,13 +260,13 @@ namespace Frontenac.BlueRed
 
             if (direction == Direction.Out || direction == Direction.Both)
             {
-                foreach (var outLabel in db.SortedSetScan(vertex.GetIdentifier("labels_out")))
+                foreach (var outLabel in db.SortedSetScan(GetIdentifier(vertex, "labels_out")))
                 {
                     var label = (string)outLabel.Element;
                     if(labels.Length > 0 && !labels.Contains(label))
                         continue;
 
-                    foreach (var edge in db.SortedSetScan(vertex.GetLabeledIdentifier("edges:out", label)))
+                    foreach (var edge in db.SortedSetScan(GetLabeledIdentifier(vertex, "edges:out", label)))
                     {
                         var edgeId = (long) edge.Element;
                         var targetId = (long) edge.Score;
@@ -272,13 +278,13 @@ namespace Frontenac.BlueRed
 
             if (direction != Direction.In && direction != Direction.Both) yield break;
 
-            foreach (var inLabel in db.SortedSetScan(vertex.GetIdentifier("labels_in")))
+            foreach (var inLabel in db.SortedSetScan(GetIdentifier(vertex, "labels_in")))
             {
                 var label = (string)inLabel.Element;
                 if(labels.Length > 0 && !labels.Contains(label))
                     continue;
 
-                foreach (var edge in db.SortedSetScan(vertex.GetLabeledIdentifier("edges:in", label)))
+                foreach (var edge in db.SortedSetScan(GetLabeledIdentifier(vertex, "edges:in", label)))
                 {
                     var edgeId = (long) edge.Element;
                     var targetId = (long) edge.Score;
@@ -290,7 +296,7 @@ namespace Frontenac.BlueRed
 
         public override void Shutdown()
         {
-            
+            _factory.Destroy(this);
         }
 
         public override string ToString()
@@ -299,6 +305,72 @@ namespace Frontenac.BlueRed
             return this.GraphString(String.Format("vertices: {0} Edges: {1}",
                                     db.SortedSetLength("globals:vertices"),
                                     db.SortedSetLength("globals:edges")));
+        }
+
+        public object GetProperty(RedisElement element, string key)
+        {
+            Contract.Requires(element != null);
+
+            var db = Multiplexer.GetDatabase();
+            var val = db.HashGet(GetIdentifier(element, "properties"), key);
+            return val != RedisValue.Null ? Serializer.Deserialize(val) : null;
+        }
+
+        public string GetIdentifier(RedisElement element, string suffix)
+        {
+            Contract.Requires(element != null);
+
+            var prefix = element is RedisVertex ? "vertex:" : "edge:";
+            var identifier = String.Concat(prefix, element.RawId);
+            if (suffix != null)
+                identifier = String.Concat(identifier, ":", suffix);
+            return identifier;
+        }
+
+        public string GetLabeledIdentifier(RedisElement element, string suffix, string label)
+        {
+            Contract.Requires(element != null);
+
+            return String.Concat(GetIdentifier(element, suffix), ":", label);
+        }
+
+        public IEnumerable<string> GetPropertyKeys(RedisElement element)
+        {
+            Contract.Requires(element != null);
+
+            var db = Multiplexer.GetDatabase();
+            var keys = db.HashKeys(GetIdentifier(element, "properties"));
+            return keys.Select((value => value.ToString())).ToArray();
+        }
+
+        public void SetProperty(RedisElement element, string key, object value)
+        {
+            Contract.Requires(element != null);
+            Contract.Requires(!string.IsNullOrWhiteSpace(key));
+
+            var raw = Serializer.Serialize(value);
+            var db = Multiplexer.GetDatabase();
+            db.HashSet(GetIdentifier(element, "properties"), key, raw);
+            SetIndexedKeyValue(element, key, value);
+        }
+
+        public object RemoveProperty(RedisElement element, string key)
+        {
+            Contract.Requires(element != null);
+            Contract.Requires(!string.IsNullOrWhiteSpace(key));
+
+            var result = GetProperty(element, key);
+            var db = Multiplexer.GetDatabase();
+            db.HashDelete(GetIdentifier(element, "properties"), key);
+            SetIndexedKeyValue(element, key, null);
+            return result;
+        }
+
+        public static void DeleteDb()
+        {
+            var mp = ConnectionMultiplexer.Connect("localhost:6379,allowAdmin=true");
+            mp.GetServer("localhost:6379").FlushDatabase();
+            mp.Dispose();
         }
     }
 }

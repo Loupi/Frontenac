@@ -6,6 +6,7 @@ using System.Threading;
 using System.Transactions;
 using Frontenac.Blueprints;
 using Frontenac.Grave.Esent;
+using Frontenac.Infrastructure;
 using Frontenac.Infrastructure.Indexing;
 
 namespace Frontenac.Grave
@@ -76,12 +77,16 @@ namespace Frontenac.Grave
             get { return GraveTransactionalGraphFeatures; }
         }
 
-        public GraveTransactionalGraph(IGraveGraphFactory factory, EsentInstance instance, IIndexingServiceFactory indexingServiceFactory)
-            : base(factory, instance, indexingServiceFactory)
+        public GraveTransactionalGraph(IGraphFactory factory, 
+                                       EsentInstance instance, 
+                                       IndexingService indexingService, 
+                                       IGraphConfiguration configuration)
+            : base(factory, instance, indexingService, configuration)
         {
             Contract.Requires(factory != null);
             Contract.Requires(instance != null);
-            Contract.Requires(indexingServiceFactory != null);
+            Contract.Requires(indexingService != null);
+            Contract.Requires(configuration != null);
         }
 
         #region IDisposable
@@ -122,6 +127,8 @@ namespace Frontenac.Grave
                         }
                     }
                 }
+
+                _transactionContexts.Dispose();
             }
 
             _disposed = true;

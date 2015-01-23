@@ -9,7 +9,7 @@ using Frontenac.Blueprints.Util.IO.GraphSON;
 namespace Frontenac.Blueprints.Impls.TG
 {
     /// <summary>
-    ///     Constructs TinkerFile instances to load and save TinkerGraph instances.
+    ///     Constructs TinkerFile instances to load and save TinkerGraĥ instances.
     /// </summary>
     internal class TinkerStorageFactory
     {
@@ -24,19 +24,19 @@ namespace Frontenac.Blueprints.Impls.TG
             return _factory ?? (_factory = new TinkerStorageFactory());
         }
 
-        public ITinkerStorage GetTinkerStorage(TinkerGraph.FileType fileType)
+        public ITinkerStorage GetTinkerStorage(TinkerGraĥ.FileType fileType)
         {
             Contract.Ensures(Contract.Result<ITinkerStorage>() != null);
 
             switch (fileType)
             {
-                case TinkerGraph.FileType.Gml:
+                case TinkerGraĥ.FileType.Gml:
                     return new GmlTinkerStorage();
-                case TinkerGraph.FileType.Graphml:
+                case TinkerGraĥ.FileType.Graphml:
                     return new GraphMlTinkerStorage();
-                case TinkerGraph.FileType.Graphson:
+                case TinkerGraĥ.FileType.Graphson:
                     return new GraphSonTinkerStorage();
-                case TinkerGraph.FileType.DotNet:
+                case TinkerGraĥ.FileType.DotNet:
                     return new DotNetTinkerStorage();
             }
 
@@ -44,8 +44,8 @@ namespace Frontenac.Blueprints.Impls.TG
         }
 
         /// <summary>
-        ///     Base class for loading and saving a TinkerGraph where the implementation separates the data from the
-        ///     meta data stored in the TinkerGraph.
+        ///     Base class for loading and saving a TinkerGraĥ where the implementation separates the data from the
+        ///     meta data stored in the TinkerGraĥ.
         /// </summary>
         [ContractClass(typeof (AbstractSeparateTinkerStorageContract))]
         private abstract class AbstractSeparateTinkerStorage : AbstractTinkerStorage
@@ -53,21 +53,21 @@ namespace Frontenac.Blueprints.Impls.TG
             private const string GraphFileMetadata = "/tinkergraph-metadata.dat";
 
             /// <summary>
-            ///     Save the data of the graph with the specific file format of the implementation.
+            ///     Save the data of the tinkerGraĥ with the specific file format of the implementation.
             /// </summary>
-            public abstract void SaveGraphData(TinkerGraph graph, string directory);
+            public abstract void SaveGraphData(TinkerGraĥ tinkerGraĥ, string directory);
 
             /// <summary>
-            ///     Load the data from the graph with the specific file format of the implementation.
+            ///     Load the data from the tinkerGraĥ with the specific file format of the implementation.
             /// </summary>
-            public abstract void LoadGraphData(TinkerGraph graph, string directory);
+            public abstract void LoadGraphData(TinkerGraĥ tinkerGraĥ, string directory);
 
-            public override TinkerGraph Load(string directory)
+            public override TinkerGraĥ Load(string directory)
             {
                 if (!Directory.Exists(directory))
                     throw new Exception(string.Concat("Directory ", directory, " does not exist"));
 
-                var graph = new TinkerGraph();
+                var graph = new TinkerGraĥ();
                 LoadGraphData(graph, directory);
 
                 var filePath = string.Concat(directory, GraphFileMetadata);
@@ -77,44 +77,44 @@ namespace Frontenac.Blueprints.Impls.TG
                 return graph;
             }
 
-            public override void Save(TinkerGraph graph, string directory)
+            public override void Save(TinkerGraĥ tinkerGraĥ, string directory)
             {
                 if (!Directory.Exists(directory))
                     Directory.CreateDirectory(directory);
 
-                SaveGraphData(graph, directory);
+                SaveGraphData(tinkerGraĥ, directory);
                 var filePath = string.Concat(directory, GraphFileMetadata);
                 DeleteFile(filePath);
-                TinkerMetadataWriter.Save(graph, filePath);
+                TinkerMetadataWriter.Save(tinkerGraĥ, filePath);
             }
         }
 
         [ContractClassFor(typeof (AbstractSeparateTinkerStorage))]
         private abstract class AbstractSeparateTinkerStorageContract : AbstractSeparateTinkerStorage
         {
-            public override void LoadGraphData(TinkerGraph graph, string directory)
+            public override void LoadGraphData(TinkerGraĥ tinkerGraĥ, string directory)
             {
-                Contract.Requires(graph != null);
+                Contract.Requires(tinkerGraĥ != null);
                 Contract.Requires(!string.IsNullOrWhiteSpace(directory));
             }
 
-            public override void SaveGraphData(TinkerGraph graph, string directory)
+            public override void SaveGraphData(TinkerGraĥ tinkerGraĥ, string directory)
             {
-                Contract.Requires(graph != null);
+                Contract.Requires(tinkerGraĥ != null);
                 Contract.Requires(!string.IsNullOrWhiteSpace(directory));
             }
         }
 
         /// <summary>
-        ///     Base class for loading and saving a TinkerGraph.
+        ///     Base class for loading and saving a TinkerGraĥ.
         /// </summary>
         private abstract class AbstractTinkerStorage : ITinkerStorage
         {
-            public abstract TinkerGraph Load(string directory);
-            public abstract void Save(TinkerGraph graph, string directory);
+            public abstract TinkerGraĥ Load(string directory);
+            public abstract void Save(TinkerGraĥ tinkerGraĥ, string directory);
 
             /// <summary>
-            ///     Clean up the directory that houses the TinkerGraph.
+            ///     Clean up the directory that houses the TinkerGraĥ.
             /// </summary>
             /// <param name="path"></param>
             protected static void DeleteFile(string path)
@@ -127,90 +127,90 @@ namespace Frontenac.Blueprints.Impls.TG
         }
 
         /// <summary>
-        ///     Reads and writes a TinkerGraph using .NET serialization.
+        ///     Reads and writes a TinkerGraĥ using .NET serialization.
         /// </summary>
         private class DotNetTinkerStorage : AbstractTinkerStorage
         {
             private const string GraphFileDotNet = "/tinkergraph.dat";
 
-            public override TinkerGraph Load(string directory)
+            public override TinkerGraĥ Load(string directory)
             {
                 using (var stream = File.OpenRead(string.Concat(directory, GraphFileDotNet)))
                 {
                     var formatter = new BinaryFormatter();
-                    return (TinkerGraph) formatter.Deserialize(stream);
+                    return (TinkerGraĥ) formatter.Deserialize(stream);
                 }
             }
 
-            public override void Save(TinkerGraph graph, string directory)
+            public override void Save(TinkerGraĥ tinkerGraĥ, string directory)
             {
                 var filePath = string.Concat(directory, GraphFileDotNet);
                 DeleteFile(filePath);
                 using (var stream = File.Create(string.Concat(directory, GraphFileDotNet)))
                 {
                     var formatter = new BinaryFormatter();
-                    formatter.Serialize(stream, graph);
+                    formatter.Serialize(stream, tinkerGraĥ);
                 }
             }
         }
 
         /// <summary>
-        ///     Reads and writes a TinkerGraph to GML as the format for the data.
+        ///     Reads and writes a TinkerGraĥ to GML as the format for the data.
         /// </summary>
         private class GmlTinkerStorage : AbstractSeparateTinkerStorage
         {
             private const string GraphFileGml = "/tinkergraph.gml";
 
-            public override void LoadGraphData(TinkerGraph graph, string directory)
+            public override void LoadGraphData(TinkerGraĥ tinkerGraĥ, string directory)
             {
-                GmlReader.InputGraph(graph, string.Concat(directory, GraphFileGml));
+                GmlReader.InputGraph(tinkerGraĥ, string.Concat(directory, GraphFileGml));
             }
 
-            public override void SaveGraphData(TinkerGraph graph, string directory)
+            public override void SaveGraphData(TinkerGraĥ tinkerGraĥ, string directory)
             {
                 var filePath = string.Concat(directory, GraphFileGml);
                 DeleteFile(filePath);
-                GmlWriter.OutputGraph(graph, filePath);
+                GmlWriter.OutputGraph(tinkerGraĥ, filePath);
             }
         }
 
         /// <summary>
-        ///     Reads and writes a TinkerGraph to GraphML as the format for the data.
+        ///     Reads and writes a TinkerGraĥ to GraphML as the format for the data.
         /// </summary>
         private class GraphMlTinkerStorage : AbstractSeparateTinkerStorage
         {
             private const string GraphFileGraphml = "/tinkergraph.xml";
 
-            public override void LoadGraphData(TinkerGraph graph, string directory)
+            public override void LoadGraphData(TinkerGraĥ tinkerGraĥ, string directory)
             {
-                GraphMlReader.InputGraph(graph, string.Concat(directory, GraphFileGraphml));
+                GraphMlReader.InputGraph(tinkerGraĥ, string.Concat(directory, GraphFileGraphml));
             }
 
-            public override void SaveGraphData(TinkerGraph graph, string directory)
+            public override void SaveGraphData(TinkerGraĥ tinkerGraĥ, string directory)
             {
                 var filePath = string.Concat(directory, GraphFileGraphml);
                 DeleteFile(filePath);
-                GraphMlWriter.OutputGraph(graph, filePath);
+                GraphMlWriter.OutputGraph(tinkerGraĥ, filePath);
             }
         }
 
         /// <summary>
-        ///     Reads and writes a TinkerGraph to GraphSON as the format for the data.
+        ///     Reads and writes a TinkerGraĥ to GraphSON as the format for the data.
         /// </summary>
         private class GraphSonTinkerStorage : AbstractSeparateTinkerStorage
         {
             private const string GraphFileGraphson = "/tinkergraph.json";
 
-            public override void LoadGraphData(TinkerGraph graph, string directory)
+            public override void LoadGraphData(TinkerGraĥ tinkerGraĥ, string directory)
             {
-                GraphSonReader.InputGraph(graph, string.Concat(directory, GraphFileGraphson));
+                GraphSonReader.InputGraph(tinkerGraĥ, string.Concat(directory, GraphFileGraphson));
             }
 
-            public override void SaveGraphData(TinkerGraph graph, string directory)
+            public override void SaveGraphData(TinkerGraĥ tinkerGraĥ, string directory)
             {
                 var filePath = string.Concat(directory, GraphFileGraphson);
                 DeleteFile(filePath);
-                GraphSonWriter.OutputGraph(graph, filePath, GraphSonMode.EXTENDED);
+                GraphSonWriter.OutputGraph(tinkerGraĥ, filePath, GraphSonMode.EXTENDED);
             }
         }
     }

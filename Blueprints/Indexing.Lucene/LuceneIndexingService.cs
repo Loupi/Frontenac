@@ -5,6 +5,7 @@ using System.IO;
 using System.Linq;
 using Frontenac.Blueprints;
 using Frontenac.Infrastructure.Geo;
+using Lucene.Net.Analysis;
 using Lucene.Net.Contrib.Management;
 using Lucene.Net.Documents;
 using Lucene.Net.Index;
@@ -23,22 +24,35 @@ namespace Frontenac.Infrastructure.Indexing.Lucene
 {
     public class LuceneIndexingService : IndexingService
     {
-        private readonly NrtManager _nrtManager;
-        private readonly SearcherManager _searcherManager;
+        private NrtManager _nrtManager;
+        private NrtManagerReopener _reopener;
+        private SearcherManager _searcherManager;
         private readonly IIndexerFactory _indexerFactory;
+        private readonly Analyzer _analyzer = new KeywordAnalyzer();
+        private FSDirectory _directory;
 
-        public LuceneIndexingService(IIndexerFactory indexerFactory,
-                                     NrtManager nrtManager,
-                                     IIndexCollectionFactory indexCollectionFactory)
-            : base(indexCollectionFactory)
+        public LuceneIndexingService(IIndexerFactory indexerFactory)
         {
             Contract.Requires(indexerFactory != null);
-            Contract.Requires(nrtManager != null);
-            Contract.Requires(indexCollectionFactory != null);
-
+            
             _indexerFactory = indexerFactory;
-            _nrtManager = nrtManager;
+        }
+
+        public override void Initialize(string databasePath)
+        {
+            var path = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, string.Concat(databasePath, "\\Lucene"));
+            _directory = CreateMMapDirectory(path);
+
+            _nrtManager = new NrtManager(_directory, _analyzer);
             _searcherManager = _nrtManager.GetSearcherManager();
+
+            _reopener = new NrtManagerReopener(_nrtManager,
+                                 TimeSpan.FromSeconds(LuceneIndexingServiceParameters.Default.MaxStaleSeconds),
+                                 TimeSpan.FromMilliseconds(LuceneIndexingServiceParameters.Default.MinStaleMilliseconds),
+                                 LuceneIndexingServiceParameters.Default.CloseTimeoutSeconds);
+
+            System.Threading.Tasks.Task.Factory.StartNew(() => _reopener.Start());
+
         }
 
         #region IDisposable
@@ -49,8 +63,16 @@ namespace Frontenac.Infrastructure.Indexing.Lucene
 
             if (!disposing) return;
 
-            _searcherManager.Dispose();
-            _nrtManager.Dispose();
+            if(_reopener != null)
+                _reopener.Dispose();
+
+            _analyzer.Dispose();
+
+            if(_nrtManager != null)
+                _nrtManager.Dispose();
+
+            if(_directory != null)
+                _directory.Dispose();
         }
 
         #endregion
@@ -283,7 +305,7 @@ namespace Frontenac.Infrastructure.Indexing.Lucene
             bool minInclusive;
             bool maxInclusive;
 
-            if (comparable.Value == null || !Portability.IsNumber(comparable.Value))
+            if (comparable.Value == null || !Blueprints.GraphHelpers.IsNumber(comparable.Value))
             {
                 min = comparable.Value;
                 max = comparable.Value;
@@ -372,8 +394,15 @@ namespace Frontenac.Infrastructure.Indexing.Lucene
 
             var rawDocument = CreateDocument(idColumn, keyColumn, id, indexName);
             var document = new LuceneDocument(rawDocument);
-            var indexer = _indexerFactory.Create(value, document);
-            indexer.Index(propertyName);
+            var indexer = _indexerFactory.Create(value.GetType());
+            try
+            {
+                indexer.Index(document, propertyName, value);
+            }
+            finally 
+            {
+                _indexerFactory.Destroy(indexer);
+            }
             generation = _nrtManager.AddDocument(rawDocument);
 
             return generation;
@@ -386,10 +415,10 @@ namespace Frontenac.Infrastructure.Indexing.Lucene
 
         private static Query CreateQuery(string key, object value, object minValue, object maxValue, bool minInclusive, bool maxInclusive)
         {
-            Contract.Requires(((((!(Portability.IsNumber(value)) || !(string.IsNullOrWhiteSpace(key))) || key == null) || key.Length != 0) || value != null));
+            Contract.Requires(((((!(Blueprints.GraphHelpers.IsNumber(value)) || !(string.IsNullOrWhiteSpace(key))) || key == null) || key.Length != 0) || value != null));
             Contract.Ensures(Contract.Result<Query>() != null);
 
-            var query = Portability.IsNumber(value)
+            var query = Blueprints.GraphHelpers.IsNumber(value)
                             ? CreateRangeQuery(key, value, minValue, maxValue, minInclusive, maxInclusive)
                             : new TermQuery(new Term(key, value as string));
 

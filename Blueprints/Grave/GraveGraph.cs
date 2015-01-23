@@ -10,9 +10,11 @@ using Frontenac.Infrastructure.Indexing;
 
 namespace Frontenac.Grave
 {
+
     public class GraveGraph : IndexedGraph
     {
-        private readonly IGraveGraphFactory _factory;
+        private readonly IGraphFactory _factory;
+
         protected readonly EsentInstance Instance;
         private const string EdgeInPrefix = "$e_i_";
         private const string EdgeOutPrefix = "$e_o_";
@@ -53,48 +55,41 @@ namespace Frontenac.Grave
                 SupportsLabelProperty = true
             };
 
-        public class GraveThreadContext : ThreadContext
-        {
-            public GraveThreadContext()
-            {
-                NewVertices = new List<int>();
-                NewEdges = new List<int>();
-            }
-
-            public EsentContext Context { get; set; }
-            public List<int> NewVertices { get; private set; }
-            public List<int> NewEdges { get; private set; }
-        }
-
-        public GraveGraph(IGraveGraphFactory factory,
-                          EsentInstance instance, 
-                          IIndexingServiceFactory indexingServiceFactory)
-            : base(indexingServiceFactory)
+        public GraveGraph(IGraphFactory factory,
+                          EsentInstance instance,
+                          IndexingService indexingService,
+                          IGraphConfiguration configuration)
+            : base(indexingService, configuration)
         {
             Contract.Requires(factory != null);
             Contract.Requires(instance != null);
-            Contract.Requires(indexingServiceFactory != null);
+            Contract.Requires(indexingService != null);
+            Contract.Requires(configuration != null);
 
             _factory = factory;
             Instance = instance;
         }
 
-        protected override ThreadContext CreateThreadContext(IIndexingServiceFactory indexingServiceFactory)
+        public class GraveThreadContext : ThreadContext
+        {
+            public EsentContext Context { get; set; }
+        }
+
+        protected override ThreadContext CreateThreadContext(IndexingService indexingService)
         {
             var context = Instance.CreateContext();
-            var indexing = indexingServiceFactory.Create();
-            indexing.LoadFromStore(new EsentIndexStore(context));
-
+            indexingService.LoadFromStore(new EsentIndexStore(context));
+            
             return new GraveThreadContext
-                {
+            {
                 Context = context,
-                IndexingService = indexing
+                IndexingService = indexingService
             };
         }
 
         protected override IVertex GetVertexInstance(long vertexId)
         {
-            return new GraveVertex(this, EsentContext.VertexTable, (int) vertexId);
+            return new GraveVertex(this, (int)vertexId);
         }
 
         public override Features Features
@@ -116,7 +111,7 @@ namespace Frontenac.Grave
         {
             var esentContext = EsentContext;
             var id = esentContext.VertexTable.AddRow();
-            return new GraveVertex(this, esentContext.VertexTable, id);
+            return new GraveVertex(this, id);
         }
 
         public override IVertex GetVertex(object id)
@@ -126,7 +121,7 @@ namespace Frontenac.Grave
             if (!vertexId.HasValue) return null;
             var esentContext = EsentContext;
             if (esentContext.VertexTable.SetCursor(vertexId.Value))
-                result = new GraveVertex(this, esentContext.VertexTable, vertexId.Value);
+                result = new GraveVertex(this, vertexId.Value);
 
             return result;
         }
@@ -151,7 +146,7 @@ namespace Frontenac.Grave
                 var id = cursor.MoveFirst();
                 while (id != 0)
                 {
-                    yield return new GraveVertex(this, esentContext.VertexTable, id);
+                    yield return new GraveVertex(this, id);
                     id = cursor.MoveNext();
                 }
             }
@@ -169,7 +164,7 @@ namespace Frontenac.Grave
             var edgeId = esentContext.EdgesTable.AddEdge(label, inVertexId, outVertexId);
             esentContext.VertexTable.AddEdge(inVertexId, Direction.In, label, edgeId, outVertexId);
             esentContext.VertexTable.AddEdge(outVertexId, Direction.Out, label, edgeId, inVertexId);
-            return new GraveEdge(edgeId, outVertex, inVertex, label, this, esentContext.EdgesTable);
+            return new GraveEdge(edgeId, outVertex, inVertex, label, this);
         }
 
         public override IEdge GetEdge(object id)
@@ -180,8 +175,7 @@ namespace Frontenac.Grave
             Tuple<string, int, int> data;
             var esentContext = EsentContext;
             return esentContext.EdgesTable.TryGetEdge(edgeId.Value, out data)
-                       ? new GraveEdge(edgeId.Value, GetVertex(data.Item3), GetVertex(data.Item2), data.Item1, this,
-                                       esentContext.EdgesTable)
+                       ? new GraveEdge(edgeId.Value, GetVertex(data.Item3), GetVertex(data.Item2), data.Item1, this)
                        : null;
         }
 
@@ -210,9 +204,9 @@ namespace Frontenac.Grave
                     var data = cursor.GetEdgeData();
                     if (data != null)
                     {
-                        var vertexOut = new GraveVertex(this, esentContext.VertexTable, data.Item3);
-                        var vertexIn = new GraveVertex(this, esentContext.VertexTable, data.Item2);
-                        yield return new GraveEdge(id, vertexOut, vertexIn, data.Item1, this, esentContext.EdgesTable);
+                        var vertexOut = new GraveVertex(this, data.Item3);
+                        var vertexIn = new GraveVertex(this, data.Item2);
+                        yield return new GraveEdge(id, vertexOut, vertexIn, data.Item1, this);
                     }
                     id = cursor.MoveNext();
                 }
@@ -242,10 +236,10 @@ namespace Frontenac.Grave
                     {
                         var edgeId = (int)(edgeData >> 32);
                         var targetId = (int)(edgeData & 0xFFFF);
-                        var targetVertex = new GraveVertex(this, esentContext.VertexTable, targetId);
+                        var targetVertex = new GraveVertex(this, targetId);
                         var outVertex = isVertexIn ? targetVertex : vertex;
                         var inVertex = isVertexIn ? vertex : targetVertex;
-                        yield return new GraveEdge(edgeId, outVertex, inVertex, labelName, this, esentContext.EdgesTable);
+                        yield return new GraveEdge(edgeId, outVertex, inVertex, labelName, this);
                     }
                 }
             }
@@ -278,14 +272,22 @@ namespace Frontenac.Grave
             Contract.Requires(element != null);
             Contract.Requires(!string.IsNullOrWhiteSpace(key));
 
-            return element.Table.ReadCell(element.RawId, key);
+            var table = element is GraveVertex
+                            ? (EsentTable)GraveContext.Context.VertexTable
+                            : GraveContext.Context.EdgesTable;
+
+            return table.ReadCell(element.RawId, key);
         }
 
         public virtual IEnumerable<string> GetPropertyKeys(GraveElement element)
         {
             Contract.Requires(element != null);
 
-            return element.Table.GetColumnsForRow(element.RawId).Where(t => !t.StartsWith("$"));
+            var table = element is GraveVertex
+                            ? (EsentTable)GraveContext.Context.VertexTable
+                            : GraveContext.Context.EdgesTable;
+
+            return table.GetColumnsForRow(element.RawId).Where(t => !t.StartsWith("$"));
         }
 
         public virtual void SetProperty(GraveElement element, string key, object value)
@@ -293,7 +295,11 @@ namespace Frontenac.Grave
             Contract.Requires(element != null);
             Contract.Requires(!string.IsNullOrWhiteSpace(key));
 
-            element.Table.WriteCell(element.RawId, key, value);
+            var table = element is GraveVertex
+                            ? (EsentTable)GraveContext.Context.VertexTable
+                            : GraveContext.Context.EdgesTable;
+
+            table.WriteCell(element.RawId, key, value);
             SetIndexedKeyValue(element, key, value);
         }
 
@@ -302,18 +308,22 @@ namespace Frontenac.Grave
             Contract.Requires(element != null);
             Contract.Requires(!string.IsNullOrWhiteSpace(key));
 
-            var result = element.Table.DeleteCell(element.RawId, key);
+            var table = element is GraveVertex
+                            ? (EsentTable)GraveContext.Context.VertexTable
+                            : GraveContext.Context.EdgesTable;
+
+            var result = table.DeleteCell(element.RawId, key);
             SetIndexedKeyValue(element, key, null);
             return result;
         }
 
         public override void Shutdown()
         {
-            _factory.Destroy(this);
             foreach (var context in Contexts.Values.OfType<GraveThreadContext>())
             {
                 context.Context.Dispose();    
             }
+            _factory.Destroy(this);
         }
 
         public override string ToString()

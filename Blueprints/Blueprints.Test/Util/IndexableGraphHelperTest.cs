@@ -9,7 +9,7 @@ namespace Frontenac.Blueprints.Util
         [Test]
         public void TestAddUniqueVertex()
         {
-            var graph = new TinkerGraph();
+            var graph = new Impls.TG.TinkerGraĥ();
             var marko = graph.AddVertex(0);
             marko.SetProperty("name", "marko");
             var index = graph.CreateIndex("txIdx", typeof (IVertex));

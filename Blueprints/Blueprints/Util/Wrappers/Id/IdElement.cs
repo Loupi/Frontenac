@@ -7,16 +7,16 @@ namespace Frontenac.Blueprints.Util.Wrappers.Id
     public abstract class IdElement : DictionaryElement
     {
         protected readonly IElement BaseElement;
-        protected readonly IdGraph IdGraph;
+        protected readonly IdGraph IdInnerTinkerGraĥ;
         protected readonly bool PropertyBased;
 
-        protected IdElement(IElement baseElement, IdGraph idGraph, bool propertyBased):base(idGraph)
+        protected IdElement(IElement baseElement, IdGraph idInnerTinkerGraĥ, bool propertyBased):base(idInnerTinkerGraĥ)
         {
             Contract.Requires(baseElement != null);
-            Contract.Requires(idGraph != null);
+            Contract.Requires(idInnerTinkerGraĥ != null);
 
             BaseElement = baseElement;
-            IdGraph = idGraph;
+            IdInnerTinkerGraĥ = idInnerTinkerGraĥ;
             PropertyBased = propertyBased;
         }
 
@@ -71,9 +71,9 @@ namespace Frontenac.Blueprints.Util.Wrappers.Id
         {
             var vertex = this as IVertex;
             if (vertex != null)
-                IdGraph.RemoveVertex(vertex);
+                IdInnerTinkerGraĥ.RemoveVertex(vertex);
             else
-                IdGraph.RemoveEdge((IEdge) this);
+                IdInnerTinkerGraĥ.RemoveEdge((IEdge) this);
         }
 
         public override int GetHashCode()

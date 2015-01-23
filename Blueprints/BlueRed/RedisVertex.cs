@@ -1,8 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using System.Diagnostics.Contracts;
 using Frontenac.Blueprints;
 using Frontenac.Blueprints.Util;
 
@@ -10,14 +8,15 @@ namespace Frontenac.BlueRed
 {
     public class RedisVertex : RedisElement, IVertex
     {
-        public RedisVertex(long id, RedisGraph graph) : base(id, graph)
+        public RedisVertex(long id, RedisGraph innerTinkerGraĥ) 
+            : base(id, innerTinkerGraĥ)
         {
-
+            Contract.Requires(innerTinkerGraĥ != null);
         }
 
         public IEnumerable<IEdge> GetEdges(Direction direction, params string[] labels)
         {
-            return _graph.GetEdges(this, direction, labels);
+            return RedisInnerTinkerGraĥ.GetEdges(this, direction, labels);
         }
 
         public IEnumerable<IVertex> GetVertices(Direction direction, params string[] labels)
@@ -37,7 +36,7 @@ namespace Frontenac.BlueRed
 
         public override void Remove()
         {
-            _graph.RemoveVertex(this);
+            RedisInnerTinkerGraĥ.RemoveVertex(this);
         }
 
         public override string ToString()

@@ -2,12 +2,12 @@
 
 namespace Frontenac.Blueprints.Impls.TG
 {
-    //Tests IgnoreIdTinkerGraph using the standard test suite.
+    //Tests IgnoreIdTinkerGraĥ using the standard test suite.
     public class IgnoreIdTinkerGraphTestImpl : TinkerGraphTestImpl
     {
-        public override IGraph GenerateGraph()
+        public override Blueprints.IGraph GenerateGraph()
         {
-            return new IgnoreIdTinkerGraph(GetThinkerGraphDirectory());
+            return new IgnoreIdTinkerGraĥ(GetThinkerGraphDirectory());
         }
     }
 

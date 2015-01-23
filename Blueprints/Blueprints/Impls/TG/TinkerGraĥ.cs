@@ -10,10 +10,10 @@ using Frontenac.Blueprints.Util;
 namespace Frontenac.Blueprints.Impls.TG
 {
     /// <summary>
-    ///     An in-memory, reference implementation of the property graph interfaces provided by Blueprints.
+    ///     An in-memory, reference implementation of the property tinkerGraĥ interfaces provided by Blueprints.
     /// </summary>
     [Serializable]
-    public class TinkerGraph : IIndexableGraph, IKeyIndexableGraph
+    public class TinkerGraĥ : IIndexableGraph, IKeyIndexableGraph
     {
         public enum FileType
         {
@@ -36,7 +36,7 @@ namespace Frontenac.Blueprints.Impls.TG
 
         internal TinkerKeyIndex VertexKeyIndex;
 
-        static TinkerGraph()
+        static TinkerGraĥ()
         {
             TinkerGraphFeatures.SupportsDuplicateEdges = true;
             TinkerGraphFeatures.SupportsSelfLoops = true;
@@ -77,7 +77,7 @@ namespace Frontenac.Blueprints.Impls.TG
             PersistentFeatures.IsPersistent = true;
         }
 
-        public TinkerGraph(string directory, FileType fileType)
+        public TinkerGraĥ(string directory, FileType fileType)
         {
             Contract.Requires(!string.IsNullOrWhiteSpace(directory));
 
@@ -103,12 +103,12 @@ namespace Frontenac.Blueprints.Impls.TG
             }
         }
 
-        public TinkerGraph(string directory)
+        public TinkerGraĥ(string directory)
             : this(directory, FileType.DotNet)
         {
         }
 
-        public TinkerGraph()
+        public TinkerGraĥ()
         {
             VertexKeyIndex = new TinkerKeyIndex(typeof (TinkerVertex), this);
             EdgeKeyIndex = new TinkerKeyIndex(typeof (TinkerEdge), this);
@@ -375,16 +375,16 @@ namespace Frontenac.Blueprints.Impls.TG
         [Serializable]
         internal class TinkerKeyIndex : TinkerIndex
         {
-            private readonly TinkerGraph _graph;
+            private readonly TinkerGraĥ _tinkerGraĥ;
             private readonly HashSet<string> _indexedKeys = new HashSet<string>();
 
-            public TinkerKeyIndex(Type indexClass, TinkerGraph graph)
+            public TinkerKeyIndex(Type indexClass, TinkerGraĥ tinkerGraĥ)
                 : base(null, indexClass)
             {
                 Contract.Requires(indexClass != null);
-                Contract.Requires(graph != null);
+                Contract.Requires(tinkerGraĥ != null);
 
-                _graph = graph;
+                _tinkerGraĥ = tinkerGraĥ;
             }
 
             public void AutoUpdate(string key, object newValue, object oldValue, TinkerElement element)
@@ -417,9 +417,9 @@ namespace Frontenac.Blueprints.Impls.TG
                 _indexedKeys.Add(key);
 
                 if (typeof (TinkerVertex) == IndexClass)
-                    _graph.ReIndexElements(_graph.GetVertices(), new[] {key});
+                    _tinkerGraĥ.ReIndexElements(_tinkerGraĥ.GetVertices(), new[] {key});
                 else
-                    _graph.ReIndexElements(_graph.GetEdges(), new[] {key});
+                    _tinkerGraĥ.ReIndexElements(_tinkerGraĥ.GetEdges(), new[] {key});
             }
 
             public void DropKeyIndex(string key)

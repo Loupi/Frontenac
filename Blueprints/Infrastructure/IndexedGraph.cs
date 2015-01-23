@@ -13,14 +13,16 @@ namespace Frontenac.Infrastructure
     {
         protected readonly ThreadLocal<ThreadContext> Contexts;
 
-        protected IndexedGraph(IIndexingServiceFactory indexingServiceFactory)
+        protected IndexedGraph(IndexingService indexingService, IGraphConfiguration configuration)
         {
-            Contract.Requires(indexingServiceFactory != null);
+            Contract.Requires(indexingService != null);
+            Contract.Requires(configuration != null);
 
-            Contexts = new ThreadLocal<ThreadContext>(() => CreateThreadContext(indexingServiceFactory), true);
+            indexingService.Initialize(configuration.GetPath());
+            Contexts = new ThreadLocal<ThreadContext>(() => CreateThreadContext(indexingService), true);
         }
 
-        protected abstract ThreadContext CreateThreadContext(IIndexingServiceFactory indexingServiceFactory);
+        protected abstract ThreadContext CreateThreadContext(IndexingService indexingService);
         protected abstract IVertex GetVertexInstance(long vertexId);
 
         public abstract Features Features { get; }
@@ -38,6 +40,7 @@ namespace Frontenac.Infrastructure
                 return new PropertyFilteredIterable<IEdge>(key, value, GetEdges());
 
             WaitForGeneration();
+
             return IterateEdges(key, value);
         }
 
@@ -47,6 +50,7 @@ namespace Frontenac.Infrastructure
                 return new PropertyFilteredIterable<IVertex>(key, value, GetVertices());
 
             WaitForGeneration();
+
             return Context.IndexingService.VertexIndices.Get(key, key, value, int.MaxValue)
                 .Select(GetVertexInstance);
         }

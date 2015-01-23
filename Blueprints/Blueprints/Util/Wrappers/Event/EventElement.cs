@@ -11,15 +11,15 @@ namespace Frontenac.Blueprints.Util.Wrappers.Event
     public abstract class EventElement : DictionaryElement
     {
         protected readonly IElement Element;
-        protected readonly EventGraph EventGraph;
+        protected readonly EventGraph EventInnerTinkerGraĥ;
 
-        protected EventElement(IElement element, EventGraph eventGraph):base(eventGraph)
+        protected EventElement(IElement element, EventGraph eventInnerTinkerGraĥ):base(eventInnerTinkerGraĥ)
         {
             Contract.Requires(element != null);
-            Contract.Requires(eventGraph != null);
+            Contract.Requires(eventInnerTinkerGraĥ != null);
 
             Element = element;
-            EventGraph = eventGraph;
+            EventInnerTinkerGraĥ = eventInnerTinkerGraĥ;
         }
 
         public override IEnumerable<string> GetPropertyKeys()
@@ -80,9 +80,9 @@ namespace Frontenac.Blueprints.Util.Wrappers.Event
         {
             var vertex = this as IVertex;
             if (vertex != null)
-                EventGraph.RemoveVertex(vertex);
+                EventInnerTinkerGraĥ.RemoveVertex(vertex);
             else
-                EventGraph.RemoveEdge((IEdge) this);
+                EventInnerTinkerGraĥ.RemoveEdge((IEdge) this);
         }
 
         protected void OnVertexPropertyChanged(IVertex vertex, string key, object oldValue, object newValue)
@@ -90,7 +90,7 @@ namespace Frontenac.Blueprints.Util.Wrappers.Event
             Contract.Requires(vertex != null);
             Contract.Requires(!string.IsNullOrWhiteSpace(key));
 
-            EventGraph.GetTrigger().AddEvent(new VertexPropertyChangedEvent(vertex, key, oldValue, newValue));
+            EventInnerTinkerGraĥ.GetTrigger().AddEvent(new VertexPropertyChangedEvent(vertex, key, oldValue, newValue));
         }
 
         protected void OnEdgePropertyChanged(IEdge edge, string key, object oldValue, object newValue)
@@ -98,7 +98,7 @@ namespace Frontenac.Blueprints.Util.Wrappers.Event
             Contract.Requires(edge != null);
             Contract.Requires(!string.IsNullOrWhiteSpace(key));
 
-            EventGraph.GetTrigger().AddEvent(new EdgePropertyChangedEvent(edge, key, oldValue, newValue));
+            EventInnerTinkerGraĥ.GetTrigger().AddEvent(new EdgePropertyChangedEvent(edge, key, oldValue, newValue));
         }
 
         protected void OnVertexPropertyRemoved(IVertex vertex, string key, object removedValue)
@@ -106,7 +106,7 @@ namespace Frontenac.Blueprints.Util.Wrappers.Event
             Contract.Requires(vertex != null);
             Contract.Requires(!string.IsNullOrWhiteSpace(key));
 
-            EventGraph.GetTrigger().AddEvent(new VertexPropertyRemovedEvent(vertex, key, removedValue));
+            EventInnerTinkerGraĥ.GetTrigger().AddEvent(new VertexPropertyRemovedEvent(vertex, key, removedValue));
         }
 
         protected void OnEdgePropertyRemoved(IEdge edge, string key, object removedValue)
@@ -114,7 +114,7 @@ namespace Frontenac.Blueprints.Util.Wrappers.Event
             Contract.Requires(edge != null);
             Contract.Requires(!string.IsNullOrWhiteSpace(key));
 
-            EventGraph.GetTrigger().AddEvent(new EdgePropertyRemovedEvent(edge, key, removedValue));
+            EventInnerTinkerGraĥ.GetTrigger().AddEvent(new EdgePropertyRemovedEvent(edge, key, removedValue));
         }
 
         public override string ToString()

@@ -60,6 +60,8 @@ namespace Lucene.Net.Contrib.Management
                 {
                     try
                     {
+                        _searcherManager.Dispose();
+
                         _writer.Dispose();
 
                         var disposeActions = new List<Action>

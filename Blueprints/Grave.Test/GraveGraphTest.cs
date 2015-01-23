@@ -3,26 +3,118 @@ using System.IO;
 using System.Linq;
 using Frontenac.Blueprints;
 using Frontenac.Blueprints.Impls;
+using Frontenac.Blueprints.Impls.TG;
 using Frontenac.Blueprints.Util;
 using Frontenac.Blueprints.Util.IO.GML;
 using Frontenac.Blueprints.Util.IO.GraphML;
 using Frontenac.Blueprints.Util.IO.GraphSON;
+using Frontenac.Infrastructure;
+using Frontenac.Infrastructure.CastleWindsor;
 using NUnit.Framework;
 
 namespace Frontenac.Grave.Tests
 {
-    [TestFixture(Category = "GraveGraphGraphTestSuite")]
-    public class GraveGraphGraphTestSuite : GraphTestSuite
+    public class GraveGraphTest : GraphTest
     {
+        public IGraphFactory Factory { get; set; }
+
+        public override IGraph GenerateGraph()
+        {
+            return GenerateGraph("Grave");
+        }
+
+        public override IGraph GenerateGraph(string graphDirectoryName)
+        {
+            return Factory.Create<IGraph>();
+        }
+
+        public static string GetGraveGraphDirectory()
+        {
+            return Path.Combine(Directory.GetCurrentDirectory(), "Grave");
+        }
+    }
+
+    public class GraveGraphTestSuite
+    {
+        private IContainer _container;
+        private IGraphFactory _factory;
+
+        public void SetUp(GraphTest graphTest)
+        {
+            DeleteDirectory(GraveGraphTest.GetGraveGraphDirectory());
+
+            _container = new CastleWindsorContainer();
+            _container.SetupGrave();
+            _factory = _container.Resolve<IGraphFactory>();
+
+            ((GraveGraphTest) graphTest).Factory = _factory;
+        }
+
+        static void DeleteDirectory(string directory)
+        {
+            if (Directory.Exists(directory))
+                Directory.Delete(directory, true);
+        }
+
+        public void TearDown()
+        {
+            _container.Release(_factory);
+            _factory.Dispose();
+            _container.Dispose();
+
+            DeleteDirectory(GraveGraphTest.GetGraveGraphDirectory());
+        }
+
+        public IGraphFactory Factory { get { return _factory; } }
+    }
+
+    [TestFixture(Category = "GraveGraphGraphTestSuite")]
+    public class GraveStorageTestSuite : StorageTestSuite
+    {
+        private readonly GraveGraphTestSuite _suite = new GraveGraphTestSuite();
+
         [SetUp]
         public void SetUp()
         {
-            GraveFactory.Release();
-            DeleteDirectory(GraveGraphTestImpl.GetGraveGraphDirectory());
+            _suite.SetUp(GraphTest);
+        }
+
+        [TearDown]
+        public void TearDown()
+        {
+            _suite.TearDown();
+        }
+
+        public GraveStorageTestSuite()
+            : base(new GraveGraphTest())
+        {
+        }
+
+        public GraveStorageTestSuite(GraphTest graphTest)
+            : base(graphTest)
+        {
+        }
+    }
+
+    [TestFixture(Category = "GraveGraphGraphTestSuite")]
+    public class GraveGraphGraphTestSuite : GraphTestSuite
+    {
+        private readonly GraveGraphTestSuite _suite = new GraveGraphTestSuite();
+
+        [SetUp]
+        public void SetUp()
+        {
+            _suite.SetUp(GraphTest);
+        }
+
+        [TearDown]
+        public void TearDown()
+        {
+            _suite.TearDown();
         }
 
         public GraveGraphGraphTestSuite()
-            : base(new GraveGraphTestImpl())
+            : base(new GraveGraphTest())
         {
         }
 
@@ -35,15 +127,22 @@ namespace Frontenac.Grave.Tests
     [TestFixture(Category = "GraveGraphGraphTestSuite")]
     public class GraveGraphVertexTestSuite : VertexTestSuite
     {
+        private readonly GraveGraphTestSuite _suite = new GraveGraphTestSuite();
+
         [SetUp]
         public void SetUp()
         {
-            GraveFactory.Release();
-            DeleteDirectory(GraveGraphTestImpl.GetGraveGraphDirectory());
+            _suite.SetUp(GraphTest);
+        }
+
+        [TearDown]
+        public void TearDown()
+        {
+            _suite.TearDown();
         }
 
         public GraveGraphVertexTestSuite()
-            : base(new GraveGraphTestImpl())
+            : base(new GraveGraphTest())
         {
         }
 
@@ -56,15 +155,22 @@ namespace Frontenac.Grave.Tests
     [TestFixture(Category = "GraveGraphGraphTestSuite")]
     public class GraveGraphEdgeTestSuite : EdgeTestSuite
     {
+        private readonly GraveGraphTestSuite _suite = new GraveGraphTestSuite();
+
         [SetUp]
         public void SetUp()
         {
-            GraveFactory.Release();
-            DeleteDirectory(GraveGraphTestImpl.GetGraveGraphDirectory());
+            _suite.SetUp(GraphTest);
+        }
+
+        [TearDown]
+        public void TearDown()
+        {
+            _suite.TearDown();
         }
 
         public GraveGraphEdgeTestSuite()
-            : base(new GraveGraphTestImpl())
+            : base(new GraveGraphTest())
         {
         }
 
@@ -77,15 +183,22 @@ namespace Frontenac.Grave.Tests
     [TestFixture(Category = "GraveGraphGraphTestSuite")]
     public class GraveGraphKeyIndexableGraphTestSuite : KeyIndexableGraphTestSuite
     {
+        private readonly GraveGraphTestSuite _suite = new GraveGraphTestSuite();
+
         [SetUp]
         public void SetUp()
         {
-            GraveFactory.Release();
-            DeleteDirectory(GraveGraphTestImpl.GetGraveGraphDirectory());
+            _suite.SetUp(GraphTest);
+        }
+
+        [TearDown]
+        public void TearDown()
+        {
+            _suite.TearDown();
         }
 
         public GraveGraphKeyIndexableGraphTestSuite()
-            : base(new GraveGraphTestImpl())
+            : base(new GraveGraphTest())
         {
         }
 
@@ -98,15 +211,22 @@ namespace Frontenac.Grave.Tests
     [TestFixture(Category = "GraveGraphGraphTestSuite")]
     public class GraveGraphIndexableGraphTestSuite : IndexableGraphTestSuite
     {
+        private readonly GraveGraphTestSuite _suite = new GraveGraphTestSuite();
+
         [SetUp]
         public void SetUp()
         {
-            GraveFactory.Release();
-            DeleteDirectory(GraveGraphTestImpl.GetGraveGraphDirectory());
+            _suite.SetUp(GraphTest);
+        }
+
+        [TearDown]
+        public void TearDown()
+        {
+            _suite.TearDown();
         }
 
         public GraveGraphIndexableGraphTestSuite()
-            : base(new GraveGraphTestImpl())
+            : base(new GraveGraphTest())
         {
         }
 
@@ -119,15 +239,22 @@ namespace Frontenac.Grave.Tests
     [TestFixture(Category = "GraveGraphGraphTestSuite")]
     public class GraveGraphIndexTestSuite : IndexTestSuite
     {
+        private readonly GraveGraphTestSuite _suite = new GraveGraphTestSuite();
+
         [SetUp]
         public void SetUp()
         {
-            GraveFactory.Release();
-            DeleteDirectory(GraveGraphTestImpl.GetGraveGraphDirectory());
+            _suite.SetUp(GraphTest);
+        }
+
+        [TearDown]
+        public void TearDown()
+        {
+            _suite.TearDown();
         }
 
         public GraveGraphIndexTestSuite()
-            : base(new GraveGraphTestImpl())
+            : base(new GraveGraphTest())
         {
         }
 
@@ -141,15 +268,22 @@ namespace Frontenac.Grave.Tests
     [TestFixture(Category = "GraveGraphGraphTestSuite")]
     public class GraveGraphGmlReaderTestSuite : GmlReaderTestSuite
     {
+        private readonly GraveGraphTestSuite _suite = new GraveGraphTestSuite();
+
         [SetUp]
         public void SetUp()
         {
-            GraveFactory.Release();
-            DeleteDirectory(GraveGraphTestImpl.GetGraveGraphDirectory());
+            _suite.SetUp(GraphTest);
+        }
+
+        [TearDown]
+        public void TearDown()
+        {
+            _suite.TearDown();
         }
 
         public GraveGraphGmlReaderTestSuite()
-            : base(new GraveGraphTestImpl())
+            : base(new GraveGraphTest())
         {
         }
 
@@ -162,36 +296,50 @@ namespace Frontenac.Grave.Tests
     [TestFixture(Category = "GraveGraphGraphTestSuite")]
     public class GraveGraphGraphMlReaderTestSuite : GraphMlReaderTestSuite
     {
+        private readonly GraveGraphTestSuite _suite = new GraveGraphTestSuite();
+
         [SetUp]
         public void SetUp()
         {
-            GraveFactory.Release();
-            DeleteDirectory(GraveGraphTestImpl.GetGraveGraphDirectory());
+            _suite.SetUp(GraphTest);
+        }
+
+        [TearDown]
+        public void TearDown()
+        {
+            _suite.TearDown();
         }
 
         public GraveGraphGraphMlReaderTestSuite()
-            : base(new GraveGraphTestImpl())
+            : base(new GraveGraphTest())
         {
         }
 
         public GraveGraphGraphMlReaderTestSuite(GraphTest graphTest)
             : base(graphTest)
         {
-        }
+        }                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                
     }
 
     [TestFixture(Category = "GraveGraphGraphTestSuite")]
     public class GraveGraphGraphSonReaderTestSuite : GraphSonReaderTestSuite
     {
+        private readonly GraveGraphTestSuite _suite = new GraveGraphTestSuite();
+
         [SetUp]
         public void SetUp()
         {
-            GraveFactory.Release();
-            DeleteDirectory(GraveGraphTestImpl.GetGraveGraphDirectory());
+            _suite.SetUp(GraphTest);
+        }
+
+        [TearDown]
+        public void TearDown()
+        {
+            _suite.TearDown();
         }
 
         public GraveGraphGraphSonReaderTestSuite()
-            : base(new GraveGraphTestImpl())
+            : base(new GraveGraphTest())
         {
         }
 
@@ -201,37 +349,23 @@ namespace Frontenac.Grave.Tests
         }
     }
 
-    public class GraveGraphTestImpl : GraphTest
-    {
-        public override IGraph GenerateGraph()
-        {
-            return GenerateGraph("graph");
-        }
-
-        public override IGraph GenerateGraph(string graphDirectoryName)
-        {
-            return GraveFactory.CreateGraph();
-        }
-
-        public static string GetGraveGraphDirectory()
-        {
-            return Path.Combine(Directory.GetCurrentDirectory(), "GraveGraph");
-        }
-    }
+    
 
     [TestFixture(Category = "GraveGraphGraphTestSuite")]
     public class GraveGraphTestGeneral : TestSuite
     {
+        private readonly GraveGraphTestSuite _suite = new GraveGraphTestSuite();
+
         [SetUp]
         public void SetUp()
         {
-            GraveFactory.Release();
-            DeleteDirectory(GraveGraphTestImpl.GetGraveGraphDirectory());
+            _suite.SetUp(GraphTest);
         }
 
-        public GraveGraphTestGeneral()
-            : this(new GraveGraphTestImpl())
+        [TearDown]
+        public void TearDown()
         {
+            _suite.TearDown();
         }
 
         public GraveGraphTestGeneral(GraphTest graphTest) :
@@ -242,34 +376,61 @@ namespace Frontenac.Grave.Tests
         /*[Test]
         public void TestClear()
         {
-            DeleteDirectory(GraveGraphTestImpl.GetGraveGraphDirectory());
-            using (var graph = (GraveIndexedGraph)GraphTest.GenerateGraph())
+            DeleteDirectory(GraveGraphTest.GetGraveGraphDirectory());
+            using (var InnerGraph = (GraveIndexedGraph)GraphTest.GenerateGraph())
             {
                 StopWatch();
                 for (int i = 0; i < 25; i++)
                 {
-                    IVertex a = graph.AddVertex(null);
-                    IVertex b = graph.AddVertex(null);
-                    graph.AddEdge(null, a, b, "knows");
+                    IVertex a = InnerGraph.AddVertex(null);
+                    IVertex b = InnerGraph.AddVertex(null);
+                    InnerGraph.AddEdge(null, a, b, "knows");
                 }
-                PrintPerformance(graph.ToString(), 75, "elements added", StopWatch());
+                PrintPerformance(InnerGraph.ToString(), 75, "elements added", StopWatch());
 
-                Assert.AreEqual(50, Count(graph.GetVertices()));
-                Assert.AreEqual(25, Count(graph.GetEdges()));
+                Assert.AreEqual(50, Count(InnerGraph.GetVertices()));
+                Assert.AreEqual(25, Count(InnerGraph.GetEdges()));
 
                 StopWatch();
-                graph.Clear();
-                PrintPerformance(graph.ToString(), 75, "elements deleted", StopWatch());
+                InnerGraph.Clear();
+                PrintPerformance(InnerGraph.ToString(), 75, "elements deleted", StopWatch());
 
-                Assert.AreEqual(0, Count(graph.GetVertices()));
-                Assert.AreEqual(0, Count(graph.GetEdges()));
+                Assert.AreEqual(0, Count(InnerGraph.GetVertices()));
+                Assert.AreEqual(0, Count(InnerGraph.GetEdges()));
             }
         }*/
 
         private void TestGraphFileType(string directory, FileType fileType)
         {
-            var path = GraveGraphTestImpl.GetGraveGraphDirectory() + "/" + directory;
+            var path = GraveGraphTest.GetGraveGraphDirectory() + "/" + directory;
             DeleteDirectory(path);
+
+            var sourceGraph = _suite.Factory.Create<TinkerGraĥ>();
+            try
+            {
+                var targetGraph = _suite.Factory.Create<IKeyIndexableGraph>();
+                try
+                {
+                    CreateKeyIndices(targetGraph);
+
+                    CopyGraphs(sourceGraph, targetGraph);
+
+                    CreateManualIndices((IIndexableGraph)targetGraph);
+
+                    StopWatch();
+                    PrintTestPerformance("save InnerGraph: " + fileType.ToString(), StopWatch());
+                    StopWatch();
+                }
+                finally
+                {
+                    
+                    targetGraph.Shutdown();
+                }
+            }
+            finally
+            {
+                sourceGraph.Shutdown();
+            }
 
             /*using (var sourceGraph = GraveFactory.CreateTinkerGraph())
             {
@@ -282,14 +443,14 @@ namespace Frontenac.Grave.Tests
                     CreateManualIndices(targetGraph);
 
                     StopWatch();
-                    PrintTestPerformance("save graph: " + fileType.ToString(), StopWatch());
+                    PrintTestPerformance("save InnerGraph: " + fileType.ToString(), StopWatch());
                     StopWatch();
 
                     //targetGraph.Dispose();
 
                     using (var compareGraph = new GraveIndexedGraph(path, fileType))
                     {
-                        PrintTestPerformance("load graph: " + fileType.ToString(), StopWatch());
+                        PrintTestPerformance("load InnerGraph: " + fileType.ToString(), StopWatch());
 
                         CompareGraphs(targetGraph, compareGraph, fileType);
                     }
@@ -318,7 +479,7 @@ namespace Frontenac.Grave.Tests
             weightIndex.Put("weight", e12.GetProperty("weight"), e12);
         }
 
-        private static void CopyGraphs(IGraph src, IGraph dst)
+        private static void CopyGraphs(Blueprints.IGraph src, Blueprints.IGraph dst)
         {
             foreach (var v in src.GetVertices())
             {
@@ -334,7 +495,7 @@ namespace Frontenac.Grave.Tests
             }
         }
 
-        private void CompareGraphs(IGraph g1, IIndexableGraph g2, FileType fileType)
+        /*private void CompareGraphs(TinkerGraĥ g1, IIndexableGraph g2, FileType fileType)
         {
             foreach (var v1 in g1.GetVertices())
             {
@@ -359,7 +520,7 @@ namespace Frontenac.Grave.Tests
                 {
                     // For GML we need to iterate the properties manually to catch the
                     // case where the property returned from GML is an integer
-                    // while the target graph property is a float.
+                    // while the target InnerGraph property is a float.
                     foreach (var p in e1.GetPropertyKeys())
                     {
                         var v1 = e1.GetProperty(p);
@@ -407,7 +568,7 @@ namespace Frontenac.Grave.Tests
             weightItty.MoveNext();
             Assert.AreEqual(g2.GetEdge(7), weightItty.Current);
             Assert.False(weightItty.MoveNext());
-        }
+        }*/
 
         private static void CompareEdgeCounts(IVertex v1, IVertex v2, Direction direction)
         {
@@ -428,25 +589,25 @@ namespace Frontenac.Grave.Tests
         [Test]
         public void TestGraphFileTypeDotNet()
         {
-            TestGraphFileType("graph-test-dotnet", FileType.DotNet);
+            TestGraphFileType("InnerGraph-test-dotnet", FileType.DotNet);
         }
 
         [Test]
         public void TestGraphFileTypeGml()
         {
-            TestGraphFileType("graph-test-gml", FileType.Gml);
+            TestGraphFileType("InnerGraph-test-gml", FileType.Gml);
         }
 
         [Test]
         public void TestGraphFileTypeGraphMl()
         {
-            TestGraphFileType("graph-test-graphml", FileType.Graphml);
+            TestGraphFileType("InnerGraph-test-graphml", FileType.Graphml);
         }
 
         [Test]
         public void TestGraphFileTypeGraphSon()
         {
-            TestGraphFileType("graph-test-graphson", FileType.Graphson);
+            TestGraphFileType("InnerGraph-test-graphson", FileType.Graphson);
         }
 
         [Test]

@@ -128,7 +128,7 @@ namespace Frontenac.Gremlinq
             }
 
             var kp = instanceTypes.TypesBuffer
-                .SingleOrDefault(pair => Portability.IsNumber(pair.Value) && Portability.IsNumber(id)
+                .SingleOrDefault(pair => GraphHelpers.IsNumber(pair.Value) && GraphHelpers.IsNumber(id)
                     ? Convert.ToDouble(pair.Value).CompareTo(Convert.ToDouble(id)) == 0
                     : pair.Value != null && pair.Value.Equals(id));
             

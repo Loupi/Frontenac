@@ -7,11 +7,6 @@ namespace Frontenac.Infrastructure.Indexing
     [ContractClassFor(typeof (IndexingService))]
     public abstract class IndexingServiceContract : IndexingService
     {
-        protected IndexingServiceContract(IIndexCollectionFactory indexCollectionFactory) 
-            : base(indexCollectionFactory)
-        {
-        }
-
         public override long DeleteDocuments(Type indexType, long id)
         {
             return default(long);

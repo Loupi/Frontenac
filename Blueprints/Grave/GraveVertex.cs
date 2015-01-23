@@ -9,21 +9,15 @@ namespace Frontenac.Grave
 {
     public class GraveVertex : GraveElement, IVertex
     {
-        public GraveVertex(GraveGraph graph, EsentTable vertexTable, int id)
-            : base(graph, vertexTable, id)
+        public GraveVertex(GraveGraph innerTinkerGraĥ, int id)
+            : base(innerTinkerGraĥ, id)
         {
-            Contract.Requires(graph != null);
-            Contract.Requires(vertexTable != null);
-        }
-
-        public IEdge AddEdge(string label, IVertex inVertex)
-        {
-            return Graph.AddEdge(0, this, inVertex, label);
+            Contract.Requires(innerTinkerGraĥ != null);
         }
 
         public IEnumerable<IEdge> GetEdges(Direction direction, params string[] labels)
         {
-            return GraveGraph.GetEdges(this, direction, labels);
+            return GraveInnerTinkerGraĥ.GetEdges(this, direction, labels);
         }
 
         public IEnumerable<IVertex> GetVertices(Direction direction, params string[] labels)
@@ -34,6 +28,16 @@ namespace Frontenac.Grave
         public IVertexQuery Query()
         {
             throw new NotImplementedException();
+        }
+
+        public IEdge AddEdge(string label, IVertex inVertex)
+        {
+            return Graph.AddEdge(0, this, inVertex, label);
+        }
+
+        public override void Remove()
+        {
+            GraveInnerTinkerGraĥ.RemoveVertex(this);
         }
 
         public override string ToString()

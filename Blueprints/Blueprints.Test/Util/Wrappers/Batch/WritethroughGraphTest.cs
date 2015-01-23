@@ -70,7 +70,7 @@ namespace Frontenac.Blueprints.Util.Wrappers.Batch
 
         public override IGraph GenerateGraph(string graphDirectoryName)
         {
-            return new WritethroughGraph(new TinkerGraph());
+            return new WritethroughGraph(new Impls.TG.TinkerGraĥ());
         }
     }
 }

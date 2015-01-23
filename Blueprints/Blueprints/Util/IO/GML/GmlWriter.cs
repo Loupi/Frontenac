@@ -44,7 +44,7 @@ namespace Frontenac.Blueprints.Util.IO.GML
         }
 
         /// <summary>
-        ///     when set to true, property keys in the graph that do not meet the exact guidelines of the GML
+        ///     when set to true, property keys in the Graph that do not meet the exact guidelines of the GML
         ///     specification are ignored.  By default this value is false.
         /// </summary>
         /// <value></value>
@@ -232,7 +232,7 @@ namespace Frontenac.Blueprints.Util.IO.GML
             if (!UseId)
             {
                 WriteKey(writer, _vertexIdKey);
-                if (Portability.IsNumber(blueprintsId))
+                if (Blueprints.GraphHelpers.IsNumber(blueprintsId))
                     WriteNumberProperty(writer, blueprintsId);
                 else
                     WriteStringProperty(writer, blueprintsId);
@@ -261,7 +261,7 @@ namespace Frontenac.Blueprints.Util.IO.GML
         {
             Contract.Requires(writer != null);
 
-            if (Portability.IsNumber(property))
+            if (Blueprints.GraphHelpers.IsNumber(property))
                 WriteNumberProperty(writer, property);
             else if (property is IDictionary)
                 WriteMapProperty(writer, property as IDictionary, tab);

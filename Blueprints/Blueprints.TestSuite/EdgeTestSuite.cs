@@ -194,7 +194,7 @@ namespace Frontenac.Blueprints
                 }
                 catch (Exception x)
                 {
-                    if (x.GetType().FullName != Portability.ContractExceptionName)
+                    if (x.GetType().FullName != GraphHelpers.ContractExceptionName)
                     {
                         throw;
                     }
@@ -268,7 +268,7 @@ namespace Frontenac.Blueprints
                     }
                     Assert.AreEqual((edgeCount - edgeCountdown)*2, x);
                 }
-                PrintPerformance(graph.ToString(), edgeCount, "edges removed and graph checked", StopWatch());
+                PrintPerformance(graph.ToString(), edgeCount, "edges removed and InnerGraph checked", StopWatch());
             }
             finally
             {
@@ -666,7 +666,7 @@ namespace Frontenac.Blueprints
             var graph = GraphTest.GenerateGraph();
             try
             {
-                // no point in testing graph features for setting string properties because the intent is for it to
+                // no point in testing InnerGraph features for setting string properties because the intent is for it to
                 // fail based on the id or label properties.
                 if (!graph.Features.SupportsEdgeProperties) return;
 
@@ -741,7 +741,7 @@ namespace Frontenac.Blueprints
             var graph = GraphTest.GenerateGraph();
             try
             {
-                // no point in testing graph features for setting string properties because the intent is for it to
+                // no point in testing InnerGraph features for setting string properties because the intent is for it to
                 // fail based on the empty key.
                 if (!graph.Features.SupportsEdgeProperties) return;
 
@@ -753,7 +753,7 @@ namespace Frontenac.Blueprints
                 }
                 catch (Exception x)
                 {
-                    if (x.GetType().FullName != Portability.ContractExceptionName)
+                    if (x.GetType().FullName != GraphHelpers.ContractExceptionName)
                     {
                         throw;
                     }

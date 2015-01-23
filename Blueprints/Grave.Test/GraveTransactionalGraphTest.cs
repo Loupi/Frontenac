@@ -9,7 +9,7 @@ using NUnit.Framework;
 
 namespace Frontenac.Grave.Tests
 {
-    [TestFixture(Category = "GraveTransactionalGraphGraphTestSuite")]
+    /*[TestFixture(Category = "GraveTransactionalGraphGraphTestSuite")]
     public class GraveTransactionalGraphGraphTestSuite : GraphTestSuite
     {
         [SetUp]
@@ -202,19 +202,19 @@ namespace Frontenac.Grave.Tests
     [TestFixture(Category = "GraveTransactionalGraphGraphTestSuite")]
     public class GraveTransactionalGraphTestImpl : GraphTest
     {
-        public override IGraph GenerateGraph()
+        public override TinkerGraĥ GenerateGraph()
         {
-            return GenerateGraph("graph");
+            return GenerateGraph("InnerGraph");
         }
 
-        public override IGraph GenerateGraph(string graphDirectoryName)
+        public override TinkerGraĥ GenerateGraph(string graphDirectoryName)
         {
             return GraveFactory.CreateTransactionalGraph();
         }
 
         public static string GetGraveGraphDirectory()
         {
-            return Path.Combine(Directory.GetCurrentDirectory(), "GraveGraph");
+            return Path.Combine(Directory.GetCurrentDirectory(), "GraveInnerTinkerGraĥ");
         }
     }
 
@@ -237,9 +237,9 @@ namespace Frontenac.Grave.Tests
             : base(graphTest)
         {
         }
-    }
+    }*/
 
-    [TestFixture(Category = "GraveTransactionalGraphGraphTestSuite")]
+    /*[TestFixture(Category = "GraveTransactionalGraphGraphTestSuite")]
     public class GraveTransactionalGraphTestGeneral : TestSuite
     {
         [SetUp]
@@ -262,7 +262,7 @@ namespace Frontenac.Grave.Tests
         private void TestGraphFileType(string directory, FileType fileType)
         {
             var path = GraveTransactionalGraphTestImpl.GetGraveGraphDirectory() + "/" + directory;
-            DeleteDirectory(path);
+            DeleteDirectory(path);*/
 
             /*using (var sourceGraph = GraveFactory.CreateTinkerGraph())
             {
@@ -275,89 +275,89 @@ namespace Frontenac.Grave.Tests
                     CreateManualIndices(targetGraph);
 
                     StopWatch();
-                    PrintTestPerformance("save graph: " + fileType.ToString(), StopWatch());
+                    PrintTestPerformance("save InnerGraph: " + fileType.ToString(), StopWatch());
                     StopWatch();
 
                     //targetGraph.Dispose();
 
                     using (var compareGraph = new GraveIndexedGraph(path, fileType))
                     {
-                        PrintTestPerformance("load graph: " + fileType.ToString(), StopWatch());
+                        PrintTestPerformance("load InnerGraph: " + fileType.ToString(), StopWatch());
 
                         CompareGraphs(targetGraph, compareGraph, fileType);
                     }
                 }
             }*/
-        }
+        /*}
 
         [Test]
         public void TestGraphFileTypeDotNet()
         {
-            TestGraphFileType("graph-test-dotnet", FileType.DotNet);
+            TestGraphFileType("InnerGraph-test-dotnet", FileType.DotNet);
         }
 
         [Test]
         public void TestGraphFileTypeGml()
         {
-            TestGraphFileType("graph-test-gml", FileType.Gml);
+            TestGraphFileType("InnerGraph-test-gml", FileType.Gml);
         }
 
         [Test]
         public void TestGraphFileTypeGraphMl()
         {
-            TestGraphFileType("graph-test-graphml", FileType.Graphml);
+            TestGraphFileType("InnerGraph-test-graphml", FileType.Graphml);
         }
 
         [Test]
         public void TestGraphFileTypeGraphSon()
         {
-            TestGraphFileType("graph-test-graphson", FileType.Graphson);
+            TestGraphFileType("InnerGraph-test-graphson", FileType.Graphson);
         }
 
         [Test]
         public void TestShutdownStartManyTimes()
         {
-            var graph = (GraveGraph) GraphTest.GenerateGraph();
+            var InnerGraph = (GraveInnerTinkerGraĥ) GraphTest.GenerateGraph();
             try
             {
                 for (var i = 0; i < 25; i++)
                 {
-                    var a = graph.AddVertex(null);
+                    var a = InnerGraph.AddVertex(null);
                     a.SetProperty("name", string.Concat("a", Guid.NewGuid()));
-                    var b = graph.AddVertex(null);
+                    var b = InnerGraph.AddVertex(null);
                     b.SetProperty("name", string.Concat("b", Guid.NewGuid()));
-                    graph.AddEdge(null, a, b, "knows").SetProperty("weight", 1);
+                    InnerGraph.AddEdge(null, a, b, "knows").SetProperty("weight", 1);
                 }
             }
             finally
             {
-                graph.Shutdown();
+                InnerGraph.Shutdown();
             }
             StopWatch();
             const int iterations = 150;
             for (var i = 0; i < iterations; i++)
             {
-                graph = (GraveGraph) GraphTest.GenerateGraph();
+                InnerGraph = (GraveInnerTinkerGraĥ) GraphTest.GenerateGraph();
                 try
                 {
-                    Assert.AreEqual(50, Count(graph.GetVertices()));
-                    foreach (var v in graph.GetVertices())
+                    Assert.AreEqual(50, Count(InnerGraph.GetVertices()));
+                    foreach (var v in InnerGraph.GetVertices())
                     {
                         Assert.True(v.GetProperty("name").ToString().StartsWith("a") ||
                                     v.GetProperty("name").ToString().StartsWith("b"));
                     }
-                    Assert.AreEqual(25, Count(graph.GetEdges()));
-                    foreach (var e in graph.GetEdges())
+                    Assert.AreEqual(25, Count(InnerGraph.GetEdges()));
+                    foreach (var e in InnerGraph.GetEdges())
                     {
                         Assert.AreEqual(e.GetProperty("weight"), 1);
                     }
-                    PrintPerformance(graph.ToString(), iterations, "iterations of shutdown and restart", StopWatch());
+                    PrintPerformance(InnerGraph.ToString(), iterations, "iterations of shutdown and restart", StopWatch());
                 }
                 finally
                 {
-                    graph.Shutdown();
+                    InnerGraph.Shutdown();
                 }
             }
         }
-    }
+    }*/
 }

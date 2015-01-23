@@ -10,18 +10,18 @@ namespace Frontenac.Blueprints.Util.Wrappers.Event
     {
         private readonly IEdge _edge;
 
-        public EventEdge(IEdge edge, EventGraph eventGraph)
-            : base(edge, eventGraph)
+        public EventEdge(IEdge edge, EventGraph eventInnerTinkerGraĥ)
+            : base(edge, eventInnerTinkerGraĥ)
         {
             Contract.Requires(edge != null);
-            Contract.Requires(eventGraph != null);
+            Contract.Requires(eventInnerTinkerGraĥ != null);
 
             _edge = edge;
         }
 
         public IVertex GetVertex(Direction direction)
         {
-            return new EventVertex(GetBaseEdge().GetVertex(direction), EventGraph);
+            return new EventVertex(GetBaseEdge().GetVertex(direction), EventInnerTinkerGraĥ);
         }
 
         public string Label

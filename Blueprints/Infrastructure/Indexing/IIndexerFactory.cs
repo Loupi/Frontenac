@@ -1,4 +1,5 @@
-﻿using System.Diagnostics.Contracts;
+﻿using System;
+using System.Diagnostics.Contracts;
 using Frontenac.Infrastructure.Indexing.Indexers;
 
 namespace Frontenac.Infrastructure.Indexing
@@ -6,6 +7,7 @@ namespace Frontenac.Infrastructure.Indexing
     [ContractClass(typeof (IndexerFactoryContract))]
     public interface IIndexerFactory
     {
-        Indexer Create(object content, IDocument document);
+        Indexer Create(Type contentType);
+        void Destroy(Indexer indexer);
     }
 }

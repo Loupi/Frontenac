@@ -54,7 +54,7 @@ namespace Frontenac.Grave.Tests
                     }
                     var currentTime = StopWatch();
                     totalTime = totalTime + currentTime;
-                    PrintPerformance(graph.ToString(), counter, "TinkerGraph elements touched", currentTime);
+                    PrintPerformance(graph.ToString(), counter, "TinkerGraĥ elements touched", currentTime);
                 }
             }
             finally
@@ -62,7 +62,7 @@ namespace Frontenac.Grave.Tests
                 graph.Shutdown();
             }
 
-            PrintPerformance("TinkerGraph", 1, "TinkerGraph experiment average", (long) (totalTime/TotalRuns));
+            PrintPerformance("TinkerGraĥ", 1, "TinkerGraĥ experiment average", (long) (totalTime/TotalRuns));
         }
     }
 }

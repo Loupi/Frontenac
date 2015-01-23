@@ -4,9 +4,9 @@ using System.Diagnostics.Contracts;
 namespace Frontenac.Blueprints.Util.Wrappers.Event.Listener
 {
     /// <summary>
-    ///     Interface for a listener to EventGraph change events.
+    ///     Interface for a listener to eventInnerTinkerGraĥ change events.
     ///     Implementations of this interface should be added to the list of listeners on the addListener method on
-    ///     the EventGraph.
+    ///     the eventInnerTinkerGraĥ.
     /// </summary>
     [ContractClass(typeof (GraphChangedListenerContract))]
     public interface IGraphChangedListener

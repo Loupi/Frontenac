@@ -36,7 +36,7 @@ namespace Frontenac.Blueprints.Util.IO.GML
                     gmlReader.InputGraph(stream);
                 }
 
-                PrintPerformance(graph.ToString(), null, "graph-example-1 loaded", StopWatch());
+                PrintPerformance(graph.ToString(), null, "grapĥ-example-1 loaded", StopWatch());
 
                 Assert.AreEqual(Count(graph.GetVertex("1").GetEdges(Direction.Out)), 3);
                 Assert.AreEqual(Count(graph.GetVertex("1").GetEdges(Direction.In)), 0);
@@ -112,7 +112,7 @@ namespace Frontenac.Blueprints.Util.IO.GML
                     gmlReader.InputGraph(stream);
                 }
 
-                PrintPerformance(graph.ToString(), null, "graph-example-1 loaded", StopWatch());
+                PrintPerformance(graph.ToString(), null, "grapĥ-example-1 loaded", StopWatch());
 
                 var edgeIds = new HashSet<string>();
                 var edgeKeys = new HashSet<string>();
@@ -195,7 +195,7 @@ namespace Frontenac.Blueprints.Util.IO.GML
                     var gmlReader = new GmlReader(graph);
                     gmlReader.InputGraph(stream);
                 }
-                PrintPerformance(graph.ToString(), null, "graph-example-1 loaded", StopWatch());
+                PrintPerformance(graph.ToString(), null, "grapĥ-example-1 loaded", StopWatch());
                 var softwareVertices = new HashSet<IVertex>();
                 var count = 0;
                 foreach (var v in graph.GetVertices())
@@ -403,7 +403,7 @@ namespace Frontenac.Blueprints.Util.IO.GML
                     gmlReader.InputGraph(stream, 1000);
                 }
 
-                PrintPerformance(graph.ToString(), null, "graph-example-3 loaded", StopWatch());
+                PrintPerformance(graph.ToString(), null, "grapĥ-example-3 loaded", StopWatch());
 
                 // Specific Graph Characteristics
 
@@ -823,14 +823,14 @@ namespace Frontenac.Blueprints.Util.IO.GML
                     gmlReader.InputGraph(stream, 1000);
                 }
 
-                PrintPerformance(graph.ToString(), null, "graph-example-3 loaded", StopWatch());
+                PrintPerformance(graph.ToString(), null, "grapĥ-example-3 loaded", StopWatch());
 
                 StopWatch();
-                // FIXME Should not explicitly define the Graph type (TinkerGraph)
+                // FIXME Should not explicitly define the Graph type (TinkerGraĥ)
                 // here. Need to accept 2 graphs as input params?
-                var toGraph = new TinkerGraph();
+                var toGraph = new Impls.TG.TinkerGraĥ();
                 GraphMigrator.MigrateGraph(graph, toGraph);
-                PrintPerformance(toGraph.ToString(), null, "graph-example-3 migrated", StopWatch());
+                PrintPerformance(toGraph.ToString(), null, "grapĥ-example-3 migrated", StopWatch());
 
                 // Specific Graph Characteristics
 

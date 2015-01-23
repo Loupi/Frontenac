@@ -11,7 +11,7 @@ namespace Frontenac.Blueprints.Util
         [Test]
         public void TestBasicFunctionality()
         {
-            var graph = new TinkerGraph();
+            var graph = new Impls.TG.TinkerGraĥ();
             var a = graph.AddVertex("a");
             a.SetProperty("age", 29);
             var b = graph.AddVertex("b");

@@ -4,16 +4,16 @@ namespace Frontenac.Blueprints.Impls.TG
 {
     public static class TinkerGraphFactory
     {
-        public static TinkerGraph CreateTinkerGraph()
+        public static TinkerGraĥ CreateTinkerGraph()
         {
-            Contract.Ensures(Contract.Result<TinkerGraph>() != null);
+            Contract.Ensures(Contract.Result<TinkerGraĥ>() != null);
 
-            var graph = new TinkerGraph();
+            var graph = new TinkerGraĥ();
             CreateTinkerGraph(graph);
             return graph;
         }
 
-        public static void CreateTinkerGraph(IGraph graph)
+        public static void CreateTinkerGraph(Blueprints.IGraph graph)
         {
             Contract.Requires(graph != null);
 

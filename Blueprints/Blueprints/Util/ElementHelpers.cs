@@ -160,7 +160,7 @@ namespace Frontenac.Blueprints.Util
                         bool result;
                         var aVal = a.GetProperty(key);
                         var bVal = b.GetProperty(key);
-                        if (Portability.IsNumber(aVal) && Portability.IsNumber(bVal))
+                        if (Blueprints.GraphHelpers.IsNumber(aVal) && Blueprints.GraphHelpers.IsNumber(bVal))
                             result = Convert.ToDouble(aVal).CompareTo(Convert.ToDouble(bVal)) == 0;
                         else if (aVal != null)
                             result = aVal.Equals(bVal);

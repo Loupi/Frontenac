@@ -11,7 +11,7 @@ namespace Frontenac.Blueprints.Util
         [Test]
         public void TestAddEdge()
         {
-            var graph = new TinkerGraph();
+            var graph = new Impls.TG.TinkerGraĥ();
             var edge = graph.AddEdge(null, graph.AddVertex(null), graph.AddVertex(null), "knows", "weight", 10.0);
             Assert.AreEqual(edge.GetProperty("weight"), 10.0);
             Assert.AreEqual(edge.Label, "knows");
@@ -35,7 +35,7 @@ namespace Frontenac.Blueprints.Util
         [Test]
         public void TestAddVertex()
         {
-            var graph = new TinkerGraph();
+            var graph = new Impls.TG.TinkerGraĥ();
             var vertex = graph.AddVertex(null, "name", "marko", "age", 31);
             Assert.AreEqual(vertex.GetProperty("name"), "marko");
             Assert.AreEqual(vertex.GetProperty("age"), 31);
@@ -58,7 +58,7 @@ namespace Frontenac.Blueprints.Util
         public void TestCopyGraph()
         {
             var g = TinkerGraphFactory.CreateTinkerGraph();
-            var h = new TinkerGraph();
+            var h = new Impls.TG.TinkerGraĥ();
 
             g.CopyGraph(h);
             Assert.AreEqual(Count(h.GetVertices()), 7);

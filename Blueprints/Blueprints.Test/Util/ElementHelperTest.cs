@@ -12,7 +12,7 @@ namespace Frontenac.Blueprints.Util
         [Test]
         public void TestCopyElementProperties()
         {
-            var graph = new TinkerGraph();
+            var graph = new Impls.TG.TinkerGraĥ();
             var v = graph.AddVertex(null);
             v.SetProperty("name", "marko");
             v.SetProperty("age", 31);
@@ -43,7 +43,7 @@ namespace Frontenac.Blueprints.Util
         [Test]
         public void TestHaveEqualProperties()
         {
-            var graph = new TinkerGraph();
+            var graph = new Impls.TG.TinkerGraĥ();
             var a = graph.AddVertex(null);
             var b = graph.AddVertex(null);
             var c = graph.AddVertex(null);
@@ -112,7 +112,7 @@ namespace Frontenac.Blueprints.Util
         [Test]
         public void TestSetProperties()
         {
-            var graph = new TinkerGraph();
+            var graph = new Impls.TG.TinkerGraĥ();
             var vertex = graph.AddVertex(null);
             var map = new Dictionary<string, object>();
             map.Put("name", "pierre");
@@ -131,7 +131,7 @@ namespace Frontenac.Blueprints.Util
         [Test]
         public void TestSetPropertiesVarArgs()
         {
-            var graph = new TinkerGraph();
+            var graph = new Impls.TG.TinkerGraĥ();
             var vertex = graph.AddVertex(null);
             vertex.SetProperties("name", "pierre");
             Assert.AreEqual(vertex.GetPropertyKeys().Count(), 1);
@@ -150,7 +150,7 @@ namespace Frontenac.Blueprints.Util
             }
             catch (Exception x)
             {
-                if (x.GetType().FullName != Portability.ContractExceptionName)
+                if (x.GetType().FullName != Blueprints.GraphHelpers.ContractExceptionName)
                 {
                     throw;
                 }

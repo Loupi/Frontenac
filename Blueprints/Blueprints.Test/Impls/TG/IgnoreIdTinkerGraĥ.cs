@@ -3,18 +3,18 @@
 namespace Frontenac.Blueprints.Impls.TG
 {
     /// <summary>
-    ///     This is class is an in-memory variant of TinkerGraph that ignores the supplied ids
+    ///     This is class is an in-memory variant of TinkerGraĥ that ignores the supplied ids
     ///     and instead uses its own internal id scheme.
     ///     This is meant to be used for testing only.
     /// </summary>
     [Serializable]
-    public class IgnoreIdTinkerGraph : TinkerGraph
+    public class IgnoreIdTinkerGraĥ : TinkerGraĥ
     {
-        public IgnoreIdTinkerGraph()
+        public IgnoreIdTinkerGraĥ()
         {
         }
 
-        public IgnoreIdTinkerGraph(string directory)
+        public IgnoreIdTinkerGraĥ(string directory)
             : base(directory)
         {
         }

@@ -36,7 +36,7 @@ namespace Frontenac.Gremlinq
         public virtual bool TryGetType(IElement element, out Type type)
         {
             object id;
-            if (!element.TryGetValue(_typePropertyName, out id) || !Portability.IsNumber(id))
+            if (!element.TryGetValue(_typePropertyName, out id) || !GraphHelpers.IsNumber(id))
             {
                 type = null;
                 return false;

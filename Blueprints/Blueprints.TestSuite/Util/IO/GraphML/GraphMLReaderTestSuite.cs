@@ -784,9 +784,9 @@ namespace Frontenac.Blueprints.Util.IO.GraphML
                 PrintPerformance(graph.ToString(), null, "graph-example-3 loaded", StopWatch());
 
                 StopWatch();
-                // FIXME Should not explicitly define the Graph type (TinkerGraph)
+                // FIXME Should not explicitly define the Graph type (TinkerGraĥ)
                 // here. Need to accept 2 graphs as input params?
-                var toGraph = new TinkerGraph();
+                var toGraph = new Impls.TG.TinkerGraĥ();
                 GraphMigrator.MigrateGraph(graph, toGraph);
                 PrintPerformance(toGraph.ToString(), null, "graph-example-3 migrated", StopWatch());
 

@@ -3,12 +3,12 @@
 namespace Frontenac.Blueprints.Impls.TG
 {
     /// <summary>
-    ///     Implementations are responsible for loading and saving a TinkerGraph data.
+    ///     Implementations are responsible for loading and saving a TinkerGraĥ data.
     /// </summary>
     [ContractClass(typeof (TinkerStorageContract))]
     internal interface ITinkerStorage
     {
-        TinkerGraph Load(string directory);
-        void Save(TinkerGraph graph, string directory);
+        TinkerGraĥ Load(string directory);
+        void Save(TinkerGraĥ tinkerGraĥ, string directory);
     }
 }
