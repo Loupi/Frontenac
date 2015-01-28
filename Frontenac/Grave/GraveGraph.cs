@@ -272,7 +272,7 @@ namespace Frontenac.Grave
             Contract.Requires(element != null);
             Contract.Requires(!string.IsNullOrWhiteSpace(key));
 
-            var table = element is GraveVertex
+            var table = element is IVertex
                             ? (EsentTable)GraveContext.Context.VertexTable
                             : GraveContext.Context.EdgesTable;
 
@@ -283,7 +283,7 @@ namespace Frontenac.Grave
         {
             Contract.Requires(element != null);
 
-            var table = element is GraveVertex
+            var table = element is IVertex
                             ? (EsentTable)GraveContext.Context.VertexTable
                             : GraveContext.Context.EdgesTable;
 
@@ -295,7 +295,7 @@ namespace Frontenac.Grave
             Contract.Requires(element != null);
             Contract.Requires(!string.IsNullOrWhiteSpace(key));
 
-            var table = element is GraveVertex
+            var table = element is IVertex
                             ? (EsentTable)GraveContext.Context.VertexTable
                             : GraveContext.Context.EdgesTable;
 
@@ -308,7 +308,7 @@ namespace Frontenac.Grave
             Contract.Requires(element != null);
             Contract.Requires(!string.IsNullOrWhiteSpace(key));
 
-            var table = element is GraveVertex
+            var table = element is IVertex
                             ? (EsentTable)GraveContext.Context.VertexTable
                             : GraveContext.Context.EdgesTable;
 

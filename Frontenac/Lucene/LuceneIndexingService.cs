@@ -388,8 +388,10 @@ namespace Frontenac.Lucene
 
         public override long Set(Type indexType, long id, string indexName, string propertyName, object value, bool isUserIndex)
         {
+            //_nrtManager.MaybeReopen(true);
             var idColumn = GetIdColumn(indexType);
             var keyColumn = isUserIndex ? GetIndexColumn(indexType) : GetKeyColumn(indexType);
+            
             var generation = _nrtManager.DeleteDocuments(CreateKeyQuery(idColumn, keyColumn, id, indexName));
             if (value == null) return generation;
 
@@ -400,11 +402,16 @@ namespace Frontenac.Lucene
             {
                 indexer.Index(document, propertyName, value);
             }
-            finally 
+            finally
             {
                 _indexerFactory.Destroy(indexer);
             }
             generation = _nrtManager.AddDocument(rawDocument);
+
+            //_nrtManager.Commit();
+            //_nrtManager.MaybeReopen(true);
+            //_nrtManager.WaitForGeneration(generation, true, TimeSpan.FromSeconds(5));
+            //_nrtManager.MaybeReopen(true);
 
             return generation;
         }

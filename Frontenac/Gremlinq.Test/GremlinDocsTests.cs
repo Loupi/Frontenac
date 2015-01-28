@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using Frontenac.Blueprints;
 using Frontenac.Blueprints.Impls;
+using Frontenac.Blueprints.Util.Wrappers.Id;
 using NUnit.Framework;
 
 namespace Frontenac.Gremlinq.Test
@@ -23,6 +24,8 @@ namespace Frontenac.Gremlinq.Test
             var g = GraphTest.GenerateGraph();
             try
             {
+                g.CreateTinkerGraph();
+
                 var v = g.V(4);
                 Assert.NotNull(v);
 
@@ -58,9 +61,12 @@ namespace Frontenac.Gremlinq.Test
         [Test]
         public void TestBothE()
         {
-            var g = GraphTest.GenerateGraph();
+
+            var g = new IdGraph((IKeyIndexableGraph)GraphTest.GenerateGraph());
             try
             {
+                g.CreateTinkerGraph();
+
                 var v = g.V(4);
                 Assert.NotNull(v);
 
@@ -96,9 +102,11 @@ namespace Frontenac.Gremlinq.Test
         [Test]
         public void TestBothV()
         {
-            var g = GraphTest.GenerateGraph();
+            var g = new IdGraph((IKeyIndexableGraph)GraphTest.GenerateGraph());
             try
             {
+                g.CreateTinkerGraph();
+
                 var e = g.E(12);
                 Assert.NotNull(e);
 
@@ -132,7 +140,9 @@ namespace Frontenac.Gremlinq.Test
             var g = GraphTest.GenerateGraph();
             try
             {
-                g.V("lang", "java").In("created").Select(vertex =>  vertex.GetProperty("")).GroupCount();
+                g.CreateTinkerGraph();
+
+                g.V("lang", "java").In("created").Select(vertex =>  vertex.GetProperty("name")).GroupCount();
             }
             finally
             {
@@ -146,6 +156,8 @@ namespace Frontenac.Gremlinq.Test
             var g = GraphTest.GenerateGraph();
             try
             {
+                g.CreateTinkerGraph();
+
                 var edges = g.E().ToList();
                 Assert.NotNull(edges);
                 Assert.AreEqual(6, edges.Count);
@@ -163,9 +175,11 @@ namespace Frontenac.Gremlinq.Test
         [Test]
         public void TestIn()
         {
-            var g = GraphTest.GenerateGraph();
+            var g = new IdGraph((IKeyIndexableGraph)GraphTest.GenerateGraph());
             try
             {
+                g.CreateTinkerGraph();
+
                 var v = g.V(4);
                 Assert.NotNull(v);
                 Assert.AreEqual("v[4]", v.ToString());
@@ -196,9 +210,11 @@ namespace Frontenac.Gremlinq.Test
         [Test]
         public void TestInE()
         {
-            var g = GraphTest.GenerateGraph();
+            var g = new IdGraph((IKeyIndexableGraph)GraphTest.GenerateGraph());
             try
             {
+                g.CreateTinkerGraph();
+
                 var v = g.V(4);
                 Assert.NotNull(v);
                 Assert.AreEqual("v[4]", v.ToString());
@@ -226,13 +242,14 @@ namespace Frontenac.Gremlinq.Test
             }
         }
 
-        [
-            Test]
+        [Test]
         public void TestGroupBy()
         {
-            var g = GraphTest.GenerateGraph();
+            var g = new IdGraph((IKeyIndexableGraph)GraphTest.GenerateGraph());
             try
             {
+                g.CreateTinkerGraph();
+
                 var result = g.V().GroupBy(vertex => vertex, vertex => vertex.Out()).ToList();
                 Assert.AreEqual(result.Count, 7);
                 var v1 = result.Single(grouping => grouping.Key.ToString() == "v[1]");
@@ -311,9 +328,11 @@ namespace Frontenac.Gremlinq.Test
         [Test]
         public void TestGroupCount()
         {
-            var g = GraphTest.GenerateGraph();
+            var g = new IdGraph((IKeyIndexableGraph)GraphTest.GenerateGraph());
             try
             {
+                g.CreateTinkerGraph();
+
                 var m = new Dictionary<IVertex, double>();
                 var result = g.V().Out().GroupCount(m).ToList();
                 Assert.AreEqual(6, result.Count);

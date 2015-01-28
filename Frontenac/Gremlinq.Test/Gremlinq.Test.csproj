@@ -54,9 +54,30 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="EntitiesTestSuite.cs" />
+    <Compile Include="Entities\IAgedCharacter.cs" />
+    <Compile Include="Entities\IBattle.cs" />
+    <Compile Include="Entities\ICharacter.cs" />
+    <Compile Include="Entities\IChildren.cs" />
+    <Compile Include="Entities\IContributor.cs" />
+    <Compile Include="Entities\IDemiGod.cs" />
+    <Compile Include="Entities\IEntityWithId.cs" />
+    <Compile Include="Entities\IGod.cs" />
+    <Compile Include="Entities\IHeirChildren.cs" />
+    <Compile Include="Entities\IHuman.cs" />
+    <Compile Include="Entities\IJob.cs" />
+    <Compile Include="Entities\ILive.cs" />
+    <Compile Include="Entities\ILocation.cs" />
+    <Compile Include="Entities\IMonster.cs" />
+    <Compile Include="Entities\INamedEntity.cs" />
+    <Compile Include="Entities\IPerson.cs" />
+    <Compile Include="Entities\ITitan.cs" />
+    <Compile Include="Entities\IWeightedEntity.cs" />
     <Compile Include="GremlinDocsTests.cs" />
+    <Compile Include="GremlinqHelpers.cs" />
     <Compile Include="GremlinqTinkerGraphTestImpl.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="TinkerGraphEntitiesTestSuite.cs" />
     <Compile Include="TinkerGraphGremlinDocsTestSuite.cs" />
   </ItemGroup>
   <ItemGroup>
@@ -82,6 +103,10 @@
     <ProjectReference Include="..\Gremlinq\Gremlinq.csproj">
       <Project>{bef87227-a8ba-4edc-835c-b13de0e6a7c2}</Project>
       <Name>Gremlinq</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Infrastructure\Infrastructure.csproj">
+      <Project>{f3a4e6dc-bb03-409d-9bde-71bc122d9008}</Project>
+      <Name>Infrastructure</Name>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

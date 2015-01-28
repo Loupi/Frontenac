@@ -34,7 +34,7 @@ namespace Frontenac.Infrastructure
                 return;
 
             Contexts.Dispose();
-            Shutdown();
+            
             
             _disposed = true;
         }
@@ -235,9 +235,10 @@ namespace Frontenac.Infrastructure
 
             var id = element.Id.TryToInt64();
             if (!id.HasValue) throw new InvalidOperationException();
-            
+
             var generation = indices.Set(id.Value, key, key, value);
             UpdateGeneration(generation);
+
         }
     }
 }

@@ -142,7 +142,6 @@ namespace Lucene.Net.Contrib.Management
             return _indexingGen;
         }
 
-
         public long DeleteDocuments(params Query[] queries)
         {
             _writer.DeleteDocuments(queries);

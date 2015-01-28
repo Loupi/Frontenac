@@ -168,6 +168,7 @@
     <Compile Include="RelationAccessors\ElementPropertyGetterBehavior.cs" />
     <Compile Include="RelationAccessors\VertexRelationCollection.cs" />
     <Compile Include="RelationAttribute.cs" />
+    <Compile Include="StaticGremlinqContextFactory.cs" />
     <Compile Include="Vertex.cs" />
   </ItemGroup>
   <ItemGroup>

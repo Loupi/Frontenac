@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 
-namespace Frontenac.Grave.Entities
+namespace Frontenac.Gremlinq.Test.Entities
 {
     public interface IContributor : INamedEntity
     {

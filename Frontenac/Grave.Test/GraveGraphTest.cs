@@ -9,6 +9,7 @@ using Frontenac.Blueprints.Util.IO.GML;
 using Frontenac.Blueprints.Util.IO.GraphML;
 using Frontenac.Blueprints.Util.IO.GraphSON;
 using Frontenac.CastleWindsor;
+using Frontenac.Gremlinq.Test;
 using Frontenac.Infrastructure;
 using NUnit.Framework;
 
@@ -66,6 +67,62 @@ namespace Frontenac.Grave.Tests
         }
 
         public IGraphFactory Factory { get { return _factory; } }
+    }
+
+    [TestFixture(Category = "GraveEntitiesTestSuite")]
+    public class GraveEntitiesTestSuite : EntitiesTestSuite
+    {
+        private readonly GraveGraphTestSuite _suite = new GraveGraphTestSuite();
+
+        [SetUp]
+        public void SetUp()
+        {
+            _suite.SetUp(GraphTest);
+        }
+
+        [TearDown]
+        public void TearDown()
+        {
+            _suite.TearDown();
+        }
+
+        public GraveEntitiesTestSuite()
+            : base(new GraveGraphTest())
+        {
+        }
+
+        public GraveEntitiesTestSuite(GraphTest graphTest)
+            : base(graphTest)
+        {
+        }
+    }
+
+    [TestFixture(Category = "GraveGremlinDocsTestSuite")]
+    public class GraveGremlinDocsTestSuite : GremlinDocsTestSuite
+    {
+        private readonly GraveGraphTestSuite _suite = new GraveGraphTestSuite();
+
+        [SetUp]
+        public void SetUp()
+        {
+            _suite.SetUp(GraphTest);
+        }
+
+        [TearDown]
+        public void TearDown()
+        {
+            _suite.TearDown();
+        }
+
+        public GraveGremlinDocsTestSuite()
+            : base(new GraveGraphTest())
+        {
+        }
+
+        public GraveGremlinDocsTestSuite(GraphTest graphTest)
+            : base(graphTest)
+        {
+        }
     }
 
     [TestFixture(Category = "GraveGraphGraphTestSuite")]

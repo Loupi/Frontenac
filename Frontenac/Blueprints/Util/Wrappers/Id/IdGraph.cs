@@ -257,14 +257,14 @@ namespace Frontenac.Blueprints.Util.Wrappers.Id
 
         public void DropKeyIndex(string key, Type elementClass)
         {
-            Contract.Ensures(key == Id);
+            Contract.Ensures(key != Id);
             Contract.Ensures(IsVertex(elementClass) && _supportVertexIds || IsEdge(elementClass) && _supportEdgeIds);
             _baseGraph.DropKeyIndex(key, elementClass);
         }
 
         public void CreateKeyIndex(string key, Type elementClass, params Parameter[] indexParameters)
         {
-            Contract.Ensures(key == Id);
+            Contract.Ensures(key != Id);
             Contract.Ensures(IsVertex(elementClass) && _supportVertexIds || IsEdge(elementClass) && _supportEdgeIds);
             _baseGraph.CreateKeyIndex(key, elementClass, indexParameters);
         }
@@ -351,11 +351,11 @@ namespace Frontenac.Blueprints.Util.Wrappers.Id
 
         private void CreateIndices()
         {
-            if (_supportVertexIds && !_baseGraph.GetIndexedKeys(typeof (IVertex)).Contains(Id))
-                _baseGraph.CreateKeyIndex(Id, typeof (IVertex));
+            if (_supportVertexIds && !_baseGraph.GetIndexedKeys(typeof(IVertex)).Contains(Id))
+                _baseGraph.CreateKeyIndex(Id, typeof(IVertex));
 
-            if (_supportEdgeIds && !_baseGraph.GetIndexedKeys(typeof (IEdge)).Contains(Id))
-                _baseGraph.CreateKeyIndex(Id, typeof (IEdge));
+            if (_supportEdgeIds && !_baseGraph.GetIndexedKeys(typeof(IEdge)).Contains(Id))
+                _baseGraph.CreateKeyIndex(Id, typeof(IEdge));
         }
 
         private static void VerifyNativeElement(IElement e)

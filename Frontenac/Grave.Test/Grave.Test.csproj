@@ -75,6 +75,10 @@
       <Project>{15db2cdc-cafd-49e4-b71e-8d5843084065}</Project>
       <Name>Grave</Name>
     </ProjectReference>
+    <ProjectReference Include="..\Gremlinq.Test\Gremlinq.Test.csproj">
+      <Project>{e56ba77a-8bb0-4572-878a-3ebab7a1b921}</Project>
+      <Name>Gremlinq.Test</Name>
+    </ProjectReference>
     <ProjectReference Include="..\Infrastructure\Infrastructure.csproj">
       <Project>{f3a4e6dc-bb03-409d-9bde-71bc122d9008}</Project>
       <Name>Infrastructure</Name>

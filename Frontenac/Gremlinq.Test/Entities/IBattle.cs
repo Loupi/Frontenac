@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 using Frontenac.Infrastructure.Geo;
 
-namespace Frontenac.Grave.Entities
+namespace Frontenac.Gremlinq.Test.Entities
 {
     public interface IBattle
     {

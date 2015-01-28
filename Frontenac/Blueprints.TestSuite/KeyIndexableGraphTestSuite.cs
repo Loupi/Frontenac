@@ -154,18 +154,23 @@ namespace Frontenac.Blueprints
                 if (graph.Features.SupportsVertexIteration && graph.Features.SupportsVertexKeyIndex)
                 {
                     graph.CreateKeyIndex("name", typeof (IVertex));
-                    Assert.AreEqual(graph.GetIndexedKeys(typeof (IVertex)).Count(), 1);
+                    graph.CreateKeyIndex("number", typeof(IVertex));
+                    Assert.AreEqual(graph.GetIndexedKeys(typeof (IVertex)).Count(), 2);
                     Assert.True(graph.GetIndexedKeys(typeof (IVertex)).Contains("name"));
+                    Assert.True(graph.GetIndexedKeys(typeof(IVertex)).Contains("number"));
                     var v1 = graph.AddVertex(null);
                     v1.SetProperty("name", "marko");
                     v1.SetProperty("location", "everywhere");
+                    v1.SetProperty("number", 2);
                     var v2 = graph.AddVertex(null);
                     v2.SetProperty("name", "stephen");
                     v2.SetProperty("location", "everywhere");
+                    v2.SetProperty("number", 2);
 
                     Assert.AreEqual(Count(graph.GetVertices("location", "everywhere")), 2);
                     Assert.AreEqual(Count(graph.GetVertices("name", "marko")), 1);
                     Assert.AreEqual(Count(graph.GetVertices("name", "stephen")), 1);
+                    Assert.AreEqual(Count(graph.GetVertices("number", 2)), 2);
                     Assert.AreEqual(graph.GetVertices("name", "marko").First(), v1);
                     Assert.AreEqual(graph.GetVertices("name", "stephen").First(), v2);
                 }

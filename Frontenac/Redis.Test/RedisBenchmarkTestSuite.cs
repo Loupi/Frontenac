@@ -5,11 +5,31 @@ using NUnit.Framework;
 
 namespace Frontenac.Redis.Test
 {
+    [TestFixture(Category = "TinkerGraphGremlinDocsTestSuite")]
     public abstract class RedisBenchmarkTestSuite : TestSuite
     {
         private const int TotalRuns = 10;
 
-        protected RedisBenchmarkTestSuite(GraphTest graphTest)
+        private readonly RedisGraphTestSuite _suite = new RedisGraphTestSuite();
+
+        [SetUp]
+        public void SetUp()
+        {
+            _suite.SetUp(GraphTest);
+        }
+
+        [TearDown]
+        public void TearDown()
+        {
+            _suite.TearDown();
+        }
+
+        public RedisBenchmarkTestSuite()
+            : base("RedisBenchmarkTestSuite", new RedisGraphTest())
+        {
+        }
+
+        public RedisBenchmarkTestSuite(GraphTest graphTest)
             : base("RedisBenchmarkTestSuite", graphTest)
         {
         }

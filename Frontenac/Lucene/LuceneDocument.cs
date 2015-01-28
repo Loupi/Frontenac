@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Diagnostics.Contracts;
 using System.Runtime.Serialization;
+using Frontenac.Infrastructure;
 using Frontenac.Infrastructure.Geo;
 using Frontenac.Infrastructure.Indexing;
 using Lucene.Net.Documents;
@@ -34,19 +35,20 @@ namespace Frontenac.Lucene
             }
             else if (value is string)
             {
-                var val = value.ToString();
-                _document.Add(new Field(key, val, Field.Store.NO, Field.Index.ANALYZED_NO_NORMS));
+                string sval = value.ToString();
+                _document.Add(new Field(key, sval, Field.Store.NO, Field.Index.ANALYZED_NO_NORMS));
             }
             else if (value is sbyte || value is byte || value is short || value is ushort || value is int ||
-                     value is uint)
+                     value is uint/*)
             {
                 var val = Convert.ToInt32(value);
-                _document.Add(new NumericField(key).SetIntValue(val));
-            }
-            else if (value is long || value is ulong)
-            {
-                var val = Convert.ToInt64(value);
                 _document.Add(new NumericField(key).SetLongValue(val));
+            }
+            else if (*/  || value is long || value is ulong)
+            {
+                //var val = Convert.ToInt64(value);
+                long lval = value.TryToInt64().Value;
+                _document.Add(new NumericField(key).SetLongValue(lval));
             }
             else if (value is float)
             {
@@ -55,8 +57,8 @@ namespace Frontenac.Lucene
             }
             else if (value is double)
             {
-                var val = Convert.ToDouble(value);
-                _document.Add(new NumericField(key).SetDoubleValue(val));
+                double dval = Convert.ToDouble(value);
+                _document.Add(new NumericField(key).SetDoubleValue(dval));
             }
             else if (value is GeoPoint)
             {

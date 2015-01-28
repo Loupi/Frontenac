@@ -8,6 +8,7 @@ using Frontenac.Blueprints.Util.IO.GML;
 using Frontenac.Blueprints.Util.IO.GraphML;
 using Frontenac.Blueprints.Util.IO.GraphSON;
 using Frontenac.CastleWindsor;
+using Frontenac.Gremlinq.Test;
 using Frontenac.Infrastructure;
 using NUnit.Framework;
 
@@ -65,6 +66,62 @@ namespace Frontenac.Redis.Test
         }
 
         public IGraphFactory Factory { get { return _factory; } }
+    }
+
+    [TestFixture(Category = "RedisEntitiesTestSuite")]
+    public class RedisEntitiesTestSuite : EntitiesTestSuite
+    {
+        private readonly RedisGraphTestSuite _suite = new RedisGraphTestSuite();
+
+        [SetUp]
+        public void SetUp()
+        {
+            _suite.SetUp(GraphTest);
+        }
+
+        [TearDown]
+        public void TearDown()
+        {
+            _suite.TearDown();
+        }
+
+        public RedisEntitiesTestSuite()
+            : base(new RedisGraphTest())
+        {
+        }
+
+        public RedisEntitiesTestSuite(GraphTest graphTest)
+            : base(graphTest)
+        {
+        }
+    }
+
+    [TestFixture(Category = "RedisGremlinDocsTestSuite")]
+    public class RedisGremlinDocsTestSuite : GremlinDocsTestSuite
+    {
+        private readonly RedisGraphTestSuite _suite = new RedisGraphTestSuite();
+
+        [SetUp]
+        public void SetUp()
+        {
+            _suite.SetUp(GraphTest);
+        }
+
+        [TearDown]
+        public void TearDown()
+        {
+            _suite.TearDown();
+        }
+
+        public RedisGremlinDocsTestSuite()
+            : base(new RedisGraphTest())
+        {
+        }
+
+        public RedisGremlinDocsTestSuite(GraphTest graphTest)
+            : base(graphTest)
+        {
+        }
     }
 
     [TestFixture(Category = "RedisGraphGraphTestSuite")]

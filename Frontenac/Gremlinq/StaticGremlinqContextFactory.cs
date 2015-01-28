@@ -1,9 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics.Contracts;
-using Frontenac.Gremlinq;
 
-namespace Frontenac.Grave
+namespace Frontenac.Gremlinq
 {
     public class StaticGremlinqContextFactory : IGremlinqContextFactory
     {

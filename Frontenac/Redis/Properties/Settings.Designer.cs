@@ -25,7 +25,7 @@ namespace Frontenac.Redis.Properties {
         
         [global::System.Configuration.ApplicationScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("BlueRed")]
+        [global::System.Configuration.DefaultSettingValueAttribute("Redis")]
         public string InstanceName {
             get {
                 return ((string)(this["InstanceName"]));

@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics.Contracts;
+using System.Globalization;
 using System.Linq;
 using Frontenac.Blueprints;
 using Frontenac.Blueprints.Util;
@@ -262,16 +263,16 @@ namespace Frontenac.Redis
             {
                 foreach (var outLabel in db.SortedSetScan(GetIdentifier(vertex, "labels_out")))
                 {
-                    var label = (string)outLabel.Element;
-                    if(labels.Length > 0 && !labels.Contains(label))
+                    string labelVal2 = Testlouche.RedisElementToString(outLabel.Element);
+                    if (labels.Length > 0 && !labels.Contains(labelVal2))
                         continue;
 
-                    foreach (var edge in db.SortedSetScan(GetLabeledIdentifier(vertex, "edges:out", label)))
+                    foreach (var edge in db.SortedSetScan(GetLabeledIdentifier(vertex, "edges:out", labelVal2)))
                     {
                         var edgeId = (long) edge.Element;
                         var targetId = (long) edge.Score;
                         var targetVertex = new RedisVertex(targetId, this);
-                        yield return new RedisEdge(edgeId, vertex, targetVertex, label, this);
+                        yield return new RedisEdge(edgeId, vertex, targetVertex, labelVal2, this);
                     }
                 }
             }
@@ -280,16 +281,16 @@ namespace Frontenac.Redis
 
             foreach (var inLabel in db.SortedSetScan(GetIdentifier(vertex, "labels_in")))
             {
-                var label = (string)inLabel.Element;
-                if(labels.Length > 0 && !labels.Contains(label))
+                string labelVal = Testlouche.RedisElementToString(inLabel.Element);
+                if(labels.Length > 0 && !labels.Contains(labelVal))
                     continue;
 
-                foreach (var edge in db.SortedSetScan(GetLabeledIdentifier(vertex, "edges:in", label)))
+                foreach (var edge in db.SortedSetScan(GetLabeledIdentifier(vertex, "edges:in", labelVal)))
                 {
                     var edgeId = (long) edge.Element;
                     var targetId = (long) edge.Score;
                     var targetVertex = new RedisVertex(targetId, this);
-                    yield return new RedisEdge(edgeId, targetVertex, vertex, label, this);
+                    yield return new RedisEdge(edgeId, targetVertex, vertex, labelVal, this);
                 }
             }
         }
