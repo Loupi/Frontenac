@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Diagnostics.Contracts;
 using System.Linq;
-using System.Threading;
 using Frontenac.Blueprints;
 using Frontenac.Blueprints.Util;
 using Frontenac.Infrastructure.Indexing;
@@ -11,11 +10,12 @@ namespace Frontenac.Infrastructure
 {
     public abstract class IndexedGraph : IKeyIndexableGraph, IIndexableGraph, IGenerationBasedIndex, IDisposable
     {
-        protected readonly ThreadLocal<ThreadContext> Contexts;
-
+        protected readonly IndexingService IndexingService;
+        
         #region IDisposable
 
         private bool _disposed;
+        private long _generation;
 
         ~IndexedGraph()
         {
@@ -33,24 +33,27 @@ namespace Frontenac.Infrastructure
             if (_disposed)
                 return;
 
-            Contexts.Dispose();
-            
-            
+
+
             _disposed = true;
         }
 
         #endregion
 
-        protected IndexedGraph(IndexingService indexingService, IGraphConfiguration configuration)
+        protected IndexedGraph(IndexingService indexingService)
         {
             Contract.Requires(indexingService != null);
-            Contract.Requires(configuration != null);
-
-            indexingService.Initialize(configuration.GetPath());
-            Contexts = new ThreadLocal<ThreadContext>(() => CreateThreadContext(indexingService), true);
+            IndexingService = indexingService;
         }
 
-        protected abstract ThreadContext CreateThreadContext(IndexingService indexingService);
+        protected void Init(IGraphConfiguration configuration)
+        {
+            Contract.Requires(configuration != null);
+            IndexingService.Initialize(configuration);
+            var indexStore = IndexingService as IIndexStore ?? (IIndexStore)this;
+            IndexingService.LoadFromStore(indexStore);
+        }
+
         protected abstract IVertex GetVertexInstance(long vertexId);
 
         public abstract Features Features { get; }
@@ -64,7 +67,7 @@ namespace Frontenac.Infrastructure
 
         public virtual IEnumerable<IEdge> GetEdges(string key, object value)
         {
-            if (!Context.IndexingService.EdgeIndices.HasIndex(key))
+            if (!IndexingService.EdgeIndices.HasIndex(key))
                 return new PropertyFilteredIterable<IEdge>(key, value, GetEdges());
 
             WaitForGeneration();
@@ -74,12 +77,12 @@ namespace Frontenac.Infrastructure
 
         public virtual IEnumerable<IVertex> GetVertices(string key, object value)
         {
-            if (!Context.IndexingService.VertexIndices.HasIndex(key))
+            if (!IndexingService.VertexIndices.HasIndex(key))
                 return new PropertyFilteredIterable<IVertex>(key, value, GetVertices());
 
             WaitForGeneration();
 
-            return Context.IndexingService.VertexIndices.Get(key, key, value, int.MaxValue)
+            return IndexingService.VertexIndices.Get(key, key, value, int.MaxValue)
                 .Select(GetVertexInstance);
         }
 
@@ -87,7 +90,7 @@ namespace Frontenac.Infrastructure
         {
             var id = edge.Id.TryToInt64();
             if(!id.HasValue)throw new InvalidOperationException();
-            var generation = Context.IndexingService.EdgeIndices.DeleteDocuments(id.Value);
+            var generation = IndexingService.EdgeIndices.DeleteDocuments(id.Value);
             UpdateGeneration(generation);
         }
 
@@ -95,13 +98,8 @@ namespace Frontenac.Infrastructure
         {
             var id = vertex.Id.TryToInt64();
             if (!id.HasValue) throw new InvalidOperationException();
-            var generation = Context.IndexingService.VertexIndices.DeleteDocuments(id.Value);
+            var generation = IndexingService.VertexIndices.DeleteDocuments(id.Value);
             UpdateGeneration(generation);
-        }
-
-        public ThreadContext Context
-        {
-            get { return Contexts.Value; }
         }
 
         public virtual IIndex CreateIndex(string indexName, Type indexClass, params Parameter[] indexParameters)
@@ -141,14 +139,7 @@ namespace Frontenac.Infrastructure
 
         protected virtual IIndex CreateIndexObject(string indexName, Type indexType, IIndexCollection indexCollection, IIndexCollection userIndexCollection)
         {
-            var key = string.Concat(indexName, indexType);
-            Index index;
-            if (!Context.Indices.TryGetValue(key, out index))
-            {
-                index = new Index(indexName, indexType, this, this, Context.IndexingService);
-                Context.Indices.Add(key, index);
-            }
-            return index;
+            return new Index(indexName, indexType, this, this, IndexingService);
         }
 
         public virtual void DropIndex(string indexName)
@@ -163,27 +154,27 @@ namespace Frontenac.Infrastructure
                 UpdateGeneration(generation);
         }
 
-        internal IIndexCollection GetIndices(Type indexType, bool isUserIndex)
+        protected IIndexCollection GetIndices(Type indexType, bool isUserIndex)
         {
             Contract.Requires(indexType != null);
             Contract.Requires(indexType.IsAssignableFrom(typeof(IVertex)) || indexType.IsAssignableFrom(typeof(IEdge)));
 
             if (isUserIndex)
                 return indexType == typeof(IVertex)
-                           ? Context.IndexingService.UserVertexIndices
-                           : Context.IndexingService.UserEdgeIndices;
+                           ? IndexingService.UserVertexIndices
+                           : IndexingService.UserEdgeIndices;
 
-            return indexType == typeof(IVertex) ? Context.IndexingService.VertexIndices : Context.IndexingService.EdgeIndices;
+            return indexType == typeof(IVertex) ? IndexingService.VertexIndices : IndexingService.EdgeIndices;
         }
 
         public void UpdateGeneration(long generation)
         {
-            Context.Generation = generation;
+            _generation = generation;
         }
 
         public void WaitForGeneration()
         {
-            Context.IndexingService.WaitForGeneration(Context.Generation);
+            IndexingService.WaitForGeneration(_generation);
         }
 
         public virtual void DropKeyIndex(string key, Type elementClass)
@@ -208,24 +199,25 @@ namespace Frontenac.Infrastructure
 
         public virtual IEnumerable<string> GetIndexedKeys(Type elementClass)
         {
-            return GetIndices(elementClass, false).GetIndices();
+            var indices = GetIndices(elementClass, false).GetIndices();
+            return indices;
         }
 
         protected virtual IEnumerable<IEdge> IterateEdges(string key, object value)
         {
             Contract.Requires(!String.IsNullOrWhiteSpace(key));
 
-            var edgeIds = Context.IndexingService.EdgeIndices.Get(key, key, value, int.MaxValue);
+            var edgeIds = IndexingService.EdgeIndices.Get(key, key, value, int.MaxValue);
             return edgeIds.Select(edgeId => GetEdge(edgeId)).Where(edge => edge != null);
         }
 
         public virtual IQuery Query()
         {
             WaitForGeneration();
-            return new IndexQuery(this, Context.IndexingService);
+            return new IndexQuery(this, IndexingService);
         }
 
-        public void SetIndexedKeyValue(IElement element, string key, object value)
+        public virtual void SetIndexedKeyValue(IElement element, string key, object value)
         {
             Contract.Requires(!string.IsNullOrWhiteSpace(key));
 
@@ -238,7 +230,6 @@ namespace Frontenac.Infrastructure
 
             var generation = indices.Set(id.Value, key, key, value);
             UpdateGeneration(generation);
-
         }
     }
 }

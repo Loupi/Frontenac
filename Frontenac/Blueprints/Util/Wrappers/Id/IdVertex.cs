@@ -33,9 +33,9 @@ namespace Frontenac.Blueprints.Util.Wrappers.Id
                                           t => new IdVertexIterable(t.Vertices(), IdInnerTinkerGrapĥ));
         }
 
-        public IEdge AddEdge(string label, IVertex vertex)
+        public IEdge AddEdge(object id, string label, IVertex vertex)
         {
-            return IdInnerTinkerGrapĥ.AddEdge(null, this, vertex, label);
+            return IdInnerTinkerGrapĥ.AddEdge(id, this, vertex, label);
         }
 
         public IVertex GetBaseVertex()

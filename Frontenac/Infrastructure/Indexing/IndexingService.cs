@@ -8,12 +8,12 @@ namespace Frontenac.Infrastructure.Indexing
     [ContractClass(typeof (IndexingServiceContract))]
     public abstract class IndexingService : IDisposable
     {
-        private const string VertexIndicesColumnName = "VertexIndices";
-        private const string EdgeIndicesColumnName = "EdgeIndices";
-        private const string UserVertexIndicesColumnName = "UserVertexIndices";
-        private const string UserEdgeIndicesColumnName = "UserEdgeIndices";
+        protected string VertexIndicesColumnName = "VertexIndices";
+        protected string EdgeIndicesColumnName = "EdgeIndices";
+        protected string UserVertexIndicesColumnName = "UserVertexIndices";
+        protected string UserEdgeIndicesColumnName = "UserEdgeIndices";
 
-        internal IIndexStore IndexStore;
+        protected IIndexStore IndexStore;
 
         public IIndexCollection Create(string indicesColumnName, Type indexType, bool isUserIndex)
         {
@@ -26,13 +26,14 @@ namespace Frontenac.Infrastructure.Indexing
         public IIndexCollection UserVertexIndices { get; private set; }
         public IIndexCollection UserEdgeIndices { get; private set; }
 
-        public abstract void Initialize(string databasePath);
+
+        public abstract void Initialize(IGraphConfiguration configuration);
 
         public void LoadFromStore(IIndexStore indexStore)
         {
             Contract.Requires(indexStore != null);
             IndexStore = indexStore;
-            IndexStore.Load();
+            IndexStore.LoadIndices();
 
             VertexIndices = Create(VertexIndicesColumnName, typeof (IVertex), false);
             EdgeIndices = Create(EdgeIndicesColumnName, typeof(IEdge), false);
@@ -40,30 +41,27 @@ namespace Frontenac.Infrastructure.Indexing
             UserEdgeIndices = Create(UserEdgeIndicesColumnName, typeof(IEdge), true);
         }
 
-        public void CreateIndexOfType(string indexName, string indexColumn, List<string> indices)
+        public void CreateIndexOfType(string indexName, string indexColumn)
         {
             Contract.Requires(!String.IsNullOrWhiteSpace(indexName));
             Contract.Requires(!String.IsNullOrWhiteSpace(indexColumn));
-            Contract.Requires(indices != null);
 
-            IndexStore.Create(indexName, indexColumn, indices);
+            IndexStore.CreateIndex(indexName, indexColumn);
         }
 
         public List<string> GetIndicesOfType(string indexType)
         {
             Contract.Requires(!String.IsNullOrWhiteSpace(indexType));
 
-            return IndexStore.Get(indexType);
+            return IndexStore.GetIndices(indexType);
         }
 
-        public long DropIndexOfType(string indexName, string indexColumn, Type indexType, List<string> indices,
-                                    bool isUserIndex)
+        public long DropIndexOfType(string indexName, string indexColumn, Type indexType, bool isUserIndex)
         {
             Contract.Requires(!String.IsNullOrWhiteSpace(indexName));
             Contract.Requires(!String.IsNullOrWhiteSpace(indexColumn));
-            Contract.Requires(indices != null);
 
-            return IndexStore.Delete(this, indexName, indexColumn, indexType, indices, isUserIndex);
+            return IndexStore.DeleteIndex(this, indexName, indexColumn, indexType, isUserIndex);
         }
 
         public abstract long Set(Type indexType, long id, string indexName, string propertyName, object value,
@@ -89,7 +87,7 @@ namespace Frontenac.Infrastructure.Indexing
         
         private bool _disposed;
 
-        public void Dispose()
+        public virtual void Dispose()
         {
             Dispose(true);
             GC.SuppressFinalize(this);
@@ -105,8 +103,8 @@ namespace Frontenac.Infrastructure.Indexing
             if (_disposed)
                 return;
 
-            if (disposing && IndexStore != null)
-                IndexStore.Dispose();
+            //if (disposing && IndexStore != this && IndexStore != null)
+            //    IndexStore.Dispose();
 
             _disposed = true;
         }

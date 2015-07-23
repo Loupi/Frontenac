@@ -1,4 +1,5 @@
 ﻿using System.Linq;
+using System.Threading;
 using Frontenac.Blueprints.Impls;
 using NUnit.Framework;
 
@@ -31,6 +32,7 @@ namespace Frontenac.Blueprints
                 StopWatch();
                 index.Put("dog", "puppy", v1);
                 index.Put("dog", "mama", v2);
+                Thread.Sleep(1000);
                 PrintPerformance(graph.ToString(), 2, "vertices manually index", StopWatch());
                 Assert.AreEqual(v1, index.Get("dog", "puppy").First());
                 Assert.AreEqual(v2, index.Get("dog", "mama").First());
@@ -82,6 +84,7 @@ namespace Frontenac.Blueprints
                     var v1 = graph.AddVertex(null);
                     index.Put("dog", "puppy", v1);
                 }
+                Thread.Sleep(1000);
                 Assert.AreEqual(10, index.Count("dog", "puppy"));
                 var v = (IVertex) index.Get("dog", "puppy").First();
                 graph.RemoveVertex(v);
@@ -116,6 +119,7 @@ namespace Frontenac.Blueprints
                 StopWatch();
                 index.Put("dog", "puppy", e1);
                 index.Put("dog", "mama", e2);
+                Thread.Sleep(1000);
                 PrintPerformance(graph.ToString(), 2, "edges manually index", StopWatch());
                 Assert.AreEqual(e1, index.Get("dog", "puppy").First());
                 Assert.AreEqual(e2, index.Get("dog", "mama").First());
@@ -166,6 +170,7 @@ namespace Frontenac.Blueprints
                     var v = graph.AddVertex(null);
                     index.Put("dog", "puppy", v);
                 }
+                Thread.Sleep(1000);
                 var hits = index.Get("dog", "puppy");
                 var counter = hits.Cast<IVertex>().Count();
                 Assert.AreEqual(counter, 10);

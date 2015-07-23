@@ -143,7 +143,7 @@ namespace Frontenac.Blueprints.Util.Wrappers.Id
             if (_uniqueIds && null != id && null != GetVertex(id))
                 throw new ArgumentException(string.Concat("vertex with given id already exists: '", id, "'"));
 
-            var base_ = _baseGraph.AddVertex(null);
+            var base_ = _baseGraph.AddVertex(id);
 
             if (_supportVertexIds)
             {
@@ -204,7 +204,7 @@ namespace Frontenac.Blueprints.Util.Wrappers.Id
             VerifyNativeElement(outVertex);
             VerifyNativeElement(inVertex);
 
-            var base_ = _baseGraph.AddEdge(null, ((IdVertex) outVertex).GetBaseVertex(),
+            var base_ = _baseGraph.AddEdge(id, ((IdVertex) outVertex).GetBaseVertex(),
                                            ((IdVertex) inVertex).GetBaseVertex(), label);
 
             if (_supportEdgeIds)

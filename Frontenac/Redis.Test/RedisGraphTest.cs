@@ -8,6 +8,7 @@ using Frontenac.Blueprints.Util.IO.GML;
 using Frontenac.Blueprints.Util.IO.GraphML;
 using Frontenac.Blueprints.Util.IO.GraphSON;
 using Frontenac.CastleWindsor;
+using Frontenac.ElasticSearch;
 using Frontenac.Gremlinq.Test;
 using Frontenac.Infrastructure;
 using NUnit.Framework;
@@ -42,6 +43,7 @@ namespace Frontenac.Redis.Test
         public void SetUp(GraphTest graphTest)
         {
             RedisGraph.DeleteDb();
+            ElasticSearchService.DropAll();
             DeleteDirectory(RedisGraphTest.GetRedisGraphDirectory());
 
             _container = new CastleWindsorContainer();

@@ -425,8 +425,8 @@ namespace Frontenac.Grave.Tests
             _suite.TearDown();
         }
 
-        public GraveGraphTestGeneral(GraphTest graphTest) :
-            base("GraveGraphTestGeneral", graphTest)
+        public GraveGraphTestGeneral() :
+            base("GraveGraphTestGeneral", new GraveGraphTest())
         {
         }
 
@@ -462,10 +462,12 @@ namespace Frontenac.Grave.Tests
             var path = GraveGraphTest.GetGraveGraphDirectory() + "/" + directory;
             DeleteDirectory(path);
 
-            var sourceGraph = _suite.Factory.Create<TinkerGrapĥ>();
+            var sourceGraph = new TinkerGrapĥ();
+            sourceGraph.CreateTinkerGraph();
+
             try
             {
-                var targetGraph = _suite.Factory.Create<IKeyIndexableGraph>();
+                var targetGraph = (IKeyIndexableGraph)GraphTest.GenerateGraph();
                 try
                 {
                     CreateKeyIndices(targetGraph);

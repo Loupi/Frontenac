@@ -357,10 +357,10 @@ namespace Frontenac.Blueprints
                 var stephen = graph.AddVertex(null);
                 stephen.SetProperty("name", "stephen");
 
-                var edge = marko.AddEdge("knows", stephen);
+                var edge = marko.AddEdge(null, "knows", stephen);
                 edge.SetProperty("type", "tinkerpop");
                 edge.SetProperty("weight", 1.0);
-                edge = marko.AddEdge("knows", matthias);
+                edge = marko.AddEdge(null, "knows", matthias);
                 edge.SetProperty("type", "aurelius");
 
                 Assert.AreEqual(Count(graph.Query().Edges()), 2);

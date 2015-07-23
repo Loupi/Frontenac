@@ -5,11 +5,12 @@ using System.Diagnostics.Contracts;
 namespace Frontenac.Infrastructure.Indexing
 {
     [ContractClass(typeof(IndexStoreContract))]
-    public interface IIndexStore : IDisposable
+    public interface IIndexStore
     {
-        void Load();
-        void Create(string indexName, string indexColumn, List<string> indices);
-        List<string> Get(string indexType);
-        long Delete(IndexingService indexingService, string indexName, string indexColumn, Type indexType, List<string> indices, bool isUserIndex);
+        void LoadIndices();
+        void CreateIndex(string indexName, string indexColumn);
+        List<string> GetIndices(string indexType);
+        long DeleteIndex(IndexingService indexingService, string indexName, string indexColumn, Type indexType, bool isUserIndex);
+        void DropIndex(string indexName);
     }
 }

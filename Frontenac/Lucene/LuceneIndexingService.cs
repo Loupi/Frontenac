@@ -4,6 +4,7 @@ using System.Diagnostics.Contracts;
 using System.IO;
 using System.Linq;
 using Frontenac.Blueprints;
+using Frontenac.Infrastructure;
 using Frontenac.Infrastructure.Geo;
 using Frontenac.Infrastructure.Indexing;
 using Lucene.Net.Analysis;
@@ -39,9 +40,9 @@ namespace Frontenac.Lucene
             _indexerFactory = indexerFactory;
         }
 
-        public override void Initialize(string databasePath)
+        public override void Initialize(IGraphConfiguration configuration)
         {
-            var path = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, string.Concat(databasePath, "\\Lucene"));
+            var path = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, string.Concat(configuration.GetPath(), "\\Lucene"));
             _directory = CreateMMapDirectory(path);
 
             _nrtManager = new NrtManager(_directory, _analyzer);
@@ -53,7 +54,6 @@ namespace Frontenac.Lucene
                                  LuceneIndexingServiceParameters.Default.CloseTimeoutSeconds);
 
             System.Threading.Tasks.Task.Factory.StartNew(() => _reopener.Start());
-
         }
 
         #region IDisposable
@@ -408,7 +408,9 @@ namespace Frontenac.Lucene
             }
             generation = _nrtManager.AddDocument(rawDocument);
 
-            //_nrtManager.Commit();
+            //Prepare();
+            //Commit();
+            //_nrtManager.WaitForGeneration(generation);
             //_nrtManager.MaybeReopen(true);
             //_nrtManager.WaitForGeneration(generation, true, TimeSpan.FromSeconds(5));
             //_nrtManager.MaybeReopen(true);

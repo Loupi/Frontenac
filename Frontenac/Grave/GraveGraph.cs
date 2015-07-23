@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Diagnostics.Contracts;
 using System.Linq;
+using System.Threading;
 using Frontenac.Blueprints;
 using Frontenac.Blueprints.Util;
 using Frontenac.Grave.Esent;
@@ -10,14 +11,17 @@ using Frontenac.Infrastructure.Indexing;
 
 namespace Frontenac.Grave
 {
-
-    public class GraveGraph : IndexedGraph
+    public class GraveGraph : IndexedGraph, IIndexStore
     {
         private readonly IGraphFactory _factory;
 
-        protected readonly EsentInstance Instance;
         private const string EdgeInPrefix = "$e_i_";
         private const string EdgeOutPrefix = "$e_o_";
+
+        private readonly List<string> _vertexIndices = new List<string>();
+        private readonly List<string> _edgeIndices = new List<string>();
+        private readonly List<string> _userVertexIndices = new List<string>();
+        private readonly List<string> _userEdgeIndices = new List<string>();
 
         private static readonly Features GraveGraphFeatures = new Features
             {
@@ -59,7 +63,7 @@ namespace Frontenac.Grave
                           EsentInstance instance,
                           IndexingService indexingService,
                           IGraphConfiguration configuration)
-            : base(indexingService, configuration)
+            : base(indexingService)
         {
             Contract.Requires(factory != null);
             Contract.Requires(instance != null);
@@ -67,24 +71,21 @@ namespace Frontenac.Grave
             Contract.Requires(configuration != null);
 
             _factory = factory;
-            Instance = instance;
+            EsentContext = instance.CreateContext();
+            Init(configuration);
         }
 
-        public class GraveThreadContext : ThreadContext
-        {
-            public EsentContext Context { get; set; }
-        }
+        protected readonly EsentContext EsentContext;
 
-        protected override ThreadContext CreateThreadContext(IndexingService indexingService)
+        protected override void Dispose(bool disposing)
         {
-            var context = Instance.CreateContext();
-            indexingService.LoadFromStore(new EsentIndexStore(context));
-            
-            return new GraveThreadContext
+            if (disposing)
             {
-                Context = context,
-                IndexingService = indexingService
-            };
+                EsentContext.Dispose();
+                _indicesLock.Dispose();
+            }
+
+            base.Dispose(disposing);
         }
 
         protected override IVertex GetVertexInstance(long vertexId)
@@ -97,20 +98,13 @@ namespace Frontenac.Grave
             get { return GraveGraphFeatures; }
         }
 
-        public GraveThreadContext GraveContext
-        {
-            get { return (GraveThreadContext)Context; }
-        }
-
-        public EsentContext EsentContext
-        {
-            get { return GraveContext.Context; }
-        }
+        private int _vertexSeed = 0;
 
         public override IVertex AddVertex(object unused)
         {
             var esentContext = EsentContext;
-            var id = esentContext.VertexTable.AddRow();
+            var id = unused == null ? Interlocked.Increment(ref _vertexSeed) : unused.TryToInt32().Value;
+            id = esentContext.VertexTable.AddRow(id);
             return new GraveVertex(this, id);
         }
 
@@ -156,12 +150,15 @@ namespace Frontenac.Grave
             }
         }
 
+        private int _edgeSeed = 0;
+
         public override IEdge AddEdge(object unused, IVertex outVertex, IVertex inVertex, string label)
         {
             var inVertexId = (int) inVertex.Id;
             var outVertexId = (int) outVertex.Id;
             var esentContext = EsentContext;
-            var edgeId = esentContext.EdgesTable.AddEdge(label, inVertexId, outVertexId);
+            var id = unused == null ? Interlocked.Increment(ref _edgeSeed) : unused.TryToInt32().Value;
+            var edgeId = esentContext.EdgesTable.AddEdge(id, label, inVertexId, outVertexId);
             esentContext.VertexTable.AddEdge(inVertexId, Direction.In, label, edgeId, outVertexId);
             esentContext.VertexTable.AddEdge(outVertexId, Direction.Out, label, edgeId, inVertexId);
             return new GraveEdge(edgeId, outVertex, inVertex, label, this);
@@ -273,8 +270,8 @@ namespace Frontenac.Grave
             Contract.Requires(!string.IsNullOrWhiteSpace(key));
 
             var table = element is IVertex
-                            ? (EsentTable)GraveContext.Context.VertexTable
-                            : GraveContext.Context.EdgesTable;
+                            ? (EsentTable)EsentContext.VertexTable
+                            : EsentContext.EdgesTable;
 
             return table.ReadCell(element.RawId, key);
         }
@@ -284,8 +281,8 @@ namespace Frontenac.Grave
             Contract.Requires(element != null);
 
             var table = element is IVertex
-                            ? (EsentTable)GraveContext.Context.VertexTable
-                            : GraveContext.Context.EdgesTable;
+                            ? (EsentTable)EsentContext.VertexTable
+                            : EsentContext.EdgesTable;
 
             return table.GetColumnsForRow(element.RawId).Where(t => !t.StartsWith("$"));
         }
@@ -296,8 +293,8 @@ namespace Frontenac.Grave
             Contract.Requires(!string.IsNullOrWhiteSpace(key));
 
             var table = element is IVertex
-                            ? (EsentTable)GraveContext.Context.VertexTable
-                            : GraveContext.Context.EdgesTable;
+                            ? (EsentTable)EsentContext.VertexTable
+                            : EsentContext.EdgesTable;
 
             table.WriteCell(element.RawId, key, value);
             SetIndexedKeyValue(element, key, value);
@@ -309,8 +306,8 @@ namespace Frontenac.Grave
             Contract.Requires(!string.IsNullOrWhiteSpace(key));
 
             var table = element is IVertex
-                            ? (EsentTable)GraveContext.Context.VertexTable
-                            : GraveContext.Context.EdgesTable;
+                            ? (EsentTable)EsentContext.VertexTable
+                            : EsentContext.EdgesTable;
 
             var result = table.DeleteCell(element.RawId, key);
             SetIndexedKeyValue(element, key, null);
@@ -319,10 +316,7 @@ namespace Frontenac.Grave
 
         public override void Shutdown()
         {
-            foreach (var context in Contexts.Values.OfType<GraveThreadContext>())
-            {
-                context.Context.Dispose();    
-            }
+            EsentContext.Dispose();
             _factory.Destroy(this);
         }
 
@@ -332,6 +326,85 @@ namespace Frontenac.Grave
             return this.GraphString(String.Format("vertices: {0} Edges: {1}",
                                            esentContext.VertexTable.GetApproximateRecordCount(30),
                                            esentContext.EdgesTable.GetApproximateRecordCount(30)));
+        }
+
+        public const int ConfigVertexId = 1;
+        private readonly ReaderWriterLockSlim _indicesLock = new ReaderWriterLockSlim();
+
+        public void LoadIndices()
+        {
+            if (!EsentContext.ConfigTable.SetCursor(ConfigVertexId))
+                EsentContext.ConfigTable.AddRow(1);
+        }
+
+        List<string> GetIndexList(string indexColumn)
+        {
+            List<string> indices;
+            switch (indexColumn)
+            {
+                case "VertexIndices":
+                    indices = _vertexIndices;
+                    break;
+                case "EdgeIndices":
+                    indices = _edgeIndices;
+                    break;
+                case "UserVertexIndices":
+                    indices = _userVertexIndices;
+                    break;
+                case "UserEdgeIndices":
+                    indices = _userEdgeIndices;
+                    break;
+
+                default:
+                    throw new NotSupportedException(indexColumn);
+            }
+
+            return indices;
+        }
+
+        public void CreateIndex(string indexName, string indexColumn)
+        {
+            var indices = GetIndices(indexColumn);
+            _indicesLock.EnterWriteLock();
+            try
+            {
+                if (indices.Contains(indexName)) return;
+                indices.Add(indexName);
+                EsentContext.ConfigTable.WriteCell(ConfigVertexId, indexColumn, indices);
+            }
+            finally
+            {
+                _indicesLock.ExitWriteLock();
+            }
+        }
+
+        public List<string> GetIndices(string indexType)
+        {
+            return EsentContext.ConfigTable.ReadCell(ConfigVertexId, indexType) as List<string> ?? new List<string>();
+        }
+
+        public long DeleteIndex(IndexingService indexingService, string indexName, string indexColumn, Type indexType, bool isUserIndex)
+        {
+            long result;
+            var indices = GetIndices(indexColumn);
+            _indicesLock.EnterWriteLock();
+            try
+            {
+                if (indices.Contains(indexName))
+                {
+                    indices.Remove(indexName);
+                    EsentContext.ConfigTable.WriteCell(ConfigVertexId, indexColumn, indices);
+                    result = indexingService.DeleteIndex(indexType, indexName, isUserIndex);
+                }
+                else
+                    result = -1;
+            }
+            finally
+            {
+                _indicesLock.ExitWriteLock();
+            }
+
+            return result;
         }
     }
 }

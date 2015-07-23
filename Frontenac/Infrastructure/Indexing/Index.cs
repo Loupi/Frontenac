@@ -8,8 +8,6 @@ namespace Frontenac.Infrastructure.Indexing
 {
     public class Index : IIndex
     {
-        
-
         public Index(string indexName, Type indexType, IGraph graph, IGenerationBasedIndex genBasedIndex, IndexingService indexingService)
         {
             Contract.Requires(!string.IsNullOrWhiteSpace(indexName));
@@ -66,8 +64,6 @@ namespace Frontenac.Infrastructure.Indexing
 
         public IEnumerable<IElement> Query(string key, object query)
         {
-            GenBasedIndex.WaitForGeneration();
-
             throw new NotImplementedException();
         }
 

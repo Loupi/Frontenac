@@ -1,4 +1,5 @@
 ﻿using System.Linq;
+using System.Threading;
 using Frontenac.Blueprints.Impls;
 using NUnit.Framework;
 
@@ -103,6 +104,7 @@ namespace Frontenac.Blueprints
 
             if (isPersistent)
             {
+
                 graph = (IKeyIndexableGraph) GraphTest.GenerateGraph();
                 try
                 {
@@ -166,7 +168,7 @@ namespace Frontenac.Blueprints
                     v2.SetProperty("name", "stephen");
                     v2.SetProperty("location", "everywhere");
                     v2.SetProperty("number", 2);
-
+                    Thread.Sleep(1000);
                     Assert.AreEqual(Count(graph.GetVertices("location", "everywhere")), 2);
                     Assert.AreEqual(Count(graph.GetVertices("name", "marko")), 1);
                     Assert.AreEqual(Count(graph.GetVertices("name", "stephen")), 1);
@@ -187,7 +189,7 @@ namespace Frontenac.Blueprints
                     var e2 = graph.AddEdge(null, graph.AddVertex(null), graph.AddVertex(null), "knows");
                     e2.SetProperty("name", "stephen");
                     e2.SetProperty("place", "everywhere");
-
+                    Thread.Sleep(1000);
                     Assert.AreEqual(Count(graph.GetEdges("place", "everywhere")), 2);
                     Assert.AreEqual(Count(graph.GetEdges("name", "marko")), 1);
                     Assert.AreEqual(Count(graph.GetEdges("name", "stephen")), 1);
@@ -214,6 +216,7 @@ namespace Frontenac.Blueprints
                     Assert.AreEqual(Count(graph.GetVertices("name", "marko")), 1);
                     Assert.AreEqual(graph.GetVertices("name", "marko").First(), vertex);
                     graph.CreateKeyIndex("name", typeof (IVertex));
+                    Thread.Sleep(1000);
                     Assert.AreEqual(Count(graph.GetVertices("name", "marko")), 1);
                     Assert.AreEqual(graph.GetVertices("name", "marko").First(), vertex);
                 }
@@ -222,9 +225,11 @@ namespace Frontenac.Blueprints
                 {
                     var edge = graph.AddEdge(null, graph.AddVertex(null), graph.AddVertex(null), "knows");
                     edge.SetProperty("date", 2012);
+                    Thread.Sleep(1000);
                     Assert.AreEqual(Count(graph.GetEdges("date", 2012)), 1);
                     Assert.AreEqual(graph.GetEdges("date", 2012).First(), edge);
                     graph.CreateKeyIndex("date", typeof (IEdge));
+                    Thread.Sleep(1000);
                     Assert.AreEqual(Count(graph.GetEdges("date", 2012)), 1);
                     Assert.AreEqual(graph.GetEdges("date", 2012).First(), edge);
                 }
@@ -250,6 +255,8 @@ namespace Frontenac.Blueprints
                          .SetProperty("key", "value");
                 }
 
+                Thread.Sleep(1000);
+
                 if (graph.Features.SupportsVertexIteration) Assert.AreEqual(Count(graph.GetVertices()), 50);
                 if (graph.Features.SupportsEdgeIteration) Assert.AreEqual(Count(graph.GetEdges()), 25);
                 var counter = 0;
@@ -258,6 +265,7 @@ namespace Frontenac.Blueprints
                     graph.RemoveEdge(edge);
                     counter++;
                 }
+                
                 Assert.AreEqual(counter, 25);
                 if (graph.Features.SupportsVertexIteration) Assert.AreEqual(Count(graph.GetVertices()), 50);
                 if (graph.Features.SupportsEdgeIteration) Assert.AreEqual(Count(graph.GetEdges()), 0);

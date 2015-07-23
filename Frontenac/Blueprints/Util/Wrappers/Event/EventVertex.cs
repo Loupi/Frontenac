@@ -35,9 +35,9 @@ namespace Frontenac.Blueprints.Util.Wrappers.Event
                                           t => new EventVertexIterable(t.Vertices(), EventInnerTinkerGrapĥ));
         }
 
-        public IEdge AddEdge(string label, IVertex vertex)
+        public IEdge AddEdge(object id, string label, IVertex vertex)
         {
-            return EventInnerTinkerGrapĥ.AddEdge(null, this, vertex, label);
+            return EventInnerTinkerGrapĥ.AddEdge(id, this, vertex, label);
         }
 
         public IVertex Vertex { get; protected set; }

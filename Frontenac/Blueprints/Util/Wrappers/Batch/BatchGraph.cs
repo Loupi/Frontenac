@@ -508,7 +508,7 @@ namespace Frontenac.Blueprints.Util.Wrappers.Batch
                 throw RetrievalNotSupported();
             }
 
-            public IEdge AddEdge(string label, IVertex inVertex)
+            public IEdge AddEdge(object id, string label, IVertex inVertex)
             {
                 return _batchInnerTinkerGrapĥ.AddEdgeSupport(this, inVertex, label);
             }

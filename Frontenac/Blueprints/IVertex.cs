@@ -39,9 +39,10 @@ namespace Frontenac.Blueprints
         /// <summary>
         ///     Add a new outgoing edge from this vertex to the parameter vertex with provided edge label.
         /// </summary>
+        /// <param name="id">the id of the edge</param>
         /// <param name="label">the label of the edge</param>
         /// <param name="inVertex"></param>
         /// <returns>the newly created edge</returns>
-        IEdge AddEdge(string label, IVertex inVertex);
+        IEdge AddEdge(object id, string label, IVertex inVertex);
     }
 }

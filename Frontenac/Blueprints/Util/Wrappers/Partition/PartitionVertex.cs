@@ -31,9 +31,9 @@ namespace Frontenac.Blueprints.Util.Wrappers.Partition
                                           t => new PartitionVertexIterable(t.Vertices(), PartitionInnerTinkerGrapĥ));
         }
 
-        public IEdge AddEdge(string label, IVertex vertex)
+        public IEdge AddEdge(object id, string label, IVertex vertex)
         {
-            return Graph.AddEdge(null, this, vertex, label);
+            return Graph.AddEdge(id, this, vertex, label);
         }
 
         public IVertex Vertex { get; protected set; }

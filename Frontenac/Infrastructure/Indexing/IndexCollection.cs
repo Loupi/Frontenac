@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Linq;
 using System.Collections.Generic;
 using System.Diagnostics.Contracts;
 
@@ -8,7 +9,6 @@ namespace Frontenac.Infrastructure.Indexing
     {
         private readonly Type _indexType;
         private readonly IndexingService _indexingService;
-        private readonly List<string> _indices;
         private readonly string _indicesColumnName;
         private readonly bool _isUserIndex;
 
@@ -21,27 +21,28 @@ namespace Frontenac.Infrastructure.Indexing
             _indexingService = indexingService;
             _indexType = indexType;
             _isUserIndex = isUserIndex;
-            _indices = _indexingService.GetIndicesOfType(_indicesColumnName);
         }
 
         public void CreateIndex(string indexName)
         {
-            _indexingService.CreateIndexOfType(indexName, _indicesColumnName, _indices);
+            _indexingService.CreateIndexOfType(indexName, _indicesColumnName);
         }
 
         public long DropIndex(string indexName)
         {
-            return _indexingService.DropIndexOfType(indexName, _indicesColumnName, _indexType, _indices, _isUserIndex);
+            return _indexingService.DropIndexOfType(indexName, _indicesColumnName, _indexType, _isUserIndex);
         }
 
         public IEnumerable<string> GetIndices()
         {
-            return _indices.AsReadOnly();
+            var indices = _indexingService.GetIndicesOfType(_indicesColumnName).ToArray();
+            return indices;
         }
 
         public bool HasIndex(string indexName)
         {
-           return _indices.Contains(indexName);
+            var indices = _indexingService.GetIndicesOfType(_indicesColumnName.ToLowerInvariant()).Select(s => s.ToLowerInvariant());
+            return indices.Contains(indexName.ToLowerInvariant());
         }
 
         public long Set(long id, string indexName, string key, object value)

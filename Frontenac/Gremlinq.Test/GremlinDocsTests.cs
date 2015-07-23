@@ -62,7 +62,7 @@ namespace Frontenac.Gremlinq.Test
         public void TestBothE()
         {
 
-            var g = new IdGraph((IKeyIndexableGraph)GraphTest.GenerateGraph());
+            var g = GraphTest.GenerateGraph();
             try
             {
                 g.CreateTinkerGraph();
@@ -102,7 +102,7 @@ namespace Frontenac.Gremlinq.Test
         [Test]
         public void TestBothV()
         {
-            var g = new IdGraph((IKeyIndexableGraph)GraphTest.GenerateGraph());
+            var g = GraphTest.GenerateGraph();
             try
             {
                 g.CreateTinkerGraph();
@@ -175,7 +175,7 @@ namespace Frontenac.Gremlinq.Test
         [Test]
         public void TestIn()
         {
-            var g = new IdGraph((IKeyIndexableGraph)GraphTest.GenerateGraph());
+            var g = GraphTest.GenerateGraph();
             try
             {
                 g.CreateTinkerGraph();
@@ -210,7 +210,7 @@ namespace Frontenac.Gremlinq.Test
         [Test]
         public void TestInE()
         {
-            var g = new IdGraph((IKeyIndexableGraph)GraphTest.GenerateGraph());
+            var g = GraphTest.GenerateGraph();
             try
             {
                 g.CreateTinkerGraph();
@@ -328,10 +328,12 @@ namespace Frontenac.Gremlinq.Test
         [Test]
         public void TestGroupCount()
         {
-            var g = new IdGraph((IKeyIndexableGraph)GraphTest.GenerateGraph());
+            var g = GraphTest.GenerateGraph();
             try
             {
                 g.CreateTinkerGraph();
+                
+            
 
                 var m = new Dictionary<IVertex, double>();
                 var result = g.V().Out().GroupCount(m).ToList();

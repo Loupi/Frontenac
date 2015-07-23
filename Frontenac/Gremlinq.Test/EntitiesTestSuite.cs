@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Diagnostics.Contracts;
 using System.Linq;
+using System.Threading;
 using Frontenac.Blueprints;
 using Frontenac.Blueprints.Impls;
 using Frontenac.Gremlinq.Test.Entities;
@@ -27,7 +28,10 @@ namespace Frontenac.Gremlinq.Test
             var sea = graph.AddVertex<ILocation>(t => t.Name = "Sea");
             var tartarus = graph.AddVertex<ILocation>(t => t.Name = "Tartarus");
 
-            var saturn = graph.AddVertex<ITitan>(t => { t.Name = "Saturn"; t.Age = 10000; });
+            var saturn = graph.AddVertex<ITitan>(t =>
+                {
+                    t.Name = "Saturn"; t.Age = 10000;
+                });
             var jupiter = graph.AddVertex<IGod>(t => { t.Name = "Jupiter"; t.Age = 5000; });
             var neptune = graph.AddVertex<IGod>(t => { t.Name = "Neptune"; t.Age = 4500; });
             var pluto = graph.AddVertex<IGod>(t => { t.Name = "Pluto"; t.Age = 4000; });
@@ -37,27 +41,27 @@ namespace Frontenac.Gremlinq.Test
             var hydra = graph.AddVertex<IMonster>(t => t.Name = "Hydra");
             var cerberus = graph.AddVertex<IMonster>(t => t.Name = "Cerberus");
 
-            jupiter.AddEdge(t => t.Father, saturn);
-            jupiter.AddEdge(t => t.Lives, sky, t => t.Reason = "Loves fresh breezes.");
-            jupiter.AddEdge(t => t.Brother, neptune);
-            jupiter.AddEdge(t => t.Brother, pluto);
+            jupiter.AddEdge(null, t => t.Father, saturn);
+            jupiter.AddEdge(null, t => t.Lives, sky, t => t.Reason = "Loves fresh breezes.");
+            jupiter.AddEdge(null, t => t.Brother, neptune);
+            jupiter.AddEdge(null, t => t.Brother, pluto);
 
-            neptune.AddEdge(t => t.Lives, sea, t => t.Reason = "Loves waves.");
-            neptune.AddEdge(t => t.Brother, jupiter);
-            neptune.AddEdge(t => t.Brother, pluto);
+            neptune.AddEdge(null, t => t.Lives, sea, t => t.Reason = "Loves waves.");
+            neptune.AddEdge(null, t => t.Brother, jupiter);
+            neptune.AddEdge(null, t => t.Brother, pluto);
 
-            hercules.AddEdge(t => t.Father, jupiter);
-            hercules.AddEdge(t => t.Mother, alcmene);
-            hercules.AddEdge(t => t.Battled, nemean, t => { t.Time = 1; t.Place = new GeoPoint(38.1, 23.7); });
-            hercules.AddEdge(t => t.Battled, hydra, t => { t.Time = 2; t.Place = new GeoPoint(37.7, 23.9); });
-            hercules.AddEdge(t => t.Battled, cerberus, t => { t.Time = 12; t.Place = new GeoPoint(39, 22); });
+            hercules.AddEdge(null, t => t.Father, jupiter);
+            hercules.AddEdge(null, t => t.Mother, alcmene);
+            hercules.AddEdge(null, t => t.Battled, nemean, t => { t.Time = 1; t.Place = new GeoPoint(38.1, 23.7); });
+            hercules.AddEdge(null, t => t.Battled, hydra, t => { t.Time = 2; t.Place = new GeoPoint(37.7, 23.9); });
+            hercules.AddEdge(null, t => t.Battled, cerberus, t => { t.Time = 12; t.Place = new GeoPoint(39, 22); });
 
-            pluto.AddEdge(t => t.Brother, jupiter);
-            pluto.AddEdge(t => t.Brother, neptune);
-            pluto.AddEdge(t => t.Lives, tartarus, t => t.Reason = "No fear of death");
-            pluto.AddEdge(t => t.Pet, cerberus);
+            pluto.AddEdge(null, t => t.Brother, jupiter);
+            pluto.AddEdge(null, t => t.Brother, neptune);
+            pluto.AddEdge(null, t => t.Lives, tartarus, t => t.Reason = "No fear of death");
+            pluto.AddEdge(null, t => t.Pet, cerberus);
 
-            cerberus.AddEdge(t => t.Lives, tartarus);
+            cerberus.AddEdge(null, t => t.Lives, tartarus);
         }
 
         [Test]
@@ -70,6 +74,8 @@ namespace Frontenac.Gremlinq.Test
                 {
                     CreateGraphOfTheGods(graph);
                 }
+
+                Thread.Sleep(1000);
 
                 var saturn = graph
                     .V<ICharacter, string>(t => t.Name, "Saturn")

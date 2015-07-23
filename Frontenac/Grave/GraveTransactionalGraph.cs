@@ -469,7 +469,7 @@ namespace Frontenac.Grave
                     index.Clear();
                 }
 
-                Context.IndexingService.Prepare();
+                IndexingService.Prepare();
             }
         }
 
@@ -488,7 +488,7 @@ namespace Frontenac.Grave
                             Transaction.TransactionScope = null;
                             Transaction.Transaction = null;
                         }
-                        Context.IndexingService.Commit();
+                        IndexingService.Commit();
                     }
                 }
                 finally
@@ -506,7 +506,7 @@ namespace Frontenac.Grave
             {
                 try
                 {
-                    Context.IndexingService.Rollback();
+                    IndexingService.Rollback();
                 }
                 finally
                 {
@@ -525,9 +525,8 @@ namespace Frontenac.Grave
             foreach (var index in Transaction.TransactionalIndices.Values)
                 index.Clear();
 
-            var esentContext = EsentContext;
-            esentContext.VertexTable.RefreshColumns();
-            esentContext.EdgesTable.RefreshColumns();
+            EsentContext.VertexTable.RefreshColumns();
+            EsentContext.EdgesTable.RefreshColumns();
 
             System.Transactions.Transaction.Current = null;
         }

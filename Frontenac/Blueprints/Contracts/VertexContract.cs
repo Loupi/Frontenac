@@ -28,7 +28,7 @@ namespace Frontenac.Blueprints.Contracts
             return null;
         }
 
-        public IEdge AddEdge(string label, IVertex inVertex)
+        public IEdge AddEdge(object id, string label, IVertex inVertex)
         {
             Contract.Requires(!string.IsNullOrWhiteSpace(label));
             Contract.Requires(inVertex != null);

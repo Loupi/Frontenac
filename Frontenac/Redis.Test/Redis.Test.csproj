@@ -65,6 +65,10 @@
       <Project>{85be6d38-b69a-4e33-8967-0619a14a8466}</Project>
       <Name>CastleWindsor</Name>
     </ProjectReference>
+    <ProjectReference Include="..\ElasticSearch\ElasticSearch.csproj">
+      <Project>{7944c647-a149-4501-8a83-2eaea917b69b}</Project>
+      <Name>ElasticSearch</Name>
+    </ProjectReference>
     <ProjectReference Include="..\Gremlinq.Test\Gremlinq.Test.csproj">
       <Project>{e56ba77a-8bb0-4572-878a-3ebab7a1b921}</Project>
       <Name>Gremlinq.Test</Name>
@@ -92,9 +96,9 @@
       <ErrorText>This project references NuGet package(s) that are missing on this computer. Enable NuGet Package Restore to download them.  For more information, see http://go.microsoft.com/fwlink/?LinkID=322105. The missing file is {0}.</ErrorText>
     </PropertyGroup>
     <Error Condition="!Exists('$(SolutionDir)\.nuget\NuGet.targets')" Text="$([System.String]::Format('$(ErrorText)', '$(SolutionDir)\.nuget\NuGet.targets'))" />
-    <Error Condition="!Exists('..\packages\Fody.1.26.4\build\Fody.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\Fody.1.26.4\build\Fody.targets'))" />
+    <Error Condition="!Exists('..\packages\Fody.1.28.3\build\Fody.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\Fody.1.28.3\build\Fody.targets'))" />
   </Target>
-  <Import Project="..\packages\Fody.1.26.4\build\Fody.targets" Condition="Exists('..\packages\Fody.1.26.4\build\Fody.targets')" />
+  <Import Project="..\packages\Fody.1.28.3\build\Fody.targets" Condition="Exists('..\packages\Fody.1.28.3\build\Fody.targets')" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.
   <Target Name="BeforeBuild">

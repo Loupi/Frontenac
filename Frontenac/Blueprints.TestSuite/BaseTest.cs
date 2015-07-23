@@ -52,7 +52,9 @@ namespace Frontenac.Blueprints
                 _timer = Stopwatch.StartNew();
                 return -1;
             }
-            return _timer.ElapsedMilliseconds;
+            var elapsed = _timer.ElapsedMilliseconds;
+            _timer.Restart();
+            return elapsed;
         }
 
         public static void PrintPerformance(string name, object events, string eventName, long timeInMilliseconds)
@@ -60,12 +62,12 @@ namespace Frontenac.Blueprints
             Console.WriteLine(null != events
                                   ? string.Concat("\t", name, ": ", (int) events, " ", eventName, " in ",
                                                   timeInMilliseconds, "ms")
-                                  : string.Concat("\t", name, ": ", eventName, " in ", timeInMilliseconds, "ms"));
+                                  : string.Concat("\t", name, ": ", eventName, " in ", TimeSpan.FromMilliseconds(timeInMilliseconds)));
         }
 
         public static void PrintTestPerformance(string testName, long timeInMilliseconds)
         {
-            Console.WriteLine(string.Concat("*** TOTAL TIME [", testName, "]: ", timeInMilliseconds, " ***"));
+            Console.WriteLine(string.Concat("*** TOTAL TIME [", testName, "]: ", TimeSpan.FromMilliseconds(timeInMilliseconds), " ***"));
         }
 
         protected static void DeleteDirectory(string directory)

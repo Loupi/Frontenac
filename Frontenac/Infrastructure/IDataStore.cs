@@ -12,6 +12,6 @@ namespace Frontenac.Infrastructure
         IEdge AddEdge(object id, IVertex outVertex, IVertex inVertex, string label);
         void RemoveEdge(IEdge edge);
         IEnumerable<IVertex> GetVertices();
-        ThreadContext CreateThreadContext(IndexingService indexingService);
+        //ThreadContext CreateThreadContext(IndexingService indexingService);
     }
 }

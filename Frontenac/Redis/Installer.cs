@@ -1,5 +1,6 @@
 ﻿using System.Diagnostics.Contracts;
 using Frontenac.Blueprints;
+using Frontenac.ElasticSearch;
 using Frontenac.Infrastructure;
 using Frontenac.Infrastructure.Indexing;
 using Frontenac.Infrastructure.Indexing.Indexers;
@@ -21,7 +22,7 @@ namespace Frontenac.Redis
 
             container.Register(LifeStyle.Singleton, typeof(JsonContentSerializer), typeof(IContentSerializer));
 
-            container.Register(LifeStyle.Transient, typeof(LuceneIndexingService), typeof(IndexingService));
+            container.Register(LifeStyle.Transient, typeof(ElasticSearchService), typeof(IndexingService));
 
             container.Register(ConnectionMultiplexer.Connect("localhost:6379"), typeof(ConnectionMultiplexer));
 

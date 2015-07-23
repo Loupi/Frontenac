@@ -4,6 +4,7 @@ using System.Linq;
 using Frontenac.Blueprints;
 using Frontenac.Blueprints.Impls.TG;
 using Frontenac.CastleWindsor;
+using Frontenac.ElasticSearch;
 using Frontenac.Grave.Esent;
 using Frontenac.Gremlinq;
 using Frontenac.Infrastructure;
@@ -28,6 +29,7 @@ namespace Frontenac.Grave
             container.Register(LifeStyle.Singleton, typeof(JsonContentSerializer), typeof(IContentSerializer));
 
             container.Register(LifeStyle.Transient, typeof(LuceneIndexingService), typeof(IndexingService));
+            container.Register(LifeStyle.Transient, typeof(ElasticSearchService), typeof(IndexingService));
 
             container.Register(LifeStyle.Transient, typeof(EsentInstance));
 
@@ -39,6 +41,7 @@ namespace Frontenac.Grave
 
             container.Register(LifeStyle.Transient, typeof(TinkerGrapĥ), typeof(IGraph));
         }
+
 
         private static void Main()
         {

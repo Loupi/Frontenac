@@ -652,8 +652,8 @@ namespace Frontenac.Blueprints
                 var a = graph.AddVertex(null);
                 var b = graph.AddVertex(null);
 
-                v.AddEdge(ConvertId(graph, "knows"), a);
-                v.AddEdge(ConvertId(graph, "knows"), b);
+                v.AddEdge(null, ConvertId(graph, "knows"), a);
+                v.AddEdge(null, ConvertId(graph, "knows"), b);
 
                 if (graph.Features.SupportsVertexIteration)
                     Assert.AreEqual(Count(graph.GetVertices()), 3);

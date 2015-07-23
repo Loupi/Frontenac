@@ -49,10 +49,10 @@ namespace Frontenac.Gremlinq.RelationAccessors
             switch (_direction)
             {
                 case Direction.In:
-                    vertex.AddEdge(_label, _vertex);
+                    vertex.AddEdge(null, _label, _vertex);
                     break;
                 case Direction.Out:
-                    _vertex.AddEdge(_label, vertex);
+                    _vertex.AddEdge(null, _label, vertex);
                     break;
                 default:
                     throw new InvalidOperationException();

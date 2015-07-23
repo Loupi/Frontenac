@@ -11,14 +11,15 @@ namespace Frontenac.Gremlinq.RelationAccessors
 {
     internal class VertexRelationAccessor : RelationAccessor
     {
+        delegate void AccessCollectionDelegate2(IElement element, string key, RelationAccessor accessor, object id, object value);
         delegate void AccessCollectionDelegate(IElement element, string key, RelationAccessor accessor, object value);
-        readonly AccessCollectionDelegate _addMethod;
+        readonly AccessCollectionDelegate2 _addMethod;
         readonly AccessCollectionDelegate _removeMethod;
 
         public VertexRelationAccessor(Type modelType, bool isEnumerable, bool isWrapped, bool isCollection)
             : base(modelType, isEnumerable, isCollection, isWrapped, new[] { modelType })
         {
-            _addMethod = (AccessCollectionDelegate)CreateMagicMethod("Add", typeof(AccessCollectionDelegate), modelType);
+            _addMethod = (AccessCollectionDelegate2)CreateMagicMethod("Add", typeof(AccessCollectionDelegate2), modelType);
             _removeMethod = (AccessCollectionDelegate)CreateMagicMethod("Remove", typeof(AccessCollectionDelegate), modelType);
         }
 
@@ -42,7 +43,7 @@ namespace Frontenac.Gremlinq.RelationAccessors
             return new VertexRelationCollection<TModel>((IVertex)element, key, accessor);
         }
 
-        private static void Add<TModel>(IElement element, string key, RelationAccessor accessor, object newValue)
+        private static void Add<TModel>(IElement element, string key, RelationAccessor accessor, object id, object newValue)
             where TModel : class
         {
             Contract.Requires(!string.IsNullOrEmpty(key));
@@ -83,7 +84,7 @@ namespace Frontenac.Gremlinq.RelationAccessors
             return ConvertMethod(vertices, IsWrapped, IsEnumerable);
         }
 
-        public void SetRelation(IDictionaryAdapter dictionaryAdapter, IElement element, PropertyInfo property, string key, object value)
+        public void SetRelation(IDictionaryAdapter dictionaryAdapter, IElement element, PropertyInfo property, string key, object value, object id)
         {
             Contract.Requires(dictionaryAdapter != null);
             Contract.Requires(!string.IsNullOrEmpty(key));
@@ -125,7 +126,7 @@ namespace Frontenac.Gremlinq.RelationAccessors
             }
 
             if(value != null)
-                _addMethod(element, key, this, value);
+                _addMethod(element, key, this, id, value);
         }
     }
 }

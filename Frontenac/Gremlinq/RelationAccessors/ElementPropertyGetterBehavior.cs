@@ -49,23 +49,24 @@ namespace Frontenac.Gremlinq.RelationAccessors
                         var rel = accessor as VertexRelationAccessor;
                         if (rel != null)
                         {
-                            rel.SetRelation(dictionaryAdapter, element, property.Property, key, value);
+                            rel.SetRelation(dictionaryAdapter, element, property.Property, key, value, null);
                         }
                         else
                         {
                             var relPair = accessor as EdgeVertexPairRelationAccessor;
                             if (relPair != null)
                             {
-                                relPair.SetRelation(dictionaryAdapter, element, property.Property, key, value);
+                                relPair.SetRelation(dictionaryAdapter, element, property.Property, key, value, null);
                             }
                         }
                     }
+
+                    return false;
                 }
             }
-            else
-            {
-                dictionaryAdapter.This.Dictionary.Add(key, value);
-            }
+            
+            dictionaryAdapter.This.Dictionary.Add(key, value);
+            
 
             return true;
         }
@@ -125,7 +126,15 @@ namespace Frontenac.Gremlinq.RelationAccessors
                 }
 
                 if (key == "Id")
+                {
+                    if (property.PropertyType.IsPrimitive && property.PropertyType != element.Id.GetType())
+                    {
+                        var tc = TypeDescriptor.GetConverter(property.PropertyType);
+                        return tc.ConvertFromString(element.Id.ToString());
+                    }
+                    
                     return element.Id;
+                }
             }
 
             if (null == storedValue || property.PropertyType.IsInstanceOfType(storedValue))

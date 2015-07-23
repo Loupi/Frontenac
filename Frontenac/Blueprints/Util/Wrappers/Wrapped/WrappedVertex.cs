@@ -28,12 +28,12 @@ namespace Frontenac.Blueprints.Util.Wrappers.Wrapped
             return new WrapperVertexQuery(Vertex.Query(), t => t.Edges(), t => t.Vertices());
         }
 
-        public IEdge AddEdge(string label, IVertex vertex)
+        public IEdge AddEdge(object id, string label, IVertex vertex)
         {
             if (vertex is WrappedVertex)
-                return new WrappedEdge(Vertex.AddEdge(label, (vertex as WrappedVertex).Vertex));
+                return new WrappedEdge(Vertex.AddEdge(id, label, (vertex as WrappedVertex).Vertex));
             
-            return new WrappedEdge(Vertex.AddEdge(label, vertex));
+            return new WrappedEdge(Vertex.AddEdge(id, label, vertex));
         }
 
         public IVertex Vertex { get; protected set; }

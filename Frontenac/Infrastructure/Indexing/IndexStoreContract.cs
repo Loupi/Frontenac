@@ -7,31 +7,28 @@ namespace Frontenac.Infrastructure.Indexing
     [ContractClassFor(typeof(IIndexStore))]
     public abstract class IndexStoreContract : IIndexStore
     {
-        public void Load()
+        public void LoadIndices()
         {
             
         }
 
-        public void Create(string indexName, string indexColumn, List<string> indices)
+        public void CreateIndex(string indexName, string indexColumn)
         {
             Contract.Requires(!String.IsNullOrWhiteSpace(indexName));
             Contract.Requires(!String.IsNullOrWhiteSpace(indexColumn));
-            Contract.Requires(indices != null);
         }
 
-        public List<string> Get(string indexType)
+        public List<string> GetIndices(string indexType)
         {
             Contract.Requires(!String.IsNullOrWhiteSpace(indexType));
             return null;
         }
 
-        public long Delete(IndexingService indexingService, string indexName, string indexColumn, Type indexType, List<string> indices,
-                                    bool isUserIndex)
+        public long DeleteIndex(IndexingService indexingService, string indexName, string indexColumn, Type indexType, bool isUserIndex)
         {
             Contract.Requires(indexingService != null);
             Contract.Requires(!String.IsNullOrWhiteSpace(indexName));
             Contract.Requires(!String.IsNullOrWhiteSpace(indexColumn));
-            Contract.Requires(indices != null);
             return 0;
         }
 
@@ -39,6 +36,11 @@ namespace Frontenac.Infrastructure.Indexing
         {
             Contract.Requires(!string.IsNullOrWhiteSpace(indexName));
             return default(long);
+        }
+
+        public void DropIndex(string indexName)
+        {
+            Contract.Requires(!string.IsNullOrWhiteSpace(indexName));
         }
 
         public void Dispose()

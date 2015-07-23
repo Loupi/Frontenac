@@ -57,7 +57,7 @@ namespace Frontenac.Gremlinq
         }
 
         public static IEdge AddEdge<TOutModel, TInModel>(
-            this IVertex<TOutModel> outVertex,
+            this IVertex<TOutModel> outVertex, object id,
             Expression<Func<TOutModel, TInModel>> edgePropertySelector,
             IVertex<TInModel> inVertex)
         {
@@ -66,11 +66,11 @@ namespace Frontenac.Gremlinq
             Contract.Requires(inVertex != null);
             Contract.Ensures(Contract.Result<IEdge>() != null);
 
-            return outVertex.AddEdge(edgePropertySelector.Resolve(), inVertex);
+            return outVertex.AddEdge(id, edgePropertySelector.Resolve(), inVertex);
         }
 
         public static IEdge AddEdge<TOutModel, TInModel>(
-            this IVertex<TOutModel> outVertex,
+            this IVertex<TOutModel> outVertex, object id,
             Expression<Func<TOutModel, IEnumerable<TInModel>>> edgePropertySelector,
             IVertex<TInModel> inVertex)
         {
@@ -79,11 +79,11 @@ namespace Frontenac.Gremlinq
             Contract.Requires(inVertex != null);
             Contract.Ensures(Contract.Result<IEdge>() != null);
 
-            return outVertex.AddEdge(edgePropertySelector.Resolve(), inVertex);
+            return outVertex.AddEdge(id, edgePropertySelector.Resolve(), inVertex);
         }
 
         public static IEdge<TModel> AddEdge<TOutModel, TInModel, TModel>(
-            this IVertex<TOutModel> outVertex,
+            this IVertex<TOutModel> outVertex, object id,
             Expression<Func<TOutModel, KeyValuePair<TModel, TInModel>>> edgePropertySelector,
             IVertex<TInModel> inVertex) 
             where TModel : class
@@ -94,13 +94,13 @@ namespace Frontenac.Gremlinq
             Contract.Requires(inVertex != null);
             Contract.Ensures(Contract.Result<IEdge<TModel>>() != null);
 
-            var edge = outVertex.AddEdge(edgePropertySelector.Resolve(), inVertex);
+            var edge = outVertex.AddEdge(id, edgePropertySelector.Resolve(), inVertex);
             GremlinqContext.Current.TypeProvider.SetType(edge, typeof(TModel));
             return edge.As<TModel>();
         }
 
         public static IEdge<TModel> AddEdge<TOutModel, TInModel, TModel>(
-            this IVertex<TOutModel> outVertex,
+            this IVertex<TOutModel> outVertex, object id,
             Expression<Func<TOutModel, IEnumerable<KeyValuePair<TModel, TInModel>>>> edgePropertySelector,
             IVertex<TInModel> inVertex) 
             where TModel : class
@@ -111,13 +111,13 @@ namespace Frontenac.Gremlinq
             Contract.Requires(inVertex != null);
             Contract.Ensures(Contract.Result<IEdge<TModel>>() != null);
 
-            var edge = outVertex.AddEdge(edgePropertySelector.Resolve(), inVertex);
+            var edge = outVertex.AddEdge(id, edgePropertySelector.Resolve(), inVertex);
             GremlinqContext.Current.TypeProvider.SetType(edge, typeof(TModel));
             return edge.As<TModel>();
         }
 
         public static IEdge<TModel> AddEdge<TOutModel, TInModel, TModel>(
-            this IVertex<TOutModel> outVertex,
+            this IVertex<TOutModel> outVertex, object id,
             Expression<Func<TOutModel, KeyValuePair<TModel, TInModel>>> edgePropertySelector,
             IVertex<TInModel> inVertex,
             Action<TModel> assignMembers) 
@@ -130,13 +130,13 @@ namespace Frontenac.Gremlinq
             Contract.Requires(assignMembers != null);
             Contract.Ensures(Contract.Result<IEdge<TModel>>() != null);
 
-            var edge = outVertex.AddEdge(edgePropertySelector.Resolve(), inVertex);
+            var edge = outVertex.AddEdge(id, edgePropertySelector.Resolve(), inVertex);
             GremlinqContext.Current.TypeProvider.SetType(edge, typeof(TModel));
             return Wrap(edge, assignMembers);
         }
 
         public static IEdge<TEdgeModel> AddEdge<TOutModel, TInModel, TModel, TEdgeModel>(
-            this IVertex<TOutModel> outVertex,
+            this IVertex<TOutModel> outVertex, object id,
             Expression<Func<TOutModel, KeyValuePair<TModel, TInModel>>> edgePropertySelector,
             IVertex<TInModel> inVertex,
             Action<TEdgeModel> assignMembers)
@@ -150,13 +150,13 @@ namespace Frontenac.Gremlinq
             Contract.Requires(assignMembers != null);
             Contract.Ensures(Contract.Result<IEdge<TModel>>() != null);
 
-            var edge = outVertex.AddEdge(edgePropertySelector.Resolve(), inVertex);
+            var edge = outVertex.AddEdge(id, edgePropertySelector.Resolve(), inVertex);
             GremlinqContext.Current.TypeProvider.SetType(edge, typeof(TEdgeModel));
             return Wrap(edge, assignMembers);
         }
 
         public static IEdge<TModel> AddEdge<TOutModel, TInModel, TModel>(
-            this IVertex<TOutModel> outVertex,
+            this IVertex<TOutModel> outVertex, object id,
             Expression<Func<TOutModel, IEnumerable<KeyValuePair<TModel, TInModel>>>> edgePropertySelector,
             IVertex<TInModel> inVertex,
             Action<TModel> assignMembers)
@@ -169,13 +169,13 @@ namespace Frontenac.Gremlinq
             Contract.Requires(assignMembers != null);
             Contract.Ensures(Contract.Result<IEdge<TModel>>() != null);
 
-            var edge = outVertex.AddEdge(edgePropertySelector.Resolve(), inVertex);
+            var edge = outVertex.AddEdge(id, edgePropertySelector.Resolve(), inVertex);
             GremlinqContext.Current.TypeProvider.SetType(edge, typeof(TModel));
             return Wrap(edge, assignMembers);
         }
 
         public static IEdge<TEdgeModel> AddEdge<TOutModel, TInModel, TModel, TEdgeModel>(
-            this IVertex<TOutModel> outVertex,
+            this IVertex<TOutModel> outVertex, object id,
             Expression<Func<TOutModel, IEnumerable<KeyValuePair<TModel, TInModel>>>> edgePropertySelector,
             IVertex<TInModel> inVertex,
             Action<TEdgeModel> assignMembers)
@@ -188,7 +188,7 @@ namespace Frontenac.Gremlinq
             Contract.Requires(inVertex != null);
             Contract.Ensures(Contract.Result<IEdge<TModel>>() != null);
 
-            var edge = outVertex.AddEdge(edgePropertySelector.Resolve(), inVertex);
+            var edge = outVertex.AddEdge(id, edgePropertySelector.Resolve(), inVertex);
             GremlinqContext.Current.TypeProvider.SetType(edge, typeof(TEdgeModel));
             return edge.As<TEdgeModel>();
         }

@@ -3,7 +3,7 @@ using Frontenac.Infrastructure.Indexing;
 
 namespace Frontenac.Infrastructure
 {
-    public class ThreadContext
+    /*public class ThreadContext
     {
         public ThreadContext()
         {
@@ -14,5 +14,5 @@ namespace Frontenac.Infrastructure
         public Dictionary<string, Index> Indices { get; private set; }
         public long Generation { get; set; }
         public bool RefreshRequired { get; set; }
-    }
+    }*/
 }

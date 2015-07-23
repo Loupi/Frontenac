@@ -12,14 +12,15 @@ namespace Frontenac.Gremlinq.RelationAccessors
     internal class EdgeVertexPairRelationAccessor : RelationAccessor
     {
         delegate void AccessCollectionDelegate(IElement element, string key, RelationAccessor accessor, object value);
-        readonly AccessCollectionDelegate _addMethod;
+        delegate void AccessCollectionDelegate2(IElement element, string key, RelationAccessor accessor, object id, object value);
+        readonly AccessCollectionDelegate2 _addMethod;
         readonly AccessCollectionDelegate _removeMethod;
 
         public EdgeVertexPairRelationAccessor(Type modelType, Type edgeType, bool isEnumerable, bool isWrapped, bool isCollection)
             : base(modelType, isEnumerable, isCollection, isWrapped, new[] { edgeType, modelType })
         {
             var models = new[] {edgeType, modelType};
-            _addMethod = (AccessCollectionDelegate)CreateMagicMethod("Add", typeof(AccessCollectionDelegate), models);
+            _addMethod = (AccessCollectionDelegate2)CreateMagicMethod("Add", typeof(AccessCollectionDelegate2), models);
             _removeMethod = (AccessCollectionDelegate)CreateMagicMethod("Remove", typeof(AccessCollectionDelegate), models);
         }
 
@@ -52,7 +53,7 @@ namespace Frontenac.Gremlinq.RelationAccessors
             return new EdgeVertexRelationCollection<TEdgeModel, TVertexModel>((IVertex)element, key, accessor);
         }
 
-        private static void Add<TEdgeModel, TVertexModel>(IElement element, string key, RelationAccessor accessor, object newValue)
+        private static void Add<TEdgeModel, TVertexModel>(IElement element, string key, RelationAccessor accessor, object id, object newValue)
             where TEdgeModel : class
             where TVertexModel : class
         {
@@ -98,7 +99,7 @@ namespace Frontenac.Gremlinq.RelationAccessors
             return ConvertMethod(rawEdges, IsWrapped, IsEnumerable);
         }
 
-        public void SetRelation(IDictionaryAdapter dictionaryAdapter, IElement element, PropertyInfo property, string key, object value)
+        public void SetRelation(IDictionaryAdapter dictionaryAdapter, IElement element, PropertyInfo property, string key, object value, object id)
         {
             Contract.Requires(dictionaryAdapter != null);
             Contract.Requires(!string.IsNullOrEmpty(key));
@@ -139,7 +140,7 @@ namespace Frontenac.Gremlinq.RelationAccessors
                 vertex.Graph.RemoveEdge(edge);
             }
 
-            _addMethod(element, key, this, value);
+            _addMethod(element, key, this, id, value);
         }
     }
 }

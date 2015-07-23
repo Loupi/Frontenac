@@ -69,7 +69,7 @@ namespace Frontenac.Gremlinq.RelationAccessors
             if(inVertex == null || outVertex == null)
                 throw new InvalidOperationException();
 
-            var edge = outVertex.AddEdge(_label, inVertex);
+            var edge = outVertex.AddEdge(null, _label, inVertex);
 
             var keyAdapter = item.Key as IDictionaryAdapter;
             if (keyAdapter != null)

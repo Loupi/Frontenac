@@ -88,8 +88,8 @@ namespace Frontenac.Blueprints
                 StopWatch();
                 for (var i = 0; i < edgeCount; i++)
                 {
-                    var out_ = graph.AddVertex(ConvertId(graph, "" + counter++));
-                    var in_ = graph.AddVertex(ConvertId(graph, "" + counter++));
+                    var out_ = graph.AddVertex(null);
+                    var in_ = graph.AddVertex(null);
                     graph.AddEdge(null, out_, in_, ConvertId(graph, Guid.NewGuid().ToString()));
                 }
                 PrintPerformance(graph.ToString(), vertexCount + edgeCount, "elements added", StopWatch());

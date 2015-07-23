@@ -150,7 +150,8 @@ namespace Frontenac.Blueprints.Util.IO.GML
             if (label == null)
                 label = _defaultEdgeLabel;
 
-            object edgeId = _edgeCount++;
+            _edgeCount++;
+            object edgeId = _edgeCount;
             if (_edgeIdKey != null)
             {
                 var mappedKey = map.JavaRemove(_edgeIdKey);

@@ -39,7 +39,7 @@ namespace Frontenac.Grave.Esent
                                 {
                                     szColumnName = IdColumnName,
                                     coltyp = JET_coltyp.Long,
-                                    grbit = ColumndefGrbit.ColumnAutoincrement |
+                                    grbit = //ColumndefGrbit.ColumnAutoincrement |
                                             ColumndefGrbit.ColumnFixed |
                                             ColumndefGrbit.ColumnNotNULL
                                 },
@@ -115,19 +115,17 @@ namespace Frontenac.Grave.Esent
                 };
         }
 
-        public int AddEdge(string label, int vertexIn, int vertexOut)
+        public int AddEdge(int id, string label, int vertexIn, int vertexOut)
         {
-            int? result;
             using (var update = new Update(Session, TableId, JET_prep.Insert))
             {
-                result = Api.RetrieveColumnAsInt32(Session, TableId, Columns[IdColumnName],
-                                                   RetrieveColumnGrbit.RetrieveCopy);
+                Api.SetColumn(Session, TableId, Columns[IdColumnName], id);
                 Api.SetColumn(Session, TableId, Columns[LabelColumnName], label, Encoding.Unicode);
                 Api.SetColumn(Session, TableId, Columns[InColumnName], vertexIn);
                 Api.SetColumn(Session, TableId, Columns[OutColumnName], vertexOut);
                 update.Save();
             }
-            return result ?? 0;
+            return id;
         }
 
         public bool TryGetEdge(int id, out Tuple<string, int, int> edge)

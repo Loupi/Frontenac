@@ -60,7 +60,7 @@ namespace Frontenac.Grave.Esent
                                 {
                                     szColumnName = IdColumnName,
                                     coltyp = JET_coltyp.Long,
-                                    grbit = ColumndefGrbit.ColumnAutoincrement |
+                                    grbit = //ColumndefGrbit.ColumnAutoincrement |
                                             ColumndefGrbit.ColumnFixed |
                                             ColumndefGrbit.ColumnNotNULL
                                 }
@@ -104,16 +104,14 @@ namespace Frontenac.Grave.Esent
             Api.JetCloseTable(Session, TableId);
         }
 
-        public int AddRow()
+        public int AddRow(int id)
         {
-            int? result;
             using (var update = new Update(Session, TableId, JET_prep.Insert))
             {
-                result = Api.RetrieveColumnAsInt32(Session, TableId, Columns[IdColumnName],
-                                                   RetrieveColumnGrbit.RetrieveCopy);
+                Api.SetColumn(Session, TableId, Columns[IdColumnName], id);
                 update.Save();
             }
-            return result ?? 0;
+            return id;
         }
 
         public IEnumerable<string> GetColumnsForRow(int id)

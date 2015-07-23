@@ -103,7 +103,7 @@ namespace Frontenac.Gremlinq
             {
                 var typeVertex = graph.AddVertex(null);
                 typeVertex.SetProperty(TypePropertyName, type.AssemblyQualifiedName);
-                instanceTypes.TypesVertex.AddEdge(TypeLabelName, typeVertex);
+                instanceTypes.TypesVertex.AddEdge(null, TypeLabelName, typeVertex);
                 instanceTypes.TypesBuffer.Add(type, typeVertex.Id);
             }
 

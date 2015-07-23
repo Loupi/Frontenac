@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading;
 using Frontenac.Blueprints.Impls;
 using NUnit.Framework;
 
@@ -79,11 +80,12 @@ namespace Frontenac.Blueprints
                 for (var i = 0; i < 10; i++)
                     graph.CreateIndex(i + "blah", typeof (IVertex));
 
-                Assert.AreEqual(Count(graph.GetIndices()), 10);
+                //Thread.Sleep(1000);
+                Assert.AreEqual(10, Count(graph.GetIndices()));
                 for (var i = 0; i < 10; i++)
                     graph.DropIndex(i + "blah");
 
-                Assert.AreEqual(Count(graph.GetIndices()), 0);
+                Assert.AreEqual(0, Count(graph.GetIndices()));
                 PrintPerformance(graph.ToString(), 10, "indices created and then dropped", StopWatch());
 
                 StopWatch();
@@ -170,7 +172,7 @@ namespace Frontenac.Blueprints
                     vertex.SetProperty("name", "marko");
                     id = vertex.Id;
                     manualIndex.Put("key", "value", vertex);
-
+                    Thread.Sleep(1000);
                     Assert.AreEqual(Count(manualIndex.Get("key", "value")), 1);
                     Assert.AreEqual(manualIndex.Get("key", "value").First().Id, id);
                     PrintPerformance(graph.ToString(), 1, "index created and 1 vertex added and checked", StopWatch());

@@ -44,9 +44,9 @@ namespace Frontenac.Blueprints.Impls.TG
             return new DefaultVertexQuery(this);
         }
 
-        public IEdge AddEdge(string label, IVertex inVertex)
+        public IEdge AddEdge(object id, string label, IVertex inVertex)
         {
-            return Graph.AddEdge(null, this, inVertex, label);
+            return Graph.AddEdge(id, this, inVertex, label);
         }
 
         private static IEnumerable<IEdge> FilterEdgesByLabel(IDictionary<string, ConcurrentDictionary<string, IEdge>> edgesToGet,

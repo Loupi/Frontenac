@@ -29,9 +29,9 @@ namespace Frontenac.Grave
             throw new NotImplementedException();
         }
 
-        public IEdge AddEdge(string label, IVertex inVertex)
+        public IEdge AddEdge(object id, string label, IVertex inVertex)
         {
-            return Graph.AddEdge(0, this, inVertex, label);
+            return Graph.AddEdge(id, this, inVertex, label);
         }
 
         public override void Remove()
