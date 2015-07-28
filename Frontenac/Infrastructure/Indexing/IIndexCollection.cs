@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Diagnostics.Contracts;
+using Frontenac.Blueprints;
 
 namespace Frontenac.Infrastructure.Indexing
 {
@@ -51,7 +52,7 @@ namespace Frontenac.Infrastructure.Indexing
     [ContractClass(typeof(IndexCollectionContract))]
     public interface IIndexCollection
     {
-        void CreateIndex(string indexName);
+        void CreateIndex(string indexName, Parameter[] parameters);
         long DropIndex(string indexName);
         IEnumerable<string> GetIndices();
         bool HasIndex(string indexName);

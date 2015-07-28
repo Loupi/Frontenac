@@ -5,7 +5,6 @@ using Frontenac.Infrastructure;
 using Frontenac.Infrastructure.Indexing;
 using Frontenac.Infrastructure.Indexing.Indexers;
 using Frontenac.Infrastructure.Serializers;
-using Frontenac.Lucene;
 using StackExchange.Redis;
 
 namespace Frontenac.Redis
@@ -26,7 +25,6 @@ namespace Frontenac.Redis
 
             container.Register(ConnectionMultiplexer.Connect("localhost:6379"), typeof(ConnectionMultiplexer));
 
-            //passer config par factory a la place
             container.Register(LifeStyle.Singleton, typeof(RedisGraphConfiguration), typeof(IGraphConfiguration));
 
             container.Register(LifeStyle.Transient, typeof(RedisGraph), typeof(IGraph), typeof(IKeyIndexableGraph), typeof(IIndexableGraph));

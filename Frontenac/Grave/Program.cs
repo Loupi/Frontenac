@@ -1,14 +1,10 @@
-﻿using System.Collections.Generic;
-using System.Diagnostics.Contracts;
-using System.Linq;
+﻿using System.Diagnostics.Contracts;
 using Frontenac.Blueprints;
 using Frontenac.Blueprints.Impls.TG;
 using Frontenac.CastleWindsor;
 using Frontenac.ElasticSearch;
 using Frontenac.Grave.Esent;
-using Frontenac.Gremlinq;
 using Frontenac.Infrastructure;
-using Frontenac.Infrastructure.Geo;
 using Frontenac.Infrastructure.Indexing;
 using Frontenac.Infrastructure.Indexing.Indexers;
 using Frontenac.Infrastructure.Serializers;

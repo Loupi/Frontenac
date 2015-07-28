@@ -3,11 +3,12 @@ using System.Collections.Generic;
 using System.Diagnostics.Contracts;
 using System.Globalization;
 using Frontenac.Blueprints;
+using Frontenac.Blueprints.Geo;
 using Frontenac.Infrastructure;
-using Frontenac.Infrastructure.Geo;
 using Frontenac.Infrastructure.Indexing;
 using System.Linq;
 using Nest;
+using IGeoShape = Frontenac.Blueprints.Geo.IGeoShape;
 
 namespace Frontenac.ElasticSearch
 {
@@ -74,7 +75,18 @@ namespace Frontenac.ElasticSearch
         public override long Set(Type indexType, long id, string indexName, string propertyName, object value, bool isUserIndex)
         {
             var index = GetIndexName(indexType, indexName, isUserIndex);
-            var values = new Dictionary<string, object> {{propertyName, value}};
+            Dictionary<string, object> values;
+            if (value is GeoPoint)
+            {
+                var geoPoint = value as GeoPoint;
+                values = new Dictionary<string, object> { { propertyName, new GeoLocation(geoPoint.Latitude, geoPoint.Longitude) } };
+                
+            }
+            else
+            {
+                values = new Dictionary<string, object> {{propertyName, value}};
+            }
+             
             var upsert = new Dictionary<string, object> {{"id", id}, {propertyName, value}};
 
 
@@ -90,7 +102,6 @@ namespace Frontenac.ElasticSearch
         public override IEnumerable<long> Get(Type indexType, string indexName, string key, object value, bool isUserIndex, int hitsLimit = 1000)
         {
             var index = GetIndexName(indexType, indexName, isUserIndex);
-            var values = new Dictionary<string, object> {{key, value}};
 
             var response = _client.Search<Ref>(s => s.Index(index).AllTypes().Size(hitsLimit).Query(q => q.Term(key, value is string ? value.ToString().ToLowerInvariant() : value)));
             return response.Documents.Select(@ref => @ref.Id).ToArray();
@@ -131,8 +142,8 @@ namespace Frontenac.ElasticSearch
                 else if (graveQueryElement is ComparableQueryElement)
                 {
                     var comparable = graveQueryElement as ComparableQueryElement;
-                    if (comparable.Value is Infrastructure.Geo.IGeoShape)
-                        elasticQuery = CreateGeoQuery(queryDescriptor, comparable.Key, comparable.Value as Infrastructure.Geo.IGeoShape);
+                    if (comparable.Value is IGeoShape)
+                        elasticQuery = CreateGeoQuery(queryDescriptor, comparable.Key, comparable.Value as IGeoShape);
                     else
                         elasticQuery = CreateComparableQuery(comparable);
                 }
@@ -140,11 +151,12 @@ namespace Frontenac.ElasticSearch
                 elasticQueries.Add(elasticQuery);
             }
 
-            var indices =  indexType == typeof (IVertex) ? VertexIndicesColumnName : EdgeIndicesColumnName;
+            var indices = string.Concat(
+                indexType == typeof (IVertex) ? VertexIndicesColumnName : EdgeIndicesColumnName, "*");
 
             var queryToRun = elasticQueries.Count == 1 ? elasticQueries[0] : queryDescriptor.Bool(b => b.MustNot(elasticQueries.ToArray()));
 
-            var response = _client.Search<Ref>(s => s.Indices(indices).AllTypes().Fields("id").Query(queryToRun).Size(hitsLimit));
+            var response = _client.Search<Ref>(s => s.Indices(indices).AllTypes().Query(queryToRun).Size(hitsLimit));
             return response.Documents.Select(@ref => @ref.Id);
         }
 
@@ -170,13 +182,13 @@ namespace Frontenac.ElasticSearch
             throw new NotImplementedException();
         }
 
-        static QueryContainer CreateGeoQuery(QueryDescriptor<Ref> q, string key, Infrastructure.Geo.IGeoShape geoShape)
+        static QueryContainer CreateGeoQuery(QueryDescriptor<Ref> q, string key, IGeoShape geoShape)
         {
             if (geoShape is GeoCircle)
             {
                 var circle = geoShape as GeoCircle;
                 return q.GeoShapeCircle(
-                    c => c.Name(key)
+                    c => c.Name(key.ToLowerInvariant())
                      .Coordinates(new[] {circle.Center.Latitude, circle.Center.Longitude})
                      .Radius(string.Concat(circle.Radius, "Km")));
             }
@@ -184,13 +196,13 @@ namespace Frontenac.ElasticSearch
             if (geoShape is GeoPoint)
             {
                 var point = geoShape as GeoPoint;
-                return q.GeoShapePoint(p => p.Name(key).Coordinates(new[] {point.Latitude, point.Longitude}));
+                return q.GeoShapePoint(p => p.Name(key.ToLowerInvariant()).Coordinates(new[] {point.Latitude, point.Longitude}));
             }
 
             if (geoShape is GeoRectangle)
             {
                 var rect = geoShape as GeoRectangle;
-                return q.GeoShapeEnvelope(e => e.Name(key).Coordinates(new[]{new []{rect.TopLeft.Latitude, rect.TopLeft.Longitude},
+                return q.GeoShapeEnvelope(e => e.Name(key.ToLowerInvariant()).Coordinates(new[]{new []{rect.TopLeft.Latitude, rect.TopLeft.Longitude},
                     new []{rect.BottomRight.Latitude,rect.BottomRight.Longitude}}));
             }
 
@@ -363,22 +375,29 @@ namespace Frontenac.ElasticSearch
 
         }
 
-        public void CreateIndex(string indexName, string indexColumn)
+        public void CreateIndex(string indexName, string indexColumn, Parameter[] parameters)
         {
-            //var isUserIndex = indexColumn.EndsWith("_");
-            var fullName = /*isUserIndex ? */ string.Concat(indexColumn, indexName.ToLowerInvariant());// : indexColumn;
+            var fullName = string.Concat(indexColumn, indexName.ToLowerInvariant());
 
             if (_client.IndexExists(fullName).Exists)
                 return;
 
-            _client.CreateIndex(d => d.Index(fullName).Analysis(a => a.Analyzers(b => _analyzers)));
+            if (parameters != null && parameters.Length > 0)
+            {
+                if(parameters[0] is Parameter<string, GeoPoint>)
+                    _client.CreateIndex(descriptor => descriptor.Index(fullName).AddMapping<object>(m => m.Properties(p => p
+                    .GeoPoint(mappingDescriptor => mappingDescriptor.Name(indexName.ToLowerInvariant()).IndexLatLon()))));
+            }
+            else
+                _client.CreateIndex(d => d.Index(fullName).Analysis(a => a.Analyzers(b => _analyzers)));
         }
 
         public List<string> GetIndices(string indexType)
         {
-            var result = _client.GetAliases(s => s.Indices(string.Concat(indexType, "*"))).Indices.Where(pair => pair.Key.StartsWith(indexType)).Select(pair => pair.Key.Substring(indexType.Length)).ToList();
+            var result = _client.GetAliases(s => s.Indices(string.Concat(indexType, "*"))).Indices
+                .Where(pair => pair.Key.StartsWith(indexType))
+                .Select(pair => pair.Key.Substring(indexType.Length)).ToList();
             return result;
-            //return _client.IndicesStats(s => s.Indices(string.Concat(indexType, "*"))).Indices.Where(pair => pair.Key.StartsWith(indexType)).Select(pair => pair.Key).ToList();
         }
 
         public long DeleteIndex(IndexingService indexingService, string indexName, string indexColumn, Type indexType, bool isUserIndex)

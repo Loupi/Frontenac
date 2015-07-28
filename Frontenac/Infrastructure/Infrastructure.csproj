@@ -95,10 +95,6 @@
     <Compile Include="DefaultIndexerFactory.cs" />
     <Compile Include="ExtensionMethods.cs" />
     <Compile Include="FileType.cs" />
-    <Compile Include="Geo\GeoCircle.cs" />
-    <Compile Include="Geo\GeoPoint.cs" />
-    <Compile Include="Geo\GeoRectangle.cs" />
-    <Compile Include="Geo\IGeoShape.cs" />
     <Compile Include="GraphFactoryContract.cs" />
     <Compile Include="IContainer.cs" />
     <Compile Include="IDataStore.cs" />
@@ -142,7 +138,6 @@
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
       <DependentUpon>Settings.settings</DependentUpon>
     </Compile>
-    <Compile Include="ThreadContext.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="app.config" />

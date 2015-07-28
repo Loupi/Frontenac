@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics.Contracts;
+using Frontenac.Blueprints;
 
 namespace Frontenac.Infrastructure.Indexing
 {
@@ -12,7 +13,7 @@ namespace Frontenac.Infrastructure.Indexing
             
         }
 
-        public void CreateIndex(string indexName, string indexColumn)
+        public void CreateIndex(string indexName, string indexColumn, Parameter[] parameters)
         {
             Contract.Requires(!String.IsNullOrWhiteSpace(indexName));
             Contract.Requires(!String.IsNullOrWhiteSpace(indexColumn));
@@ -40,7 +41,7 @@ namespace Frontenac.Infrastructure.Indexing
 
         public void DropIndex(string indexName)
         {
-            Contract.Requires(!string.IsNullOrWhiteSpace(indexName));
+            //Contract.Requires(!string.IsNullOrWhiteSpace(indexName));
         }
 
         public void Dispose()

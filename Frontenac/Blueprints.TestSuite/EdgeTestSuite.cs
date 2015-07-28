@@ -84,7 +84,6 @@ namespace Frontenac.Blueprints
             {
                 const int edgeCount = 100;
                 const int vertexCount = 200;
-                long counter = 0;
                 StopWatch();
                 for (var i = 0; i < edgeCount; i++)
                 {

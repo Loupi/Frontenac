@@ -2,7 +2,7 @@
 using System.Diagnostics.Contracts;
 using System.Linq.Expressions;
 using Frontenac.Blueprints;
-using Frontenac.Infrastructure.Geo;
+using Frontenac.Blueprints.Geo;
 
 namespace Frontenac.Gremlinq.Test
 {

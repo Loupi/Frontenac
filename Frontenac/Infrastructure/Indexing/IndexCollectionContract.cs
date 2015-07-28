@@ -1,12 +1,13 @@
 ﻿using System.Collections.Generic;
 using System.Diagnostics.Contracts;
+using Frontenac.Blueprints;
 
 namespace Frontenac.Infrastructure.Indexing
 {
     [ContractClassFor(typeof(IIndexCollection))]
     public abstract class IndexCollectionContract : IIndexCollection
     {
-        public void CreateIndex(string indexName)
+        public void CreateIndex(string indexName, Parameter[] parameters)
         {
             Contract.Requires(!string.IsNullOrWhiteSpace(indexName));
         }

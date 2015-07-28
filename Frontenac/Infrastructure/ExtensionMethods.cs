@@ -35,6 +35,13 @@ namespace Frontenac.Infrastructure
             return result;
         }
 
+        public static long ToInt64(this object value)
+        {
+// ReSharper disable PossibleInvalidOperationException
+            return value.TryToInt64().Value;
+// ReSharper restore PossibleInvalidOperationException
+        }
+
         public static long? TryToInt64(this object value)
         {
             long? result;

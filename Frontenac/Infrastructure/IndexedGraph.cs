@@ -110,7 +110,7 @@ namespace Frontenac.Infrastructure
 
             var indexCollection = GetIndices(indexClass, true);
             var userIndexCollection = GetIndices(indexClass, false);
-            indexCollection.CreateIndex(indexName);
+            indexCollection.CreateIndex(indexName, indexParameters);
             return CreateIndexObject(indexName, indexClass, indexCollection, userIndexCollection);
         }
 
@@ -139,6 +139,7 @@ namespace Frontenac.Infrastructure
 
         protected virtual IIndex CreateIndexObject(string indexName, Type indexType, IIndexCollection indexCollection, IIndexCollection userIndexCollection)
         {
+            Contract.Requires(!string.IsNullOrWhiteSpace(indexName));
             return new Index(indexName, indexType, this, this, IndexingService);
         }
 
@@ -189,7 +190,7 @@ namespace Frontenac.Infrastructure
             var indices = GetIndices(elementClass, false);
             if (indices.HasIndex(key)) return;
 
-            indices.CreateIndex(key);
+            indices.CreateIndex(key, indexParameters);
 
             if (elementClass == typeof(IVertex))
                 this.ReIndexElements(GetVertices(), new[] { key });

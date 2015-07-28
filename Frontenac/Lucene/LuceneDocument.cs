@@ -1,8 +1,8 @@
 ﻿using System;
 using System.Diagnostics.Contracts;
 using System.Runtime.Serialization;
+using Frontenac.Blueprints.Geo;
 using Frontenac.Infrastructure;
-using Frontenac.Infrastructure.Geo;
 using Frontenac.Infrastructure.Indexing;
 using Lucene.Net.Documents;
 using Lucene.Net.Spatial.Prefix;

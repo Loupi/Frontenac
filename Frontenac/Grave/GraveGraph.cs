@@ -362,7 +362,7 @@ namespace Frontenac.Grave
             return indices;
         }
 
-        public void CreateIndex(string indexName, string indexColumn)
+        public void CreateIndex(string indexName, string indexColumn, Parameter[] parameters)
         {
             var indices = GetIndices(indexColumn);
             _indicesLock.EnterWriteLock();

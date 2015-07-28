@@ -2,6 +2,7 @@
 using System.Linq;
 using System.Collections.Generic;
 using System.Diagnostics.Contracts;
+using Frontenac.Blueprints;
 
 namespace Frontenac.Infrastructure.Indexing
 {
@@ -23,9 +24,9 @@ namespace Frontenac.Infrastructure.Indexing
             _isUserIndex = isUserIndex;
         }
 
-        public void CreateIndex(string indexName)
+        public void CreateIndex(string indexName, Parameter[] parameters)
         {
-            _indexingService.CreateIndexOfType(indexName, _indicesColumnName);
+            _indexingService.CreateIndexOfType(indexName, _indicesColumnName, parameters);
         }
 
         public long DropIndex(string indexName)

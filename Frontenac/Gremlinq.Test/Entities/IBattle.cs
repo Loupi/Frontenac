@@ -1,5 +1,5 @@
 ﻿using System.Collections.Generic;
-using Frontenac.Infrastructure.Geo;
+using Frontenac.Blueprints.Geo;
 
 namespace Frontenac.Gremlinq.Test.Entities
 {

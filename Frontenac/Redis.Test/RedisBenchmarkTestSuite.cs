@@ -24,12 +24,12 @@ namespace Frontenac.Redis.Test
             _suite.TearDown();
         }
 
-        public RedisBenchmarkTestSuite()
+        protected RedisBenchmarkTestSuite()
             : base("RedisBenchmarkTestSuite", new RedisGraphTest())
         {
         }
 
-        public RedisBenchmarkTestSuite(GraphTest graphTest)
+        protected RedisBenchmarkTestSuite(GraphTest graphTest)
             : base("RedisBenchmarkTestSuite", graphTest)
         {
         }

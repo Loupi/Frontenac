@@ -1,4 +1,4 @@
-﻿namespace Frontenac.Infrastructure.Geo
+﻿namespace Frontenac.Blueprints.Geo
 {
     public class GeoRectangle : IGeoShape
     {

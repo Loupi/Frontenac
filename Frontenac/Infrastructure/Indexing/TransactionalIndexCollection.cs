@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Diagnostics.Contracts;
 using System.Linq;
+using Frontenac.Blueprints;
 
 namespace Frontenac.Infrastructure.Indexing
 {
@@ -23,7 +24,7 @@ namespace Frontenac.Infrastructure.Indexing
             _indexCollection = indexCollection;
         }
 
-        public void CreateIndex(string indexName)
+        public void CreateIndex(string indexName, Parameter[] parameters)
         {
             if (_droppedIndices.Contains(indexName))
                 _droppedIndices.Remove(indexName);
@@ -132,7 +133,7 @@ namespace Frontenac.Infrastructure.Indexing
                 _indexCollection.DeleteIndex(deletedIndex);
 
             foreach (var newIndex in _newIndices)
-                _indexCollection.CreateIndex(newIndex);
+                _indexCollection.CreateIndex(newIndex, null);
 
             foreach (var setIndex in _setIndices)
                 _indexCollection.Set(setIndex.Value.Item1, setIndex.Value.Item2,

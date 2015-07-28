@@ -41,12 +41,12 @@ namespace Frontenac.Infrastructure.Indexing
             UserEdgeIndices = Create(UserEdgeIndicesColumnName, typeof(IEdge), true);
         }
 
-        public void CreateIndexOfType(string indexName, string indexColumn)
+        public void CreateIndexOfType(string indexName, string indexColumn, Parameter[] parameters)
         {
             Contract.Requires(!String.IsNullOrWhiteSpace(indexName));
             Contract.Requires(!String.IsNullOrWhiteSpace(indexColumn));
 
-            IndexStore.CreateIndex(indexName, indexColumn);
+            IndexStore.CreateIndex(indexName, indexColumn, parameters);
         }
 
         public List<string> GetIndicesOfType(string indexType)

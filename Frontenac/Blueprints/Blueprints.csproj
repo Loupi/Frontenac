@@ -137,6 +137,10 @@
     <Compile Include="Contracts\VertexQueryContract.cs" />
     <Compile Include="DictionaryElement.cs" />
     <Compile Include="Direction.cs" />
+    <Compile Include="Geo\GeoCircle.cs" />
+    <Compile Include="Geo\GeoPoint.cs" />
+    <Compile Include="Geo\GeoRectangle.cs" />
+    <Compile Include="Geo\IGeoShape.cs" />
     <Compile Include="IEdge.cs" />
     <Compile Include="IElement.cs" />
     <Compile Include="Features.cs" />

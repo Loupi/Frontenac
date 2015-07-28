@@ -1,6 +1,5 @@
 ﻿using System.Collections.Generic;
 using Frontenac.Blueprints;
-using Frontenac.Infrastructure.Indexing;
 
 namespace Frontenac.Infrastructure
 {
@@ -12,6 +11,5 @@ namespace Frontenac.Infrastructure
         IEdge AddEdge(object id, IVertex outVertex, IVertex inVertex, string label);
         void RemoveEdge(IEdge edge);
         IEnumerable<IVertex> GetVertices();
-        //ThreadContext CreateThreadContext(IndexingService indexingService);
     }
 }

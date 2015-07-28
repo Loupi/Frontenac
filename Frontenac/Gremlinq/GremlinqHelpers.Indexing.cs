@@ -3,6 +3,7 @@ using System.Diagnostics.Contracts;
 using System.Linq;
 using System.Linq.Expressions;
 using Frontenac.Blueprints;
+using Frontenac.Blueprints.Geo;
 
 namespace Frontenac.Gremlinq
 {
@@ -18,8 +19,12 @@ namespace Frontenac.Gremlinq
             Contract.Requires(indexType != null);
 
             var name = propertySelector.Resolve();
+            Parameter[] parameters = null;
+            if (typeof(TIndex) == typeof(GeoPoint))
+                parameters = new Parameter[]{new Parameter<string,GeoPoint>("GeoPoint", null)};
+            
             if (!graph.GetIndexedKeys(indexType).Contains(name))
-                graph.CreateKeyIndex(name, indexType);
+                graph.CreateKeyIndex(name, indexType, parameters);
         }
 
         public static void CreateVertexIndex<TModel, TResult>(

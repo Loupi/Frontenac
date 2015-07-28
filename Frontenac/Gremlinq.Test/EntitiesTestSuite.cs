@@ -3,9 +3,9 @@ using System.Diagnostics.Contracts;
 using System.Linq;
 using System.Threading;
 using Frontenac.Blueprints;
+using Frontenac.Blueprints.Geo;
 using Frontenac.Blueprints.Impls;
 using Frontenac.Gremlinq.Test.Entities;
-using Frontenac.Infrastructure.Geo;
 using NUnit.Framework;
 
 namespace Frontenac.Gremlinq.Test

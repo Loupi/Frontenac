@@ -259,7 +259,9 @@ namespace Frontenac.Redis
             {
                 foreach (var outLabel in db.SortedSetScan(GetIdentifier(vertex, "labels_out")))
                 {
+// ReSharper disable SpecifyACultureInStringConversionExplicitly
                     string labelVal2 = outLabel.Element.ToString();
+// ReSharper restore SpecifyACultureInStringConversionExplicitly
                     if (labels.Length > 0 && !labels.Contains(labelVal2))
                         continue;
 
@@ -277,7 +279,9 @@ namespace Frontenac.Redis
 
             foreach (var inLabel in db.SortedSetScan(GetIdentifier(vertex, "labels_in")))
             {
+// ReSharper disable SpecifyACultureInStringConversionExplicitly
                 string labelVal = inLabel.Element.ToString();
+// ReSharper restore SpecifyACultureInStringConversionExplicitly
                 if(labels.Length > 0 && !labels.Contains(labelVal))
                     continue;
 
@@ -377,7 +381,7 @@ namespace Frontenac.Redis
 
         }
 
-        public void CreateIndex(string indexName, string indexColumn)
+        public void CreateIndex(string indexName, string indexColumn, Parameter[] parameters)
         {
             var db = Multiplexer.GetDatabase();
             db.SetAdd(indexColumn, indexName);
