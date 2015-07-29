@@ -358,9 +358,13 @@ namespace Frontenac.Blueprints.Util.Wrappers.Id
                 _baseGraph.CreateKeyIndex(Id, typeof(IEdge));
         }
 
+// ReSharper disable UnusedParameter.Local
         private static void VerifyNativeElement(IElement e)
+// ReSharper restore UnusedParameter.Local
         {
             Contract.Requires(e is IdElement);
+            if(!(e is IdElement))
+                throw new ArgumentException("e must be of type IdElement");
         }
 
         private class DefaultIdFactory : IIdFactory

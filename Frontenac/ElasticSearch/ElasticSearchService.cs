@@ -315,7 +315,9 @@ namespace Frontenac.ElasticSearch
                 var minVal = min == null ? (double?)null : Convert.ToDouble(min);
                 var maxVal = max == null ? (double?)null : Convert.ToDouble(max);
 
+// ReSharper disable ImplicitlyCapturedClosure
                 return q.Range(r =>
+// ReSharper restore ImplicitlyCapturedClosure
                 {
                     var iq = r.Name(field);
 
@@ -323,9 +325,10 @@ namespace Frontenac.ElasticSearch
                                   ? iq.GreaterOrEquals(minVal)
                                   : iq.Greater(minVal);
 
-                    var iq3 = maxInclusive
-                                  ? iq2.LowerOrEquals(maxVal)
-                                  : iq2.Lower(maxVal);
+                    if (maxInclusive)
+                        iq2.LowerOrEquals(maxVal);
+                    else
+                        iq2.Lower(maxVal);
                 });
             }
             
@@ -334,7 +337,9 @@ namespace Frontenac.ElasticSearch
                 var minVal = min == null ? (DateTime?)null : Convert.ToDateTime(min);
                 var maxVal = max == null ? (DateTime?)null : Convert.ToDateTime(max);
 
+// ReSharper disable ImplicitlyCapturedClosure
                 return q.Range(r =>
+// ReSharper restore ImplicitlyCapturedClosure
                 {
                     var iq = r.Name(field);
 
@@ -342,9 +347,10 @@ namespace Frontenac.ElasticSearch
                                   ? iq.GreaterOrEquals(minVal)
                                   : iq.Greater(minVal);
 
-                    var iq3 = maxInclusive
-                                  ? iq2.LowerOrEquals(maxVal)
-                                  : iq2.Lower(maxVal);
+                    if(maxInclusive)
+                        iq2.LowerOrEquals(maxVal);
+                    else
+                        iq2.Lower(maxVal);
                 });
             }
             
@@ -353,7 +359,9 @@ namespace Frontenac.ElasticSearch
                 var minVal = Convert.ToString(min);
                 var maxVal = Convert.ToString(max);
 
+// ReSharper disable ImplicitlyCapturedClosure
                 return q.Range(r =>
+// ReSharper restore ImplicitlyCapturedClosure
                 {
                     var iq = r.Name(field);
 
@@ -361,9 +369,10 @@ namespace Frontenac.ElasticSearch
                                   ? iq.GreaterOrEquals(minVal)
                                   : iq.Greater(minVal);
 
-                    var iq3 = maxInclusive
-                                  ? iq2.LowerOrEquals(maxVal)
-                                  : iq2.Lower(maxVal);
+                    if(maxInclusive)
+                        iq2.LowerOrEquals(maxVal);
+                    else
+                        iq2.Lower(maxVal);
                 });
             }
             
@@ -385,11 +394,15 @@ namespace Frontenac.ElasticSearch
             if (parameters != null && parameters.Length > 0)
             {
                 if(parameters[0] is Parameter<string, GeoPoint>)
+// ReSharper disable ImplicitlyCapturedClosure
                     _client.CreateIndex(descriptor => descriptor.Index(fullName).AddMapping<object>(m => m.Properties(p => p
+// ReSharper restore ImplicitlyCapturedClosure
                     .GeoPoint(mappingDescriptor => mappingDescriptor.Name(indexName.ToLowerInvariant()).IndexLatLon()))));
             }
             else
+// ReSharper disable ImplicitlyCapturedClosure
                 _client.CreateIndex(d => d.Index(fullName).Analysis(a => a.Analyzers(b => _analyzers)));
+// ReSharper restore ImplicitlyCapturedClosure
         }
 
         public List<string> GetIndices(string indexType)

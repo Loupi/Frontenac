@@ -85,7 +85,9 @@ namespace Frontenac.Infrastructure.Indexing
                 .Distinct();
 
             return _setIndices
+// ReSharper disable ImplicitlyCapturedClosure
                 .Where(t => t.Value.Item3 == term && t.Value.Item4 == value)
+// ReSharper restore ImplicitlyCapturedClosure
                 .Select(t => t.Value.Item1)
                 .Concat(_indexCollection.Get(term, value, hitsLimit))
                 .Except(excepted)

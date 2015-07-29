@@ -1,5 +1,8 @@
-﻿namespace Frontenac.Blueprints.Geo
+﻿using System;
+
+namespace Frontenac.Blueprints.Geo
 {
+    [Serializable]
     public class GeoPoint : IGeoShape
     {
         public GeoPoint()

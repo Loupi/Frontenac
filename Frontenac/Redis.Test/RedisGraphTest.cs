@@ -1,9 +1,7 @@
 ﻿using System;
 using System.IO;
-using System.Linq;
 using Frontenac.Blueprints;
 using Frontenac.Blueprints.Impls;
-using Frontenac.Blueprints.Util;
 using Frontenac.Blueprints.Util.IO.GML;
 using Frontenac.Blueprints.Util.IO.GraphML;
 using Frontenac.Blueprints.Util.IO.GraphSON;
@@ -463,7 +461,9 @@ namespace Frontenac.Redis.Test
             }
         }*/
 
+// ReSharper disable UnusedParameter.Local
         private void TestGraphFileType(string directory, FileType fileType)
+// ReSharper restore UnusedParameter.Local
         {
             var path = RedisGraphTest.GetRedisGraphDirectory() + "/" + directory;
             DeleteDirectory(path);
@@ -494,12 +494,15 @@ namespace Frontenac.Redis.Test
             }*/
         }
 
+/*
         private static void CreateKeyIndices(IKeyIndexableGraph g)
         {
             g.CreateKeyIndex("name", typeof(IVertex));
             g.CreateKeyIndex("weight", typeof(IEdge));
         }
+*/
 
+/*
         private static void CreateManualIndices(IIndexableGraph g)
         {
             var ageIndex = g.CreateIndex("age", typeof(IVertex));
@@ -514,7 +517,9 @@ namespace Frontenac.Redis.Test
             weightIndex.Put("weight", e7.GetProperty("weight"), e7);
             weightIndex.Put("weight", e12.GetProperty("weight"), e12);
         }
+*/
 
+/*
         private static void CopyGraphs(IGraph src, IGraph dst)
         {
             foreach (var v in src.GetVertices())
@@ -530,7 +535,9 @@ namespace Frontenac.Redis.Test
                                    e.Label));
             }
         }
+*/
 
+/*
         private void CompareGraphs(IGraph g1, IIndexableGraph g2, FileType fileType)
         {
             foreach (var v1 in g1.GetVertices())
@@ -605,7 +612,9 @@ namespace Frontenac.Redis.Test
             Assert.AreEqual(g2.GetEdge(7), weightItty.Current);
             Assert.False(weightItty.MoveNext());
         }
+*/
 
+/*
         private static void CompareEdgeCounts(IVertex v1, IVertex v2, Direction direction)
         {
             var c1 = v1.GetEdges(direction).Count();
@@ -613,7 +622,9 @@ namespace Frontenac.Redis.Test
 
             Assert.AreEqual(c1, c2);
         }
+*/
 
+/*
         private static void CompareVertices(IEdge e1, IEdge e2, Direction direction)
         {
             var v1 = e1.GetVertex(direction);
@@ -621,6 +632,7 @@ namespace Frontenac.Redis.Test
 
             Assert.AreEqual(v1.Id, v2.Id);
         }
+*/
 
         [Test]
         public void TestGraphFileTypeDotNet()

@@ -86,21 +86,26 @@ namespace Frontenac.Gremlinq.Test
                     .Single();
 
                 var both = jupiter.Both().ToArray();
+                Assert.NotNull(both);
                 var sIn = jupiter.In();
+                Assert.NotNull(sIn);
                 var sOut = jupiter.Out();
+                Assert.NotNull(sOut);
 
                 var map = saturn.Element.Map();
+                Assert.NotNull(map);
 
                 var fatherName = saturn
                     .In(t => t.Father)
                     .In(t => t.Father)
                     .Single().Model.Name;
+                Assert.NotNull(fatherName);
 
                 var eventsNearAthen = graph.Query<IBattle>()
                                            .Has(t => t.Place, new GeoCircle(37.97, 23.72, 50))
                                            .Edges()
                                            .ToArray();
-
+                Assert.NotNull(eventsNearAthen);
                 /*var opps = eventsNearAthen[0].Model.Opponent;
                 var oopps = eventsNearAthen[0].Model.BothOpponent.ToArray();
                 var vvv = eventsNearAthen[0].Model.BothOpponent.ElementAt(0);
@@ -113,6 +118,7 @@ namespace Frontenac.Gremlinq.Test
                             t.In(u => u.Opponent).Model.Name
                         })
                     .ToArray();
+                Assert.NotNull(opponents);
 
                 var hercules = saturn
                     .Loop(t => t.In(u => u.Father).SingleOrDefault(), 2)
@@ -125,14 +131,17 @@ namespace Frontenac.Gremlinq.Test
                 var parentNames = parents
                     .Select(t => t.Model.Name)
                     .ToArray();
+                Assert.NotNull(parentNames);
 
                 var parentTypes = parents
                     .Select(t => t.Type())
                     .ToArray();
+                Assert.NotNull(parentTypes);
 
                 var humanParent = parents
                     .OfType<IHuman>()
                     .Single();
+                Assert.NotNull(humanParent);
 
                 var battled = hercules
                     .Out(t => t.Battled)
@@ -141,12 +150,14 @@ namespace Frontenac.Gremlinq.Test
                 var opponentDetails = battled
                     .Select(t => t.Element.Map())
                     .ToArray();
+                Assert.NotNull(opponentDetails);
 
                 var v2 = hercules
                     .OutE(t => t.Battled)
                     .Where(t => t.Model.Time > 1)
                     .Select(t => t.In(u => u.Opponent).Model.Name)
                     .ToArray();
+                Assert.NotNull(v2);
             }
             finally
             {
@@ -189,10 +200,14 @@ namespace Frontenac.Gremlinq.Test
 
                 var allDevelopers = developer.Persons.ToList();
                 var heleneChildrenIds = helene.Children.Select(pair => pair.Value.Id).ToList();
+                Assert.NotNull(allDevelopers);
+                Assert.NotNull(heleneChildrenIds);
                 var mimiParents = mimi.Parents.ToList();
                 var loupiParents = loupi.Parents.ToList();
                 var intersectedParents = loupi.WrappedParents.Intersect(mimi.WrappedParents).ToList();
                 var joinedParents = mimiParents.Join(loupiParents, person => person.Id, person => person.Id, (person, person1) => person).ToList();
+                Assert.NotNull(intersectedParents);
+                Assert.NotNull(joinedParents);
             }
             finally
             {

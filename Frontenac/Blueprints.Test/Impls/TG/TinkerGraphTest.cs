@@ -194,7 +194,7 @@ namespace Frontenac.Blueprints.Impls.TG
     {
         public override IGraph GenerateGraph()
         {
-            return GenerateGraph("Graph");
+            return new TinkerGrapĥ();
         }
 
         public override IGraph GenerateGraph(string graphDirectoryName)
@@ -460,7 +460,7 @@ namespace Frontenac.Blueprints.Impls.TG
         public void TestShutdownStartManyTimes()
         {
             DeleteDirectory(TinkerGraphTestImpl.GetThinkerGraphDirectory());
-            var graph = (TinkerGrapĥ) GraphTest.GenerateGraph();
+            var graph = (TinkerGrapĥ) GraphTest.GenerateGraph("Graph");
             try
             {
                 for (var i = 0; i < 25; i++)
@@ -480,7 +480,7 @@ namespace Frontenac.Blueprints.Impls.TG
             const int iterations = 150;
             for (var i = 0; i < iterations; i++)
             {
-                graph = (TinkerGrapĥ) GraphTest.GenerateGraph();
+                graph = (TinkerGrapĥ) GraphTest.GenerateGraph("graph");
                 try
                 {
                     Assert.AreEqual(50, Count(graph.GetVertices()));

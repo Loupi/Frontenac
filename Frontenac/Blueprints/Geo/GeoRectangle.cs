@@ -1,11 +1,14 @@
-﻿namespace Frontenac.Blueprints.Geo
+﻿using System;
+
+namespace Frontenac.Blueprints.Geo
 {
+    [Serializable]
     public class GeoRectangle : IGeoShape
     {
-        public GeoRectangle(GeoPoint topLeft, GeoPoint rightBottom)
+        public GeoRectangle(GeoPoint topLeft, GeoPoint bottomRight)
         {
             TopLeft = topLeft;
-            BottomRight = rightBottom;
+            BottomRight = bottomRight;
         }
 
         public GeoRectangle(double minX, double maxX, double minY, double maxY)

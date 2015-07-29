@@ -18,21 +18,21 @@ graph [
 		source 1
 		target 2
 		label "Edge from node 1 to node 2"
-		blueprintsId "0"
+		blueprintsId "1"
 		directed "True"
 	]
 	edge [
 		source 2
 		target 3
 		label "Edge from node 2 to node 3"
-		blueprintsId "1"
+		blueprintsId "2"
 		directed "True"
 	]
 	edge [
 		source 3
 		target 1
 		label "Edge from node 3 to node 1"
-		blueprintsId "2"
+		blueprintsId "3"
 		directed "True"
 	]
 ]

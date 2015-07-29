@@ -18,11 +18,6 @@ namespace Frontenac.Grave
         private const string EdgeInPrefix = "$e_i_";
         private const string EdgeOutPrefix = "$e_o_";
 
-        private readonly List<string> _vertexIndices = new List<string>();
-        private readonly List<string> _edgeIndices = new List<string>();
-        private readonly List<string> _userVertexIndices = new List<string>();
-        private readonly List<string> _userEdgeIndices = new List<string>();
-
         private static readonly Features GraveGraphFeatures = new Features
             {
                 SupportsDuplicateEdges = true,
@@ -98,12 +93,12 @@ namespace Frontenac.Grave
             get { return GraveGraphFeatures; }
         }
 
-        private int _vertexSeed = 0;
+        private int _vertexSeed;
 
         public override IVertex AddVertex(object unused)
         {
             var esentContext = EsentContext;
-            var id = unused == null ? Interlocked.Increment(ref _vertexSeed) : unused.TryToInt32().Value;
+            var id = unused == null ? Interlocked.Increment(ref _vertexSeed) : unused.ToInt32();
             id = esentContext.VertexTable.AddRow(id);
             return new GraveVertex(this, id);
         }
@@ -150,14 +145,14 @@ namespace Frontenac.Grave
             }
         }
 
-        private int _edgeSeed = 0;
+        private int _edgeSeed;
 
         public override IEdge AddEdge(object unused, IVertex outVertex, IVertex inVertex, string label)
         {
             var inVertexId = (int) inVertex.Id;
             var outVertexId = (int) outVertex.Id;
             var esentContext = EsentContext;
-            var id = unused == null ? Interlocked.Increment(ref _edgeSeed) : unused.TryToInt32().Value;
+            var id = unused == null ? Interlocked.Increment(ref _edgeSeed) : unused.ToInt32();
             var edgeId = esentContext.EdgesTable.AddEdge(id, label, inVertexId, outVertexId);
             esentContext.VertexTable.AddEdge(inVertexId, Direction.In, label, edgeId, outVertexId);
             esentContext.VertexTable.AddEdge(outVertexId, Direction.Out, label, edgeId, inVertexId);
@@ -335,31 +330,6 @@ namespace Frontenac.Grave
         {
             if (!EsentContext.ConfigTable.SetCursor(ConfigVertexId))
                 EsentContext.ConfigTable.AddRow(1);
-        }
-
-        List<string> GetIndexList(string indexColumn)
-        {
-            List<string> indices;
-            switch (indexColumn)
-            {
-                case "VertexIndices":
-                    indices = _vertexIndices;
-                    break;
-                case "EdgeIndices":
-                    indices = _edgeIndices;
-                    break;
-                case "UserVertexIndices":
-                    indices = _userVertexIndices;
-                    break;
-                case "UserEdgeIndices":
-                    indices = _userEdgeIndices;
-                    break;
-
-                default:
-                    throw new NotSupportedException(indexColumn);
-            }
-
-            return indices;
         }
 
         public void CreateIndex(string indexName, string indexColumn, Parameter[] parameters)

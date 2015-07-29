@@ -4,6 +4,13 @@ namespace Frontenac.Infrastructure
 {
     public static class ExtensionMethods
     {
+        public static int ToInt32(this object value)
+        {
+            // ReSharper disable PossibleInvalidOperationException
+            return value.TryToInt32().Value;
+            // ReSharper restore PossibleInvalidOperationException
+        }
+
         public static int? TryToInt32(this object value)
         {
             int? result;

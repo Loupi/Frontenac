@@ -47,7 +47,7 @@ namespace Frontenac.Lucene
             else if (*/  || value is long || value is ulong)
             {
                 //var val = Convert.ToInt64(value);
-                long lval = value.TryToInt64().Value;
+                long lval = value.ToInt64();
                 _document.Add(new NumericField(key).SetLongValue(lval));
             }
             else if (value is float)

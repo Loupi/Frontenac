@@ -1,6 +1,5 @@
 ﻿using System;
 using System.IO;
-using System.Linq;
 using Frontenac.Blueprints;
 using Frontenac.Blueprints.Impls;
 using Frontenac.Blueprints.Impls.TG;
@@ -629,7 +628,7 @@ namespace Frontenac.Grave.Tests
             Assert.False(weightItty.MoveNext());
         }*/
 
-        private static void CompareEdgeCounts(IVertex v1, IVertex v2, Direction direction)
+        /*private static void CompareEdgeCounts(IVertex v1, IVertex v2, Direction direction)
         {
             var c1 = v1.GetEdges(direction).Count();
             var c2 = v2.GetEdges(direction).Count();
@@ -643,7 +642,7 @@ namespace Frontenac.Grave.Tests
             var v2 = e2.GetVertex(direction);
 
             Assert.AreEqual(v1.Id, v2.Id);
-        }
+        }*/
 
         [Test]
         public void TestGraphFileTypeDotNet()

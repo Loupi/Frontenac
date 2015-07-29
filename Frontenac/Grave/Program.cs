@@ -48,7 +48,8 @@ namespace Frontenac.Grave
                 using (var factory = container.Resolve<IGraphFactory>())
                 {
                     var graph = factory.Create<IKeyIndexableGraph>();
-                    //TestGraphOfTheGods(graph);  
+                    //TestGraphOfTheGods(graph);
+                    factory.Destroy(graph);
                     container.Release(factory);
                 }
             }

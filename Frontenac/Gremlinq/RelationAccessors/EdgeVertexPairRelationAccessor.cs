@@ -24,7 +24,9 @@ namespace Frontenac.Gremlinq.RelationAccessors
             _removeMethod = (AccessCollectionDelegate)CreateMagicMethod("Remove", typeof(AccessCollectionDelegate), models);
         }
 
+// ReSharper disable UnusedMember.Local
         private static object Convert<TEdgeModel, TVertexModel>(IEnumerable elements, bool isWrapped, bool isEnumerable)
+// ReSharper restore UnusedMember.Local
             where TEdgeModel : class
             where TVertexModel : class
         {
@@ -44,7 +46,9 @@ namespace Frontenac.Gremlinq.RelationAccessors
             }
         }
 
+// ReSharper disable UnusedMember.Local
         private static object CreateCollection<TEdgeModel, TVertexModel>(IElement element, string key, RelationAccessor accessor)
+// ReSharper restore UnusedMember.Local
             where TEdgeModel : class
             where TVertexModel : class
         {
@@ -53,7 +57,11 @@ namespace Frontenac.Gremlinq.RelationAccessors
             return new EdgeVertexRelationCollection<TEdgeModel, TVertexModel>((IVertex)element, key, accessor);
         }
 
+// ReSharper disable UnusedMember.Local
+// ReSharper disable UnusedParameter.Local
         private static void Add<TEdgeModel, TVertexModel>(IElement element, string key, RelationAccessor accessor, object id, object newValue)
+// ReSharper restore UnusedParameter.Local
+// ReSharper restore UnusedMember.Local
             where TEdgeModel : class
             where TVertexModel : class
         {
@@ -63,7 +71,9 @@ namespace Frontenac.Gremlinq.RelationAccessors
             new EdgeVertexRelationCollection<TEdgeModel, TVertexModel>((IVertex)element, key, accessor).Add((KeyValuePair<TEdgeModel, TVertexModel>)newValue);
         }
 
+// ReSharper disable UnusedMember.Local
         private static void Remove<TEdgeModel, TVertexModel>(IElement element, string key, RelationAccessor accessor, object newValue)
+// ReSharper restore UnusedMember.Local
             where TEdgeModel : class
             where TVertexModel : class
         {

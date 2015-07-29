@@ -87,7 +87,7 @@ namespace Frontenac.Redis
         public override IVertex AddVertex(object id)
         {
             var db = Multiplexer.GetDatabase();
-            var nextId = id == null ? db.StringIncrement("globals:next_vertex_id") : id.TryToInt64().Value;            
+            var nextId = id == null ? db.StringIncrement("globals:next_vertex_id") : id.ToInt64();            
             db.SetAdd("globals:vertices", nextId);
             var vertex = new RedisVertex(nextId, this);
             db.StringSet(GetIdentifier(vertex, null), nextId);
@@ -170,7 +170,7 @@ namespace Frontenac.Redis
         public override IEdge AddEdge(object id, IVertex outVertex, IVertex inVertex, string label)
         {
             var db = Multiplexer.GetDatabase();
-            var nextId = id == null ? db.StringIncrement("globals:next_edge_id") : id.TryToInt64().Value;            
+            var nextId = id == null ? db.StringIncrement("globals:next_edge_id") : id.ToInt64();            
 
             var edge = new RedisEdge(nextId, outVertex, inVertex, label, this);
             db.StringSet(GetIdentifier(edge, "out"), (long)outVertex.Id);

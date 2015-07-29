@@ -9,6 +9,7 @@ namespace Frontenac.Infrastructure
     {
         private readonly IContainer _container;
         private readonly object _syncRoot = new object();
+
         private readonly List<IGraph> _graphs = new List<IGraph>(); 
 
         public DefaultGraphFactory(IContainer container)

@@ -1,5 +1,8 @@
-﻿namespace Frontenac.Blueprints.Geo
+﻿using System;
+
+namespace Frontenac.Blueprints.Geo
 {
+    [Serializable]
     public class GeoCircle : IGeoShape
     {
         public GeoCircle(double latitude, double longitude, double radius)

@@ -15,7 +15,9 @@ namespace Frontenac.Gremlinq.RelationAccessors
 
         }
 
+// ReSharper disable UnusedMember.Local
         private static object Convert<TModel>(IEnumerable elements, bool isWrapped, bool isEnumerable)
+// ReSharper restore UnusedMember.Local
             where TModel : class
         {
             Contract.Requires(elements != null);
@@ -28,7 +30,13 @@ namespace Frontenac.Gremlinq.RelationAccessors
             return isEnumerable ? models : models.SingleOrDefault();
         }
 
+// ReSharper disable UnusedMember.Local
+// ReSharper disable UnusedTypeParameter
+// ReSharper disable UnusedParameter.Local
         private static object CreateCollection<TModel>(IElement element, string key, RelationAccessor accessor)
+// ReSharper restore UnusedParameter.Local
+// ReSharper restore UnusedTypeParameter
+// ReSharper restore UnusedMember.Local
         {
             throw new NotSupportedException();
         }

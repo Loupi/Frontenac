@@ -23,7 +23,9 @@ namespace Frontenac.Gremlinq.RelationAccessors
             _removeMethod = (AccessCollectionDelegate)CreateMagicMethod("Remove", typeof(AccessCollectionDelegate), modelType);
         }
 
+// ReSharper disable UnusedMember.Local
         private static object Convert<TModel>(IEnumerable elements, bool isWrapped, bool isEnumerable)
+// ReSharper restore UnusedMember.Local
             where TModel : class
         {
             Contract.Requires(elements != null);
@@ -36,14 +38,20 @@ namespace Frontenac.Gremlinq.RelationAccessors
             return isEnumerable ? models : models.SingleOrDefault();
         }
 
+// ReSharper disable UnusedMember.Local
         private static object CreateCollection<TModel>(IElement element, string key, RelationAccessor accessor)
+// ReSharper restore UnusedMember.Local
         {
             Contract.Requires(!string.IsNullOrEmpty(key));
 
             return new VertexRelationCollection<TModel>((IVertex)element, key, accessor);
         }
 
+// ReSharper disable UnusedMember.Local
+// ReSharper disable UnusedParameter.Local
         private static void Add<TModel>(IElement element, string key, RelationAccessor accessor, object id, object newValue)
+// ReSharper restore UnusedParameter.Local
+// ReSharper restore UnusedMember.Local
             where TModel : class
         {
             Contract.Requires(!string.IsNullOrEmpty(key));
@@ -51,7 +59,9 @@ namespace Frontenac.Gremlinq.RelationAccessors
             new VertexRelationCollection<TModel>((IVertex)element, key, accessor).Add((TModel)newValue);
         }
 
+// ReSharper disable UnusedMember.Local
         private static void Remove<TModel>(IElement element, string key, RelationAccessor accessor, object newValue)
+// ReSharper restore UnusedMember.Local
             where TModel : class
         {
             Contract.Requires(!string.IsNullOrEmpty(key));

@@ -11,7 +11,6 @@ using Lucene.Net.Analysis;
 using Lucene.Net.Contrib.Management;
 using Lucene.Net.Documents;
 using Lucene.Net.Index;
-using Lucene.Net.QueryParsers;
 using Lucene.Net.Search;
 using Lucene.Net.Spatial.Prefix;
 using Lucene.Net.Spatial.Prefix.Tree;
@@ -91,6 +90,7 @@ namespace Frontenac.Lucene
             return directory;
         }
 
+/*
         private static Query ParseQuery(string searchQuery, QueryParser parser)
         {
             Contract.Requires(!string.IsNullOrWhiteSpace(searchQuery));
@@ -108,6 +108,7 @@ namespace Frontenac.Lucene
             }
             return query;
         }
+*/
 
         private static Document CreateDocument(string idColumnName, string keyColumnName, long id, string propertyName)
         {
