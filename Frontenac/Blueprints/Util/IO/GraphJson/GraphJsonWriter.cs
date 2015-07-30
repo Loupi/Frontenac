@@ -102,6 +102,7 @@ namespace Frontenac.Blueprints.Util.IO.GraphJson
         private static JObject JsonFromElement(IElement element, GraphJsonSettings settings)
         {
             Contract.Requires(element != null);
+            Contract.Requires(settings != null);
             Contract.Ensures(Contract.Result<JObject>() != null);
 
             var isEdge = element is IEdge;
