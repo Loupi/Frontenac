@@ -1,11 +1,11 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 2012
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Blueprints (.NET 4.0)", "Blueprints-.NET4.0\Blueprints (.NET 4.0).csproj", "{30495F9B-5231-477B-B8AD-6D42E1E24D39}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Blueprints", "Blueprints-.NET4.0\Blueprints.csproj", "{30495F9B-5231-477B-B8AD-6D42E1E24D39}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Blueprints.Testsuite (.NET 4.0)", "Blueprints.TestSuite-.NET4.0\Blueprints.Testsuite (.NET 4.0).csproj", "{71D5E1D9-83DA-4375-96E2-0B8BD8162973}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Blueprints.Testsuite", "Blueprints.TestSuite-.NET4.0\Blueprints.Testsuite.csproj", "{71D5E1D9-83DA-4375-96E2-0B8BD8162973}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Gremlinq (.NET 4.0)", "Gremlinq-.NET4.0\Gremlinq (.NET 4.0).csproj", "{1E901C3D-3105-4ADB-AD4B-0D100F6FA9C5}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Gremlinq", "Gremlinq-.NET4.0\Gremlinq.csproj", "{1E901C3D-3105-4ADB-AD4B-0D100F6FA9C5}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = ".nuget", ".nuget", "{FFA2446F-3758-4285-B73E-F7A8353DADEE}"
 	ProjectSection(SolutionItems) = preProject

@@ -4,6 +4,14 @@ Frontenac
 A .NET port of the [Tinkerpop Stack](http://www.tinkerpop.com/).
 
 ## News
+* 2015-07-30
+ * Frontenac.Blueprints 2.4 released.
+ * New GraphJson format support.
+ * Geographic objects added to store and query GeoPoints.
+ * IVertex.AddEdge now takes an optional id parameter.
+ * New Redis Graph Library
+ * New ElasticSearch Indexing Service
+
 * 2014-05-10
  * Frontenac.Blueprints 2.3.10 released.
  * GraphBackedTypeProvider now supports multiple graph instances correctly.
