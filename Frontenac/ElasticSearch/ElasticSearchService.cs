@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Diagnostics.Contracts;
 using System.Globalization;
@@ -17,6 +18,8 @@ namespace Frontenac.ElasticSearch
         private readonly ElasticClient _client;
         private readonly FluentDictionary<string, AnalyzerBase> _analyzers;
         private readonly CustomAnalyzer _analyzer;
+
+        private ConcurrentDictionary<string, List<string>> _indices = new ConcurrentDictionary<string, List<string>>();
 
         public ElasticSearchService(/*ElasticsearchClient client*/)
         {
@@ -79,12 +82,12 @@ namespace Frontenac.ElasticSearch
             if (value is GeoPoint)
             {
                 var geoPoint = value as GeoPoint;
-                values = new Dictionary<string, object> { { propertyName, new GeoLocation(geoPoint.Latitude, geoPoint.Longitude) } };
+                values = new Dictionary<string, object> { { propertyName.ToLowerInvariant(), new GeoLocation(geoPoint.Latitude, geoPoint.Longitude) } };
                 
             }
             else
             {
-                values = new Dictionary<string, object> {{propertyName, value}};
+                values = new Dictionary<string, object> {{propertyName.ToLowerInvariant(), value}};
             }
              
             var upsert = new Dictionary<string, object> {{"id", id}, {propertyName, value}};
@@ -164,6 +167,20 @@ namespace Frontenac.ElasticSearch
         {
             var index = GetIndexName(indexType, indexName, isUserIndex);
             _client.DeleteIndex(d => d.Index(index));
+
+            string indexColumn;
+            if (isUserIndex)
+            {
+                indexColumn = indexType == typeof (IVertex) ? UserVertexIndicesColumnName : UserEdgeIndicesColumnName;
+            }
+            else
+            {
+                indexColumn = indexType == typeof(IVertex) ? VertexIndicesColumnName : EdgeIndicesColumnName;
+            }
+
+            List<string> indices;
+            _indices.TryRemove(indexColumn, out indices);
+
             return 0;
         }
 
@@ -271,7 +288,7 @@ namespace Frontenac.ElasticSearch
             }
 
             var queryDescriptor = new QueryDescriptor<Ref>();
-            var query = CreateQuery(queryDescriptor, comparable.Key, comparable.Value, min, max, minInclusive, maxInclusive);
+            var query = CreateQuery(queryDescriptor, comparable.Key.ToLowerInvariant(), comparable.Value, min, max, minInclusive, maxInclusive);
 
             if (comparable.Comparison == Compare.NotEqual)
             {
@@ -319,7 +336,8 @@ namespace Frontenac.ElasticSearch
                 return q.Range(r =>
 // ReSharper restore ImplicitlyCapturedClosure
                 {
-                    var iq = r.Name(field);
+                    var iq = r.OnField(field);
+                    
 
                     var iq2 = minInclusive
                                   ? iq.GreaterOrEquals(minVal)
@@ -341,7 +359,7 @@ namespace Frontenac.ElasticSearch
                 return q.Range(r =>
 // ReSharper restore ImplicitlyCapturedClosure
                 {
-                    var iq = r.Name(field);
+                    var iq = r.OnField(field);
 
                     var iq2 = minInclusive
                                   ? iq.GreaterOrEquals(minVal)
@@ -363,7 +381,7 @@ namespace Frontenac.ElasticSearch
                 return q.Range(r =>
 // ReSharper restore ImplicitlyCapturedClosure
                 {
-                    var iq = r.Name(field);
+                    var iq = r.OnField(field);
 
                     var iq2 = minInclusive
                                   ? iq.GreaterOrEquals(minVal)
@@ -375,8 +393,8 @@ namespace Frontenac.ElasticSearch
                         iq2.Lower(maxVal);
                 });
             }
-            
-            return q.Term(t => t.Name(field).Value(value));
+
+            return q.Term(t => t.OnField(field).Value(value));
         }
 
         public void LoadIndices()
@@ -390,6 +408,9 @@ namespace Frontenac.ElasticSearch
 
             if (_client.IndexExists(fullName).Exists)
                 return;
+
+            List<string> indices;
+            _indices.TryRemove(indexColumn, out indices);
 
             if (parameters != null && parameters.Length > 0)
             {
@@ -407,14 +428,21 @@ namespace Frontenac.ElasticSearch
 
         public List<string> GetIndices(string indexType)
         {
-            var result = _client.GetAliases(s => s.Indices(string.Concat(indexType, "*"))).Indices
+            List<string> indices;
+            if (_indices.TryGetValue(indexType, out indices))
+                return indices;
+            indices = _client.GetAliases(s => s.Indices(string.Concat(indexType, "*"))).Indices
                 .Where(pair => pair.Key.StartsWith(indexType))
                 .Select(pair => pair.Key.Substring(indexType.Length)).ToList();
-            return result;
+            _indices.TryAdd(indexType, indices);
+            return indices;
         }
 
         public long DeleteIndex(IndexingService indexingService, string indexName, string indexColumn, Type indexType, bool isUserIndex)
         {
+            List<string> indices;
+            _indices.TryRemove(indexColumn, out indices);
+
             var fullName = string.Concat(indexColumn, indexName.ToLowerInvariant());
             _client.DeleteIndex(fullName);
             return 0;
@@ -422,14 +450,22 @@ namespace Frontenac.ElasticSearch
 
         public void DropIndex(string indexName)
         {
+            List<string> indices;
+            
             var realName = string.Concat(UserVertexIndicesColumnName, indexName.ToLowerInvariant());
             if (_client.IndexExists(realName).Exists)
+            {
                 _client.DeleteIndex(realName);
+                _indices.TryRemove(UserVertexIndicesColumnName, out indices);
+            }
             else
             {
                 realName = string.Concat(UserEdgeIndicesColumnName, indexName.ToLowerInvariant());
                 if (_client.IndexExists(realName).Exists)
+                {
+                    _indices.TryRemove(UserEdgeIndicesColumnName, out indices);
                     _client.DeleteIndex(realName);
+                }
             }
         }
     }

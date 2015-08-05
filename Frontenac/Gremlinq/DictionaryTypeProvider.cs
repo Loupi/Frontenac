@@ -47,5 +47,23 @@ namespace Frontenac.Gremlinq
 
             return true;
         }
+
+        public IEnumerable<IVertex> GetVerticesOfType(IGraph graph, Type type)
+        {
+            int id;
+            if (!_elementTypesToIds.TryGetValue(type, out id))
+                throw new KeyNotFoundException(type.AssemblyQualifiedName);
+
+            return graph.GetVertices(_typePropertyName, id);
+        }
+
+        public IEnumerable<IEdge> GetEdgesOfType(IGraph graph, Type type)
+        {
+            int id;
+            if (!_elementTypesToIds.TryGetValue(type, out id))
+                throw new KeyNotFoundException(type.AssemblyQualifiedName);
+
+            return graph.GetEdges(_typePropertyName, id);
+        }
     }
 }

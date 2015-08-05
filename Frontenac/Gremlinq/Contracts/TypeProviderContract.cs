@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Diagnostics.Contracts;
 using Frontenac.Blueprints;
 
@@ -18,6 +19,24 @@ namespace Frontenac.Gremlinq.Contracts
             Contract.Requires(element != null);
             type = null;
             return false;
+        }
+
+        public IEnumerable<IVertex> GetVerticesOfType(IGraph graph, Type type)
+        {
+            Contract.Requires(graph != null);
+            Contract.Requires(type != null);
+            Contract.Ensures(Contract.Result<IEnumerable<IVertex>>() != null);
+            
+            return null;
+        }
+
+        public IEnumerable<IEdge> GetEdgesOfType(IGraph graph, Type type)
+        {
+            Contract.Requires(graph != null);
+            Contract.Requires(type != null);
+            Contract.Ensures(Contract.Result<IEnumerable<IEdge>>() != null);
+
+            return null;
         }
     }
 }

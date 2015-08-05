@@ -1,5 +1,7 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Diagnostics.Contracts;
+using System.IO;
 using System.Linq;
 using System.Threading;
 using Frontenac.Blueprints;
@@ -208,6 +210,95 @@ namespace Frontenac.Gremlinq.Test
                 var joinedParents = mimiParents.Join(loupiParents, person => person.Id, person => person.Id, (person, person1) => person).ToList();
                 Assert.NotNull(intersectedParents);
                 Assert.NotNull(joinedParents);
+            }
+            finally
+            {
+                graph.Shutdown();
+            }
+        }
+
+        [Test]
+        public void LibImseti()
+        {
+            const string inputDataDir = "f:\\LibImseti";
+
+            var graph = (IKeyIndexableGraph)GraphTest.GenerateGraph();
+            try
+            {
+                graph.CreateVertexIndex<IRating, int>(t => t.Rating);
+
+                int id = 0;
+
+                StopWatch();
+                using (var stream = File.OpenRead(Path.Combine(inputDataDir, "gender.dat")))
+                {
+                    using (var file = new StreamReader(stream))
+                    {
+                        string line;
+                        var lineNumber = 0;
+
+                        while ((line = file.ReadLine()) != null)
+                        {
+                            if (lineNumber % 5000 == 0)
+                                Console.WriteLine("Parsing user # {0}", lineNumber);
+
+                            lineNumber++;
+                            var fields = line.Split(',');
+                            id = int.Parse(fields[0]);
+                            var gender = fields[1][0] == 'M' ? Gender.Male : fields[1][0] == 'F' ? Gender.Female : Gender.Unknown;
+                            graph.AddVertex<IUser>(id, user => user.Gender = gender);
+                        }
+
+                        PrintPerformance(graph.ToString(), lineNumber, "Done importing users", StopWatch());
+                    }
+                }
+
+                using (var stream = File.OpenRead(Path.Combine(inputDataDir, "ratings.dat")))
+                {
+                    using (var file = new StreamReader(stream))
+                    {
+                        string line;
+                        var lineNumber = 0;
+                        IVertex<IUser> rater = null;
+                        var priorRaterId = -1;
+                        var ratingVertices = new Dictionary<int, IVertex<IRating>>();
+
+                        while ((line = file.ReadLine()) != null)
+                        {
+                            lineNumber++;
+                            
+                            if (lineNumber % 5000 == 0)
+                                Console.WriteLine("Parsing rating # {0}", lineNumber);
+
+                            var fields = line.Split(',');
+                            var raterId = int.Parse(fields[0]);
+                            if (raterId != priorRaterId)
+                                rater = graph.V<IUser>(raterId);
+                            Assert.NotNull(rater);
+                            priorRaterId = raterId;
+                            var ratedId = int.Parse(fields[1]);
+                            var ratingValue = int.Parse(fields[2]);
+
+                            IVertex<IRating> rating;
+                            if (!ratingVertices.TryGetValue(ratingValue, out rating))
+                            {
+                                rating = graph.AddVertex<IRating>(++id, r => r.Rating = ratingValue);
+                                ratingVertices.Add(ratingValue, rating);
+                            }              
+
+                            var rated = graph.V<IUser>(ratedId);
+                            rater.AddEdge(null, t => t.Rated, rated, r => r.Rating = ratingValue);
+                            rating.AddEdge(null, t => t.RatingOf, rated);
+
+                            if (lineNumber >= 10000000) // remove this condition if you have time to wait a while and you have at least 16GB of RAM memory
+                                break;
+                        }
+                        PrintPerformance(graph.ToString(), lineNumber, "Done importing ratings", StopWatch());
+                    }
+                }
+
+                var ratingsVertexEnum = graph.VerticesOfType<IRating>().OrderByDescending(t => t.Model.Rating).ToArray();
+
             }
             finally
             {

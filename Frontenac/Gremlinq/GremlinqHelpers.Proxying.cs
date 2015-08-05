@@ -9,6 +9,24 @@ namespace Frontenac.Gremlinq
 {
     public static partial class GremlinqHelpers
     {   
+        public static IEnumerable<IVertex<TModel>> VerticesOfType<TModel>(this IGraph graph) 
+            where TModel : class
+        {
+            Contract.Requires(graph != null);
+            Contract.Ensures(Contract.Result<IEnumerable<IVertex<TModel>>>() != null);
+            
+            return GremlinqContext.Current.TypeProvider.GetVerticesOfType(graph, typeof(TModel)).As<TModel>();
+        }
+
+        public static IEnumerable<IEdge<TModel>> EdgesOfType<TModel>(this IGraph graph)
+            where TModel : class
+        {
+            Contract.Requires(graph != null);
+            Contract.Ensures(Contract.Result<IEnumerable<IEdge<TModel>>>() != null);
+
+            return GremlinqContext.Current.TypeProvider.GetEdgesOfType(graph, typeof(TModel)).As<TModel>();
+        }
+
         public static IVertex<TModel> Wrap<TModel>(
             this IVertex vertex,
             Action<TModel> assignMembers)

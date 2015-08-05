@@ -50,6 +50,12 @@ namespace Frontenac.Gremlinq
                         keyIndexableGraph.CreateKeyIndex(GremlinqVertexProperty, typeof(IVertex));
                 }
 
+                /*if (keyIndexableGraph != null)
+                {
+                    keyIndexableGraph.CreateKeyIndex(typePropertyName, typeof(IVertex));
+                    keyIndexableGraph.CreateKeyIndex(typePropertyName, typeof(IEdge));
+                }*/   
+
                 return vertex ?? (graph.V(GremlinqVertexProperty, typePropertyName).SingleOrDefault());
             }
 
@@ -138,6 +144,30 @@ namespace Frontenac.Gremlinq
                 throw new KeyNotFoundException(id.ToString());
 
             return true;
+        }
+
+        public IEnumerable<IVertex> GetVerticesOfType(IGraph graph, Type type)
+        {
+            var instanceTypes = _perGraphInstanceTypes.GetOrCreateValue(graph);
+            instanceTypes.LoadTypesVertex(graph, _typePropertyName);
+
+            object id;
+            if (!instanceTypes.TypesBuffer.TryGetValue(type, out id))
+                return Enumerable.Empty<IVertex>();
+
+            return graph.GetVertices(_typePropertyName, id);
+        }
+
+        public IEnumerable<IEdge> GetEdgesOfType(IGraph graph, Type type)
+        {
+            var instanceTypes = _perGraphInstanceTypes.GetOrCreateValue(graph);
+            instanceTypes.LoadTypesVertex(graph, _typePropertyName);
+
+            object id;
+            if (!instanceTypes.TypesBuffer.TryGetValue(type, out id))
+                return Enumerable.Empty<IEdge>();
+
+            return graph.GetEdges(_typePropertyName, id);
         }
     }
 }

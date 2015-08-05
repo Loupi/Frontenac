@@ -58,7 +58,10 @@ namespace Frontenac.Infrastructure.Indexing
 
         public IEnumerable<IVertex> Vertices()
         {
-            return Edges().Select(edge => edge.GetVertex(Direction.Out));
+            var ids = _indexingService.Query(typeof(IVertex), _queryElements, (int)_limit);
+            return ids.Select(id => _graph.GetVertex(id));
+
+            //return Edges().Select(edge => edge.GetVertex(Direction.Out));
         }
     }
 }

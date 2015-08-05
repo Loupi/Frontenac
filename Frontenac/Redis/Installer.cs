@@ -15,6 +15,9 @@ namespace Frontenac.Redis
         {
             Contract.Requires(container != null);
 
+            var config = new ConfigurationOptions() {ConnectTimeout = 30000, ResponseTimeout = 30000, ConnectRetry = 3, SyncTimeout = 30000};
+            config.EndPoints.Add("redis:localhost:6379");
+
             container.Register(LifeStyle.Singleton, typeof(ObjectIndexer), typeof(Indexer));
             container.Register(LifeStyle.Singleton, typeof(DefaultIndexerFactory), typeof(IIndexerFactory));
             container.Register(LifeStyle.Singleton, typeof(DefaultGraphFactory), typeof(IGraphFactory));
@@ -23,7 +26,7 @@ namespace Frontenac.Redis
 
             container.Register(LifeStyle.Transient, typeof(ElasticSearchService), typeof(IndexingService));
 
-            container.Register(ConnectionMultiplexer.Connect("localhost:6379"), typeof(ConnectionMultiplexer));
+            container.Register(ConnectionMultiplexer.Connect(config), typeof(ConnectionMultiplexer));
 
             container.Register(LifeStyle.Singleton, typeof(RedisGraphConfiguration), typeof(IGraphConfiguration));
 

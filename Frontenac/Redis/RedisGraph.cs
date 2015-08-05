@@ -7,6 +7,7 @@ using Frontenac.Blueprints.Util;
 using Frontenac.Infrastructure;
 using Frontenac.Infrastructure.Indexing;
 using Frontenac.Infrastructure.Serializers;
+using IdGen;
 using StackExchange.Redis;
 
 namespace Frontenac.Redis
@@ -14,6 +15,8 @@ namespace Frontenac.Redis
     [Serializable]
     public class RedisGraph : IndexedGraph, IIndexStore
     {
+        static readonly IdGenerator IdGenerator = new IdGenerator(0);
+
         private static readonly Features RedisGraphFeatures = new Features
         {
             SupportsDuplicateEdges = true,
@@ -87,7 +90,7 @@ namespace Frontenac.Redis
         public override IVertex AddVertex(object id)
         {
             var db = Multiplexer.GetDatabase();
-            var nextId = id == null ? db.StringIncrement("globals:next_vertex_id") : id.ToInt64();            
+            var nextId = IdGenerator.CreateId();
             db.SetAdd("globals:vertices", nextId);
             var vertex = new RedisVertex(nextId, this);
             db.StringSet(GetIdentifier(vertex, null), nextId);
@@ -170,7 +173,7 @@ namespace Frontenac.Redis
         public override IEdge AddEdge(object id, IVertex outVertex, IVertex inVertex, string label)
         {
             var db = Multiplexer.GetDatabase();
-            var nextId = id == null ? db.StringIncrement("globals:next_edge_id") : id.ToInt64();            
+            var nextId = IdGenerator.CreateId();
 
             var edge = new RedisEdge(nextId, outVertex, inVertex, label, this);
             db.StringSet(GetIdentifier(edge, "out"), (long)outVertex.Id);
@@ -312,9 +315,25 @@ namespace Frontenac.Redis
         {
             Contract.Requires(element != null);
 
-            var db = Multiplexer.GetDatabase();
-            var val = db.HashGet(GetIdentifier(element, "properties"), key);
-            return val != RedisValue.Null ? Serializer.Deserialize(val) : null;
+            int retry = 0;
+
+            while (retry < 3)
+            {
+                try
+                {
+                    var db = Multiplexer.GetDatabase();
+                    var val = db.HashGet(GetIdentifier(element, "properties"), key);
+                    return val != RedisValue.Null ? Serializer.Deserialize(val) : null;
+                }
+                catch (TimeoutException)
+                {
+                    retry++;
+                    if(retry == 3)
+                        throw;
+                }
+            }
+
+            return null;
         }
 
         public string GetIdentifier(RedisElement element, string suffix)
