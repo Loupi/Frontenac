@@ -16,7 +16,7 @@ namespace Frontenac.Redis
             Contract.Requires(container != null);
 
             var config = new ConfigurationOptions() {ConnectTimeout = 30000, ResponseTimeout = 30000, ConnectRetry = 3, SyncTimeout = 30000};
-            config.EndPoints.Add("redis:localhost:6379");
+            config.EndPoints.Add("localhost:6379");
 
             container.Register(LifeStyle.Singleton, typeof(ObjectIndexer), typeof(Indexer));
             container.Register(LifeStyle.Singleton, typeof(DefaultIndexerFactory), typeof(IIndexerFactory));

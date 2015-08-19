@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading;
 using Frontenac.Blueprints.Impls;
 using Frontenac.Blueprints.Util;
 using NUnit.Framework;
@@ -559,8 +560,9 @@ namespace Frontenac.Blueprints
                 Assert.True(a.GetEdges(Direction.Out).Contains(w));
                 Assert.True(a.GetEdges(Direction.Out).Contains(y));
                 Assert.True(a.GetEdges(Direction.Out).Contains(z));
-                Assert.True(a.GetVertices(Direction.Out).Contains(b));
-                Assert.True(a.GetVertices(Direction.Out).Contains(c));
+                var vout = a.GetVertices(Direction.Out).ToArray();
+                Assert.True(vout.Contains(b));
+                Assert.True(vout.Contains(c));
 
                 Assert.True(a.GetEdges(Direction.Out, ConvertId(graph, "knows")).Contains(w));
                 Assert.False(a.GetEdges(Direction.Out, ConvertId(graph, "knows")).Contains(y));
@@ -601,9 +603,9 @@ namespace Frontenac.Blueprints
                 x.GetVertex(Direction.Both);
                 Assert.Fail();
             }
-            catch (Exception x)
+            catch (Exception ex)
             {
-                if (x.GetType().FullName != GraphHelpers.ContractExceptionName)
+                if (ex.GetType().FullName != GraphHelpers.ContractExceptionName)
                 {
                     throw;
                 }
@@ -629,9 +631,9 @@ namespace Frontenac.Blueprints
                     Assert.Fail();
                 }
             }
-            catch (Exception x)
+            catch (Exception ex)
             {
-                if (x.GetType().FullName != GraphHelpers.ContractExceptionName)
+                if (ex.GetType().FullName != GraphHelpers.ContractExceptionName)
                 {
                     throw;
                 }

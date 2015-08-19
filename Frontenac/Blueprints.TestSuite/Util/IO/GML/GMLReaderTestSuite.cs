@@ -47,18 +47,18 @@ namespace Frontenac.Blueprints.Util.IO.GML
 
                 foreach (var e in graph.GetVertex("1").GetEdges(Direction.Out))
                 {
-                    if (e.GetVertex(Direction.In).Id.Equals("2"))
+                    if (e.GetVertex(Direction.In).Id.ToString().Equals("2"))
                     {
                         Assert.AreEqual(e.Label, "knows");
                         counter++;
                     }
-                    else if (e.GetVertex(Direction.In).Id.Equals("3"))
+                    else if (e.GetVertex(Direction.In).Id.ToString().Equals("3"))
                     {
                         Assert.AreEqual(0, Math.Round((Convert.ToSingle(e.GetProperty("weight")))));
                         Assert.AreEqual(e.Label, "created");
                         counter++;
                     }
-                    else if (e.GetVertex(Direction.In).Id.Equals("4"))
+                    else if (e.GetVertex(Direction.In).Id.ToString().Equals("4"))
                     {
                         Assert.AreEqual(1, Math.Round((Convert.ToSingle(e.GetProperty("weight")))));
                         Assert.AreEqual(e.Label, "knows");
@@ -74,13 +74,13 @@ namespace Frontenac.Blueprints.Util.IO.GML
 
                 foreach (var e in graph.GetVertex("4").GetEdges(Direction.Out))
                 {
-                    if (e.GetVertex(Direction.In).Id.Equals("3"))
+                    if (e.GetVertex(Direction.In).Id.ToString().Equals("3"))
                     {
                         Assert.AreEqual(0, Math.Round((Convert.ToSingle(e.GetProperty("weight")))));
                         Assert.AreEqual(e.Label, "created");
                         counter++;
                     }
-                    else if (e.GetVertex(Direction.In).Id.Equals("5"))
+                    else if (e.GetVertex(Direction.In).Id.ToString().Equals("5"))
                     {
                         Assert.AreEqual(1, Math.Round((Convert.ToSingle(e.GetProperty("weight")))));
                         Assert.AreEqual(e.Label, "created");
@@ -416,31 +416,31 @@ namespace Frontenac.Blueprints.Util.IO.GML
                 var counter = 0;
                 foreach (var e in graph.GetVertex(1).GetEdges(Direction.Out))
                 {
-                    if (e.GetVertex(Direction.In).Id.Equals("2"))
+                    if (e.GetVertex(Direction.In).Id.ToString().Equals("2"))
                     {
                         // Assert.AreEqual(e.getProperty("weight"), 0.5);
                         Assert.AreEqual(e.GetProperty("id2"), 8);
                         Assert.AreEqual(e.GetProperty("label2"), "has high fived");
                         Assert.AreEqual(e.Label, "knows");
-                        Assert.AreEqual(e.Id, "7");
+                        Assert.AreEqual(e.Id.ToString(), "7");
                         counter++;
                     }
-                    else if (e.GetVertex(Direction.In).Id.Equals("3"))
+                    else if (e.GetVertex(Direction.In).Id.ToString().Equals("3"))
                     {
                         Assert.AreEqual(0, Math.Round((Convert.ToSingle(e.GetProperty("weight")))));
                         Assert.AreEqual(e.GetProperty("id2"), 10);
                         Assert.AreEqual(e.GetProperty("label2"), "has high fived");
                         Assert.AreEqual(e.Label, "created");
-                        Assert.AreEqual(e.Id, "9");
+                        Assert.AreEqual(e.Id.ToString(), "9");
                         counter++;
                     }
-                    else if (e.GetVertex(Direction.In).Id.Equals("4"))
+                    else if (e.GetVertex(Direction.In).Id.ToString().Equals("4"))
                     {
                         Assert.AreEqual(1, Math.Round((Convert.ToSingle(e.GetProperty("weight")))));
                         Assert.AreEqual(e.GetProperty("id2"), 9);
                         Assert.AreEqual(e.GetProperty("label2"), "has high fived");
                         Assert.AreEqual(e.Label, "knows");
-                        Assert.AreEqual(e.Id, "8");
+                        Assert.AreEqual(e.Id.ToString(), "8");
                         counter++;
                     }
                 }
@@ -466,22 +466,22 @@ namespace Frontenac.Blueprints.Util.IO.GML
                 Assert.AreEqual(josh.GetProperty("age"), 32);
                 foreach (var e in graph.GetVertex(4).GetEdges(Direction.Out))
                 {
-                    if (e.GetVertex(Direction.In).Id.Equals("3"))
+                    if (e.GetVertex(Direction.In).Id.ToString().Equals("3"))
                     {
                         Assert.AreEqual(Math.Round((Convert.ToSingle(e.GetProperty("weight")))), 0);
                         Assert.AreEqual(e.GetProperty("id2"), 13);
                         Assert.AreEqual(e.GetProperty("label2"), null);
                         Assert.AreEqual(e.Label, "created");
-                        Assert.AreEqual(e.Id, "11");
+                        Assert.AreEqual(e.Id.ToString(), "11");
                         counter++;
                     }
-                    else if (e.GetVertex(Direction.In).Id.Equals("5"))
+                    else if (e.GetVertex(Direction.In).Id.ToString().Equals("5"))
                     {
                         Assert.AreEqual(Math.Round((Convert.ToSingle(e.GetProperty("weight")))), 1);
                         Assert.AreEqual(e.GetProperty("id2"), 11);
                         Assert.AreEqual(e.GetProperty("label2"), "has high fived");
                         Assert.AreEqual(e.Label, "created");
-                        Assert.AreEqual(e.Id, "10");
+                        Assert.AreEqual(e.Id.ToString(), "10");
                         counter++;
                     }
                 }
@@ -501,13 +501,13 @@ namespace Frontenac.Blueprints.Util.IO.GML
 
                 foreach (
                     var e in
-                        graph.GetVertex(6).GetEdges(Direction.Out).Where(e => e.GetVertex(Direction.In).Id.Equals("3")))
+                        graph.GetVertex(6).GetEdges(Direction.Out).Where(e => e.GetVertex(Direction.In).Id.ToString().Equals("3")))
                 {
                     Assert.AreEqual(Math.Round(Convert.ToDouble(e.GetProperty("weight"))), 0);
                     Assert.AreEqual(e.GetProperty("id2"), null);
                     Assert.AreEqual(e.GetProperty("label2"), null);
                     Assert.AreEqual(e.Label, "created");
-                    Assert.AreEqual(e.Id, "12");
+                    Assert.AreEqual(e.Id.ToString(), "12");
                     counter++;
                 }
 

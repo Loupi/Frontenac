@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Diagnostics.Contracts;
 using System.Linq;
+using System.Threading.Tasks;
 using Frontenac.Blueprints;
 using Frontenac.Blueprints.Util;
 using Frontenac.Infrastructure;
@@ -9,14 +10,18 @@ using Frontenac.Infrastructure.Indexing;
 using Frontenac.Infrastructure.Serializers;
 using IdGen;
 using StackExchange.Redis;
+using UniqueIdGenerator.Net;
+using RustFlakes;
 
 namespace Frontenac.Redis
 {
     [Serializable]
     public class RedisGraph : IndexedGraph, IIndexStore
     {
-        static readonly IdGenerator IdGenerator = new IdGenerator(0);
-
+        static readonly IdGenerator IdGenerator = new IdGenerator(1);
+        static readonly Generator IdGenerator2 = new Generator(1, new DateTime(2015, 1, 1, 0, 0, 0, DateTimeKind.Utc));
+        static readonly UInt64Oxidation IdGenerator3 = new UInt64Oxidation(1);
+        
         private static readonly Features RedisGraphFeatures = new Features
         {
             SupportsDuplicateEdges = true,
@@ -32,7 +37,7 @@ namespace Frontenac.Redis
             SupportsLongProperty = true,
             SupportsMapProperty = true,
             SupportsStringProperty = true,
-            IgnoresSuppliedIds = true,
+            IgnoresSuppliedIds = false,
             IsPersistent = true,
             IsRdfModel = false,
             IsWrapper = false,
@@ -58,6 +63,8 @@ namespace Frontenac.Redis
 
         internal readonly ConnectionMultiplexer Multiplexer;
 
+        private readonly RedisTransaction _transaction;
+
         public RedisGraph(IGraphFactory factory,
                           IContentSerializer serializer, 
                           ConnectionMultiplexer multiplexer, 
@@ -71,6 +78,8 @@ namespace Frontenac.Redis
             Contract.Requires(indexingService != null);
             Contract.Requires(configuration != null);
 
+            _transaction = new RedisTransaction(RedisTransactionMode.SingleTransaction, multiplexer);
+            
             _factory = factory;
             Serializer = serializer;
             Multiplexer = multiplexer;
@@ -87,13 +96,27 @@ namespace Frontenac.Redis
             get { return RedisGraphFeatures; }
         }
 
+        private int iv = 1;
         public override IVertex AddVertex(object id)
         {
-            var db = Multiplexer.GetDatabase();
-            var nextId = IdGenerator.CreateId();
-            db.SetAdd("globals:vertices", nextId);
-            var vertex = new RedisVertex(nextId, this);
-            db.StringSet(GetIdentifier(vertex, null), nextId);
+            IDatabase db;
+            var batch = _transaction.Begin(out db);
+
+            var nextId = id.TryToInt64();
+            if (!nextId.HasValue)
+                nextId = db.StringIncrement("globals:next_vertex_id");
+                //nextId = (long)IdGenerator.CreateId();
+                //nextId = (long)IdGenerator2.NextLong();
+                //nextId = iv++;
+                //nextId = (long)IdGenerator3.Oxidize();
+
+            var vertex = new RedisVertex(nextId.Value, this);
+
+            batch.SetAddAsync("globals:vertices", nextId);
+            batch.StringSetAsync(GetIdentifier(vertex, null), nextId);
+
+            _transaction.End();
+            
             return vertex;
         }
 
@@ -101,7 +124,6 @@ namespace Frontenac.Redis
         {
             var vertexId = id.TryToInt64();
             if (!vertexId.HasValue) return null;
-
             var db = Multiplexer.GetDatabase();
             var val = db.StringGet(String.Format("vertex:{0}", vertexId));
             return val != RedisValue.Null ? new RedisVertex(vertexId.Value, this) : null;
@@ -109,35 +131,39 @@ namespace Frontenac.Redis
 
         public override void RemoveVertex(IVertex vertex)
         {
+            IDatabase db;
+            var batch = _transaction.Begin(out db);
+
             var redisVertex = (RedisVertex) vertex;
             foreach (var edge in redisVertex.GetEdges(Direction.Both))
             {
-                edge.Remove();
+                RemoveEdge(edge, batch);
             }
 
-            var db = Multiplexer.GetDatabase();
-            db.KeyDelete(GetIdentifier(redisVertex, null));
-            db.KeyDelete(GetIdentifier(redisVertex, "properties"));
-            db.KeyDelete(GetIdentifier(redisVertex, "edges:in"));
-            db.KeyDelete(GetIdentifier(redisVertex, "edges:out"));
+            batch.KeyDeleteAsync(GetIdentifier(redisVertex, null));
+            batch.KeyDeleteAsync(GetIdentifier(redisVertex, "properties"));
+            batch.KeyDeleteAsync(GetIdentifier(redisVertex, "edges:in"));
+            batch.KeyDeleteAsync(GetIdentifier(redisVertex, "edges:out"));
 
             var labelsIn = GetIdentifier(redisVertex, "labels_in");
             foreach (var inLabel in db.SortedSetScan(labelsIn))
             {
-                db.KeyDelete(GetLabeledIdentifier(redisVertex, "edges:in", inLabel.Element));
+                batch.KeyDeleteAsync(GetLabeledIdentifier(redisVertex, "edges:in", inLabel.Element));
             }
-            db.KeyDelete(labelsIn);
+            batch.KeyDeleteAsync(labelsIn);
 
             var labelsOut = GetIdentifier(redisVertex, "labels_out");
             foreach (var outLabel in db.SortedSetScan(labelsOut))
             {
-                db.KeyDelete(GetLabeledIdentifier(redisVertex, "edges:out", outLabel.Element));
+                batch.KeyDeleteAsync(GetLabeledIdentifier(redisVertex, "edges:out", outLabel.Element));
             }
-            db.KeyDelete(labelsOut);
+            batch.KeyDeleteAsync(labelsOut);
 
-            db.SetRemove("globals:vertices", redisVertex.Id.ToString());
+            batch.SetRemoveAsync("globals:vertices", redisVertex.Id.ToString());
 
             base.RemoveVertex(vertex);
+
+            _transaction.End();
         }
 
         enum CollectionType
@@ -170,29 +196,42 @@ namespace Frontenac.Redis
             return db.SetScan(key).Select(entry => new RedisVertex((long)entry, this));
         }
 
+        private int ie = 1;
+
         public override IEdge AddEdge(object id, IVertex outVertex, IVertex inVertex, string label)
         {
-            var db = Multiplexer.GetDatabase();
-            var nextId = IdGenerator.CreateId();
+            IDatabase db;
+            var batch = _transaction.Begin(out db);
 
-            var edge = new RedisEdge(nextId, outVertex, inVertex, label, this);
-            db.StringSet(GetIdentifier(edge, "out"), (long)outVertex.Id);
-            db.StringSet(GetIdentifier(edge, "in"), (long)inVertex.Id);
-            db.StringSet(GetIdentifier(edge, "label"), label);
+            var nextId = id.TryToInt64();
+            if (!nextId.HasValue)
+                nextId = db.StringIncrement("globals:next_edge_id");
+                //nextId = (long)IdGenerator.CreateId();
+                //nextId = (long)IdGenerator2.NextLong();
+                //nextId = ie++;
+                //nextId = (long)IdGenerator3.Oxidize();
 
-            var vin = (RedisVertex) inVertex;
-            var vout = (RedisVertex) outVertex;
-            db.SortedSetAdd(GetIdentifier(vin, "edges:in"), nextId, vout.RawId);
-            db.SortedSetAdd(GetIdentifier(vout, "edges:out"), nextId, vin.RawId);
+            var edge = new RedisEdge(nextId.Value, outVertex, inVertex, label, this);
+            var vin = (RedisVertex)inVertex;
+            var vout = (RedisVertex)outVertex;
 
-            db.SortedSetAdd(GetLabeledIdentifier(vin, "edges:in", label), nextId, vout.RawId);
-            db.SortedSetAdd(GetLabeledIdentifier(vout, "edges:out", label), nextId, vin.RawId);
+            batch.StringSetAsync(GetIdentifier(edge, "out"), (long) outVertex.Id);
+            batch.StringSetAsync(GetIdentifier(edge, "in"), (long)inVertex.Id);
+            batch.StringSetAsync(GetIdentifier(edge, "label"), label);
 
-            db.SortedSetIncrement(GetIdentifier(vin, "labels_in"), label, 1);
-            db.SortedSetIncrement(GetIdentifier(vout, "labels_out"), label, 1);
+            batch.SortedSetAddAsync(GetIdentifier(vin, "edges:in"), nextId, vout.RawId);
+            batch.SortedSetAddAsync(GetIdentifier(vout, "edges:out"), nextId, vin.RawId);
 
-            db.StringSet(GetIdentifier(edge, null), nextId);
-            db.SetAdd("globals:edges", nextId);
+            batch.SortedSetAddAsync(GetLabeledIdentifier(vin, "edges:in", label), nextId, vout.RawId);
+            batch.SortedSetAddAsync(GetLabeledIdentifier(vout, "edges:out", label), nextId, vin.RawId);
+
+            batch.SortedSetIncrementAsync(GetIdentifier(vin, "labels_in"), label, 1);
+            batch.SortedSetIncrementAsync(GetIdentifier(vout, "labels_out"), label, 1);
+
+            batch.StringSetAsync(GetIdentifier(edge, null), nextId);
+            batch.SetAddAsync("globals:edges", nextId);
+
+            _transaction.End();
 
             return edge;
         }
@@ -203,12 +242,24 @@ namespace Frontenac.Redis
             if (!edgeId.HasValue) return null;
 
             var db = Multiplexer.GetDatabase();
-            var val = db.StringGet(String.Format("edge:{0}", edgeId));
+            var tasks = new Task<RedisValue>[4];
+
+            var batch = db.CreateTransaction();
+            var edgeKey = String.Format("edge:{0}", edgeId);
+            batch.AddCondition(Condition.KeyExists(edgeKey));
+            tasks[0] = batch.StringGetAsync(String.Format("edge:{0}", edgeId));
+            tasks[1] = batch.StringGetAsync(String.Format("edge:{0}:in", edgeId));
+            tasks[2] = batch.StringGetAsync(String.Format("edge:{0}:out", edgeId));
+            tasks[3] = batch.StringGetAsync(String.Format("edge:{0}:label", edgeId));
+            if (!batch.Execute()) return null;
+            Task.WaitAll(tasks.OfType<Task>().ToArray());
+
+            var val = tasks[0].Result;
             if (val == RedisValue.Null) return null;
 
-            var idIn = (long)db.StringGet(String.Format("edge:{0}:in", edgeId));
-            var idOut = (long)db.StringGet(String.Format("edge:{0}:out", edgeId));
-            var label = (string)db.StringGet(String.Format("edge:{0}:label", edgeId));
+            var idIn = (long)tasks[1].Result;
+            var idOut = (long)tasks[2].Result;
+            var label = (string)tasks[3].Result;
             var vin = new RedisVertex(idIn, this);
             var vout = new RedisVertex(idOut, this);
 
@@ -217,34 +268,46 @@ namespace Frontenac.Redis
 
         public override void RemoveEdge(IEdge edge)
         {
-            var redisEdge = (RedisEdge) edge;
+            IDatabase db;
+            var batch = _transaction.Begin(out db);
+
+            RemoveEdge(edge, batch);
+            batch.Execute();
+
+            _transaction.End();
+        }
+
+        private void RemoveEdge(IEdge edge, IBatch batch)
+        {
+            var redisEdge = (RedisEdge)edge;
             var vin = (RedisVertex)edge.GetVertex(Direction.In);
             var vout = (RedisVertex)edge.GetVertex(Direction.Out);
-            var db = Multiplexer.GetDatabase();
 
-            db.KeyDelete(GetIdentifier(redisEdge, null));
-            db.KeyDelete(GetIdentifier(redisEdge, "in"));
-            db.KeyDelete(GetIdentifier(redisEdge, "out"));
-            db.KeyDelete(GetIdentifier(redisEdge, "label"));
-            db.KeyDelete(GetIdentifier(redisEdge, "properties"));
+            batch.KeyDeleteAsync(GetIdentifier(redisEdge, null));
+            batch.KeyDeleteAsync(GetIdentifier(redisEdge, "in"));
+            batch.KeyDeleteAsync(GetIdentifier(redisEdge, "out"));
+            batch.KeyDeleteAsync(GetIdentifier(redisEdge, "label"));
+            batch.KeyDeleteAsync(GetIdentifier(redisEdge, "properties"));
 
-            db.SortedSetRemove(GetIdentifier(vout, "edges:out"), redisEdge.RawId);
-            db.SortedSetRemove(GetIdentifier(vin, "edges:in"), redisEdge.RawId);
+            batch.SortedSetRemoveAsync(GetIdentifier(vout, "edges:out"), redisEdge.RawId);
+            batch.SortedSetRemoveAsync(GetIdentifier(vin, "edges:in"), redisEdge.RawId);
 
-            db.SortedSetRemove(GetLabeledIdentifier(vout, "edges:out", redisEdge.Label), redisEdge.RawId);
-            db.SortedSetRemove(GetLabeledIdentifier(vin, "edges:in", redisEdge.Label), redisEdge.RawId);
+            batch.SortedSetRemoveAsync(GetLabeledIdentifier(vout, "edges:out", redisEdge.Label), redisEdge.RawId);
+            batch.SortedSetRemoveAsync(GetLabeledIdentifier(vin, "edges:in", redisEdge.Label), redisEdge.RawId);
 
             var outLabels = GetIdentifier(vout, "labels_out");
-            db.SortedSetDecrement(outLabels, redisEdge.Label, 1);
-            db.SortedSetRemoveRangeByScore(outLabels, -1, 0);
+            batch.SortedSetDecrementAsync(outLabels, redisEdge.Label, 1);
+            batch.SortedSetRemoveRangeByScoreAsync(outLabels, -1, 0);
 
             var inLabels = GetIdentifier(vin, "labels_in");
-            db.SortedSetDecrement(inLabels, redisEdge.Label, 1);
-            db.SortedSetRemoveRangeByScore(inLabels, -1, 0);
+            batch.SortedSetDecrementAsync(inLabels, redisEdge.Label, 1);
+            batch.SortedSetRemoveRangeByScoreAsync(inLabels, -1, 0);
 
-            db.SetRemove("globals:edges", redisEdge.RawId);
+            batch.SetRemoveAsync("globals:edges", redisEdge.RawId);
 
             base.RemoveEdge(edge);
+
+            batch.Execute();
         }
 
         public override IEnumerable<IEdge> GetEdges()
@@ -371,9 +434,14 @@ namespace Frontenac.Redis
             Contract.Requires(!string.IsNullOrWhiteSpace(key));
 
             var raw = Serializer.Serialize(value);
-            var db = Multiplexer.GetDatabase();
-            db.HashSet(GetIdentifier(element, "properties"), key, raw);
+
+            IDatabase db;
+            var batch = _transaction.Begin(out db);
+
+            batch.HashSetAsync(GetIdentifier(element, "properties"), key, raw);
             SetIndexedKeyValue(element, key, value);
+
+            _transaction.End();
         }
 
         public object RemoveProperty(RedisElement element, string key)
@@ -382,9 +450,15 @@ namespace Frontenac.Redis
             Contract.Requires(!string.IsNullOrWhiteSpace(key));
 
             var result = GetProperty(element, key);
-            var db = Multiplexer.GetDatabase();
-            db.HashDelete(GetIdentifier(element, "properties"), key);
+
+            IDatabase db;
+            var batch = _transaction.Begin(out db);
+ 
+            batch.HashDeleteAsync(GetIdentifier(element, "properties"), key);
             SetIndexedKeyValue(element, key, null);
+
+            _transaction.End();
+
             return result;
         }
 
@@ -438,10 +512,8 @@ namespace Frontenac.Redis
                 var indices = GetIndices(type, false);
                 if (!indices.HasIndex(key)) return;
 
-                var id = element.Id.TryToInt64();
-                if (!id.HasValue) throw new InvalidOperationException();
-
-                var generation = indices.Set(id.Value, key, key, value);
+                var id = element.Id.ToInt64();
+                var generation = indices.Set(id, key, key, value);
                 UpdateGeneration(generation);
             }
             else

@@ -106,11 +106,10 @@ namespace Frontenac.Grave
         public override IVertex GetVertex(object id)
         {
             IVertex result = null;
-            var vertexId = id.TryToInt32();
-            if (!vertexId.HasValue) return null;
+            var vertexId = id.ToInt32();
             var esentContext = EsentContext;
-            if (esentContext.VertexTable.SetCursor(vertexId.Value))
-                result = new GraveVertex(this, vertexId.Value);
+            if (esentContext.VertexTable.SetCursor(vertexId))
+                result = new GraveVertex(this, vertexId);
 
             return result;
         }
@@ -161,13 +160,11 @@ namespace Frontenac.Grave
 
         public override IEdge GetEdge(object id)
         {
-            var edgeId = id.TryToInt32();
-            if (!edgeId.HasValue) return null;
-
+            var edgeId = id.ToInt32();
             Tuple<string, int, int> data;
             var esentContext = EsentContext;
-            return esentContext.EdgesTable.TryGetEdge(edgeId.Value, out data)
-                       ? new GraveEdge(edgeId.Value, GetVertex(data.Item3), GetVertex(data.Item2), data.Item1, this)
+            return esentContext.EdgesTable.TryGetEdge(edgeId, out data)
+                       ? new GraveEdge(edgeId, GetVertex(data.Item3), GetVertex(data.Item2), data.Item1, this)
                        : null;
         }
 

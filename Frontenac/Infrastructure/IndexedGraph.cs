@@ -88,17 +88,15 @@ namespace Frontenac.Infrastructure
 
         public virtual void RemoveEdge(IEdge edge)
         {
-            var id = edge.Id.TryToInt64();
-            if(!id.HasValue)throw new InvalidOperationException();
-            var generation = IndexingService.EdgeIndices.DeleteDocuments(id.Value);
+            var id = edge.Id.ToInt64();
+            var generation = IndexingService.EdgeIndices.DeleteDocuments(id);
             UpdateGeneration(generation);
         }
 
         public virtual void RemoveVertex(IVertex vertex)
         {
-            var id = vertex.Id.TryToInt64();
-            if (!id.HasValue) throw new InvalidOperationException();
-            var generation = IndexingService.VertexIndices.DeleteDocuments(id.Value);
+            var id = vertex.Id.ToInt64();
+            var generation = IndexingService.VertexIndices.DeleteDocuments(id);
             UpdateGeneration(generation);
         }
 
@@ -226,10 +224,8 @@ namespace Frontenac.Infrastructure
             var indices = GetIndices(type, false);
             if (!indices.HasIndex(key)) return;
 
-            var id = element.Id.TryToInt64();
-            if (!id.HasValue) throw new InvalidOperationException();
-
-            var generation = indices.Set(id.Value, key, key, value);
+            var id = element.Id.ToInt64();
+            var generation = indices.Set(id, key, key, value);
             UpdateGeneration(generation);
         }
     }

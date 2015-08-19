@@ -38,25 +38,25 @@ namespace Frontenac.Blueprints.Util.IO.GraphML
                 var counter = 0;
                 foreach (var e in graph.GetVertex("1").GetEdges(Direction.Out))
                 {
-                    if (e.GetVertex(Direction.In).Id.Equals("2"))
+                    if (e.GetVertex(Direction.In).Id.ToString().Equals("2"))
                     {
                         // Assert.AreEqual(e.getProperty("weight"), 0.5);
                         Assert.AreEqual(e.Label, "knows");
-                        Assert.AreEqual(e.Id, "7");
+                        Assert.AreEqual(e.Id.ToString(), "7");
                         counter++;
                     }
-                    else if (e.GetVertex(Direction.In).Id.Equals("3"))
+                    else if (e.GetVertex(Direction.In).Id.ToString().Equals("3"))
                     {
                         Assert.AreEqual(Math.Round(Convert.ToSingle(e.GetProperty("weight"))), 0);
                         Assert.AreEqual(e.Label, "created");
-                        Assert.AreEqual(e.Id, "9");
+                        Assert.AreEqual(e.Id.ToString(), "9");
                         counter++;
                     }
-                    else if (e.GetVertex(Direction.In).Id.Equals("4"))
+                    else if (e.GetVertex(Direction.In).Id.ToString().Equals("4"))
                     {
                         Assert.AreEqual(Math.Round(Convert.ToSingle(e.GetProperty("weight"))), 1);
                         Assert.AreEqual(e.Label, "knows");
-                        Assert.AreEqual(e.Id, "8");
+                        Assert.AreEqual(e.Id.ToString(), "8");
                         counter++;
                     }
                 }
@@ -68,18 +68,18 @@ namespace Frontenac.Blueprints.Util.IO.GraphML
                 Assert.AreEqual(josh.GetProperty("age"), 32);
                 foreach (var e in graph.GetVertex("4").GetEdges(Direction.Out))
                 {
-                    if (e.GetVertex(Direction.In).Id.Equals("3"))
+                    if (e.GetVertex(Direction.In).Id.ToString().Equals("3"))
                     {
                         Assert.AreEqual(Math.Round(Convert.ToSingle(e.GetProperty("weight"))), 0);
                         Assert.AreEqual(e.Label, "created");
-                        Assert.AreEqual(e.Id, "11");
+                        Assert.AreEqual(e.Id.ToString(), "11");
                         counter++;
                     }
-                    else if (e.GetVertex(Direction.In).Id.Equals("5"))
+                    else if (e.GetVertex(Direction.In).Id.ToString().Equals("5"))
                     {
                         Assert.AreEqual(Math.Round(Convert.ToSingle(e.GetProperty("weight"))), 1);
                         Assert.AreEqual(e.Label, "created");
-                        Assert.AreEqual(e.Id, "10");
+                        Assert.AreEqual(e.Id.ToString(), "10");
                         counter++;
                     }
                 }
@@ -396,31 +396,31 @@ namespace Frontenac.Blueprints.Util.IO.GraphML
                 var counter = 0;
                 foreach (var e in graph.GetVertex("1").GetEdges(Direction.Out))
                 {
-                    if (e.GetVertex(Direction.In).Id.Equals("2"))
+                    if (e.GetVertex(Direction.In).Id.ToString().Equals("2"))
                     {
                         // Assert.AreEqual(e.getProperty("weight"), 0.5);
                         Assert.AreEqual(e.GetProperty("_id"), 8);
                         Assert.AreEqual(e.GetProperty("_label"), "has high fived");
                         Assert.AreEqual(e.Label, "knows");
-                        Assert.AreEqual(e.Id, "7");
+                        Assert.AreEqual(e.Id.ToString(), "7");
                         counter++;
                     }
-                    else if (e.GetVertex(Direction.In).Id.Equals("3"))
+                    else if (e.GetVertex(Direction.In).Id.ToString().Equals("3"))
                     {
                         Assert.AreEqual(Math.Round(Convert.ToSingle(e.GetProperty("weight"))), 0);
                         Assert.AreEqual(e.GetProperty("_id"), 10);
                         Assert.AreEqual(e.GetProperty("_label"), "has high fived");
                         Assert.AreEqual(e.Label, "created");
-                        Assert.AreEqual(e.Id, "9");
+                        Assert.AreEqual(e.Id.ToString(), "9");
                         counter++;
                     }
-                    else if (e.GetVertex(Direction.In).Id.Equals("4"))
+                    else if (e.GetVertex(Direction.In).Id.ToString().Equals("4"))
                     {
                         Assert.AreEqual(Math.Round(Convert.ToSingle(e.GetProperty("weight"))), 1);
                         Assert.AreEqual(e.GetProperty("_id"), 9);
                         Assert.AreEqual(e.GetProperty("_label"), "has high fived");
                         Assert.AreEqual(e.Label, "knows");
-                        Assert.AreEqual(e.Id, "8");
+                        Assert.AreEqual(e.Id.ToString(), "8");
                         counter++;
                     }
                 }
@@ -446,22 +446,22 @@ namespace Frontenac.Blueprints.Util.IO.GraphML
                 Assert.AreEqual(josh.GetProperty("age"), 32);
                 foreach (var e in graph.GetVertex("4").GetEdges(Direction.Out))
                 {
-                    if (e.GetVertex(Direction.In).Id.Equals("3"))
+                    if (e.GetVertex(Direction.In).Id.ToString().Equals("3"))
                     {
                         Assert.AreEqual(Math.Round(Convert.ToSingle(e.GetProperty("weight"))), 0);
                         Assert.AreEqual(e.GetProperty("_id"), 13);
                         Assert.AreEqual(e.GetProperty("_label"), null);
                         Assert.AreEqual(e.Label, "created");
-                        Assert.AreEqual(e.Id, "11");
+                        Assert.AreEqual(e.Id.ToString(), "11");
                         counter++;
                     }
-                    else if (e.GetVertex(Direction.In).Id.Equals("5"))
+                    else if (e.GetVertex(Direction.In).Id.ToString().Equals("5"))
                     {
                         Assert.AreEqual(Math.Round(Convert.ToSingle(e.GetProperty("weight"))), 1);
                         Assert.AreEqual(e.GetProperty("_id"), 11);
                         Assert.AreEqual(e.GetProperty("_label"), "has high fived");
                         Assert.AreEqual(e.Label, "created");
-                        Assert.AreEqual(e.Id, "10");
+                        Assert.AreEqual(e.Id.ToString(), "10");
                         counter++;
                     }
                 }
@@ -483,13 +483,13 @@ namespace Frontenac.Blueprints.Util.IO.GraphML
                     var e in
                         graph.GetVertex("6")
                              .GetEdges(Direction.Out)
-                             .Where(e => e.GetVertex(Direction.In).Id.Equals("3")))
+                             .Where(e => e.GetVertex(Direction.In).Id.ToString().Equals("3")))
                 {
                     Assert.AreEqual(Math.Round(Convert.ToSingle(e.GetProperty("weight"))), 0);
                     Assert.AreEqual(e.GetProperty("_id"), null);
                     Assert.AreEqual(e.GetProperty("_label"), null);
                     Assert.AreEqual(e.Label, "created");
-                    Assert.AreEqual(e.Id, "12");
+                    Assert.AreEqual(e.Id.ToString(), "12");
                     counter++;
                 }
 
@@ -966,7 +966,7 @@ namespace Frontenac.Blueprints.Util.IO.GraphML
                 Assert.AreEqual(29, onlyOne.GetProperty("i"));
                 Assert.AreEqual(true, onlyOne.GetProperty("b"));
                 Assert.AreEqual(10000000, onlyOne.GetProperty("l"));
-                Assert.AreEqual(123.54f, onlyOne.GetProperty("f"));
+                Assert.AreEqual(123.54, onlyOne.GetProperty("f"));
                 Assert.AreEqual("junk", onlyOne.GetProperty("n"));
             }
             finally

@@ -9,11 +9,12 @@
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>Frontenac.Redis</RootNamespace>
     <AssemblyName>Frontenac.Redis</AssemblyName>
-    <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
+    <TargetFrameworkVersion>v4.5.1</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <SolutionDir Condition="$(SolutionDir) == '' Or $(SolutionDir) == '*Undefined*'">..\</SolutionDir>
     <RestorePackages>true</RestorePackages>
     <CodeContractsAssemblyMode>1</CodeContractsAssemblyMode>
+    <TargetFrameworkProfile />
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
@@ -70,7 +71,7 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <PropertyGroup>
-    <SignAssembly>true</SignAssembly>
+    <SignAssembly>false</SignAssembly>
   </PropertyGroup>
   <PropertyGroup>
     <AssemblyOriginatorKeyFile>key.snk</AssemblyOriginatorKeyFile>
@@ -79,17 +80,24 @@
     <Reference Include="IdGen">
       <HintPath>..\packages\IdGen.1.1.0\lib\net45\IdGen.dll</HintPath>
     </Reference>
+    <Reference Include="RustFlakes">
+      <HintPath>..\packages\RustFlakes.1.4.1\lib\RustFlakes.dll</HintPath>
+    </Reference>
     <Reference Include="StackExchange.Redis.StrongName, Version=1.0.316.0, Culture=neutral, PublicKeyToken=c219ff1ca8c2ce46, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\packages\StackExchange.Redis.StrongName.1.0.481\lib\net45\StackExchange.Redis.StrongName.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
+    <Reference Include="System.Numerics" />
     <Reference Include="System.Xml.Linq" />
     <Reference Include="System.Data.DataSetExtensions" />
     <Reference Include="Microsoft.CSharp" />
     <Reference Include="System.Data" />
     <Reference Include="System.Xml" />
+    <Reference Include="UniqueIdGenerator.Net">
+      <HintPath>..\packages\UniqueIdGenerator.1.0.2\lib\net45\UniqueIdGenerator.Net.dll</HintPath>
+    </Reference>
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Installer.cs" />
@@ -98,6 +106,8 @@
     <Compile Include="RedisEdge.cs" />
     <Compile Include="RedisElement.cs" />
     <Compile Include="RedisGraph.cs" />
+    <Compile Include="RedisTransaction.cs" />
+    <Compile Include="RedisTransactionMode.cs" />
     <Compile Include="RedisVertex.cs" />
     <Compile Include="Properties\Settings.Designer.cs">
       <AutoGen>True</AutoGen>
@@ -107,7 +117,6 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="app.config" />
-    <None Include="IdGenHelp.chm" />
     <None Include="key.snk" />
     <None Include="packages.config" />
     <None Include="Properties\Settings.settings">
@@ -143,11 +152,11 @@
       <ErrorText>This project references NuGet package(s) that are missing on this computer. Enable NuGet Package Restore to download them.  For more information, see http://go.microsoft.com/fwlink/?LinkID=322105. The missing file is {0}.</ErrorText>
     </PropertyGroup>
     <Error Condition="!Exists('$(SolutionDir)\.nuget\NuGet.targets')" Text="$([System.String]::Format('$(ErrorText)', '$(SolutionDir)\.nuget\NuGet.targets'))" />
-    <Error Condition="!Exists('..\packages\Fody.1.29.0\build\Fody.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\Fody.1.29.0\build\Fody.targets'))" />
     <Error Condition="!Exists('..\packages\GitVersionTask.3.0.2\Build\GitVersionTask.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\GitVersionTask.3.0.2\Build\GitVersionTask.targets'))" />
+    <Error Condition="!Exists('..\packages\Fody.1.29.2\build\portable-net+sl+win+wpa+wp\Fody.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\Fody.1.29.2\build\portable-net+sl+win+wpa+wp\Fody.targets'))" />
   </Target>
-  <Import Project="..\packages\Fody.1.29.0\build\Fody.targets" Condition="Exists('..\packages\Fody.1.29.0\build\Fody.targets')" />
   <Import Project="..\packages\GitVersionTask.3.0.2\Build\GitVersionTask.targets" Condition="Exists('..\packages\GitVersionTask.3.0.2\Build\GitVersionTask.targets')" />
+  <Import Project="..\packages\Fody.1.29.2\build\portable-net+sl+win+wpa+wp\Fody.targets" Condition="Exists('..\packages\Fody.1.29.2\build\portable-net+sl+win+wpa+wp\Fody.targets')" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.
   <Target Name="BeforeBuild">

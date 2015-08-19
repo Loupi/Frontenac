@@ -13,13 +13,54 @@ using IGeoShape = Frontenac.Blueprints.Geo.IGeoShape;
 
 namespace Frontenac.ElasticSearch
 {
+    public interface ITransaction
+    {
+        void Commit();
+        void Rollback();
+    }
+
+    public class StandardStrategy
+    {
+        private readonly ElasticClient _client;
+
+        public StandardStrategy(ElasticClient client)
+        {
+            _client = client;
+        }
+
+        public void Delete(string indices, long id)
+        {
+            
+            _client.DeleteByQuery<Ref>(d => d.Indices(indices).AllTypes().Query(q => q.Ids(new[] { id.ToString(CultureInfo.InvariantCulture) })));
+        }
+    }
+
+    public class BulkStrategy
+    {
+        private readonly ElasticClient _client;
+        private readonly BulkDescriptor _bulkDescriptor = new BulkDescriptor();
+
+        public BulkStrategy(ElasticClient client)
+        {
+            _client = client;
+        }
+
+        public void Delete(string indices, long id)
+        {
+            var docs = _client.Search<Ref>(s => s.Indices(indices).AllTypes().Query(q => q.Ids(new[] { id.ToString(CultureInfo.InvariantCulture) })));
+            if (docs.Total <= 0) return;
+            var ids = docs.Documents.Select(@ref => @ref.Id).ToList();
+            _bulkDescriptor.DeleteMany<Ref>(ids, (descriptor, l) => descriptor.Index(indices));
+        }
+    }
+
     public class ElasticSearchService : IndexingService, IIndexStore
     {
         private readonly ElasticClient _client;
         private readonly FluentDictionary<string, AnalyzerBase> _analyzers;
         private readonly CustomAnalyzer _analyzer;
 
-        private ConcurrentDictionary<string, List<string>> _indices = new ConcurrentDictionary<string, List<string>>();
+        private readonly ConcurrentDictionary<string, List<string>> _indices = new ConcurrentDictionary<string, List<string>>();
 
         public ElasticSearchService(/*ElasticsearchClient client*/)
         {
