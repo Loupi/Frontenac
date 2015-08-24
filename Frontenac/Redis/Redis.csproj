@@ -106,7 +106,9 @@
     <Compile Include="RedisEdge.cs" />
     <Compile Include="RedisElement.cs" />
     <Compile Include="RedisGraph.cs" />
-    <Compile Include="RedisTransaction.cs" />
+    <Compile Include="RedisTransactionalGraph.cs" />
+    <Compile Include="TransactedIndex.cs" />
+    <Compile Include="TransactionManager.cs" />
     <Compile Include="RedisTransactionMode.cs" />
     <Compile Include="RedisVertex.cs" />
     <Compile Include="Properties\Settings.Designer.cs">

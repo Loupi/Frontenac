@@ -28,6 +28,16 @@ namespace Frontenac.Grave.Tests
             return Factory.Create<IGraph>();
         }
 
+        public override ITransactionalGraph GenerateTransactionalGraph()
+        {
+            throw new NotImplementedException();
+        }
+
+        public override ITransactionalGraph GenerateTransactionalGraph(string graphDirectoryName)
+        {
+            throw new NotImplementedException();
+        }
+
         public static string GetGraveGraphDirectory()
         {
             return Path.Combine(Directory.GetCurrentDirectory(), "Grave");

@@ -63,7 +63,7 @@ namespace Frontenac.Redis
 
         internal readonly ConnectionMultiplexer Multiplexer;
 
-        private readonly RedisTransaction _transaction;
+        protected readonly TransactionManager TransactionManager;
 
         public RedisGraph(IGraphFactory factory,
                           IContentSerializer serializer, 
@@ -77,13 +77,17 @@ namespace Frontenac.Redis
             Contract.Requires(multiplexer != null);
             Contract.Requires(indexingService != null);
             Contract.Requires(configuration != null);
-
-            _transaction = new RedisTransaction(RedisTransactionMode.SingleTransaction, multiplexer);
             
             _factory = factory;
             Serializer = serializer;
             Multiplexer = multiplexer;
+
             Init(configuration);
+
+            if(this is RedisTransactionalGraph)
+                TransactionManager = new TransactionManager(RedisTransactionMode.BatchTransaction, multiplexer, indexingService);
+            else
+                TransactionManager = new TransactionManager(RedisTransactionMode.SingleBatch, multiplexer, indexingService);
         }
 
         protected override IVertex GetVertexInstance(long vertexId)
@@ -100,7 +104,7 @@ namespace Frontenac.Redis
         public override IVertex AddVertex(object id)
         {
             IDatabase db;
-            var batch = _transaction.Begin(out db);
+            var batch = TransactionManager.Begin(out db);
 
             var nextId = id.TryToInt64();
             if (!nextId.HasValue)
@@ -115,7 +119,7 @@ namespace Frontenac.Redis
             batch.SetAddAsync("globals:vertices", nextId);
             batch.StringSetAsync(GetIdentifier(vertex, null), nextId);
 
-            _transaction.End();
+            TransactionManager.End();
             
             return vertex;
         }
@@ -132,7 +136,7 @@ namespace Frontenac.Redis
         public override void RemoveVertex(IVertex vertex)
         {
             IDatabase db;
-            var batch = _transaction.Begin(out db);
+            var batch = TransactionManager.Begin(out db);
 
             var redisVertex = (RedisVertex) vertex;
             foreach (var edge in redisVertex.GetEdges(Direction.Both))
@@ -163,7 +167,7 @@ namespace Frontenac.Redis
 
             base.RemoveVertex(vertex);
 
-            _transaction.End();
+            TransactionManager.End();
         }
 
         enum CollectionType
@@ -201,7 +205,7 @@ namespace Frontenac.Redis
         public override IEdge AddEdge(object id, IVertex outVertex, IVertex inVertex, string label)
         {
             IDatabase db;
-            var batch = _transaction.Begin(out db);
+            var batch = TransactionManager.Begin(out db);
 
             var nextId = id.TryToInt64();
             if (!nextId.HasValue)
@@ -231,7 +235,7 @@ namespace Frontenac.Redis
             batch.StringSetAsync(GetIdentifier(edge, null), nextId);
             batch.SetAddAsync("globals:edges", nextId);
 
-            _transaction.End();
+            TransactionManager.End();
 
             return edge;
         }
@@ -269,12 +273,12 @@ namespace Frontenac.Redis
         public override void RemoveEdge(IEdge edge)
         {
             IDatabase db;
-            var batch = _transaction.Begin(out db);
+            var batch = TransactionManager.Begin(out db);
 
             RemoveEdge(edge, batch);
             batch.Execute();
 
-            _transaction.End();
+            TransactionManager.End();
         }
 
         private void RemoveEdge(IEdge edge, IBatch batch)
@@ -326,7 +330,7 @@ namespace Frontenac.Redis
                 foreach (var outLabel in db.SortedSetScan(GetIdentifier(vertex, "labels_out")))
                 {
 // ReSharper disable SpecifyACultureInStringConversionExplicitly
-                    string labelVal2 = outLabel.Element.ToString();
+                    var labelVal2 = outLabel.Element.ToString();
 // ReSharper restore SpecifyACultureInStringConversionExplicitly
                     if (labels.Length > 0 && !labels.Contains(labelVal2))
                         continue;
@@ -346,7 +350,7 @@ namespace Frontenac.Redis
             foreach (var inLabel in db.SortedSetScan(GetIdentifier(vertex, "labels_in")))
             {
 // ReSharper disable SpecifyACultureInStringConversionExplicitly
-                string labelVal = inLabel.Element.ToString();
+                var labelVal = inLabel.Element.ToString();
 // ReSharper restore SpecifyACultureInStringConversionExplicitly
                 if(labels.Length > 0 && !labels.Contains(labelVal))
                     continue;
@@ -436,12 +440,12 @@ namespace Frontenac.Redis
             var raw = Serializer.Serialize(value);
 
             IDatabase db;
-            var batch = _transaction.Begin(out db);
+            var batch = TransactionManager.Begin(out db);
 
             batch.HashSetAsync(GetIdentifier(element, "properties"), key, raw);
             SetIndexedKeyValue(element, key, value);
 
-            _transaction.End();
+            TransactionManager.End();
         }
 
         public object RemoveProperty(RedisElement element, string key)
@@ -452,20 +456,33 @@ namespace Frontenac.Redis
             var result = GetProperty(element, key);
 
             IDatabase db;
-            var batch = _transaction.Begin(out db);
+            var batch = TransactionManager.Begin(out db);
  
             batch.HashDeleteAsync(GetIdentifier(element, "properties"), key);
             SetIndexedKeyValue(element, key, null);
 
-            _transaction.End();
+            TransactionManager.End();
 
             return result;
         }
 
         public static void DeleteDb()
         {
-            var mp = ConnectionMultiplexer.Connect("localhost:6379,allowAdmin=true");
-            mp.GetServer("localhost:6379").FlushDatabase();
+            var config = new ConfigurationOptions
+            {
+                ConnectTimeout = 30000,
+                ResponseTimeout = 30000,
+                ConnectRetry = 3,
+                SyncTimeout = 30000,
+                AllowAdmin = true
+            };
+
+            var endpoints = Properties.Settings.Default.ConnectionString.Split(';');
+            foreach (var endpoint in endpoints)
+                config.EndPoints.Add(endpoint);
+
+            var mp = ConnectionMultiplexer.Connect(config);
+            mp.GetServer(config.EndPoints[0]).FlushDatabase();
             mp.Dispose();
         }
 
@@ -478,6 +495,14 @@ namespace Frontenac.Redis
         {
             var db = Multiplexer.GetDatabase();
             db.SetAdd(indexColumn, indexName);
+        }
+
+        protected override IIndex CreateIndexObject(string indexName, Type indexType, IIndexCollection indexCollection,
+            IIndexCollection userIndexCollection)
+        {
+            //var index = base.CreateIndexObject(indexName, indexType, indexCollection, userIndexCollection);
+            //return index;
+            return new TransactedIndex(indexName, indexType, this, this, IndexingService, TransactionManager);
         }
 
         public List<string> GetIndices(string indexType)

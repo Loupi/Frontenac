@@ -27,6 +27,16 @@ namespace Frontenac.Redis.Test
             return Factory.Create<IGraph>();
         }
 
+        public override ITransactionalGraph GenerateTransactionalGraph()
+        {
+            return GenerateTransactionalGraph("Redis");
+        }
+
+        public override ITransactionalGraph GenerateTransactionalGraph(string graphDirectoryName)
+        {
+            return Factory.Create<ITransactionalGraph>();
+        }
+
         public static string GetRedisGraphDirectory()
         {
             return Path.Combine(Directory.GetCurrentDirectory(), "Redis");

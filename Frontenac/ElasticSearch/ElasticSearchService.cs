@@ -8,49 +8,95 @@ using Frontenac.Blueprints.Geo;
 using Frontenac.Infrastructure;
 using Frontenac.Infrastructure.Indexing;
 using System.Linq;
+using System.Threading;
 using Nest;
 using IGeoShape = Frontenac.Blueprints.Geo.IGeoShape;
 
 namespace Frontenac.ElasticSearch
 {
-    public interface ITransaction
-    {
-        void Commit();
-        void Rollback();
-    }
-
-    public class StandardStrategy
-    {
-        private readonly ElasticClient _client;
-
-        public StandardStrategy(ElasticClient client)
-        {
-            _client = client;
-        }
-
-        public void Delete(string indices, long id)
-        {
-            
-            _client.DeleteByQuery<Ref>(d => d.Indices(indices).AllTypes().Query(q => q.Ids(new[] { id.ToString(CultureInfo.InvariantCulture) })));
-        }
-    }
-
     public class BulkStrategy
     {
         private readonly ElasticClient _client;
-        private readonly BulkDescriptor _bulkDescriptor = new BulkDescriptor();
-
-        public BulkStrategy(ElasticClient client)
+        private readonly ElasticSearchService _searchService;
+        private BulkDescriptor _bulkDescriptor;
+        
+        public BulkStrategy(ElasticClient client, ElasticSearchService searchService)
         {
             _client = client;
+            _searchService = searchService;
         }
 
-        public void Delete(string indices, long id)
+        public void Update(string index, long id, Dictionary<string, object> values, Dictionary<string, object> upsert)
         {
-            var docs = _client.Search<Ref>(s => s.Indices(indices).AllTypes().Query(q => q.Ids(new[] { id.ToString(CultureInfo.InvariantCulture) })));
-            if (docs.Total <= 0) return;
-            var ids = docs.Documents.Select(@ref => @ref.Id).ToList();
-            _bulkDescriptor.DeleteMany<Ref>(ids, (descriptor, l) => descriptor.Index(indices));
+            if (_bulkDescriptor == null)
+                _bulkDescriptor = new BulkDescriptor();
+
+            _bulkDescriptor.Update<object, object>(u => u.Index(index).Id(id).Doc(values).Upsert(upsert));
+        }
+
+        public void DeleteDocuments(Type indexType, long id)
+        {
+            if (indexType == typeof (IVertex))
+            {
+                var indices = _searchService.VertexIndices.GetIndices().ToArray();
+                Delete(indices, id, "vertex-");
+            }
+            else
+            {
+                var indices = _searchService.EdgeIndices.GetIndices().ToArray();
+                Delete(indices, id, "edge-");
+            }
+
+            DeleteUserDocuments(indexType, id);
+        }
+
+        public void DeleteUserDocuments(Type indexType, long id)
+        {
+            if (indexType == typeof(IVertex))
+            {
+                var indices = _searchService.UserVertexIndices.GetIndices().ToArray();
+                Delete(indices, id, "vertex_");
+            }
+            else
+            {
+                var indices = _searchService.UserEdgeIndices.GetIndices().ToArray();
+                Delete(indices, id, "edge_");
+            }
+        }
+
+        private void Delete(IEnumerable<string> indices, long id, string prefix)
+        {
+            foreach (var index in indices)
+            {
+                string indexName = string.Concat(prefix, index);
+                var docs = _client.Search<Ref>(s => s.Index(indexName).AllTypes().Query(q => q.Ids(new[] { id.ToString(CultureInfo.InvariantCulture) })));
+                if (docs.Total > 0)
+                {
+                    var ids = docs.Documents.Select(@ref => @ref.Id).ToList();
+
+                    if (ids.Count > 0)
+                    {
+                        if (_bulkDescriptor == null)
+                            _bulkDescriptor = new BulkDescriptor();
+
+                        _bulkDescriptor.DeleteMany<object>(ids, (descriptor, l) => descriptor.Index(indexName));
+                    }
+                }
+            }
+        }
+
+        public void Commit()
+        {
+            if (_bulkDescriptor != null)
+            {
+                _client.Bulk(_bulkDescriptor);
+                _bulkDescriptor = null;
+            }
+        }
+
+        public void Rollback()
+        {
+            _bulkDescriptor = null;
         }
     }
 
@@ -58,7 +104,8 @@ namespace Frontenac.ElasticSearch
     {
         private readonly ElasticClient _client;
         private readonly FluentDictionary<string, AnalyzerBase> _analyzers;
-        private readonly CustomAnalyzer _analyzer;
+
+        private readonly BulkStrategy _transaction;        
 
         private readonly ConcurrentDictionary<string, List<string>> _indices = new ConcurrentDictionary<string, List<string>>();
 
@@ -71,13 +118,15 @@ namespace Frontenac.ElasticSearch
 
             _client = new ElasticClient();
 
-            _analyzer = new CustomAnalyzer
-                {
-                    Filter = new List<string> {"standard", "asciifolding"},
-                    Tokenizer = "standard"
-                };
+            _transaction = new BulkStrategy(_client, this);
 
-            _analyzers = new FluentDictionary<string, AnalyzerBase> {{"exact", _analyzer}};
+            var analyzer = new CustomAnalyzer
+            {
+                Filter = new List<string> {"standard", "asciifolding"},
+                Tokenizer = "standard"
+            };
+
+            _analyzers = new FluentDictionary<string, AnalyzerBase> {{"exact", analyzer}};
         }
 
         public static void DropAll()
@@ -133,8 +182,8 @@ namespace Frontenac.ElasticSearch
              
             var upsert = new Dictionary<string, object> {{"id", id}, {propertyName, value}};
 
+            _transaction.Update(index, id, values, upsert);
 
-            _client.Update<object, object>(u => u.Index(index).Id(id).Doc(values).Upsert(upsert));
             return 0;
         }
 
@@ -153,16 +202,22 @@ namespace Frontenac.ElasticSearch
 
         public override long DeleteDocuments(Type indexType, long id)
         {
-            var indices =  indexType == typeof (IVertex) ? "vertex*" : "edge*";
-            _client.DeleteByQuery<Ref>(d => d.Indices(indices).AllTypes().Query(q => q.Ids(new []{id.ToString(CultureInfo.InvariantCulture)})));
+            //var indices =  indexType == typeof (IVertex) ? "vertex*" : "edge*";
+            //_client.DeleteByQuery<Ref>(d => d.Indices(indices).AllTypes().Query(q => q.Ids(new []{id.ToString(CultureInfo.InvariantCulture)})));
+
+            _transaction.DeleteDocuments(indexType, id);
+
             return 0;
         }
 
         public override long DeleteUserDocuments(Type indexType, long id, string key, object value)
         {
-            var indices = indexType == typeof(IVertex) ? UserVertexIndicesColumnName : UserEdgeIndicesColumnName;
+            /*var indices = indexType == typeof(IVertex) ? UserVertexIndicesColumnName : UserEdgeIndicesColumnName;
             indices = string.Concat(indices, value);
-            _client.DeleteByQuery<Ref>(d => d.Indices(indices).AllTypes().Query(q => q.Ids(new []{id.ToString(CultureInfo.InvariantCulture)})));
+            _client.DeleteByQuery<Ref>(d => d.Indices(indices).AllTypes().Query(q => q.Ids(new []{id.ToString(CultureInfo.InvariantCulture)})));*/
+
+            _transaction.DeleteUserDocuments(indexType, id);
+
             return 0;
         }
 
@@ -227,7 +282,7 @@ namespace Frontenac.ElasticSearch
 
         public override void Commit()
         {
-            throw new NotImplementedException();
+            _transaction.Commit();
         }
 
         public override void Prepare()
@@ -237,7 +292,7 @@ namespace Frontenac.ElasticSearch
 
         public override void Rollback()
         {
-            throw new NotImplementedException();
+            _transaction.Rollback();
         }
 
         static QueryContainer CreateGeoQuery(QueryDescriptor<Ref> q, string key, IGeoShape geoShape)

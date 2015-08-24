@@ -15,8 +15,17 @@ namespace Frontenac.Redis
         {
             Contract.Requires(container != null);
 
-            var config = new ConfigurationOptions() {ConnectTimeout = 30000, ResponseTimeout = 30000, ConnectRetry = 3, SyncTimeout = 30000};
-            config.EndPoints.Add("localhost:6379");
+            var config = new ConfigurationOptions
+            {
+                ConnectTimeout = 30000, 
+                ResponseTimeout = 30000, 
+                ConnectRetry = 3, 
+                SyncTimeout = 30000
+            };
+
+            var endpoints = Properties.Settings.Default.ConnectionString.Split(';');
+            foreach (var endpoint in endpoints)
+                config.EndPoints.Add(endpoint);
 
             container.Register(LifeStyle.Singleton, typeof(ObjectIndexer), typeof(Indexer));
             container.Register(LifeStyle.Singleton, typeof(DefaultIndexerFactory), typeof(IIndexerFactory));
@@ -31,6 +40,9 @@ namespace Frontenac.Redis
             container.Register(LifeStyle.Singleton, typeof(RedisGraphConfiguration), typeof(IGraphConfiguration));
 
             container.Register(LifeStyle.Transient, typeof(RedisGraph), typeof(IGraph), typeof(IKeyIndexableGraph), typeof(IIndexableGraph));
+
+            container.Register(LifeStyle.Transient, typeof(RedisTransactionalGraph), typeof(IGraph), typeof(IKeyIndexableGraph), 
+                                                    typeof(IIndexableGraph), typeof(ITransactionalGraph), typeof(IThreadedTransactionalGraph));
         }
     }
 }

@@ -202,6 +202,16 @@ namespace Frontenac.Blueprints.Impls.TG
             return new TinkerGrapĥ(GetThinkerGraphDirectory());
         }
 
+        public override ITransactionalGraph GenerateTransactionalGraph()
+        {
+            throw new NotImplementedException();
+        }
+
+        public override ITransactionalGraph GenerateTransactionalGraph(string graphDirectoryName)
+        {
+            throw new NotImplementedException();
+        }
+
         public static string GetThinkerGraphDirectory()
         {
             string directory = Environment.GetEnvironmentVariable("tinkerGraphDirectory") ?? GetWorkingDirectory();

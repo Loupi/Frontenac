@@ -220,12 +220,16 @@ namespace Frontenac.Gremlinq.Test
         [Test]
         public void LibImseti()
         {
-            const string inputDataDir = "f:\\LibImseti";
+            const string inputDataDir = "d:\\LibImseti";
 
-            var graph = (IKeyIndexableGraph)GraphTest.GenerateGraph();
+            var graph = (IKeyIndexableGraph)GraphTest.GenerateTransactionalGraph();
+            var idx = (IIndexableGraph)GraphTest.GenerateTransactionalGraph();
+            var trans = (ITransactionalGraph) graph;
             try
             {
                 graph.CreateVertexIndex<IRating, int>(t => t.Rating);
+                idx.CreateIndex("frontenac_gremlinq", typeof(IVertex));
+                trans.Commit();
 
                 int id = 0;
 
@@ -239,8 +243,12 @@ namespace Frontenac.Gremlinq.Test
 
                         while ((line = file.ReadLine()) != null)
                         {
-                            if (lineNumber % 5000 == 0)
+                            if (lineNumber % 1000 == 0)
+                            {
                                 Console.WriteLine("Parsing user # {0}", lineNumber);
+                                trans.Commit();
+                            }
+                                
 
                             lineNumber++;
                             var fields = line.Split(',');
@@ -252,6 +260,8 @@ namespace Frontenac.Gremlinq.Test
                         PrintPerformance(graph.ToString(), lineNumber, "Done importing users", StopWatch());
                     }
                 }
+
+                trans.Commit();
 
                 using (var stream = File.OpenRead(Path.Combine(inputDataDir, "ratings.dat")))
                 {
@@ -266,9 +276,12 @@ namespace Frontenac.Gremlinq.Test
                         while ((line = file.ReadLine()) != null)
                         {
                             lineNumber++;
-                            
-                            if (lineNumber % 5000 == 0)
+
+                            if (lineNumber%5000 == 0)
+                            {
                                 Console.WriteLine("Parsing rating # {0}", lineNumber);
+                                trans.Commit();
+                            }
 
                             var fields = line.Split(',');
                             var raterId = int.Parse(fields[0]);
@@ -296,6 +309,8 @@ namespace Frontenac.Gremlinq.Test
                         PrintPerformance(graph.ToString(), lineNumber, "Done importing ratings", StopWatch());
                     }
                 }
+
+                trans.Commit();
 
                 var ratingsVertexEnum = graph.VerticesOfType<IRating>().OrderByDescending(t => t.Model.Rating).ToArray();
 

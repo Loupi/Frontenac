@@ -48,8 +48,8 @@ namespace Frontenac.Blueprints.Contracts
 
         object IDictionary.this[object key]
         {
-            get { throw new NotImplementedException(); }
-            set { throw new NotImplementedException(); }
+            get { throw new NotSupportedException(); }
+            set { throw new NotSupportedException(); }
         }
 
         IEnumerator IEnumerable.GetEnumerator()
@@ -63,7 +63,7 @@ namespace Frontenac.Blueprints.Contracts
         public abstract void Clear();
         IDictionaryEnumerator IDictionary.GetEnumerator()
         {
-            throw new NotImplementedException();
+            throw new NotSupportedException();
         }
 
         public abstract bool Contains(KeyValuePair<string, object> item);
@@ -76,7 +76,7 @@ namespace Frontenac.Blueprints.Contracts
 
         ICollection IDictionary.Values
         {
-            get { throw new NotImplementedException(); }
+            get { throw new NotSupportedException(); }
         }
 
         public abstract bool IsReadOnly { get; }
@@ -90,7 +90,7 @@ namespace Frontenac.Blueprints.Contracts
 
         ICollection IDictionary.Keys
         {
-            get { throw new NotImplementedException(); }
+            get { throw new NotSupportedException(); }
         }
 
         public abstract ICollection<object> Values { get; }

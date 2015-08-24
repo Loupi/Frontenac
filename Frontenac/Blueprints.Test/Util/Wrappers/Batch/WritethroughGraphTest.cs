@@ -72,5 +72,15 @@ namespace Frontenac.Blueprints.Util.Wrappers.Batch
         {
             return new WritethroughGraph(new TinkerGrapĥ());
         }
+
+        public override ITransactionalGraph GenerateTransactionalGraph()
+        {
+            throw new System.NotImplementedException();
+        }
+
+        public override ITransactionalGraph GenerateTransactionalGraph(string graphDirectoryName)
+        {
+            throw new System.NotImplementedException();
+        }
     }
 }

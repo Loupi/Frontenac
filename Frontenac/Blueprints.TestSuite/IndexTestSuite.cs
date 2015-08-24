@@ -84,11 +84,16 @@ namespace Frontenac.Blueprints
                     var v1 = graph.AddVertex(null);
                     index.Put("dog", "puppy", v1);
                 }
+
                 Thread.Sleep(1000);
+
                 Assert.AreEqual(10, index.Count("dog", "puppy"));
                 var v = (IVertex) index.Get("dog", "puppy").First();
                 graph.RemoveVertex(v);
                 index.Remove("dog", "puppy", v);
+
+                Thread.Sleep(1000);
+
                 Assert.AreEqual(9, index.Count("dog", "puppy"));
             }
             finally
@@ -170,7 +175,10 @@ namespace Frontenac.Blueprints
                     var v = graph.AddVertex(null);
                     index.Put("dog", "puppy", v);
                 }
+
                 Thread.Sleep(1000);
+                //((ITransactionalGraph)graph).Commit();
+
                 var hits = index.Get("dog", "puppy");
                 var counter = hits.Cast<IVertex>().Count();
                 Assert.AreEqual(counter, 10);
