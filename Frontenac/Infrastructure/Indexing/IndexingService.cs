@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics.Contracts;
+using System.Threading.Tasks;
 using Frontenac.Blueprints;
 
 namespace Frontenac.Infrastructure.Indexing
@@ -84,6 +85,8 @@ namespace Frontenac.Infrastructure.Indexing
         public abstract void Commit();
         public abstract void Prepare();
         public abstract void Rollback();
+
+        public abstract Task CommitAsync();
         
         private bool _disposed;
 

@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
+using System.Configuration;
 using System.Diagnostics.Contracts;
 using System.Globalization;
 using Frontenac.Blueprints;
@@ -9,6 +10,7 @@ using Frontenac.Infrastructure;
 using Frontenac.Infrastructure.Indexing;
 using System.Linq;
 using System.Threading;
+using System.Threading.Tasks;
 using Nest;
 using IGeoShape = Frontenac.Blueprints.Geo.IGeoShape;
 
@@ -94,6 +96,14 @@ namespace Frontenac.ElasticSearch
             }
         }
 
+        public Task<IBulkResponse> CommitAsync()
+        {
+            if (_bulkDescriptor == null) return null;
+            var task = _client.BulkAsync(_bulkDescriptor);
+            _bulkDescriptor = null;
+            return task;
+        }
+
         public void Rollback()
         {
             _bulkDescriptor = null;
@@ -109,29 +119,53 @@ namespace Frontenac.ElasticSearch
 
         private readonly ConcurrentDictionary<string, List<string>> _indices = new ConcurrentDictionary<string, List<string>>();
 
-        public ElasticSearchService(/*ElasticsearchClient client*/)
+        public ElasticSearchService()
         {
             VertexIndicesColumnName = "vertex-";
             EdgeIndicesColumnName = "edge-";
             UserVertexIndicesColumnName = "vertex_";
             UserEdgeIndicesColumnName = "edge_";
 
-            _client = new ElasticClient();
+            _client = CreateClient();
 
             _transaction = new BulkStrategy(_client, this);
 
             var analyzer = new CustomAnalyzer
             {
-                Filter = new List<string> {"standard", "asciifolding"},
-                Tokenizer = "standard"
+                Filter = new List<string> { "standard", "asciifolding", "lowercase" },
+                Tokenizer = "keyword"
             };
 
-            _analyzers = new FluentDictionary<string, AnalyzerBase> {{"exact", analyzer}};
+            var autocomplete = new CustomAnalyzer
+            {
+                Filter = new List<string> { "standard", "asciifolding", "lowercase" },
+                Tokenizer = "edgeNGram"
+            };
+
+            _analyzers = new FluentDictionary<string, AnalyzerBase> { { "exact", analyzer }, { "autocomplete", autocomplete } };
+        }
+
+        private static ElasticClient CreateClient()
+        {
+            string connectionString = null;
+            try
+            {
+                connectionString = ConfigurationManager.ConnectionStrings["ElasticSearch"].ConnectionString;
+            }
+            catch
+            {
+                //ignored
+            }
+
+            var uri = string.IsNullOrWhiteSpace(connectionString) ? "http://localhost:9200" : connectionString;
+            var node = new Uri(uri);
+            var settings = new ConnectionSettings(node);
+            return new ElasticClient(settings);
         }
 
         public static void DropAll()
         {
-            var client = new ElasticClient();
+            var client = CreateClient();
             var indices = client.GetAliases(a => a.Indices("*")).Indices.Keys.ToList();
             foreach (var index in indices)
             {
@@ -196,15 +230,12 @@ namespace Frontenac.ElasticSearch
         {
             var index = GetIndexName(indexType, indexName, isUserIndex);
 
-            var response = _client.Search<Ref>(s => s.Index(index).AllTypes().Size(hitsLimit).Query(q => q.Term(key, value is string ? value.ToString().ToLowerInvariant() : value)));
+            var response = _client.Search<Ref>(s => s.Index(index).AllTypes().FielddataFields(key).Size(hitsLimit).Query(q => q.Wildcard(key, value.ToString().ToLowerInvariant())));
             return response.Documents.Select(@ref => @ref.Id).ToArray();
         }
 
         public override long DeleteDocuments(Type indexType, long id)
         {
-            //var indices =  indexType == typeof (IVertex) ? "vertex*" : "edge*";
-            //_client.DeleteByQuery<Ref>(d => d.Indices(indices).AllTypes().Query(q => q.Ids(new []{id.ToString(CultureInfo.InvariantCulture)})));
-
             _transaction.DeleteDocuments(indexType, id);
 
             return 0;
@@ -212,10 +243,6 @@ namespace Frontenac.ElasticSearch
 
         public override long DeleteUserDocuments(Type indexType, long id, string key, object value)
         {
-            /*var indices = indexType == typeof(IVertex) ? UserVertexIndicesColumnName : UserEdgeIndicesColumnName;
-            indices = string.Concat(indices, value);
-            _client.DeleteByQuery<Ref>(d => d.Indices(indices).AllTypes().Query(q => q.Ids(new []{id.ToString(CultureInfo.InvariantCulture)})));*/
-
             _transaction.DeleteUserDocuments(indexType, id);
 
             return 0;
@@ -283,6 +310,11 @@ namespace Frontenac.ElasticSearch
         public override void Commit()
         {
             _transaction.Commit();
+        }
+
+        public override Task CommitAsync()
+        {
+            return _transaction.CommitAsync();
         }
 
         public override void Prepare()
@@ -510,15 +542,37 @@ namespace Frontenac.ElasticSearch
 
             if (parameters != null && parameters.Length > 0)
             {
-                if(parameters[0] is Parameter<string, GeoPoint>)
+                if (parameters[0] is Parameter<string, GeoPoint>)
 // ReSharper disable ImplicitlyCapturedClosure
-                    _client.CreateIndex(descriptor => descriptor.Index(fullName).AddMapping<object>(m => m.Properties(p => p
+                    _client.CreateIndex(
+                        descriptor => descriptor.Index(fullName).AddMapping<object>(m => m.Properties(p => p
 // ReSharper restore ImplicitlyCapturedClosure
-                    .GeoPoint(mappingDescriptor => mappingDescriptor.Name(indexName.ToLowerInvariant()).IndexLatLon()))));
+                            .GeoPoint(
+                                mappingDescriptor => mappingDescriptor.Name(indexName.ToLowerInvariant()).IndexLatLon()))));
+                else if (parameters[0] is AutoCompleteParameter)
+                {
+                    var autoComplete = parameters[0] as AutoCompleteParameter;
+
+                    _client.CreateIndex(d => d.Index(fullName).Analysis(a => a.Analyzers(b =>
+                    {
+                        b.Clear();
+                        b.Add("default", _analyzers["autocomplete"]);
+                        return b;
+                    }).Tokenizers(tokenizers => tokenizers.Add("edgeNGram", new EdgeNGramTokenizer()
+                    {
+                        MinGram = autoComplete.NGram.Min,
+                        MaxGram = autoComplete.NGram.Max
+                    }))));
+                }
             }
             else
 // ReSharper disable ImplicitlyCapturedClosure
-                _client.CreateIndex(d => d.Index(fullName).Analysis(a => a.Analyzers(b => _analyzers)));
+                _client.CreateIndex(d => d.Index(fullName).Analysis(a => a.Analyzers(b =>
+                {
+                    b.Clear();
+                    b.Add("default", _analyzers["exact"]);
+                    return b;
+                })));
 // ReSharper restore ImplicitlyCapturedClosure
         }
 

@@ -1,9 +1,11 @@
-﻿using System.Diagnostics.Contracts;
+﻿using System.Diagnostics;
+using System.Diagnostics.Contracts;
 using Frontenac.Blueprints;
 using Frontenac.Blueprints.Util;
 
 namespace Frontenac.Redis
 {
+    [DebuggerDisplay("")]
     public class RedisEdge : RedisElement, IEdge
     {
         private readonly IVertex _inVertex;

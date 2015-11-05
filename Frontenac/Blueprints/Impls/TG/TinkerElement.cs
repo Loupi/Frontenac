@@ -12,7 +12,7 @@ namespace Frontenac.Blueprints.Impls.TG
     {
         protected readonly TinkerGrapĥ TinkerGrapĥ;
         protected readonly string RawId;
-        protected ConcurrentDictionary<string, object> Properties = new ConcurrentDictionary<string, object>();
+        protected readonly ConcurrentDictionary<string, object> Properties = new ConcurrentDictionary<string, object>();
 
         protected TinkerElement(string id, TinkerGrapĥ tinkerGrapĥ):base(tinkerGrapĥ)
         {

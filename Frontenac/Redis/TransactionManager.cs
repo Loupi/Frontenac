@@ -1,4 +1,4 @@
-﻿using System.Threading;
+﻿using System.Threading.Tasks;
 using Frontenac.Infrastructure.Indexing;
 using StackExchange.Redis;
 
@@ -36,27 +36,39 @@ namespace Frontenac.Redis
 
         public void End()
         {
-            if (Mode == RedisTransactionMode.SingleBatch || Mode == RedisTransactionMode.SingleTransaction)
-            {
-                if (_batch != null)
-                {
-                    _batch.Execute();
-                    _batch = null;
-                }
+            if (Mode != RedisTransactionMode.SingleBatch && Mode != RedisTransactionMode.SingleTransaction) return;
 
-                _indexingService.Commit();
+            if (_batch != null)
+            {
+                _batch.Execute();
+                _batch = null;
             }
+
+            _indexingService.Commit();
         }
 
         public void Commit()
         {
-            if (_batch != null)
+            if (_batch == null) return;
+            var transaction = _batch as ITransaction;
+            if(transaction != null)
+            {
+                var t1 = transaction.ExecuteAsync();
+                var t2 = _indexingService.CommitAsync();
+
+                if (t2 != null)
+                    Task.WaitAll(t1, t2);
+                else
+                    t1.Wait();
+
+            }
+            else
             {
                 _batch.Execute();
                 _indexingService.Commit();
-                _batch = null;
-                Thread.Sleep(3000);
             }
+                
+            _batch = null;
         }
 
         public void Rollback()

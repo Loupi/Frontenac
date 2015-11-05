@@ -99,7 +99,7 @@ namespace Frontenac.Gremlinq
 
         public static IEnumerable<IVertex<TOutModel>> Out<TInModel, TOutModel>(
             this IVertex<TInModel> vertex,
-            Expression<Func<TInModel, IEnumerable<TOutModel>>> propertySelector) 
+            Expression<Func<TInModel, ICollection<TOutModel>>> propertySelector) 
             where TOutModel : class
         {
             Contract.Requires(vertex != null);
@@ -152,7 +152,19 @@ namespace Frontenac.Gremlinq
 
         public static IEnumerable<IVertex<TOutModel>> Out<TOutModel, TInModel>(
             this IEnumerable<IVertex<TInModel>> vertices,
-            Expression<Func<TInModel, TOutModel>> propertySelector) 
+            Expression<Func<TInModel, TOutModel>> propertySelector)
+            where TOutModel : class
+        {
+            Contract.Requires(vertices != null);
+            Contract.Requires(propertySelector != null);
+            Contract.Ensures(Contract.Result<IEnumerable<IVertex<TOutModel>>>() != null);
+
+            return vertices.SelectMany(t => t.Out(propertySelector.Resolve())).As<TOutModel>();
+        }
+
+        public static IEnumerable<IVertex<TOutModel>> Out<TOutModel, TInModel>(
+            this IEnumerable<IVertex<TInModel>> vertices,
+            Expression<Func<TInModel, ICollection<TOutModel>>> propertySelector)
             where TOutModel : class
         {
             Contract.Requires(vertices != null);

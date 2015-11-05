@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics.Contracts;
+using System.Linq;
 using Frontenac.Blueprints;
 using Frontenac.Blueprints.Util;
 
@@ -17,6 +18,16 @@ namespace Frontenac.Grave
         public IEnumerable<IEdge> GetEdges(Direction direction, params string[] labels)
         {
             return GraveInnerTinkerGrapĥ.GetEdges(this, direction, labels);
+        }
+
+        public long GetNbEdges(Direction direction, string label)
+        {
+            return GetEdges(direction, label).Count();
+        }
+
+        public IEnumerable<IVertex> GetVertices(Direction direction, string label, params object[] ids)
+        {
+            return GetEdges(direction, label).Where(edge => ids.Contains(edge.GetVertex(direction).Id)).Select(edge => edge.GetVertex(direction));
         }
 
         public IEnumerable<IVertex> GetVertices(Direction direction, params string[] labels)

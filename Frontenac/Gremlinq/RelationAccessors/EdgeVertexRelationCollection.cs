@@ -12,25 +12,32 @@ namespace Frontenac.Gremlinq.RelationAccessors
         where TEdgeModel : class 
         where TVertexModel : class
     {
+        private readonly RelationAttribute _rel;
         private readonly IVertex _vertex;
         private readonly string _key;
         private readonly RelationAccessor _accessor;
         private readonly Direction _direction;
         private readonly string _label;
 
-        public EdgeVertexRelationCollection(IVertex vertex, string key, RelationAccessor accessor)
+        public EdgeVertexRelationCollection(IVertex vertex, string key, RelationAccessor accessor, RelationAttribute rel)
         {
             Contract.Requires(!string.IsNullOrEmpty(key));
 
+            _rel = rel;
             _vertex = vertex;
             _key = key;
             _accessor = accessor;
             _direction = RelationAccessor.DirectionFromKey(_key, out _label);
+            if (rel != null)
+            {
+                _label = rel.AdjustKey(key);
+                _direction = rel.Direction;
+            }
         }
 
         public IEnumerator<KeyValuePair<TEdgeModel, TVertexModel>> GetEnumerator()
         {
-            return ((IEnumerable)_accessor.GetRelations(_vertex, _key)).OfType<KeyValuePair<TEdgeModel, TVertexModel>>().GetEnumerator();
+            return ((IEnumerable)_accessor.GetRelations(_vertex, _key, _rel)).OfType<KeyValuePair<TEdgeModel, TVertexModel>>().GetEnumerator();
         }
 
         IEnumerator IEnumerable.GetEnumerator()
@@ -106,13 +113,13 @@ namespace Frontenac.Gremlinq.RelationAccessors
             if (vertex == null)
                 throw new InvalidOperationException();
 
-            return GetEdges().Any(edge => edge.Key.GetVertex(_direction).Equals(vertex));
+            return _vertex.GetVertices(_direction, _label, vertex.Id).Any();
         }
 
         public void CopyTo(KeyValuePair<TEdgeModel, TVertexModel>[] array, int arrayIndex)
         {
             var index = arrayIndex;
-            foreach (var model in ((IEnumerable)_accessor.GetRelations(_vertex, _key)).OfType<KeyValuePair<TEdgeModel, TVertexModel>>())
+            foreach (var model in ((IEnumerable)_accessor.GetRelations(_vertex, _key, _rel)).OfType<KeyValuePair<TEdgeModel, TVertexModel>>())
             {
                 if (index >= array.Length)
                     break;
@@ -135,7 +142,7 @@ namespace Frontenac.Gremlinq.RelationAccessors
 
         public int Count
         {
-            get { return GetEdges().Count(); }
+            get { return (int)_vertex.GetNbEdges(_direction, _label); }
         }
 
         public bool IsReadOnly { get { return false; } }

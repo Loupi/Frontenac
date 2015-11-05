@@ -22,6 +22,23 @@ namespace Frontenac.Blueprints
         IEnumerable<IEdge> GetEdges(Direction direction, params string[] labels);
 
         /// <summary>
+        ///     Return the number of incident edges to the vertex according to the provided direction and edge label.
+        /// </summary>
+        /// <param name="direction">the direction of the edges to retrieve</param>
+        /// <param name="label">the label of the edges to retrieve</param>
+        /// <returns>the number of incident edges</returns>
+        long GetNbEdges(Direction direction, string label);
+
+        /// <summary>
+        ///     Find the vertices that are present in the edges.
+        /// </summary>
+        /// <param name="direction">the direction of the edges of the adjacent vertices</param>
+        /// <param name="label">the labels of the edges to retrieve</param>
+        /// <param name="ids">the ids to look for</param>
+        /// <returns>an IEnumerable of adjacent vertices</returns>
+        IEnumerable<IVertex> GetVertices(Direction direction, string label, params object[] ids);
+
+        /// <summary>
         ///     Return the vertices adjacent to the vertex according to the provided direction and edge labels.
         ///     This method does not remove duplicate vertices (i.e. those vertices that are connected by more than one edge).
         /// </summary>

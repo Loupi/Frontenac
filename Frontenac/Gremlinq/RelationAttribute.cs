@@ -24,7 +24,7 @@ namespace Frontenac.Gremlinq
         {
             key = _label ?? key;
 
-            switch (Direction)
+            /*switch (Direction)
             {
                 case Direction.In:
                     return string.Concat("in", key);
@@ -34,7 +34,9 @@ namespace Frontenac.Gremlinq
                     return string.Concat("both", key);
                 default:
                     throw new InvalidOperationException();
-            }
+            }*/
+
+            return key;
         }
     }
 }

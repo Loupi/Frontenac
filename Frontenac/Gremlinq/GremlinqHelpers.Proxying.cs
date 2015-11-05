@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Diagnostics.Contracts;
 using System.Linq;
 using System.Linq.Expressions;
+using System.Reflection;
 using Frontenac.Blueprints;
 
 namespace Frontenac.Gremlinq
@@ -77,7 +78,7 @@ namespace Frontenac.Gremlinq
             where TModel : class
         {
             Contract.Requires(element != null);
-            Contract.Ensures(Contract.Result<TModel>() != null);
+            //Contract.Ensures(Contract.Result<TModel>() != null);
 
             var proxy = (TModel)element.ProxyBestFit(typeof(TModel));
             return proxy;
@@ -112,20 +113,36 @@ namespace Frontenac.Gremlinq
             return proxy;
         }
 
+        public static TBase Transient<TBase>(this Dictionary<string, object> rawValues, IGraph graph, Type baseType = null)
+        {
+            Contract.Requires(rawValues != null);
+
+            Type proxyType;
+            if (!GremlinqContext.Current.TypeProvider.TryGetType(rawValues, graph, out proxyType))
+                return default(TBase);
+            
+            if (baseType != null && !baseType.IsAssignableFrom(proxyType))
+                return default(TBase);
+
+            var proxy = GremlinqContext.Current.ProxyFactory.Create(rawValues, proxyType);
+            return (TBase)proxy;
+        }
+
         public static object ProxyBestFit(this IElement element, Type baseType)
         {
             Contract.Requires(element != null);
             Contract.Requires(baseType != null);
-            Contract.Ensures(Contract.Result<object>() != null);
 
             Type type;
-            var proxyType = GremlinqContext.Current.TypeProvider.TryGetType(element, out type) ? type : baseType;
+            var proxyType = GremlinqContext.Current.TypeProvider.TryGetType(element, element.Graph, out type) ? type : baseType;
 
             if (proxyType == null)
-                throw new NullReferenceException("No type present on element");
+                return null;
+                //throw new NullReferenceException("No type present on element");
 
             if (!baseType.IsAssignableFrom(proxyType))
-                throw new InvalidOperationException(string.Format("Element type {0} does not match TModel {1}.", type, baseType));
+                return null;
+                //throw new InvalidOperationException(string.Format("Element type {0} does not match TModel {1}.", type, baseType));
 
             var proxy = GremlinqContext.Current.ProxyFactory.Create(element, proxyType);
             return proxy;
@@ -146,10 +163,30 @@ namespace Frontenac.Gremlinq
             Contract.Ensures(Contract.Result<string>() != null);
 
             if (e.NodeType == ExpressionType.Lambda)
-                return ((LambdaExpression)e).Body.Resolve();
+            {
+                var memberInfo = ((LambdaExpression)e).Body.InnerResolve();
+                var rel = (RelationAttribute)Attribute.GetCustomAttribute(memberInfo, typeof(RelationAttribute));
+                if (rel != null)
+                    return rel.AdjustKey(memberInfo.Name);
+                return memberInfo.Name;
+            }
 
             if (e.NodeType == ExpressionType.MemberAccess)
                 return ((MemberExpression)e).Member.Name;
+
+            throw new InvalidOperationException("Given expression is not of type MemberAccess.");
+        }
+
+        public static MemberInfo InnerResolve(this Expression e)
+        {
+            Contract.Requires(e != null);
+            Contract.Ensures(Contract.Result<MemberInfo>() != null);
+
+            if (e.NodeType == ExpressionType.Lambda)
+                return ((LambdaExpression)e).Body.InnerResolve();
+
+            if (e.NodeType == ExpressionType.MemberAccess)
+                return ((MemberExpression)e).Member;
 
             throw new InvalidOperationException("Given expression is not of type MemberAccess.");
         }
@@ -160,7 +197,7 @@ namespace Frontenac.Gremlinq
             Contract.Ensures(Contract.Result<Type>() != null);
 
             Type type;
-            if (!GremlinqContext.Current.TypeProvider.TryGetType(element, out type))
+            if (!GremlinqContext.Current.TypeProvider.TryGetType(element, element.Graph, out type))
                 throw new InvalidOperationException(string.Format("No type found for {0}", element));
 
             return type;
@@ -174,8 +211,19 @@ namespace Frontenac.Gremlinq
 
             Type type;
             var context = GremlinqContext.Current;
-            return elements.Where(t => context.TypeProvider.TryGetType(t, out type) && typeof(TResult).IsAssignableFrom(t.Type()))
+            return elements.Where(t => context.TypeProvider.TryGetType(t, t.Graph, out type) && typeof(TResult).IsAssignableFrom(t.Type()))
                 .Select(t => t.Proxy<TResult>());
+        }
+
+        public static IEnumerable<IVertex> OfType(this IEnumerable<IVertex> elements, Type typeOf)
+        {
+            Contract.Requires(elements != null);
+            Contract.Ensures(Contract.Result<IEnumerable<IVertex>>() != null);
+
+            Type type;
+            var context = GremlinqContext.Current;
+            return elements.Where(t => context.TypeProvider.TryGetType(t, t.Graph, out type) && typeOf.IsAssignableFrom(type))
+                .Select(t => t);
         }
     }
 }

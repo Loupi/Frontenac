@@ -28,6 +28,16 @@ namespace Frontenac.Blueprints.Util.Wrappers.Event
             return new EventVertexIterable(Vertex.GetVertices(direction, labels), EventInnerTinkerGrapĥ);
         }
 
+        public IEnumerable<IVertex> GetVertices(Direction direction, string label, params object[] ids)
+        {
+            return Vertex.GetVertices(direction, label, ids);
+        }
+
+        public long GetNbEdges(Direction direction, string label)
+        {
+            return Vertex.GetNbEdges(direction, label);
+        }
+
         public IVertexQuery Query()
         {
             return new WrapperVertexQuery(Vertex.Query(),

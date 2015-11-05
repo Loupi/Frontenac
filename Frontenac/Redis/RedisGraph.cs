@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Configuration;
 using System.Diagnostics.Contracts;
 using System.Linq;
 using System.Threading.Tasks;
@@ -58,6 +59,21 @@ namespace Frontenac.Redis
             SupportsLabelProperty = true
         };
 
+        public static string GetConnectionString()
+        {
+            string connectionString = null;
+            try
+            {
+                connectionString = ConfigurationManager.ConnectionStrings["Redis"].ConnectionString;
+            }
+            catch
+            {
+                //ignored
+            }
+
+            return string.IsNullOrWhiteSpace(connectionString) ? "localhost:6379" : connectionString;
+        }
+
         private readonly IGraphFactory _factory;
         internal readonly IContentSerializer Serializer;
 
@@ -87,7 +103,7 @@ namespace Frontenac.Redis
             if(this is RedisTransactionalGraph)
                 TransactionManager = new TransactionManager(RedisTransactionMode.BatchTransaction, multiplexer, indexingService);
             else
-                TransactionManager = new TransactionManager(RedisTransactionMode.SingleBatch, multiplexer, indexingService);
+                TransactionManager = new TransactionManager(RedisTransactionMode.SingleTransaction, multiplexer, indexingService);
         }
 
         protected override IVertex GetVertexInstance(long vertexId)
@@ -100,7 +116,7 @@ namespace Frontenac.Redis
             get { return RedisGraphFeatures; }
         }
 
-        private int iv = 1;
+        //private int iv = 1;
         public override IVertex AddVertex(object id)
         {
             IDatabase db;
@@ -200,7 +216,7 @@ namespace Frontenac.Redis
             return db.SetScan(key).Select(entry => new RedisVertex((long)entry, this));
         }
 
-        private int ie = 1;
+        //private int ie = 1;
 
         public override IEdge AddEdge(object id, IVertex outVertex, IVertex inVertex, string label)
         {
@@ -335,7 +351,7 @@ namespace Frontenac.Redis
                     if (labels.Length > 0 && !labels.Contains(labelVal2))
                         continue;
 
-                    foreach (var edge in db.SortedSetScan(GetLabeledIdentifier(vertex, "edges:out", labelVal2)))
+                    foreach (var edge in db.SortedSetScan(GetLabeledIdentifier(vertex, "edges:out", labelVal2), default(RedisValue), 1000))
                     {
                         var edgeId = (long) edge.Element;
                         var targetId = (long) edge.Score;
@@ -355,13 +371,44 @@ namespace Frontenac.Redis
                 if(labels.Length > 0 && !labels.Contains(labelVal))
                     continue;
 
-                foreach (var edge in db.SortedSetScan(GetLabeledIdentifier(vertex, "edges:in", labelVal)))
+                foreach (var edge in db.SortedSetScan(GetLabeledIdentifier(vertex, "edges:in", labelVal), default(RedisValue), 1000))
                 {
                     var edgeId = (long) edge.Element;
                     var targetId = (long) edge.Score;
                     var targetVertex = new RedisVertex(targetId, this);
                     yield return new RedisEdge(edgeId, targetVertex, vertex, labelVal, this);
                 }
+            }
+        }
+
+        public virtual long GetNbEdges(RedisVertex vertex, Direction direction, string label)
+        {
+            Contract.Requires(vertex != null);
+
+            var db = Multiplexer.GetDatabase();
+
+            if (direction == Direction.Out)
+                return db.SortedSetLength(GetLabeledIdentifier(vertex, "edges:out", label));
+            else
+                return db.SortedSetLength(GetLabeledIdentifier(vertex, "edges:in", label));
+
+        }
+
+        public IEnumerable<IVertex> GetVertices(RedisVertex vertex, Direction direction, string label, IEnumerable<object> ids)
+        {
+            var db = Multiplexer.GetDatabase();
+
+            string key;
+            if (direction == Direction.Out)
+                key = GetLabeledIdentifier(vertex, "edges:out", label);
+            else
+                key = GetLabeledIdentifier(vertex, "edges:in", label);
+
+            foreach (var id in ids)
+            {
+                var matches = db.SortedSetRangeByScore(key, (long)id, (long)id);
+                if (matches.Length > 0)
+                    yield return GetVertex(id);
             }
         }
 
@@ -421,15 +468,28 @@ namespace Frontenac.Redis
             return String.Concat(GetIdentifier(element, suffix), ":", label);
         }
 
-        public IEnumerable<string> GetPropertyKeys(RedisElement element)
+        public List<string> GetPropertyKeys(RedisElement element)
         {
             Contract.Requires(element != null);
 
-            var db = Multiplexer.GetDatabase();
-            var keys = db.HashKeys(GetIdentifier(element, "properties"));
-// ReSharper disable SpecifyACultureInStringConversionExplicitly
-            return keys.Select((value => value.ToString())).ToArray();
-// ReSharper restore SpecifyACultureInStringConversionExplicitly
+            int retry = 0;
+
+            while (retry < 3)
+            {
+                try
+                {
+                    var db = Multiplexer.GetDatabase();
+                    var keys = db.HashKeys(GetIdentifier(element, "properties"));
+                    return keys.Select(t => t.ToString()).ToList();
+                }
+                catch (TimeoutException)
+                {
+                    retry++;
+                    if (retry == 3)
+                        throw;
+                }
+            }
+            return null;
         }
 
         public void SetProperty(RedisElement element, string key, object value)
@@ -477,7 +537,7 @@ namespace Frontenac.Redis
                 AllowAdmin = true
             };
 
-            var endpoints = Properties.Settings.Default.ConnectionString.Split(';');
+            var endpoints = GetConnectionString().Split(';');
             foreach (var endpoint in endpoints)
                 config.EndPoints.Add(endpoint);
 
@@ -543,6 +603,46 @@ namespace Frontenac.Redis
             }
             else
                 base.SetIndexedKeyValue(element, key, value);
+        }
+
+        public Dictionary<long, Dictionary<string, object>> GetElementsMap(IEnumerable<long> ids)
+        {
+            Contract.Requires(ids != null);
+
+            var db = Multiplexer.GetDatabase();
+            var batch = db.CreateBatch();
+            List<Tuple<Task<HashEntry[]>, long>> tasks = new List<Tuple<Task<HashEntry[]>, long>>();
+
+            foreach (var id in ids)
+            {
+                var task = batch.HashGetAllAsync(GetRawIdentifier("vertex:", id, "properties"));
+                tasks.Add(new Tuple<Task<HashEntry[]>, long>(task, id));
+            }
+
+            batch.Execute();
+
+            var result = new Dictionary<long, Dictionary<string, object>>();
+            foreach (var task in tasks)
+            {
+                task.Item1.Wait();
+                var dict = task.Item1.Result.ToDictionary(entry => entry.Name.ToString(), 
+                    entry => entry.Value != RedisValue.Null 
+                        ? Serializer.Deserialize(entry.Value) 
+                        : null);
+
+                result.Add(task.Item2, dict);
+            }
+
+            return result;
+        }
+
+        public string GetRawIdentifier(string prefix, long id, string suffix)
+        {
+
+            var identifier = String.Concat(prefix, id);
+            if (suffix != null)
+                identifier = String.Concat(identifier, ":", suffix);
+            return identifier;
         }
     }
 }

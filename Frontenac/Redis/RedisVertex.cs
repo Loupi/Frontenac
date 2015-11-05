@@ -7,7 +7,7 @@ using Frontenac.Blueprints.Util;
 namespace Frontenac.Redis
 {
     public class RedisVertex : RedisElement, IVertex
-    {
+    {        
         public RedisVertex(long id, RedisGraph innerTinkerGrapĥ) 
             : base(id, innerTinkerGrapĥ)
         {
@@ -22,6 +22,16 @@ namespace Frontenac.Redis
         public IEnumerable<IVertex> GetVertices(Direction direction, params string[] labels)
         {
             return new VerticesFromEdgesIterable(this, direction, labels);
+        }
+
+        public long GetNbEdges(Direction direction, string label)
+        {
+            return RedisInnerTinkerGrapĥ.GetNbEdges(this, direction, label);
+        }
+
+        public IEnumerable<IVertex> GetVertices(Direction direction, string label, params object[]ids)
+        {
+            return RedisInnerTinkerGrapĥ.GetVertices(this, direction, label, ids);
         }
 
         public IVertexQuery Query()

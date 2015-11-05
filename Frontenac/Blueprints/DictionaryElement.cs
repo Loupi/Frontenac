@@ -1,10 +1,12 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 
 namespace Frontenac.Blueprints
 {
+    
     [Serializable]
     public abstract class DictionaryElement : IElement
     {

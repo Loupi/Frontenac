@@ -16,7 +16,7 @@ namespace Frontenac.Gremlinq.RelationAccessors
         protected delegate object ConvertDelegate(IEnumerable elements, bool isWrapped, bool isEnumerable);
         protected readonly ConvertDelegate ConvertMethod;
 
-        internal delegate object CreateCollectionDelegate(IElement element, string key, RelationAccessor accessor);
+        internal delegate object CreateCollectionDelegate(IElement element, string key, RelationAccessor accessor, RelationAttribute rel);
         internal readonly CreateCollectionDelegate CreateCollectionMethod;
 
         protected RelationAccessor(Type modelType, bool isEnumerable, bool isCollection, bool isWrapped, Type[] models)
@@ -40,7 +40,7 @@ namespace Frontenac.Gremlinq.RelationAccessors
             return Delegate.CreateDelegate(delegateType, genericMethod);
         }
 
-        public abstract object GetRelations(IElement element, string key);
+        public abstract object GetRelations(IElement element, string key, RelationAttribute rel);
 
         public static Direction DirectionFromKey(string key, out string newKey)
         {

@@ -498,7 +498,17 @@ namespace Frontenac.Blueprints.Util.Wrappers.Batch
                 throw RetrievalNotSupported();
             }
 
+            public long GetNbEdges(Direction direction, string label)
+            {
+                throw RetrievalNotSupported();
+            }
+
             public IEnumerable<IVertex> GetVertices(Direction direction, params string[] labels)
+            {
+                throw RetrievalNotSupported();
+            }
+
+            public IEnumerable<IVertex> GetVertices(Direction direction, string label, params object[] ids)
             {
                 throw RetrievalNotSupported();
             }

@@ -13,7 +13,7 @@ namespace Frontenac.Blueprints.Impls.TG
         protected readonly Type IndexClass;
         protected readonly string IndexName;
 
-        internal ConcurrentDictionary<string, ConcurrentDictionary<object, ConcurrentDictionary<string, IElement>>> Index =
+        internal readonly ConcurrentDictionary<string, ConcurrentDictionary<object, ConcurrentDictionary<string, IElement>>> Index =
             new ConcurrentDictionary<string, ConcurrentDictionary<object, ConcurrentDictionary<string, IElement>>>();
 
         public TinkerIndex(string indexName, Type indexClass)

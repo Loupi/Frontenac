@@ -1,3 +1,4 @@
+using System.Diagnostics;
 using System.Diagnostics.Contracts;
 using Frontenac.Blueprints;
 using Frontenac.Infrastructure;
@@ -7,6 +8,7 @@ using StackExchange.Redis;
 
 namespace Frontenac.Redis
 {
+    [DebuggerDisplay("")]
     public class RedisTransactionalGraph : RedisGraph, IThreadedTransactionalGraph
     {
         private readonly IGraphFactory _factory;

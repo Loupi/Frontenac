@@ -18,9 +18,19 @@ namespace Frontenac.Blueprints.Util.Wrappers.Wrapped
             return Vertex.GetEdges(direction, labels);
         }
 
+        public IEnumerable<IVertex> GetVertices(Direction direction, string label, params object[] ids)
+        {
+            return Vertex.GetVertices(direction, label, ids);
+        }
+
         public IEnumerable<IVertex> GetVertices(Direction direction, params string[] labels)
         {
             return Vertex.GetVertices(direction, labels);
+        }
+
+        public long GetNbEdges(Direction direction, string label)
+        {
+            return Vertex.GetNbEdges(direction, label);
         }
 
         public IVertexQuery Query()

@@ -27,13 +27,13 @@ namespace Frontenac.Gremlinq.RelationAccessors
                 ? (IEnumerable<object>)edges.As<TModel>()
                 : edges.Proxy<TModel>();
 
-            return isEnumerable ? models : models.SingleOrDefault();
+            return isEnumerable ? models : models.FirstOrDefault();
         }
 
 // ReSharper disable UnusedMember.Local
 // ReSharper disable UnusedTypeParameter
 // ReSharper disable UnusedParameter.Local
-        private static object CreateCollection<TModel>(IElement element, string key, RelationAccessor accessor)
+        private static object CreateCollection<TModel>(IElement element, string key, RelationAccessor accessor, RelationAttribute rel)
 // ReSharper restore UnusedParameter.Local
 // ReSharper restore UnusedTypeParameter
 // ReSharper restore UnusedMember.Local
@@ -41,12 +41,17 @@ namespace Frontenac.Gremlinq.RelationAccessors
             throw new NotSupportedException();
         }
 
-        public override object GetRelations(IElement element, string key)
+        public override object GetRelations(IElement element, string key, RelationAttribute rel)
         {
             var vertex = element as IVertex;
             IEnumerable<IEdge> edges;
             string label;
             var direction = DirectionFromKey(key, out label);
+            if (rel != null)
+            {
+                label = rel.AdjustKey(key);
+                direction = rel.Direction;
+            }
 
             switch (direction)
             {

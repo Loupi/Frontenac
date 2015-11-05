@@ -37,7 +37,7 @@ namespace Frontenac.Gremlinq
                     var index = indexableGraph.GetIndex(GremlinqVertexProperty, typeof(IVertex)) ??
                                 indexableGraph.CreateIndex(GremlinqVertexProperty, typeof(IVertex));
 
-                    vertex = Enumerable.OfType<IVertex>(index.Get(TypesIndexName, typePropertyName)).SingleOrDefault();
+                    vertex = Enumerable.OfType<IVertex>(index.Get(TypesIndexName, typePropertyName)).FirstOrDefault();
                     if (vertex == null)
                     {
                         vertex = graph.AddVertex(null);
@@ -56,7 +56,7 @@ namespace Frontenac.Gremlinq
                     keyIndexableGraph.CreateKeyIndex(typePropertyName, typeof(IEdge));
                 }*/   
 
-                return vertex ?? (graph.V(GremlinqVertexProperty, typePropertyName).SingleOrDefault());
+                return vertex ?? (graph.V(GremlinqVertexProperty, typePropertyName).FirstOrDefault());
             }
 
             public void LoadTypesVertex(IGraph graph, string typePropertyName)
@@ -120,9 +120,8 @@ namespace Frontenac.Gremlinq
             element.SetProperty(_typePropertyName, id);
         }
 
-        public virtual bool TryGetType(IElement element, out Type type)
+        public virtual bool TryGetType(IDictionary<string, object> element, IGraph graph, out Type type)
         {
-            var graph = element.Graph;
             var instanceTypes = _perGraphInstanceTypes.GetOrCreateValue(graph);
             instanceTypes.LoadTypesVertex(graph, _typePropertyName);
 
@@ -134,7 +133,7 @@ namespace Frontenac.Gremlinq
             }
 
             var kp = instanceTypes.TypesBuffer
-                .SingleOrDefault(pair => GraphHelpers.IsNumber(pair.Value) && GraphHelpers.IsNumber(id)
+                .FirstOrDefault(pair => GraphHelpers.IsNumber(pair.Value) && GraphHelpers.IsNumber(id)
                     ? Convert.ToDouble(pair.Value).CompareTo(Convert.ToDouble(id)) == 0
                     : pair.Value != null && pair.Value.Equals(id));
             
@@ -168,6 +167,14 @@ namespace Frontenac.Gremlinq
                 return Enumerable.Empty<IEdge>();
 
             return graph.GetEdges(_typePropertyName, id);
+        }
+
+        public IEnumerable<Type> GetTypes(IGraph graph)
+        {
+            var instanceTypes = _perGraphInstanceTypes.GetOrCreateValue(graph);
+            instanceTypes.LoadTypesVertex(graph, _typePropertyName);
+
+            return instanceTypes.TypesBuffer.Keys;
         }
     }
 }

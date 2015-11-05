@@ -31,7 +31,7 @@ namespace Frontenac.Blueprints.Impls.TG
         internal long CurrentId = 0;
         internal TinkerKeyIndex EdgeKeyIndex;
         protected ConcurrentDictionary<string, IEdge> Edges = new ConcurrentDictionary<string, IEdge>();
-        internal ConcurrentDictionary<string, TinkerIndex> Indices = new ConcurrentDictionary<string, TinkerIndex>();
+        internal readonly ConcurrentDictionary<string, TinkerIndex> Indices = new ConcurrentDictionary<string, TinkerIndex>();
         protected ConcurrentDictionary<string, IVertex> InnerVertices = new ConcurrentDictionary<string, IVertex>();
 
         internal TinkerKeyIndex VertexKeyIndex;

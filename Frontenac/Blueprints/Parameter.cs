@@ -82,4 +82,20 @@
             set { base.Value = value; }
         }
     }
+
+    public class NGram
+    {
+        public int Min { get; set; }
+        public int Max { get; set; }
+    }
+
+    public class AutoCompleteParameter : Parameter<string, NGram>
+    {
+        public NGram NGram { get; set; }
+
+        public AutoCompleteParameter(NGram value) : base("autocomplete", value)
+        {
+            NGram = value;
+        }
+    }
 }

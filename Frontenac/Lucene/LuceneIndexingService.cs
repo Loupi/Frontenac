@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Diagnostics.Contracts;
 using System.IO;
 using System.Linq;
+using System.Threading.Tasks;
 using Frontenac.Blueprints;
 using Frontenac.Blueprints.Geo;
 using Frontenac.Infrastructure;
@@ -253,6 +254,11 @@ namespace Frontenac.Lucene
         public override void Commit()
         {
             _nrtManager.Commit();
+        }
+
+        public override Task CommitAsync()
+        {
+            throw new NotSupportedException();
         }
 
         public override void Rollback()

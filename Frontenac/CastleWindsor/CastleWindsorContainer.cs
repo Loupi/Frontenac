@@ -7,7 +7,7 @@ namespace Frontenac.CastleWindsor
 {
     public class CastleWindsorContainer : IContainer
     {
-        private readonly IWindsorContainer _container = new WindsorContainer();
+        public readonly IWindsorContainer Container = new WindsorContainer();
 
         public CastleWindsorContainer()
         {
@@ -36,8 +36,8 @@ namespace Frontenac.CastleWindsor
 
             if (disposing)
             {
-                _container.Release(this);
-                _container.Dispose();
+                Container.Release(this);
+                Container.Dispose();
             }
             
             _disposed = true;
@@ -48,30 +48,30 @@ namespace Frontenac.CastleWindsor
         public void Register(LifeStyle lifeStyle, Type implementation, params Type[] services)
         {
             if (services.Length == 0)
-                _container.Register(lifeStyle == LifeStyle.Transient 
+                Container.Register(lifeStyle == LifeStyle.Transient 
                     ? Component.For(implementation).LifestyleTransient()
                     : Component.For(implementation));
             else
-                _container.Register(lifeStyle == LifeStyle.Transient
+                Container.Register(lifeStyle == LifeStyle.Transient
                     ? Component.For(services).ImplementedBy(implementation).LifestyleTransient()
                     : Component.For(services).ImplementedBy(implementation));
         }
 
         public void Register(object instance, params Type[] services)
         {
-            _container.Register(services.Length == 0
+            Container.Register(services.Length == 0
                 ? Component.For().Instance(instance)
                 : Component.For(services).Instance(instance));
         }
 
         public TService Resolve<TService>()
         {
-            return _container.Resolve<TService>();
+            return Container.Resolve<TService>();
         }
 
         public void Release(object instance)
         {
-            _container.Release(instance);
+            Container.Release(instance);
         }
     }
 }

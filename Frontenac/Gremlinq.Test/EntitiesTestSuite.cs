@@ -243,7 +243,7 @@ namespace Frontenac.Gremlinq.Test
 
                         while ((line = file.ReadLine()) != null)
                         {
-                            if (lineNumber % 1000 == 0)
+                            if (lineNumber % 10000 == 0)
                             {
                                 Console.WriteLine("Parsing user # {0}", lineNumber);
                                 trans.Commit();
@@ -277,7 +277,7 @@ namespace Frontenac.Gremlinq.Test
                         {
                             lineNumber++;
 
-                            if (lineNumber%5000 == 0)
+                            if (lineNumber % 10000 == 0)
                             {
                                 Console.WriteLine("Parsing rating # {0}", lineNumber);
                                 trans.Commit();
