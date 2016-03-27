@@ -31,14 +31,5 @@ namespace Frontenac.Redis.Properties {
                 return ((string)(this["InstanceName"]));
             }
         }
-        
-        [global::System.Configuration.ApplicationScopedSettingAttribute()]
-        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("localhost:6379")]
-        public string ConnectionString {
-            get {
-                return ((string)(this["ConnectionString"]));
-            }
-        }
     }
 }
