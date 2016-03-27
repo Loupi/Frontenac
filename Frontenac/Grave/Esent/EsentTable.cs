@@ -48,7 +48,7 @@ namespace Frontenac.Grave.Esent
         {
             Contract.Ensures(Contract.Result<JET_TABLECREATE>() != null);
 
-            var idIndexKey = string.Format("+{0}\0\0", IdColumnName);
+            var idIndexKey = $"+{IdColumnName}\0\0";
 
             return new JET_TABLECREATE
                 {

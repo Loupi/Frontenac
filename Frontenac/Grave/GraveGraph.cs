@@ -88,17 +88,14 @@ namespace Frontenac.Grave
             return new GraveVertex(this, (int)vertexId);
         }
 
-        public override Features Features
-        {
-            get { return GraveGraphFeatures; }
-        }
+        public override Features Features => GraveGraphFeatures;
 
         private int _vertexSeed;
 
         public override IVertex AddVertex(object unused)
         {
             var esentContext = EsentContext;
-            var id = unused == null ? Interlocked.Increment(ref _vertexSeed) : unused.ToInt32();
+            var id = unused?.ToInt32() ?? Interlocked.Increment(ref _vertexSeed);
             id = esentContext.VertexTable.AddRow(id);
             return new GraveVertex(this, id);
         }
@@ -151,7 +148,7 @@ namespace Frontenac.Grave
             var inVertexId = (int) inVertex.Id;
             var outVertexId = (int) outVertex.Id;
             var esentContext = EsentContext;
-            var id = unused == null ? Interlocked.Increment(ref _edgeSeed) : unused.ToInt32();
+            var id = unused?.ToInt32() ?? Interlocked.Increment(ref _edgeSeed);
             var edgeId = esentContext.EdgesTable.AddEdge(id, label, inVertexId, outVertexId);
             esentContext.VertexTable.AddEdge(inVertexId, Direction.In, label, edgeId, outVertexId);
             esentContext.VertexTable.AddEdge(outVertexId, Direction.Out, label, edgeId, inVertexId);
@@ -243,17 +240,14 @@ namespace Frontenac.Grave
         {
             Contract.Requires(labels != null);
             Contract.Requires(columns != null);
-            Contract.Requires(!String.IsNullOrWhiteSpace(prefix));
+            Contract.Requires(!string.IsNullOrWhiteSpace(prefix));
 
-            if (direction == directionFilter || direction == Direction.Both)
-            {
-                if (!labels.Any())
-                    return columns.Where(t => t.StartsWith(prefix));
+            if (direction != directionFilter && direction != Direction.Both) return Enumerable.Empty<string>();
+            if (!labels.Any())
+                return columns.Where(t => t.StartsWith(prefix));
 
-                var labelsFilter = labels.Select(t => String.Format("{0}{1}", prefix, t)).ToArray();
-                return columns.Where(labelsFilter.Contains);
-            }
-            return Enumerable.Empty<string>();
+            var labelsFilter = labels.Select(t => $"{prefix}{t}").ToArray();
+            return columns.Where(labelsFilter.Contains);
         }
 
         public virtual object GetProperty(GraveElement element, string key)
@@ -315,9 +309,8 @@ namespace Frontenac.Grave
         public override string ToString()
         {
             var esentContext = EsentContext;
-            return this.GraphString(String.Format("vertices: {0} Edges: {1}",
-                                           esentContext.VertexTable.GetApproximateRecordCount(30),
-                                           esentContext.EdgesTable.GetApproximateRecordCount(30)));
+            return this.GraphString(
+                $"vertices: {esentContext.VertexTable.GetApproximateRecordCount(30)} Edges: {esentContext.EdgesTable.GetApproximateRecordCount(30)}");
         }
 
         public const int ConfigVertexId = 1;

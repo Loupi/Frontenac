@@ -7,9 +7,9 @@ namespace Frontenac.Gremlinq
 {
     public class DictionaryAdapterProxyFactory : IProxyFactory
     {
-        readonly PropertyDescriptor _propsDesc = new PropertyDescriptor();
+        private readonly PropertyDescriptor _propsDesc = new PropertyDescriptor();
 
-        readonly DictionaryAdapterFactory _dictionaryAdapterFactory = new DictionaryAdapterFactory();
+        private readonly DictionaryAdapterFactory _dictionaryAdapterFactory = new DictionaryAdapterFactory();
 
         public DictionaryAdapterProxyFactory()
         {

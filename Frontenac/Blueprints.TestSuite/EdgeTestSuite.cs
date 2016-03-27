@@ -41,7 +41,7 @@ namespace Frontenac.Blueprints
 
                 if (graph.Features.SupportsEdgeIteration)
                     set.Add(graph.GetEdges().First());
-                Assert.AreEqual(set.Count(), 1);
+                Assert.AreEqual(set.Count, 1);
             }
             finally
             {
@@ -223,7 +223,7 @@ namespace Frontenac.Blueprints
                     var in_ = graph.AddVertex(ConvertId(graph, "" + counter++));
                     edges.Add(graph.AddEdge(null, out_, in_, ConvertId(graph, "a" + Guid.NewGuid().ToString())));
                 }
-                Assert.AreEqual(edgeCount, edges.Count());
+                Assert.AreEqual(edgeCount, edges.Count);
 
                 if (graph.Features.SupportsVertexIteration)
                 {
@@ -607,7 +607,7 @@ namespace Frontenac.Blueprints
                         Assert.True(false);
                 }
                 Assert.AreEqual(3, count);
-                Assert.AreEqual(3, edgeIds.Count());
+                Assert.AreEqual(3, edgeIds.Count);
                 Assert.True(edgeIds.Contains(e1.Id.ToString()));
                 Assert.True(edgeIds.Contains(e2.Id.ToString()));
                 Assert.True(edgeIds.Contains(e3.Id.ToString()));

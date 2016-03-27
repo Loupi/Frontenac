@@ -40,7 +40,7 @@ namespace Frontenac.Blueprints.Impls.TG
                     return new DotNetTinkerStorage();
             }
 
-            throw new Exception(string.Format("File Type {0} is not configurable by the factory", fileType));
+            throw new Exception($"File Type {fileType} is not configurable by the factory");
         }
 
         /// <summary>

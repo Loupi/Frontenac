@@ -120,9 +120,9 @@ namespace Frontenac.Blueprints.Util.IO.GraphML
                     }
                 }
                 Assert.AreEqual(count, 6);
-                Assert.AreEqual(edgeIds.Count(), 6);
-                Assert.AreEqual(edgeKeys.Count(), 1);
-                Assert.AreEqual(edgeValues.Count(), 4);
+                Assert.AreEqual(edgeIds.Count, 6);
+                Assert.AreEqual(edgeKeys.Count, 1);
+                Assert.AreEqual(edgeValues.Count, 4);
             }
             finally
             {
@@ -154,7 +154,7 @@ namespace Frontenac.Blueprints.Util.IO.GraphML
                     // System.out.println(v);
                 }
                 Assert.AreEqual(count, 6);
-                Assert.AreEqual(vertexNames.Count(), 6);
+                Assert.AreEqual(vertexNames.Count, 6);
                 Assert.True(vertexNames.Contains("marko"));
                 Assert.True(vertexNames.Contains("josh"));
                 Assert.True(vertexNames.Contains("peter"));
@@ -194,7 +194,7 @@ namespace Frontenac.Blueprints.Util.IO.GraphML
                     }
                 }
                 Assert.AreEqual(count, 6);
-                Assert.AreEqual(softwareVertices.Count(), 2);
+                Assert.AreEqual(softwareVertices.Count, 2);
                 foreach (var v in softwareVertices)
                 {
                     Assert.AreEqual(v.GetProperty("lang"), "java");
@@ -280,7 +280,7 @@ namespace Frontenac.Blueprints.Util.IO.GraphML
                 {
                     vertices.Add(e.GetVertex(Direction.In));
                 }
-                Assert.AreEqual(vertices.Count(), 3);
+                Assert.AreEqual(vertices.Count, 3);
                 Assert.True(vertices.Contains(lop));
                 Assert.True(vertices.Contains(josh));
                 Assert.True(vertices.Contains(vadas));
@@ -295,7 +295,7 @@ namespace Frontenac.Blueprints.Util.IO.GraphML
                 {
                     vertices.Add(e.GetVertex(Direction.In));
                 }
-                Assert.AreEqual(vertices.Count(), 1);
+                Assert.AreEqual(vertices.Count, 1);
                 Assert.True(vertices.Contains(lop));
                 // test josh
                 vertices = new HashSet<IVertex>();
@@ -308,7 +308,7 @@ namespace Frontenac.Blueprints.Util.IO.GraphML
                 {
                     vertices.Add(e.GetVertex(Direction.In));
                 }
-                Assert.AreEqual(vertices.Count(), 2);
+                Assert.AreEqual(vertices.Count, 2);
 // ReSharper disable AssignNullToNotNullAttribute
                 Assert.True(vertices.Contains(lop));
                 Assert.True(vertices.Contains(ripple));
@@ -318,7 +318,7 @@ namespace Frontenac.Blueprints.Util.IO.GraphML
                 {
                     vertices.Add(e.GetVertex(Direction.Out));
                 }
-                Assert.AreEqual(vertices.Count(), 1);
+                Assert.AreEqual(vertices.Count, 1);
                 Assert.True(vertices.Contains(marko));
                 // test vadas
                 vertices = new HashSet<IVertex>();
@@ -331,7 +331,7 @@ namespace Frontenac.Blueprints.Util.IO.GraphML
                 {
                     vertices.Add(e.GetVertex(Direction.Out));
                 }
-                Assert.AreEqual(vertices.Count(), 1);
+                Assert.AreEqual(vertices.Count, 1);
                 Assert.True(vertices.Contains(marko));
                 // test lop
                 vertices = new HashSet<IVertex>();
@@ -344,7 +344,7 @@ namespace Frontenac.Blueprints.Util.IO.GraphML
                 {
                     vertices.Add(e.GetVertex(Direction.Out));
                 }
-                Assert.AreEqual(vertices.Count(), 3);
+                Assert.AreEqual(vertices.Count, 3);
                 Assert.True(vertices.Contains(marko));
                 Assert.True(vertices.Contains(josh));
                 Assert.True(vertices.Contains(peter));
@@ -359,7 +359,7 @@ namespace Frontenac.Blueprints.Util.IO.GraphML
                 {
                     vertices.Add(e.GetVertex(Direction.Out));
                 }
-                Assert.AreEqual(vertices.Count(), 1);
+                Assert.AreEqual(vertices.Count, 1);
                 Assert.True(vertices.Contains(josh));
             }
             finally
@@ -522,19 +522,19 @@ namespace Frontenac.Blueprints.Util.IO.GraphML
                 }
 
                 Assert.AreEqual(vertexCount, 6);
-                Assert.AreEqual(vertexIds.Count(), 6);
+                Assert.AreEqual(vertexIds.Count, 6);
                 Assert.AreEqual(vertexKeys.Contains("name"), true);
                 Assert.AreEqual(vertexKeys.Contains("age"), true);
                 Assert.AreEqual(vertexKeys.Contains("lang"), true);
                 Assert.AreEqual(vertexKeys.Contains("_id"), true);
-                Assert.AreEqual(vertexKeys.Count(), 4);
+                Assert.AreEqual(vertexKeys.Count, 4);
 
                 Assert.AreEqual(edgeCount, 6);
-                Assert.AreEqual(edgeIds.Count(), 6);
+                Assert.AreEqual(edgeIds.Count, 6);
                 Assert.AreEqual(edgeKeys.Contains("weight"), true);
                 Assert.AreEqual(edgeKeys.Contains("_id"), true);
                 Assert.AreEqual(edgeKeys.Contains("_label"), true);
-                Assert.AreEqual(edgeKeys.Count(), 3);
+                Assert.AreEqual(edgeKeys.Count, 3);
             }
             finally
             {
@@ -585,12 +585,12 @@ namespace Frontenac.Blueprints.Util.IO.GraphML
                 }
 
                 Assert.AreEqual(vertexCount, 6);
-                Assert.AreEqual(vertexIds.Count(), 6);
+                Assert.AreEqual(vertexIds.Count, 6);
                 Assert.AreEqual(vertexKeys.Contains("name"), true);
                 Assert.AreEqual(vertexKeys.Contains("age"), true);
                 Assert.AreEqual(vertexKeys.Contains("lang"), true);
                 Assert.AreEqual(vertexKeys.Contains("_id"), true);
-                Assert.AreEqual(vertexKeys.Count(), 4);
+                Assert.AreEqual(vertexKeys.Count, 4);
                 Assert.True(vertexNames.Contains("marko"));
                 Assert.True(vertexNames.Contains("josh"));
                 Assert.True(vertexNames.Contains("peter"));
@@ -599,12 +599,12 @@ namespace Frontenac.Blueprints.Util.IO.GraphML
                 Assert.True(vertexNames.Contains("lop"));
 
                 Assert.AreEqual(edgeCount, 6);
-                Assert.AreEqual(edgeIds.Count(), 6);
+                Assert.AreEqual(edgeIds.Count, 6);
                 Assert.AreEqual(edgeKeys.Contains("weight"), true);
                 Assert.AreEqual(edgeKeys.Contains("_id"), true);
                 Assert.AreEqual(edgeKeys.Contains("_label"), false);
-                Assert.AreEqual(edgeKeys.Count(), 2);
-                Assert.AreEqual(edgeLabels.Count(), 2);
+                Assert.AreEqual(edgeKeys.Count, 2);
+                Assert.AreEqual(edgeLabels.Count, 2);
                 Assert.AreEqual(edgeLabels.Contains("has high fived"), true);
                 Assert.AreEqual(edgeLabels.Contains("knows"), false);
                 Assert.AreEqual(edgeLabels.Contains("created"), true);
@@ -658,12 +658,12 @@ namespace Frontenac.Blueprints.Util.IO.GraphML
                 }
 
                 Assert.AreEqual(vertexCount, 6);
-                Assert.AreEqual(vertexIds.Count(), 6);
+                Assert.AreEqual(vertexIds.Count, 6);
                 Assert.AreEqual(vertexKeys.Contains("name"), true);
                 Assert.AreEqual(vertexKeys.Contains("age"), true);
                 Assert.AreEqual(vertexKeys.Contains("lang"), true);
                 Assert.AreEqual(vertexKeys.Contains("_id"), false);
-                Assert.AreEqual(vertexKeys.Count(), 3);
+                Assert.AreEqual(vertexKeys.Count, 3);
                 Assert.True(vertexNames.Contains("marko"));
                 Assert.True(vertexNames.Contains("josh"));
                 Assert.True(vertexNames.Contains("peter"));
@@ -672,12 +672,12 @@ namespace Frontenac.Blueprints.Util.IO.GraphML
                 Assert.True(vertexNames.Contains("lop"));
 
                 Assert.AreEqual(edgeCount, 6);
-                Assert.AreEqual(edgeIds.Count(), 6);
+                Assert.AreEqual(edgeIds.Count, 6);
                 Assert.AreEqual(edgeKeys.Contains("weight"), true);
                 Assert.AreEqual(edgeKeys.Contains("_id"), false);
                 Assert.AreEqual(edgeKeys.Contains("_label"), true);
-                Assert.AreEqual(edgeKeys.Count(), 2);
-                Assert.AreEqual(edgeLabels.Count(), 2);
+                Assert.AreEqual(edgeKeys.Count, 2);
+                Assert.AreEqual(edgeLabels.Count, 2);
                 Assert.AreEqual(edgeLabels.Contains("has high fived"), false);
                 Assert.AreEqual(edgeLabels.Contains("knows"), true);
                 Assert.AreEqual(edgeLabels.Contains("created"), true);
@@ -736,12 +736,12 @@ namespace Frontenac.Blueprints.Util.IO.GraphML
                 }
 
                 Assert.AreEqual(vertexCount, 6);
-                Assert.AreEqual(vertexIds.Count(), 6);
+                Assert.AreEqual(vertexIds.Count, 6);
                 Assert.AreEqual(vertexKeys.Contains("name"), true);
                 Assert.AreEqual(vertexKeys.Contains("age"), true);
                 Assert.AreEqual(vertexKeys.Contains("lang"), true);
                 Assert.AreEqual(vertexKeys.Contains("_id"), false);
-                Assert.AreEqual(vertexKeys.Count(), 3);
+                Assert.AreEqual(vertexKeys.Count, 3);
                 Assert.True(vertexNames.Contains("marko"));
                 Assert.True(vertexNames.Contains("josh"));
                 Assert.True(vertexNames.Contains("peter"));
@@ -750,12 +750,12 @@ namespace Frontenac.Blueprints.Util.IO.GraphML
                 Assert.True(vertexNames.Contains("lop"));
 
                 Assert.AreEqual(edgeCount, 6);
-                Assert.AreEqual(edgeIds.Count(), 6);
+                Assert.AreEqual(edgeIds.Count, 6);
                 Assert.AreEqual(edgeKeys.Contains("weight"), true);
                 Assert.AreEqual(edgeKeys.Contains("_id"), false);
                 Assert.AreEqual(edgeKeys.Contains("_label"), false);
-                Assert.AreEqual(edgeKeys.Count(), 1);
-                Assert.AreEqual(edgeLabels.Count(), 2);
+                Assert.AreEqual(edgeKeys.Count, 1);
+                Assert.AreEqual(edgeLabels.Count, 2);
                 Assert.AreEqual(edgeLabels.Contains("has high fived"), true);
                 Assert.AreEqual(edgeLabels.Contains("knows"), false);
                 Assert.AreEqual(edgeLabels.Contains("created"), true);
@@ -923,19 +923,19 @@ namespace Frontenac.Blueprints.Util.IO.GraphML
                 }
 
                 Assert.AreEqual(vertexCount, 6);
-                Assert.AreEqual(vertexIds.Count(), 6);
+                Assert.AreEqual(vertexIds.Count, 6);
                 Assert.AreEqual(vertexKeys.Contains("name"), true);
                 Assert.AreEqual(vertexKeys.Contains("age"), true);
                 Assert.AreEqual(vertexKeys.Contains("lang"), true);
                 Assert.AreEqual(vertexKeys.Contains("_id"), true);
-                Assert.AreEqual(vertexKeys.Count(), 4);
+                Assert.AreEqual(vertexKeys.Count, 4);
 
                 Assert.AreEqual(edgeCount, 6);
-                Assert.AreEqual(edgeIds.Count(), 6);
+                Assert.AreEqual(edgeIds.Count, 6);
                 Assert.AreEqual(edgeKeys.Contains("weight"), true);
                 Assert.AreEqual(edgeKeys.Contains("_id"), true);
                 Assert.AreEqual(edgeKeys.Contains("_label"), true);
-                Assert.AreEqual(edgeKeys.Count(), 3);
+                Assert.AreEqual(edgeKeys.Count, 3);
             }
             finally
             {
@@ -966,7 +966,7 @@ namespace Frontenac.Blueprints.Util.IO.GraphML
                 Assert.AreEqual(29, onlyOne.GetProperty("i"));
                 Assert.AreEqual(true, onlyOne.GetProperty("b"));
                 Assert.AreEqual(10000000, onlyOne.GetProperty("l"));
-                Assert.AreEqual(123.54, onlyOne.GetProperty("f"));
+                Assert.AreEqual(123.54f, Convert.ToSingle(onlyOne.GetProperty("f")));
                 Assert.AreEqual("junk", onlyOne.GetProperty("n"));
             }
             finally

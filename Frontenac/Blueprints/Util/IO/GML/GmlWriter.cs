@@ -264,12 +264,12 @@ namespace Frontenac.Blueprints.Util.IO.GML
             if (Blueprints.GraphHelpers.IsNumber(property))
                 WriteNumberProperty(writer, property);
             else if (property is IDictionary)
-                WriteMapProperty(writer, property as IDictionary, tab);
+                WriteMapProperty(writer, (IDictionary) property, tab);
             else
                 WriteStringProperty(writer, property.ToString());
         }
 
-        private void WriteMapProperty(StreamWriter writer, IDictionary map, int tabs)
+        private void WriteMapProperty(StreamWriter writer, IEnumerable map, int tabs)
         {
             Contract.Requires(writer != null);
             Contract.Requires(map != null);

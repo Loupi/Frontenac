@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Diagnostics.Contracts;
 using System.IO;
 using System.Linq;
+using System.Threading.Tasks;
 using Frontenac.Blueprints;
 using Frontenac.Blueprints.Geo;
 using Frontenac.Infrastructure;
@@ -52,7 +53,7 @@ namespace Frontenac.Lucene
                                  TimeSpan.FromMilliseconds(LuceneIndexingServiceParameters.Default.MinStaleMilliseconds),
                                  LuceneIndexingServiceParameters.Default.CloseTimeoutSeconds);
 
-            System.Threading.Tasks.Task.Factory.StartNew(() => _reopener.Start());
+            Task.Factory.StartNew(() => _reopener.Start());
         }
 
         #region IDisposable
@@ -63,16 +64,13 @@ namespace Frontenac.Lucene
 
             if (!disposing) return;
 
-            if(_reopener != null)
-                _reopener.Dispose();
+            _reopener.Dispose();
 
             _analyzer.Dispose();
 
-            if(_nrtManager != null)
-                _nrtManager.Dispose();
+            _nrtManager.Dispose();
 
-            if(_directory != null)
-                _directory.Dispose();
+            _directory?.Dispose();
         }
 
         #endregion
@@ -216,10 +214,10 @@ namespace Frontenac.Lucene
                 {
                     var comparable = graveQueryElement as ComparableQueryElement;
 
-                    if (comparable.Value is IGeoShape)
-                        luceneQuery = CreateGeoQuery(indexType, comparable.Key, comparable.Value as IGeoShape);
-                    else
-                        luceneQuery = CreateComparableQuery(indexType, comparable);
+                    var shape = comparable.Value as IGeoShape;
+                    luceneQuery = shape != null 
+                        ? CreateGeoQuery(indexType, comparable.Key, shape) 
+                        : CreateComparableQuery(indexType, comparable);
                 }
 
                 luceneQueries.Add(luceneQuery);
@@ -255,6 +253,11 @@ namespace Frontenac.Lucene
             _nrtManager.Commit();
         }
 
+        public override Task CommitAsync()
+        {
+            throw new NotSupportedException();
+        }
+
         public override void Rollback()
         {
             VertexIndices.Rollback();
@@ -264,30 +267,39 @@ namespace Frontenac.Lucene
             _nrtManager.Rollback();
         }
 
-        static Query CreateGeoQuery(Type indexType, string key, IGeoShape geoShape)
+        private static Query CreateGeoQuery(Type indexType, string key, IGeoShape geoShape)
         {
             Shape shape;
-            if (geoShape is GeoCircle)
+            var geoCircle = geoShape as GeoCircle;
+            if (geoCircle != null)
             {
-                var circle = geoShape as GeoCircle;
+                var circle = geoCircle;
                 shape = SpatialContext.GEO.MakeCircle(circle.Center.Latitude, circle.Center.Longitude,
                                                       DistanceUtils.Dist2Degrees(circle.Radius, DistanceUtils.EARTH_MEAN_RADIUS_KM));
             }
-            else if (geoShape is GeoPoint)
-            {
-                var point = geoShape as GeoPoint;
-                shape = SpatialContext.GEO.MakePoint(point.Latitude, point.Longitude);
-            }
-            else if (geoShape is GeoRectangle)
-            {
-                var rect = geoShape as GeoRectangle;
-                shape = SpatialContext.GEO.MakeRectangle(rect.TopLeft.Latitude, rect.TopLeft.Longitude,
-                                                         rect.BottomRight.Latitude,
-                                                         rect.BottomRight.Longitude);
-            }
             else
             {
-                throw new InvalidOperationException("Unknown GeoShape type");
+                var geoPoint = geoShape as GeoPoint;
+                if (geoPoint != null)
+                {
+                    var point = geoPoint;
+                    shape = SpatialContext.GEO.MakePoint(point.Latitude, point.Longitude);
+                }
+                else
+                {
+                    var rectangle = geoShape as GeoRectangle;
+                    if (rectangle != null)
+                    {
+                        var rect = rectangle;
+                        shape = SpatialContext.GEO.MakeRectangle(rect.TopLeft.Latitude, rect.TopLeft.Longitude,
+                            rect.BottomRight.Latitude,
+                            rect.BottomRight.Longitude);
+                    }
+                    else
+                    {
+                        throw new InvalidOperationException("Unknown GeoShape type");
+                    }
+                }
             }
 
             var grid = new GeohashPrefixTree(SpatialContext.GEO, 11);

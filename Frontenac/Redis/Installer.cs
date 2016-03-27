@@ -17,13 +17,13 @@ namespace Frontenac.Redis
 
             var config = new ConfigurationOptions
             {
-                ConnectTimeout = 30000, 
-                ResponseTimeout = 30000, 
+                ConnectTimeout = 60000, 
+                ResponseTimeout = 60000, 
                 ConnectRetry = 3, 
-                SyncTimeout = 30000
+                SyncTimeout = 60000
             };
 
-            var endpoints = Properties.Settings.Default.ConnectionString.Split(';');
+            var endpoints = RedisGraph.GetConnectionString().Split(';');
             foreach (var endpoint in endpoints)
                 config.EndPoints.Add(endpoint);
 
@@ -44,5 +44,7 @@ namespace Frontenac.Redis
             container.Register(LifeStyle.Transient, typeof(RedisTransactionalGraph), typeof(IGraph), typeof(IKeyIndexableGraph), 
                                                     typeof(IIndexableGraph), typeof(ITransactionalGraph), typeof(IThreadedTransactionalGraph));
         }
+
+        
     }
 }

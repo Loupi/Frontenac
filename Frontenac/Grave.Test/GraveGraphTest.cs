@@ -1,5 +1,6 @@
 ﻿using System;
 using System.IO;
+using System.Runtime.CompilerServices;
 using Frontenac.Blueprints;
 using Frontenac.Blueprints.Impls;
 using Frontenac.Blueprints.Impls.TG;
@@ -30,12 +31,12 @@ namespace Frontenac.Grave.Tests
 
         public override ITransactionalGraph GenerateTransactionalGraph()
         {
-            throw new NotImplementedException();
+            throw new NotSupportedException();
         }
 
         public override ITransactionalGraph GenerateTransactionalGraph(string graphDirectoryName)
         {
-            throw new NotImplementedException();
+            throw new NotSupportedException();
         }
 
         public static string GetGraveGraphDirectory()
@@ -46,21 +47,22 @@ namespace Frontenac.Grave.Tests
 
     public class GraveGraphTestSuite
     {
-        private IContainer _container;
-        private IGraphFactory _factory;
+        public static ConditionalWeakTable<GraveGraphTestSuite, CastleWindsorContainer> Containers { get; } =
+            new ConditionalWeakTable<GraveGraphTestSuite, CastleWindsorContainer>();
 
         public void SetUp(GraphTest graphTest)
         {
             DeleteDirectory(GraveGraphTest.GetGraveGraphDirectory());
 
-            _container = new CastleWindsorContainer();
-            _container.SetupGrave();
-            _factory = _container.Resolve<IGraphFactory>();
+            var container = new CastleWindsorContainer();
+            container.SetupGrave();
+            Factory = container.Resolve<IGraphFactory>();
 
-            ((GraveGraphTest) graphTest).Factory = _factory;
+            Containers.Add(this, container);
+            ((GraveGraphTest) graphTest).Factory = Factory;
         }
 
-        static void DeleteDirectory(string directory)
+        private static void DeleteDirectory(string directory)
         {
             if (Directory.Exists(directory))
                 Directory.Delete(directory, true);
@@ -68,14 +70,19 @@ namespace Frontenac.Grave.Tests
 
         public void TearDown()
         {
-            _container.Release(_factory);
-            _factory.Dispose();
-            _container.Dispose();
+            CastleWindsorContainer container;
+            if (Containers.TryGetValue(this, out container))
+            {
+                container.Release(Factory);
+                Factory.Dispose();
+                container.Dispose();
+                Containers.Remove(this);
+            }
 
             DeleteDirectory(GraveGraphTest.GetGraveGraphDirectory());
         }
 
-        public IGraphFactory Factory { get { return _factory; } }
+        public IGraphFactory Factory { get; private set; }
     }
 
     [TestFixture(Category = "GraveEntitiesTestSuite")]

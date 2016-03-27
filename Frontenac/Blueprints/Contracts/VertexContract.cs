@@ -22,6 +22,23 @@ namespace Frontenac.Blueprints.Contracts
             return null;
         }
 
+        public IEnumerable<IVertex> GetVertices(Direction direction, string label, params object[] ids)
+        {
+            Contract.Requires(direction != Direction.Both);
+            Contract.Requires(!string.IsNullOrWhiteSpace(label));
+            Contract.Ensures(Contract.Result<IEnumerable<IVertex>>() != null);
+
+            return null;
+        }
+
+        public long GetNbEdges(Direction direction, string label)
+        {
+            Contract.Requires(direction != Direction.Both);
+            Contract.Requires(!string.IsNullOrWhiteSpace(label));
+            
+            return 0;
+        }
+
         public IVertexQuery Query()
         {
             Contract.Ensures(Contract.Result<IVertexQuery>() != null);

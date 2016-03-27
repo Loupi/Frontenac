@@ -27,10 +27,7 @@ namespace Frontenac.Blueprints.Util.Wrappers.Id
             }
         }
 
-        public Type Type
-        {
-            get { return BaseIndex.Type; }
-        }
+        public Type Type => BaseIndex.Type;
 
         public void Put(string key, object value, IElement element)
         {

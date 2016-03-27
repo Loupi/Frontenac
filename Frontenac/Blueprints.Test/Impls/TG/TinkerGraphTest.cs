@@ -352,13 +352,13 @@ namespace Frontenac.Blueprints.Impls.TG
 
                         if (v1.GetType() != v2.GetType())
                         {
-                            if ((v1 is float) && (v2 is int))
+                            if (v1 is float && v2 is int)
                             {
-                                Assert.AreEqual(v1, (float) ((int) v2));
+                                Assert.AreEqual(v1, (float) (int) v2);
                             }
-                            else if ((v1 is int) && (v2 is float))
+                            else if (v1 is int && v2 is float)
                             {
-                                Assert.AreEqual((float) ((int) v1), v2);
+                                Assert.AreEqual((float) (int) v1, v2);
                             }
                         }
                         else

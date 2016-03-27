@@ -55,12 +55,13 @@ namespace Frontenac.Infrastructure.Indexing.Indexers
             
             if ((type.IsValueType && type.FullName == string.Concat("System.", type.Name)) ||
                 (type.FullName == string.Concat("System.Reflection.", type.Name)) ||
-                (value is SecurityIdentifier))
+                value is SecurityIdentifier)
                 return;
 
-            if (value is IEnumerable)
+            var objs = value as IEnumerable;
+            if (objs != null)
             {
-                foreach (var obj in value as IEnumerable)
+                foreach (var obj in objs)
                 {
                     Recurse(depth + 1, document, obj, nameBuilder);
                 }

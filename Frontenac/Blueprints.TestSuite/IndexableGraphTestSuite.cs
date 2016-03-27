@@ -159,8 +159,8 @@ namespace Frontenac.Blueprints
             var graph = (IIndexableGraph) GraphTest.GenerateGraph();
             try
             {
-                hasFeatures = (graph.Features.IsPersistent && graph.Features.SupportsVertexIndex &&
-                               graph.Features.SupportsElementProperties() && graph.Features.SupportsIndices);
+                hasFeatures = graph.Features.IsPersistent && graph.Features.SupportsVertexIndex &&
+                              graph.Features.SupportsElementProperties() && graph.Features.SupportsIndices;
 
                 if (hasFeatures)
                 {
@@ -292,8 +292,8 @@ namespace Frontenac.Blueprints
             var graph = (IIndexableGraph) GraphTest.GenerateGraph();
             try
             {
-                var hasFeatures = (graph.Features.IsPersistent && graph.Features.SupportsIndices &&
-                                   graph.Features.SupportsVertexIndex);
+                var hasFeatures = graph.Features.IsPersistent && graph.Features.SupportsIndices &&
+                                  graph.Features.SupportsVertexIndex;
                 if (!hasFeatures) return;
 
                 graph.CreateIndex("blah", typeof (IVertex));
@@ -304,13 +304,13 @@ namespace Frontenac.Blueprints
                     indexNames.Add(index.Name);
                 }
                 Assert.AreEqual(Count(graph.GetIndices()), 2);
-                Assert.AreEqual(Count(graph.GetIndices()), indexNames.Count());
+                Assert.AreEqual(Count(graph.GetIndices()), indexNames.Count);
                 StopWatch();
                 foreach (var indexName in indexNames)
                 {
                     graph.DropIndex(indexName);
                 }
-                PrintPerformance(graph.ToString(), indexNames.Count(), "indices dropped", StopWatch());
+                PrintPerformance(graph.ToString(), indexNames.Count, "indices dropped", StopWatch());
                 Assert.AreEqual(Count(graph.GetIndices()), 0);
 
                 var count = Count(graph.GetIndices());

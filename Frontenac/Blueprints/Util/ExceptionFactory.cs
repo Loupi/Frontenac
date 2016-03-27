@@ -22,12 +22,12 @@ namespace Frontenac.Blueprints.Util
 
         public static ArgumentException VertexWithIdAlreadyExists(object id)
         {
-            return new ArgumentException(string.Format("Vertex with id already exists: {0}", id));
+            return new ArgumentException($"Vertex with id already exists: {id}");
         }
 
         public static ArgumentException EdgeWithIdAlreadyExist(object id)
         {
-            return new ArgumentException(string.Format("Edge with id already exists: {0}", id));
+            return new ArgumentException($"Edge with id already exists: {id}");
         }
 
         public static ArgumentException BothIsNotSupported()
@@ -39,7 +39,7 @@ namespace Frontenac.Blueprints.Util
 
         public static ArgumentException PropertyKeyIsReserved(string key)
         {
-            return new ArgumentException(string.Format("Property key is reserved for all elements: {0}", key));
+            return new ArgumentException($"Property key is reserved for all elements: {key}");
         }
 
         public static ArgumentException PropertyKeyIdIsReserved()
@@ -71,19 +71,19 @@ namespace Frontenac.Blueprints.Util
 
         public static ArgumentException IndexAlreadyExists(string indexName)
         {
-            return new ArgumentException(string.Format("Index already exists: {0}", indexName));
+            return new ArgumentException($"Index already exists: {indexName}");
         }
 
         public static InvalidOperationException IndexDoesNotSupportClass(string indexName, Type clazz)
         {
-            return new InvalidOperationException(string.Format("{0} does not support class: {1}", indexName, clazz));
+            return new InvalidOperationException($"{indexName} does not support class: {clazz}");
         }
 
         // KeyIndexableGraph related exceptions
 
         public static ArgumentException ClassIsNotIndexable(Type clazz)
         {
-            return new ArgumentException(string.Format("Class is not indexable: {0}", clazz));
+            return new ArgumentException($"Class is not indexable: {clazz}");
         }
 
         // TransactionalGraph related exceptions

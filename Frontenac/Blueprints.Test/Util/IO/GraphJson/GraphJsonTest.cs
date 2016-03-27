@@ -21,10 +21,8 @@ namespace Frontenac.Blueprints.Util.IO.GraphJson
                 var jsonString = Encoding.Default.GetString(stream.ToArray());
                 using (var example = GetResource<GraphJsonTest>("graph-example-1.json"))
                 {
-                    using (var sr = new StreamReader(example))
-                    {
-                        Assert.AreEqual(jsonString, sr.ReadToEnd());
-                    }
+                    var sr = new StreamReader(example);
+                    Assert.AreEqual(jsonString, sr.ReadToEnd());
                 }
             }
         }

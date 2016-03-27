@@ -24,10 +24,7 @@ namespace Frontenac.Blueprints.Util.Wrappers.ReadOnly
             return BaseElement.GetPropertyKeys();
         }
 
-        public override object Id
-        {
-            get { return BaseElement.Id; }
-        }
+        public override object Id => BaseElement.Id;
 
         public override object RemoveProperty(string key)
         {

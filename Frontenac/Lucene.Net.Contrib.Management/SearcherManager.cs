@@ -79,10 +79,7 @@ namespace Lucene.Net.Contrib.Management
                     var success = false;
                     try
                     {
-                        if (_warmer != null)
-                        {
-                            _warmer.Warm(newSearcher);
-                        }
+                        _warmer?.Warm(newSearcher);
                         SwapSearcher(newSearcher);
                         oldSearcher.Dispose();
                         success = true;
@@ -176,7 +173,7 @@ namespace Lucene.Net.Contrib.Management
 
             #endregion
 
-            public IndexSearcher Searcher { get; private set; }
+            public IndexSearcher Searcher { get; }
         }
 
         

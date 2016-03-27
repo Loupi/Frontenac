@@ -13,6 +13,6 @@ namespace Frontenac.Gremlinq
             Model = model;
         }
 
-        public TModel Model { get; private set; }
+        public TModel Model { get; }
     }
 }

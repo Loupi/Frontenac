@@ -88,6 +88,7 @@
       <HintPath>..\packages\StackExchange.Redis.StrongName.1.0.481\lib\net45\StackExchange.Redis.StrongName.dll</HintPath>
     </Reference>
     <Reference Include="System" />
+    <Reference Include="System.configuration" />
     <Reference Include="System.Core" />
     <Reference Include="System.Numerics" />
     <Reference Include="System.Xml.Linq" />

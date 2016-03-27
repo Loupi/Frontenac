@@ -27,6 +27,16 @@ namespace Frontenac.Blueprints.Util.Wrappers.ReadOnly
             return new ReadOnlyVertexIterable(ReadOnlyInnerTinkerGrapĥ, ((IVertex) BaseElement).GetVertices(direction, labels));
         }
 
+        public IEnumerable<IVertex> GetVertices(Direction direction, string label, params object[] ids)
+        {
+            return _baseVertex.GetVertices(direction, label, ids);
+        }
+
+        public long GetNbEdges(Direction direction, string label)
+        {
+            return _baseVertex.GetNbEdges(direction, label);
+        }
+
         public IEdge AddEdge(object id, string label, IVertex vertex)
         {
             throw new InvalidOperationException(ReadOnlyTokens.MutateErrorMessage);

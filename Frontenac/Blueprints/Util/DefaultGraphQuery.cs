@@ -36,19 +36,17 @@ namespace Frontenac.Blueprints.Util
             Contract.Requires(elementClass != null);
             Contract.Ensures(Contract.Result<IEnumerable<T>>() != null);
 
-            if (_graph is IKeyIndexableGraph)
+            var graph = _graph as IKeyIndexableGraph;
+            if (graph != null)
             {
-                var keys = (_graph as IKeyIndexableGraph).GetIndexedKeys(elementClass).ToArray();
-                foreach (
-                    var hasContainer in
-                        HasContainers.Where(
-                            hasContainer =>
+                var keys = graph.GetIndexedKeys(elementClass).ToArray();
+                foreach (var hasContainer in HasContainers.Where(hasContainer =>
                             hasContainer.Compare == Compare.Equal && hasContainer.Value != null &&
                             keys.Contains(hasContainer.Key)))
                 {
                     if (typeof (IVertex).IsAssignableFrom(elementClass))
-                        return (IEnumerable<T>) _graph.GetVertices(hasContainer.Key, hasContainer.Value);
-                    return (IEnumerable<T>) _graph.GetEdges(hasContainer.Key, hasContainer.Value);
+                        return (IEnumerable<T>) graph.GetVertices(hasContainer.Key, hasContainer.Value);
+                    return (IEnumerable<T>) graph.GetEdges(hasContainer.Key, hasContainer.Value);
                 }
             }
 

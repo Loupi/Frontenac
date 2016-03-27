@@ -37,7 +37,7 @@ namespace Frontenac.Blueprints.Util.Wrappers.Batch
         public const long DefaultBufferSize = 100000;
 
         private readonly ITransactionalGraph _baseGraph;
-        private readonly long _bufferSize = DefaultBufferSize;
+        private readonly long _bufferSize;
         private readonly IVertexCache _cache;
         private BatchEdge _currentEdge;
         private IEdge _currentEdgeCached;
@@ -284,7 +284,7 @@ namespace Frontenac.Blueprints.Util.Wrappers.Batch
         public void SetVertexIdKey(string key)
         {
             bool? ignoresSuppliedIds = _baseGraph.Features.IgnoresSuppliedIds;
-            if (ignoresSuppliedIds != null && (!_loadingFromScratch && key == null && ignoresSuppliedIds.Value))
+            if (ignoresSuppliedIds != null && !_loadingFromScratch && key == null && ignoresSuppliedIds.Value)
                 throw new InvalidOperationException(
                     "Cannot set vertex id key to null when not loading from scratch while ids are ignored.");
             _vertexIdKey = key;
@@ -336,7 +336,7 @@ namespace Frontenac.Blueprints.Util.Wrappers.Batch
         /// <param name="fromScratch">Sets whether the Graph loaded through this instance of BatchGraph is loaded from scratch</param>
         public void SetLoadingFromScratch(bool fromScratch)
         {
-            if (_baseGraph.Features.IgnoresSuppliedIds && (fromScratch == false && _vertexIdKey == null))
+            if (_baseGraph.Features.IgnoresSuppliedIds && fromScratch == false && _vertexIdKey == null)
                 throw new InvalidOperationException(
                     "Vertex id key is required to query existing vertices in wrapped Graph.");
             _loadingFromScratch = fromScratch;
@@ -428,20 +428,14 @@ namespace Frontenac.Blueprints.Util.Wrappers.Batch
                 return GetWrappedEdge().GetVertex(direction);
             }
 
-            public string Label
-            {
-                get { return GetWrappedEdge().Label; }
-            }
+            public string Label => GetWrappedEdge().Label;
 
             public override void SetProperty(string key, object value)
             {
                 GetWrappedEdge().SetProperty(key, value);
             }
 
-            public override object Id
-            {
-                get { return GetWrappedEdge().Id; }
-            }
+            public override object Id => GetWrappedEdge().Id;
 
             public override object GetProperty(string key)
             {
@@ -488,7 +482,7 @@ namespace Frontenac.Blueprints.Util.Wrappers.Batch
                 Contract.Requires(batchInnerTinkerGrapĥ != null);
                 Contract.Ensures(_batchInnerTinkerGrapĥ != null);
 
-                if (id == null) throw new ArgumentNullException("id");
+                if (id == null) throw new ArgumentNullException(nameof(id));
                 _externalId = id;
                 _batchInnerTinkerGrapĥ = batchInnerTinkerGrapĥ;
             }
@@ -498,7 +492,17 @@ namespace Frontenac.Blueprints.Util.Wrappers.Batch
                 throw RetrievalNotSupported();
             }
 
+            public long GetNbEdges(Direction direction, string label)
+            {
+                throw RetrievalNotSupported();
+            }
+
             public IEnumerable<IVertex> GetVertices(Direction direction, params string[] labels)
+            {
+                throw RetrievalNotSupported();
+            }
+
+            public IEnumerable<IVertex> GetVertices(Direction direction, string label, params object[] ids)
             {
                 throw RetrievalNotSupported();
             }
@@ -516,14 +520,10 @@ namespace Frontenac.Blueprints.Util.Wrappers.Batch
             public override void SetProperty(string key, object value)
             {
                 var cachedVertex = _batchInnerTinkerGrapĥ.GetCachedVertex(_externalId);
-                if(cachedVertex != null)
-                    cachedVertex.SetProperty(key, value);
+                cachedVertex?.SetProperty(key, value);
             }
 
-            public override object Id
-            {
-                get { return _externalId; }
-            }
+            public override object Id => _externalId;
 
             public override object GetProperty(string key)
             {

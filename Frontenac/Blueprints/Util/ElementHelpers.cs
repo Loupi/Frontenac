@@ -117,7 +117,7 @@ namespace Frontenac.Blueprints.Util
                 try
                 {
                     object convertedValue;
-                    if (classCast.IsPrimitive)
+                    if (classCast.IsPrimitive || classCast.IsEnum)
                     {
                         var tc = TypeDescriptor.GetConverter(classCast);
                         convertedValue = tc.ConvertFromString(value.ToString());

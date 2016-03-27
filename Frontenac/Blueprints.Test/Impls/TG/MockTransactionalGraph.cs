@@ -21,8 +21,7 @@ namespace Frontenac.Blueprints.Impls.TG
 
         public void Shutdown()
         {
-            if (_graph != null)
-                _graph.Shutdown();
+            _graph?.Shutdown();
         }
 
         public void Rollback()

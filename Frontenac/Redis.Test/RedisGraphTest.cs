@@ -1,5 +1,6 @@
 ﻿using System;
 using System.IO;
+using System.Runtime.CompilerServices;
 using Frontenac.Blueprints;
 using Frontenac.Blueprints.Impls;
 using Frontenac.Blueprints.Util.IO.GML;
@@ -45,23 +46,24 @@ namespace Frontenac.Redis.Test
 
     public class RedisGraphTestSuite
     {
-        private IContainer _container;
-        private IGraphFactory _factory;
+        public static ConditionalWeakTable<RedisGraphTestSuite, CastleWindsorContainer> Containers { get; } =
+            new ConditionalWeakTable<RedisGraphTestSuite, CastleWindsorContainer>();
 
         public void SetUp(GraphTest graphTest)
         {
             RedisGraph.DeleteDb();
             ElasticSearchService.DropAll();
             DeleteDirectory(RedisGraphTest.GetRedisGraphDirectory());
+            
+            var container = new CastleWindsorContainer();
+            container.SetupRedis();
+            Factory = container.Resolve<IGraphFactory>();
 
-            _container = new CastleWindsorContainer();
-            _container.SetupRedis();
-            _factory = _container.Resolve<IGraphFactory>();
-
-            ((RedisGraphTest)graphTest).Factory = _factory;
+            Containers.Add(this, container);
+            ((RedisGraphTest)graphTest).Factory = Factory;
         }
 
-        static void DeleteDirectory(string directory)
+        private static void DeleteDirectory(string directory)
         {
             if (Directory.Exists(directory))
                 Directory.Delete(directory, true);
@@ -69,13 +71,19 @@ namespace Frontenac.Redis.Test
 
         public void TearDown()
         {
-            _container.Release(_factory);
-            _factory.Dispose();
-            _container.Dispose();
+            CastleWindsorContainer container;
+            if (Containers.TryGetValue(this, out container))
+            {
+                container.Release(Factory);
+                Factory.Dispose();
+                container.Dispose();
+                Containers.Remove(this);
+            }
+            
             RedisGraph.DeleteDb();
         }
 
-        public IGraphFactory Factory { get { return _factory; } }
+        public IGraphFactory Factory { get; private set; }
     }
 
     [TestFixture(Category = "RedisEntitiesTestSuite")]

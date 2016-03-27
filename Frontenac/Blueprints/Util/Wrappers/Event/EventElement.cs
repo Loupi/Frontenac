@@ -27,10 +27,7 @@ namespace Frontenac.Blueprints.Util.Wrappers.Event
             return Element.GetPropertyKeys();
         }
 
-        public override object Id
-        {
-            get { return Element.Id; }
-        }
+        public override object Id => Element.Id;
 
         /// <note>
         ///     Raises a vertexPropertyRemoved or edgePropertyRemoved event.

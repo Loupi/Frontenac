@@ -347,7 +347,7 @@ namespace Frontenac.Blueprints
         {
             var fields = GetType()
                 .GetProperties()
-                .Select(t => string.Format("{0}: {1}", t.Name, t.GetValue(this, null)));
+                .Select(t => $"{t.Name}: {t.GetValue(this, null)}");
 
             return string.Join("\n", fields);
         }
@@ -373,7 +373,7 @@ namespace Frontenac.Blueprints
                 .FirstOrDefault(t => t.GetValue(this) == null);
 
             if (notCompliant != null)
-                throw new InvalidOperationException(string.Format("The feature {0} was not specified", notCompliant.Name));
+                throw new InvalidOperationException($"The feature {notCompliant.Name} was not specified");
         }
 
         /// <summary>

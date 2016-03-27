@@ -42,7 +42,7 @@ namespace Frontenac.Grave.Esent
                     if (edgeId.HasValue && targetId.HasValue)
                     {
 // ReSharper disable RedundantCast
-                        var key = ((((ulong) edgeId.Value) << 32)) | (ulong) (long) targetId.Value;
+                        var key = (ulong) edgeId.Value << 32 | (ulong) (long) targetId.Value;
 // ReSharper restore RedundantCast
                         var data = BitConverter.GetBytes(key);
                         Api.JetSetColumn(Session, TableId, Columns[labelColumn], data, data.Length,
@@ -98,7 +98,7 @@ namespace Frontenac.Grave.Esent
             Contract.Requires(!string.IsNullOrWhiteSpace(edgeLabel));
 
 // ReSharper disable RedundantCast
-            var key = ((((ulong) edgeId) << 32)) | (ulong) (long) targetId;
+            var key = (ulong) edgeId << 32 | (ulong) (long) targetId;
 // ReSharper restore RedundantCast
             Api.JetSetCurrentIndex(Session, TableId, string.Concat(edgeLabel, "Index"));
             Api.MakeKey(Session, TableId, key, MakeKeyGrbit.NewKey);
@@ -107,20 +107,18 @@ namespace Frontenac.Grave.Esent
 
         private static string GetEdgeColumnName(Direction direction, string label)
         {
-            return string.Format("$e_{0}_{1}", direction == Direction.In ? "i" : "o", label);
+            return $"$e_{(direction == Direction.In ? "i" : "o")}_{label}";
         }
 
         private void CreateEdgeColumn(string columnName)
         {
             Contract.Requires(!string.IsNullOrWhiteSpace(columnName));
 
-            if (CreateColumn(columnName, VistaColtyp.LongLong,
-                             ColumndefGrbit.ColumnMultiValued | ColumndefGrbit.ColumnTagged))
-            {
-                var description = string.Format("+{0}\0\0", columnName);
-                Api.JetCreateIndex(Session, TableId, string.Concat(columnName, "Index"), CreateIndexGrbit.None,
-                                   description, description.Length, 50);
-            }
+            if (!CreateColumn(columnName, VistaColtyp.LongLong,
+                ColumndefGrbit.ColumnMultiValued | ColumndefGrbit.ColumnTagged)) return;
+            var description = $"+{columnName}\0\0";
+            Api.JetCreateIndex(Session, TableId, string.Concat(columnName, "Index"), CreateIndexGrbit.None,
+                description, description.Length, 50);
         }
 
         public int CountEdges(int vertexId, string labelName)

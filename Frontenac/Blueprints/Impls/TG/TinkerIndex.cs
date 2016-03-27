@@ -13,7 +13,7 @@ namespace Frontenac.Blueprints.Impls.TG
         protected readonly Type IndexClass;
         protected readonly string IndexName;
 
-        internal ConcurrentDictionary<string, ConcurrentDictionary<object, ConcurrentDictionary<string, IElement>>> Index =
+        internal readonly ConcurrentDictionary<string, ConcurrentDictionary<object, ConcurrentDictionary<string, IElement>>> Index =
             new ConcurrentDictionary<string, ConcurrentDictionary<object, ConcurrentDictionary<string, IElement>>>();
 
         public TinkerIndex(string indexName, Type indexClass)
@@ -26,15 +26,9 @@ namespace Frontenac.Blueprints.Impls.TG
             IndexClass = indexClass;
         }
 
-        public string Name
-        {
-            get { return IndexName; }
-        }
+        public string Name => IndexName;
 
-        public Type Type
-        {
-            get { return IndexClass; }
-        }
+        public Type Type => IndexClass;
 
         public void Put(string key, object value, IElement element)
         {
@@ -67,7 +61,7 @@ namespace Frontenac.Blueprints.Impls.TG
 
         public IEnumerable<IElement> Query(string key, object query)
         {
-            throw new NotImplementedException();
+            throw new NotSupportedException();
         }
 
         public long Count(string key, object value)
@@ -76,26 +70,19 @@ namespace Frontenac.Blueprints.Impls.TG
             if (null == keyMap)
                 return 0;
             var set = keyMap.Get(value);
-            return null == set ? 0 : set.LongCount();
+            return set?.LongCount() ?? 0;
         }
 
         public void Remove(string key, object value, IElement element)
         {
             var keyMap = Index.Get(key);
-            if (null != keyMap)
-            {
-                var objects = keyMap.Get(value);
-                if (null != objects)
-                {
-                    IElement removedElement;
-                    objects.TryRemove(element.Id.ToString(), out removedElement);
-                    if (objects.Count == 0)
-                    {
-                        ConcurrentDictionary<string, IElement> removedElements;
-                        keyMap.TryRemove(value, out removedElements);
-                    }
-                }
-            }
+            var objects = keyMap?.Get(value);
+            if (objects == null) return;
+            IElement removedElement;
+            objects.TryRemove(element.Id.ToString(), out removedElement);
+            if (objects.Count != 0) return;
+            ConcurrentDictionary<string, IElement> removedElements;
+            keyMap.TryRemove(value, out removedElements);
         }
 
         public void RemoveElement(IElement element)

@@ -679,7 +679,7 @@ namespace Frontenac.Blueprints.Util.IO
                  * character then arrange to Read a new character next time
                  * around; otherwise, save the character.
                  */
-                _peekc = (d == Ttype) ? NeedChar : d;
+                _peekc = d == Ttype ? NeedChar : d;
 
                 StringValue = new string(buf.ToArray(), 0, i);
                 return Ttype;

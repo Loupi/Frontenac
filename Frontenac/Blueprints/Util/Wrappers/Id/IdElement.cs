@@ -57,15 +57,9 @@ namespace Frontenac.Blueprints.Util.Wrappers.Id
             return BaseElement.RemoveProperty(key);
         }
 
-        public override object Id
-        {
-            get
-            {
-                return PropertyBased
-                           ? BaseElement.GetProperty(IdGraph.Id)
-                           : BaseElement.Id;
-            }
-        }
+        public override object Id => PropertyBased
+            ? BaseElement.GetProperty(IdGraph.Id)
+            : BaseElement.Id;
 
         public override void Remove()
         {

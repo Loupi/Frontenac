@@ -46,8 +46,7 @@ namespace Frontenac.Blueprints.Util.Wrappers.Wrapped
 
             if (disposing)
             {
-                if (_iterable is IDisposable)
-                    (_iterable as IDisposable).Dispose();
+                (_iterable as IDisposable)?.Dispose();
             }
 
             _disposed = true;

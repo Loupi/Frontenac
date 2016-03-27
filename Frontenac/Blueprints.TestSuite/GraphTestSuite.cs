@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Threading;
 using Frontenac.Blueprints.Impls;
 using Frontenac.Blueprints.Util.IO;
 using NUnit.Framework;
@@ -104,16 +103,16 @@ namespace Frontenac.Blueprints
                     var vertices = graph.GetVertices().ToArray();
                     Assert.AreEqual(Count(vertices), 30);
                     Assert.AreEqual(Count(vertices), 30);
-                    var counter = vertices.Count();
+                    var counter = vertices.Length;
                     Assert.AreEqual(counter, 30);
                 }
 
-                if (graph.Features.SupportsEdgeIteration)
+                if (!graph.Features.SupportsEdgeIteration) return;
                 {
                     var edges = graph.GetEdges().ToArray();
                     Assert.AreEqual(Count(edges), 15);
                     Assert.AreEqual(Count(edges), 15);
-                    var counter = edges.Count();
+                    var counter = edges.Length;
                     Assert.AreEqual(counter, 15);
                 }
             }
@@ -412,8 +411,8 @@ namespace Frontenac.Blueprints
                 StopWatch();
                 for (var i = 0; i < edgeCount; i++)
                 {
-                    var a = vertices.ElementAt(random.Next(vertices.Count()));
-                    var b = vertices.ElementAt(random.Next(vertices.Count()));
+                    var a = vertices.ElementAt(random.Next(vertices.Count));
+                    var b = vertices.ElementAt(random.Next(vertices.Count));
                     if (a != b)
                         edges.Add(graph.AddEdge(null, a, b, ConvertId(graph, string.Concat("a", Guid.NewGuid()))));
                 }
@@ -426,10 +425,10 @@ namespace Frontenac.Blueprints
                     graph.RemoveEdge(e);
 
                     if (graph.Features.SupportsEdgeIteration)
-                        Assert.AreEqual(edges.Count() - counter, Count(graph.GetEdges()));
+                        Assert.AreEqual(edges.Count - counter, Count(graph.GetEdges()));
 
                     if (graph.Features.SupportsVertexIteration)
-                        Assert.AreEqual(vertices.Count(), Count(graph.GetVertices()));
+                        Assert.AreEqual(vertices.Count, Count(graph.GetVertices()));
                 }
                 PrintPerformance(graph.ToString(), edgeCount, "edges deleted (with Count check on each delete)",
                                  StopWatch());
@@ -475,11 +474,11 @@ namespace Frontenac.Blueprints
                     if ((counter + 1)%2 == 0)
                     {
                         if (graph.Features.SupportsEdgeIteration)
-                            Assert.AreEqual(edges.Count() - ((counter + 1)/2), graph.GetEdges().Count());
+                            Assert.AreEqual(edges.Count - (counter + 1)/2, graph.GetEdges().Count());
                     }
 
                     if (graph.Features.SupportsVertexIteration)
-                        Assert.AreEqual(vertices.Count() - counter, graph.GetVertices().Count());
+                        Assert.AreEqual(vertices.Count - counter, graph.GetVertices().Count());
                 }
                 PrintPerformance(graph.ToString(), vertexCount, "vertices deleted (with Count check on each delete)",
                                     StopWatch());
@@ -577,7 +576,7 @@ namespace Frontenac.Blueprints
                         d.Id,
                         d.Id
                     };
-                Assert.AreEqual(4, vertexIds.Count());
+                Assert.AreEqual(4, vertexIds.Count);
             }
             finally
             {
@@ -601,33 +600,33 @@ namespace Frontenac.Blueprints
                 var cHateB = graph.AddEdge(null, c, b, ConvertId(graph, "hate"));
 
                 var results = a.GetEdges(Direction.Out).ToArray();
-                Assert.AreEqual(results.Count(), 3);
+                Assert.AreEqual(results.Length, 3);
                 Assert.True(results.Contains(aFriendB));
                 Assert.True(results.Contains(aFriendC));
                 Assert.True(results.Contains(aHateC));
 
                 results = a.GetEdges(Direction.Out, ConvertId(graph, "friend")).ToArray();
-                Assert.AreEqual(results.Count(), 2);
+                Assert.AreEqual(results.Length, 2);
                 Assert.True(results.Contains(aFriendB));
                 Assert.True(results.Contains(aFriendC));
 
                 results = a.GetEdges(Direction.Out, ConvertId(graph, "hate")).ToArray();
-                Assert.AreEqual(results.Count(), 1);
+                Assert.AreEqual(results.Length, 1);
                 Assert.True(results.Contains(aHateC));
 
                 results = a.GetEdges(Direction.In, ConvertId(graph, "hate")).ToArray();
-                Assert.AreEqual(results.Count(), 1);
+                Assert.AreEqual(results.Length, 1);
                 Assert.True(results.Contains(cHateA));
 
                 results = a.GetEdges(Direction.In, ConvertId(graph, "friend")).ToArray();
-                Assert.AreEqual(results.Count(), 0);
+                Assert.AreEqual(results.Length, 0);
 
                 results = b.GetEdges(Direction.In, ConvertId(graph, "hate")).ToArray();
-                Assert.AreEqual(results.Count(), 1);
+                Assert.AreEqual(results.Length, 1);
                 Assert.True(results.Contains(cHateB));
 
                 results = b.GetEdges(Direction.In, ConvertId(graph, "friend")).ToArray();
-                Assert.AreEqual(results.Count(), 1);
+                Assert.AreEqual(results.Length, 1);
                 Assert.True(results.Contains(aFriendB));
             }
             finally
@@ -653,23 +652,23 @@ namespace Frontenac.Blueprints
 
                 var results = a.GetEdges(Direction.Out, ConvertId(graph, "friend"),
                                          ConvertId(graph, "hate")).ToArray();
-                Assert.AreEqual(results.Count(), 3);
+                Assert.AreEqual(results.Length, 3);
                 Assert.True(results.Contains(aFriendB));
                 Assert.True(results.Contains(aFriendC));
                 Assert.True(results.Contains(aHateC));
 
                 results = a.GetEdges(Direction.In, ConvertId(graph, "friend"), ConvertId(graph, "hate")).ToArray();
-                Assert.AreEqual(results.Count(), 1);
+                Assert.AreEqual(results.Length, 1);
                 Assert.True(results.Contains(cHateA));
 
                 results = b.GetEdges(Direction.In, ConvertId(graph, "friend"), ConvertId(graph, "hate")).ToArray();
-                Assert.AreEqual(results.Count(), 2);
+                Assert.AreEqual(results.Length, 2);
                 Assert.True(results.Contains(aFriendB));
                 Assert.True(results.Contains(cHateB));
 
                 results = b.GetEdges(Direction.In, ConvertId(graph, "blah"), ConvertId(graph, "blah2"),
                                      ConvertId(graph, "blah3")).ToArray();
-                Assert.AreEqual(results.Count(), 0);
+                Assert.AreEqual(results.Length, 0);
             }
             finally
             {
@@ -736,18 +735,18 @@ namespace Frontenac.Blueprints
                     foreach (var v in graph.GetVertices())
                         vertices.Add(v);
 
-                    Assert.AreEqual(totalVertices, vertices.Count());
+                    Assert.AreEqual(totalVertices, vertices.Count);
                     PrintPerformance(graph.ToString(), totalVertices, "vertices iterated", StopWatch());
                 }
 
-                if (graph.Features.SupportsEdgeIteration)
+                if (!graph.Features.SupportsEdgeIteration) return;
                 {
                     StopWatch();
                     var edges = new HashSet<IEdge>();
                     foreach (var e in graph.GetEdges())
                         edges.Add(e);
 
-                    Assert.AreEqual(totalVertices - 1, edges.Count());
+                    Assert.AreEqual(totalVertices - 1, edges.Count);
                     PrintPerformance(graph.ToString(), totalVertices - 1, "edges iterated", StopWatch());
                 }
             }
@@ -785,14 +784,12 @@ namespace Frontenac.Blueprints
                 }
                 else
                 {
-                    if (graph.Features.SupportsEdgeIteration)
-                    {
-                        for (var i = 0; i < 10; i++)
-                            graph.AddEdge(null, graph.AddVertex(null), graph.AddVertex(null), ConvertId(graph, "test"));
+                    if (!graph.Features.SupportsEdgeIteration) return;
+                    for (var i = 0; i < 10; i++)
+                        graph.AddEdge(null, graph.AddVertex(null), graph.AddVertex(null), ConvertId(graph, "test"));
 
-                        foreach (var edge in graph.GetEdges())
-                            graph.RemoveEdge(edge);
-                    }
+                    foreach (var edge in graph.GetEdges())
+                        graph.RemoveEdge(edge);
                 }
             }
             finally
@@ -849,20 +846,18 @@ namespace Frontenac.Blueprints
                         if (graph.Features.SupportsVertexProperties)
                         {
                             foreach (var vertex in graph.GetVertices())
-                                Assert.True(((string) vertex.GetProperty("name")) == "marko" ||
-                                            ((string) vertex.GetProperty("name")) == "pavel");
+                                Assert.True((string) vertex.GetProperty("name") == "marko" ||
+                                            (string) vertex.GetProperty("name") == "pavel");
                         }
                     }
 
-                    if (graph.Features.SupportsEdgeIteration)
+                    if (!graph.Features.SupportsEdgeIteration) return;
+                    Assert.AreEqual(Count(graph.GetEdges()), 1);
+                    foreach (var edge in graph.GetEdges())
                     {
-                        Assert.AreEqual(Count(graph.GetEdges()), 1);
-                        foreach (var edge in graph.GetEdges())
-                        {
-                            Assert.AreEqual(edge.Label, ConvertId(graph, "collaborator"));
-                            if (graph.Features.SupportsEdgeProperties)
-                                Assert.AreEqual(edge.GetProperty("location"), "internet");
-                        }
+                        Assert.AreEqual(edge.Label, ConvertId(graph, "collaborator"));
+                        if (graph.Features.SupportsEdgeProperties)
+                            Assert.AreEqual(edge.GetProperty("location"), "internet");
                     }
                 }
             }

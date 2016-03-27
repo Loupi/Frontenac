@@ -20,10 +20,7 @@ namespace Frontenac.Blueprints.Util.Wrappers.Id
             return new IdVertex(((IEdge) BaseElement).GetVertex(direction), IdInnerTinkerGrapĥ);
         }
 
-        public string Label
-        {
-            get { return ((IEdge) BaseElement).Label; }
-        }
+        public string Label => ((IEdge) BaseElement).Label;
 
         public IEdge GetBaseEdge()
         {

@@ -32,10 +32,7 @@ namespace Frontenac.Blueprints.Util.Wrappers.Wrapped
             return Element.GetPropertyKeys();
         }
 
-        public override object Id
-        {
-            get { return Element.Id; }
-        }
+        public override object Id => Element.Id;
 
         public override void Remove()
         {
@@ -52,7 +49,7 @@ namespace Frontenac.Blueprints.Util.Wrappers.Wrapped
             return Element.GetHashCode();
         }
 
-        public IElement Element { get; protected set; }
+        public IElement Element { get; }
 
         public override string ToString()
         {

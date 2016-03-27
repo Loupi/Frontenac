@@ -79,7 +79,7 @@ namespace Frontenac.Blueprints
         public string ComputeTestDataRoot()
         {
             var ns = GetType().Namespace;
-            return ns != null ? ns.Replace('.', '\\') : null;
+            return ns?.Replace('.', '\\');
         }
     }
 }

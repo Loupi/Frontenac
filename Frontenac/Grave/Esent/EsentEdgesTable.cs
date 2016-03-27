@@ -22,12 +22,12 @@ namespace Frontenac.Grave.Esent
 
         protected override JET_TABLECREATE GetTableDefinition()
         {
-            var idIndexKey = string.Format("+{0}\0\0", IdColumnName);
-            var labelIndexKey = string.Format("+{0}\0\0", LabelColumnName);
-            var inIndexKey = string.Format("+{0}\0\0", InColumnName);
-            var outIndexKey = string.Format("+{0}\0\0", OutColumnName);
-            var labelInIndexKey = string.Format("+{0}\0+{1}\0\0", LabelColumnName, InColumnName);
-            var labelOutIndexKey = string.Format("+{0}\0+{1}\0\0", LabelColumnName, OutColumnName);
+            var idIndexKey = $"+{IdColumnName}\0\0";
+            var labelIndexKey = $"+{LabelColumnName}\0\0";
+            var inIndexKey = $"+{InColumnName}\0\0";
+            var outIndexKey = $"+{OutColumnName}\0\0";
+            var labelInIndexKey = $"+{LabelColumnName}\0+{InColumnName}\0\0";
+            var labelOutIndexKey = $"+{LabelColumnName}\0+{OutColumnName}\0\0";
 
             return new JET_TABLECREATE
                 {

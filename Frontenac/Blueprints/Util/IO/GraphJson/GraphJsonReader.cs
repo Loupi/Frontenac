@@ -56,84 +56,73 @@ namespace Frontenac.Blueprints.Util.IO.GraphJson
             Contract.Requires(settings != null);
             Contract.Requires(bufferSize > 0);
 
-            StreamReader sr = null;
-
-            try
+            var sr = new StreamReader(jsonInputStream);
+            
+            using (var jp = new JsonTextReader(sr))
             {
-                sr = new StreamReader(jsonInputStream);
+                // if this is a transactional graph then we're buffering
+                var graph = BatchGraph.Wrap(inputGraph, bufferSize);
+                var serializer = JsonSerializer.Create(null);
 
-                using (var jp = new JsonTextReader(sr))
+                while (jp.Read() && jp.TokenType != JsonToken.EndObject)
                 {
-                    sr = null;
-                    // if this is a transactional graph then we're buffering
-                    var graph = BatchGraph.Wrap(inputGraph, bufferSize);
-                    var serializer = JsonSerializer.Create(null);
-
-                    while (jp.Read() && jp.TokenType != JsonToken.EndObject)
+                    var fieldname = Convert.ToString(jp.Value);
+                    switch (fieldname)
                     {
-                        var fieldname = Convert.ToString(jp.Value);
-                        switch (fieldname)
-                        {
-                            case "nodes":
-                                jp.Read();
-                                while (jp.Read() && jp.TokenType != JsonToken.EndArray)
+                        case "nodes":
+                            jp.Read();
+                            while (jp.Read() && jp.TokenType != JsonToken.EndArray)
+                            {
+                                var props = new Dictionary<string, object>();
+                                var node = (JObject)serializer.Deserialize(jp);
+                                object id = null;
+                                foreach (var val in node)
                                 {
-                                    var props = new Dictionary<string, object>();
-                                    var node = (JObject) serializer.Deserialize(jp);
-                                    object id = null;
-                                    foreach (var val in node)
-                                    {
-                                        if (val.Key == settings.IdProp)
-                                            id = val.Value.ToObject<object>();
-                                        else
-                                            props.Add(val.Key, val.Value.ToObject<object>());
-                                    }
-                                    var vertex  = graph.AddVertex(id);
-                                    vertex.SetProperties(props);
+                                    if (val.Key == settings.IdProp)
+                                        id = val.Value.ToObject<object>();
+                                    else
+                                        props.Add(val.Key, val.Value.ToObject<object>());
                                 }
-                                break;
+                                var vertex = graph.AddVertex(id);
+                                vertex.SetProperties(props);
+                            }
+                            break;
 
-                            case "edges":
-                                jp.Read();
-                                while (jp.Read() && jp.TokenType != JsonToken.EndArray)
+                        case "edges":
+                            jp.Read();
+                            while (jp.Read() && jp.TokenType != JsonToken.EndArray)
+                            {
+                                var props = new Dictionary<string, object>();
+                                var node = (JObject)serializer.Deserialize(jp);
+                                object id = null;
+                                object source = null;
+                                object target = null;
+                                var caption = string.Empty;
+                                foreach (var val in node)
                                 {
-                                    var props = new Dictionary<string, object>();
-                                    var node = (JObject)serializer.Deserialize(jp);
-                                    object id = null;
-                                    object source = null;
-                                    object target = null;
-                                    var caption = string.Empty;
-                                    foreach (var val in node)
-                                    {
-                                        if (val.Key == settings.IdProp)
-                                            id = val.Value.ToObject<object>();
-                                        else if (val.Key == settings.EdgeCaptionProp)
-                                            caption = val.Value.ToString();
-                                        else if (val.Key == settings.SourceProp)
-                                            source = val.Value.ToObject<object>();
-                                        else if (val.Key == settings.TargetProp)
-                                            target = val.Value.ToObject<object>();
-                                        else
-                                            props.Add(val.Key, val.Value.ToObject<object>());
-                                    }
-                                    if(source == null)
-                                        throw new IOException("Edge has no source");
-                                    if (target == null)
-                                        throw new IOException("Edge has no target");
-                                    var edge = graph.AddEdge(id, graph.GetVertex(source), graph.GetVertex(target), caption);
-                                    edge.SetProperties(props);
+                                    if (val.Key == settings.IdProp)
+                                        id = val.Value.ToObject<object>();
+                                    else if (val.Key == settings.EdgeCaptionProp)
+                                        caption = val.Value.ToString();
+                                    else if (val.Key == settings.SourceProp)
+                                        source = val.Value.ToObject<object>();
+                                    else if (val.Key == settings.TargetProp)
+                                        target = val.Value.ToObject<object>();
+                                    else
+                                        props.Add(val.Key, val.Value.ToObject<object>());
                                 }
-                                break;
-                        }
+                                if (source == null)
+                                    throw new IOException("Edge has no source");
+                                if (target == null)
+                                    throw new IOException("Edge has no target");
+                                var edge = graph.AddEdge(id, graph.GetVertex(source), graph.GetVertex(target), caption);
+                                edge.SetProperties(props);
+                            }
+                            break;
                     }
-
-                    graph.Commit();
                 }
-            }
-            finally
-            {
-                if (sr != null)
-                    sr.Dispose();
+
+                graph.Commit();
             }
         }
     }

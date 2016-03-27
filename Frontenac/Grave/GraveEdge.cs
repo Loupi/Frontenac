@@ -7,7 +7,6 @@ namespace Frontenac.Grave
     public class GraveEdge : GraveElement, IEdge
     {
         private readonly IVertex _inVertex;
-        private readonly string _label;
         private readonly IVertex _outVertex;
 
         public GraveEdge(int id, IVertex outVertex, IVertex inVertex, string label, GraveGraph innerTinkerGrapĥ)
@@ -20,7 +19,7 @@ namespace Frontenac.Grave
 
             _outVertex = outVertex;
             _inVertex = inVertex;
-            _label = label;
+            Label = label;
         }
 
         public override void Remove()
@@ -33,10 +32,7 @@ namespace Frontenac.Grave
             return direction == Direction.In ? _inVertex : _outVertex;
         }
 
-        public string Label
-        {
-            get { return _label; }
-        }
+        public string Label { get; }
 
         public override string ToString()
         {

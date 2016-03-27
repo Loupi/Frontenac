@@ -1,13 +1,14 @@
-﻿using System.Diagnostics.Contracts;
+﻿using System.Diagnostics;
+using System.Diagnostics.Contracts;
 using Frontenac.Blueprints;
 using Frontenac.Blueprints.Util;
 
 namespace Frontenac.Redis
 {
+    [DebuggerDisplay("")]
     public class RedisEdge : RedisElement, IEdge
     {
         private readonly IVertex _inVertex;
-        private readonly string _label;
         private readonly IVertex _outVertex;
 
         public RedisEdge(long id, IVertex outVertex, IVertex inVertex, string label, RedisGraph innerTinkerGrapĥ)
@@ -20,7 +21,7 @@ namespace Frontenac.Redis
 
             _outVertex = outVertex;
             _inVertex = inVertex;
-            _label = label;
+            Label = label;
         }
 
         public override void Remove()
@@ -33,10 +34,7 @@ namespace Frontenac.Redis
             return direction == Direction.In ? _inVertex : _outVertex;
         }
 
-        public string Label
-        {
-            get { return _label; }
-        }
+        public string Label { get; }
 
         public override string ToString()
         {

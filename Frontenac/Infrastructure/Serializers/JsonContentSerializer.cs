@@ -10,10 +10,7 @@ namespace Frontenac.Infrastructure.Serializers
                 TypeNameHandling = TypeNameHandling.All
             };
 
-        public bool IsBinary
-        {
-            get { return true; }
-        }
+        public bool IsBinary => true;
 
         public byte[] Serialize(object value)
         {

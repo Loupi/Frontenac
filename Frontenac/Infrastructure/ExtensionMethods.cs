@@ -7,7 +7,10 @@ namespace Frontenac.Infrastructure
         public static int ToInt32(this object value)
         {
             // ReSharper disable PossibleInvalidOperationException
-            return value.TryToInt32().Value;
+            var result = value.TryToInt32();
+            if (result.HasValue)
+                return result.Value;
+            return -1;
             // ReSharper restore PossibleInvalidOperationException
         }
 
@@ -17,25 +20,29 @@ namespace Frontenac.Infrastructure
 
             if (value is int)
                 result = (int)value;
-            else if (value is string)
-            {
-                int intVal;
-                result = Int32.TryParse(value as string, out intVal) ? (int?)intVal : null;
-            }
-            else if (value == null)
-                result = null;
             else
             {
-                try
+                var s = value as string;
+                if (s != null)
                 {
-                    result = Convert.ToInt32(value);
+                    int intVal;
+                    result = int.TryParse(s, out intVal) ? (int?)intVal : null;
                 }
-                catch (Exception ex)
+                else if (value == null)
+                    result = null;
+                else
                 {
-                    if (ex is FormatException || ex is InvalidCastException || ex is OverflowException)
-                        result = null;
-                    else
-                        throw;
+                    try
+                    {
+                        result = Convert.ToInt32(value);
+                    }
+                    catch (Exception ex)
+                    {
+                        if (ex is FormatException || ex is InvalidCastException || ex is OverflowException)
+                            result = null;
+                        else
+                            throw;
+                    }
                 }
             }
 
@@ -55,25 +62,29 @@ namespace Frontenac.Infrastructure
 
             if (value is long)
                 result = (long)value;
-            else if (value is string)
-            {
-                long intVal;
-                result = Int64.TryParse(value as string, out intVal) ? (long?)intVal : null;
-            }
-            else if (value == null)
-                result = null;
             else
             {
-                try
+                var s = value as string;
+                if (s != null)
                 {
-                    result = Convert.ToInt64(value);
+                    long intVal;
+                    result = long.TryParse(s, out intVal) ? (long?)intVal : null;
                 }
-                catch (Exception ex)
+                else if (value == null)
+                    result = null;
+                else
                 {
-                    if (ex is FormatException || ex is InvalidCastException || ex is OverflowException)
-                        result = null;
-                    else
-                        throw;
+                    try
+                    {
+                        result = Convert.ToInt64(value);
+                    }
+                    catch (Exception ex)
+                    {
+                        if (ex is FormatException || ex is InvalidCastException || ex is OverflowException)
+                            result = null;
+                        else
+                            throw;
+                    }
                 }
             }
 

@@ -303,7 +303,7 @@ namespace Lucene.Net.Contrib.Management
             }
 
             public long Generation { get; set; }
-            public SearcherManager Manager { get; private set; }
+            public SearcherManager Manager { get; }
 
             public void Dispose()
             {

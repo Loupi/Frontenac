@@ -24,10 +24,7 @@ namespace Frontenac.Blueprints.Util.Wrappers.Event
             return new EventVertex(GetBaseEdge().GetVertex(direction), EventInnerTinkerGrapĥ);
         }
 
-        public string Label
-        {
-            get { return _edge.Label; }
-        }
+        public string Label => _edge.Label;
 
         public IEdge GetBaseEdge()
         {

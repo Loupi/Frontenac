@@ -270,9 +270,9 @@ namespace Frontenac.Blueprints
             var graph = GraphTest.GenerateGraph();
             try
             {
-                if (graph.Features.SupportsVertexIndex && graph is IKeyIndexableGraph)
+                if (graph.Features.SupportsVertexIndex)
                 {
-                    ((IKeyIndexableGraph) graph).CreateKeyIndex("name", typeof (IVertex));
+                    (graph as IKeyIndexableGraph)?.CreateKeyIndex("name", typeof (IVertex));
                 }
 
                 if (!graph.Features.SupportsVertexProperties) return;
@@ -292,7 +292,7 @@ namespace Frontenac.Blueprints
                 foreach (var v in vertices)
                     names.Add((string) v.GetProperty(ConvertId(graph, "name")));
 
-                Assert.AreEqual(names.Count(), 3);
+                Assert.AreEqual(names.Count, 3);
                 Assert.True(names.Contains("marko"));
                 // ReSharper disable AssignNullToNotNullAttribute
                 Assert.True(names.Contains(null));
@@ -319,7 +319,7 @@ namespace Frontenac.Blueprints
                 foreach (var v in vertices)
                     names.Add((string) v.GetProperty(ConvertId(graph, "name")));
 
-                Assert.AreEqual(names.Count(), 2);
+                Assert.AreEqual(names.Count, 2);
                 Assert.True(names.Contains("marko"));
                 Assert.True(names.Contains("matthias"));
 
@@ -345,8 +345,8 @@ namespace Frontenac.Blueprints
             var graph = GraphTest.GenerateGraph();
             try
             {
-                if (graph.Features.SupportsEdgeIndex && graph is IKeyIndexableGraph)
-                    ((IKeyIndexableGraph) graph).CreateKeyIndex("type", typeof (IEdge));
+                if (graph.Features.SupportsEdgeIndex)
+                    (graph as IKeyIndexableGraph)?.CreateKeyIndex("type", typeof (IEdge));
 
                 if (!graph.Features.SupportsEdgeProperties || !graph.Features.SupportsVertexProperties) return;
 

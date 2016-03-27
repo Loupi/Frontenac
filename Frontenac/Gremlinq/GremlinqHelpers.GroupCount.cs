@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace Frontenac.Gremlinq
 {
@@ -9,12 +10,10 @@ namespace Frontenac.Gremlinq
             this IEnumerable<T> source)
         {
             var dic = new Dictionary<T, int>();
-#pragma warning disable 168
-            foreach (var source1 in source.GroupCount(dic))
-#pragma warning restore 168
-            {
-                
-            }
+            var enumerable = source as T[] ?? source.ToArray();
+            var list = enumerable.GroupCount(dic).ToList();
+            if(list == null)
+                throw new InvalidOperationException();
             return dic;
         }
 

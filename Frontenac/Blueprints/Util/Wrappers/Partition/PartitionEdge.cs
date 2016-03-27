@@ -20,10 +20,7 @@ namespace Frontenac.Blueprints.Util.Wrappers.Partition
             return new PartitionVertex(_edge.GetVertex(direction), PartitionInnerTinkerGrapĥ);
         }
 
-        public string Label
-        {
-            get { return _edge.Label; }
-        }
+        public string Label => _edge.Label;
 
         public IEdge GetBaseEdge()
         {

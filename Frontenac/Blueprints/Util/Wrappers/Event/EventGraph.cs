@@ -18,7 +18,6 @@ namespace Frontenac.Blueprints.Util.Wrappers.Event
     public class EventGraph : IGraph, IWrapperGraph, IDisposable
     {
         protected readonly List<IGraphChangedListener> GraphChangedListeners = new List<IGraphChangedListener>();
-        private readonly Features _features;
         protected IGraph BaseGraph;
         protected EventTrigger Trigger;
 
@@ -27,8 +26,8 @@ namespace Frontenac.Blueprints.Util.Wrappers.Event
             Contract.Requires(baseGraph != null);
 
             BaseGraph = baseGraph;
-            _features = BaseGraph.Features.CopyFeatures();
-            _features.IsWrapper = true;
+            Features = BaseGraph.Features.CopyFeatures();
+            Features.IsWrapper = true;
 
             Trigger = new EventTrigger(this, false);
         }
@@ -87,8 +86,9 @@ namespace Frontenac.Blueprints.Util.Wrappers.Event
         public void RemoveVertex(IVertex vertex)
         {
             var vertexToRemove = vertex;
-            if (vertex is EventVertex)
-                vertexToRemove = (vertex as EventVertex).Vertex;
+            var eventVertex = vertex as EventVertex;
+            if (eventVertex != null)
+                vertexToRemove = eventVertex.Vertex;
 
             var props = vertex.GetProperties();
             if (vertexToRemove != null)
@@ -114,12 +114,14 @@ namespace Frontenac.Blueprints.Util.Wrappers.Event
         public IEdge AddEdge(object id, IVertex outVertex, IVertex inVertex, string label)
         {
             var outVertexToSet = outVertex;
-            if (outVertex is EventVertex)
-                outVertexToSet = (outVertex as EventVertex).Vertex;
+            var vertex = outVertex as EventVertex;
+            if (vertex != null)
+                outVertexToSet = vertex.Vertex;
 
             var inVertexToSet = inVertex;
-            if (inVertex is EventVertex)
-                inVertexToSet = (inVertex as EventVertex).Vertex;
+            var eventVertex = inVertex as EventVertex;
+            if (eventVertex != null)
+                inVertexToSet = eventVertex.Vertex;
 
             if(inVertexToSet == null || outVertexToSet == null)
                 throw new InvalidOperationException();
@@ -140,8 +142,9 @@ namespace Frontenac.Blueprints.Util.Wrappers.Event
         public void RemoveEdge(IEdge edge)
         {
             var edgeToRemove = edge;
-            if (edge is EventEdge)
-                edgeToRemove = (edge as EventEdge).GetBaseEdge();
+            var eventEdge = edge as EventEdge;
+            if (eventEdge != null)
+                edgeToRemove = eventEdge.GetBaseEdge();
 
             var props = edge.GetProperties();
             BaseGraph.RemoveEdge(edgeToRemove);
@@ -174,10 +177,7 @@ namespace Frontenac.Blueprints.Util.Wrappers.Event
             Trigger.ResetEventQueue();
         }
 
-        public Features Features
-        {
-            get { return _features; }
-        }
+        public Features Features { get; }
 
         public IGraph GetBaseGraph()
         {

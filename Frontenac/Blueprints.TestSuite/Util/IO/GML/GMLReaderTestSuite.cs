@@ -54,13 +54,13 @@ namespace Frontenac.Blueprints.Util.IO.GML
                     }
                     else if (e.GetVertex(Direction.In).Id.ToString().Equals("3"))
                     {
-                        Assert.AreEqual(0, Math.Round((Convert.ToSingle(e.GetProperty("weight")))));
+                        Assert.AreEqual(0, Math.Round(Convert.ToSingle(e.GetProperty("weight"))));
                         Assert.AreEqual(e.Label, "created");
                         counter++;
                     }
                     else if (e.GetVertex(Direction.In).Id.ToString().Equals("4"))
                     {
-                        Assert.AreEqual(1, Math.Round((Convert.ToSingle(e.GetProperty("weight")))));
+                        Assert.AreEqual(1, Math.Round(Convert.ToSingle(e.GetProperty("weight"))));
                         Assert.AreEqual(e.Label, "knows");
                         counter++;
                     }
@@ -76,13 +76,13 @@ namespace Frontenac.Blueprints.Util.IO.GML
                 {
                     if (e.GetVertex(Direction.In).Id.ToString().Equals("3"))
                     {
-                        Assert.AreEqual(0, Math.Round((Convert.ToSingle(e.GetProperty("weight")))));
+                        Assert.AreEqual(0, Math.Round(Convert.ToSingle(e.GetProperty("weight"))));
                         Assert.AreEqual(e.Label, "created");
                         counter++;
                     }
                     else if (e.GetVertex(Direction.In).Id.ToString().Equals("5"))
                     {
-                        Assert.AreEqual(1, Math.Round((Convert.ToSingle(e.GetProperty("weight")))));
+                        Assert.AreEqual(1, Math.Round(Convert.ToSingle(e.GetProperty("weight"))));
                         Assert.AreEqual(e.Label, "created");
                         counter++;
                     }
@@ -131,9 +131,9 @@ namespace Frontenac.Blueprints.Util.IO.GML
                 }
 
                 Assert.AreEqual(count, 6);
-                Assert.AreEqual(edgeIds.Count(), 6);
-                Assert.AreEqual(edgeKeys.Count(), 1);
-                Assert.AreEqual(edgeValues.Count(), 4);
+                Assert.AreEqual(edgeIds.Count, 6);
+                Assert.AreEqual(edgeKeys.Count, 1);
+                Assert.AreEqual(edgeValues.Count, 4);
             }
             finally
             {
@@ -167,7 +167,7 @@ namespace Frontenac.Blueprints.Util.IO.GML
                     // System.out.println(v);
                 }
                 Assert.AreEqual(count, 6);
-                Assert.AreEqual(vertexNames.Count(), 6);
+                Assert.AreEqual(vertexNames.Count, 6);
                 Assert.True(vertexNames.Contains("marko"));
                 Assert.True(vertexNames.Contains("josh"));
                 Assert.True(vertexNames.Contains("peter"));
@@ -208,7 +208,7 @@ namespace Frontenac.Blueprints.Util.IO.GML
                     }
                 }
                 Assert.AreEqual(count, 6);
-                Assert.AreEqual(softwareVertices.Count(), 2);
+                Assert.AreEqual(softwareVertices.Count, 2);
                 foreach (var v in softwareVertices)
                 {
                     Assert.AreEqual(v.GetProperty("lang"), "java");
@@ -295,7 +295,7 @@ namespace Frontenac.Blueprints.Util.IO.GML
                 {
                     vertices.Add(e.GetVertex(Direction.In));
                 }
-                Assert.AreEqual(vertices.Count(), 3);
+                Assert.AreEqual(vertices.Count, 3);
                 Assert.True(vertices.Contains(lop));
                 Assert.True(vertices.Contains(josh));
                 Assert.True(vertices.Contains(vadas));
@@ -311,7 +311,7 @@ namespace Frontenac.Blueprints.Util.IO.GML
                 {
                     vertices.Add(e.GetVertex(Direction.In));
                 }
-                Assert.AreEqual(vertices.Count(), 1);
+                Assert.AreEqual(vertices.Count, 1);
                 Assert.True(vertices.Contains(lop));
 
                 // test josh
@@ -325,7 +325,7 @@ namespace Frontenac.Blueprints.Util.IO.GML
                 {
                     vertices.Add(e.GetVertex(Direction.In));
                 }
-                Assert.AreEqual(vertices.Count(), 2);
+                Assert.AreEqual(vertices.Count, 2);
                 Assert.True(vertices.Contains(lop));
                 Assert.True(vertices.Contains(ripple));
                 vertices = new HashSet<IVertex>();
@@ -333,7 +333,7 @@ namespace Frontenac.Blueprints.Util.IO.GML
                 {
                     vertices.Add(e.GetVertex(Direction.Out));
                 }
-                Assert.AreEqual(vertices.Count(), 1);
+                Assert.AreEqual(vertices.Count, 1);
                 Assert.True(vertices.Contains(marko));
 
                 // test vadas
@@ -347,7 +347,7 @@ namespace Frontenac.Blueprints.Util.IO.GML
                 {
                     vertices.Add(e.GetVertex(Direction.Out));
                 }
-                Assert.AreEqual(vertices.Count(), 1);
+                Assert.AreEqual(vertices.Count, 1);
                 Assert.True(vertices.Contains(marko));
 
                 // test lop
@@ -361,7 +361,7 @@ namespace Frontenac.Blueprints.Util.IO.GML
                 {
                     vertices.Add(e.GetVertex(Direction.Out));
                 }
-                Assert.AreEqual(vertices.Count(), 3);
+                Assert.AreEqual(vertices.Count, 3);
                 Assert.True(vertices.Contains(marko));
                 Assert.True(vertices.Contains(josh));
                 Assert.True(vertices.Contains(peter));
@@ -377,7 +377,7 @@ namespace Frontenac.Blueprints.Util.IO.GML
                 {
                     vertices.Add(e.GetVertex(Direction.Out));
                 }
-                Assert.AreEqual(vertices.Count(), 1);
+                Assert.AreEqual(vertices.Count, 1);
                 Assert.True(vertices.Contains(josh));
             }
             finally
@@ -427,7 +427,7 @@ namespace Frontenac.Blueprints.Util.IO.GML
                     }
                     else if (e.GetVertex(Direction.In).Id.ToString().Equals("3"))
                     {
-                        Assert.AreEqual(0, Math.Round((Convert.ToSingle(e.GetProperty("weight")))));
+                        Assert.AreEqual(0, Math.Round(Convert.ToSingle(e.GetProperty("weight"))));
                         Assert.AreEqual(e.GetProperty("id2"), 10);
                         Assert.AreEqual(e.GetProperty("label2"), "has high fived");
                         Assert.AreEqual(e.Label, "created");
@@ -436,7 +436,7 @@ namespace Frontenac.Blueprints.Util.IO.GML
                     }
                     else if (e.GetVertex(Direction.In).Id.ToString().Equals("4"))
                     {
-                        Assert.AreEqual(1, Math.Round((Convert.ToSingle(e.GetProperty("weight")))));
+                        Assert.AreEqual(1, Math.Round(Convert.ToSingle(e.GetProperty("weight"))));
                         Assert.AreEqual(e.GetProperty("id2"), 9);
                         Assert.AreEqual(e.GetProperty("label2"), "has high fived");
                         Assert.AreEqual(e.Label, "knows");
@@ -468,7 +468,7 @@ namespace Frontenac.Blueprints.Util.IO.GML
                 {
                     if (e.GetVertex(Direction.In).Id.ToString().Equals("3"))
                     {
-                        Assert.AreEqual(Math.Round((Convert.ToSingle(e.GetProperty("weight")))), 0);
+                        Assert.AreEqual(Math.Round(Convert.ToSingle(e.GetProperty("weight"))), 0);
                         Assert.AreEqual(e.GetProperty("id2"), 13);
                         Assert.AreEqual(e.GetProperty("label2"), null);
                         Assert.AreEqual(e.Label, "created");
@@ -477,7 +477,7 @@ namespace Frontenac.Blueprints.Util.IO.GML
                     }
                     else if (e.GetVertex(Direction.In).Id.ToString().Equals("5"))
                     {
-                        Assert.AreEqual(Math.Round((Convert.ToSingle(e.GetProperty("weight")))), 1);
+                        Assert.AreEqual(Math.Round(Convert.ToSingle(e.GetProperty("weight"))), 1);
                         Assert.AreEqual(e.GetProperty("id2"), 11);
                         Assert.AreEqual(e.GetProperty("label2"), "has high fived");
                         Assert.AreEqual(e.Label, "created");
@@ -544,19 +544,19 @@ namespace Frontenac.Blueprints.Util.IO.GML
                 }
 
                 Assert.AreEqual(vertexCount, 6);
-                Assert.AreEqual(vertexIds.Count(), 6);
+                Assert.AreEqual(vertexIds.Count, 6);
                 Assert.AreEqual(vertexKeys.Contains("name"), true);
                 Assert.AreEqual(vertexKeys.Contains("age"), true);
                 Assert.AreEqual(vertexKeys.Contains("lang"), true);
                 Assert.AreEqual(vertexKeys.Contains("id2"), true);
-                Assert.AreEqual(vertexKeys.Count(), 4);
+                Assert.AreEqual(vertexKeys.Count, 4);
 
                 Assert.AreEqual(edgeCount, 6);
-                Assert.AreEqual(edgeIds.Count(), 6);
+                Assert.AreEqual(edgeIds.Count, 6);
                 Assert.AreEqual(edgeKeys.Contains("weight"), true);
                 Assert.AreEqual(edgeKeys.Contains("id2"), true);
                 Assert.AreEqual(edgeKeys.Contains("label2"), true);
-                Assert.AreEqual(edgeKeys.Count(), 3);
+                Assert.AreEqual(edgeKeys.Count, 3);
             }
             finally
             {
@@ -613,12 +613,12 @@ namespace Frontenac.Blueprints.Util.IO.GML
                 }
 
                 Assert.AreEqual(vertexCount, 6);
-                Assert.AreEqual(vertexIds.Count(), 6);
+                Assert.AreEqual(vertexIds.Count, 6);
                 Assert.AreEqual(vertexKeys.Contains("name"), true);
                 Assert.AreEqual(vertexKeys.Contains("age"), true);
                 Assert.AreEqual(vertexKeys.Contains("lang"), true);
                 Assert.AreEqual(vertexKeys.Contains("id2"), true);
-                Assert.AreEqual(vertexKeys.Count(), 4);
+                Assert.AreEqual(vertexKeys.Count, 4);
                 Assert.True(vertexNames.Contains("marko"));
                 Assert.True(vertexNames.Contains("josh"));
                 Assert.True(vertexNames.Contains("peter"));
@@ -627,12 +627,12 @@ namespace Frontenac.Blueprints.Util.IO.GML
                 Assert.True(vertexNames.Contains("lop"));
 
                 Assert.AreEqual(edgeCount, 6);
-                Assert.AreEqual(edgeIds.Count(), 6);
+                Assert.AreEqual(edgeIds.Count, 6);
                 Assert.AreEqual(edgeKeys.Contains("weight"), true);
                 Assert.AreEqual(edgeKeys.Contains("id2"), true);
                 Assert.AreEqual(edgeKeys.Contains("label2"), false);
-                Assert.AreEqual(edgeKeys.Count(), 2);
-                Assert.AreEqual(edgeLabels.Count(), 2);
+                Assert.AreEqual(edgeKeys.Count, 2);
+                Assert.AreEqual(edgeLabels.Count, 2);
                 Assert.AreEqual(edgeLabels.Contains("has high fived"), true);
                 Assert.AreEqual(edgeLabels.Contains("knows"), false);
                 Assert.AreEqual(edgeLabels.Contains("created"), true);
@@ -692,12 +692,12 @@ namespace Frontenac.Blueprints.Util.IO.GML
                 }
 
                 Assert.AreEqual(vertexCount, 6);
-                Assert.AreEqual(vertexIds.Count(), 6);
+                Assert.AreEqual(vertexIds.Count, 6);
                 Assert.AreEqual(vertexKeys.Contains("name"), true);
                 Assert.AreEqual(vertexKeys.Contains("age"), true);
                 Assert.AreEqual(vertexKeys.Contains("lang"), true);
                 Assert.AreEqual(vertexKeys.Contains("id2"), false);
-                Assert.AreEqual(vertexKeys.Count(), 3);
+                Assert.AreEqual(vertexKeys.Count, 3);
                 Assert.True(vertexNames.Contains("marko"));
                 Assert.True(vertexNames.Contains("josh"));
                 Assert.True(vertexNames.Contains("peter"));
@@ -706,12 +706,12 @@ namespace Frontenac.Blueprints.Util.IO.GML
                 Assert.True(vertexNames.Contains("lop"));
 
                 Assert.AreEqual(edgeCount, 6);
-                Assert.AreEqual(edgeIds.Count(), 6);
+                Assert.AreEqual(edgeIds.Count, 6);
                 Assert.AreEqual(edgeKeys.Contains("weight"), true);
                 Assert.AreEqual(edgeKeys.Contains("id2"), false);
                 Assert.AreEqual(edgeKeys.Contains("label2"), true);
-                Assert.AreEqual(edgeKeys.Count(), 2);
-                Assert.AreEqual(edgeLabels.Count(), 2);
+                Assert.AreEqual(edgeKeys.Count, 2);
+                Assert.AreEqual(edgeLabels.Count, 2);
                 Assert.AreEqual(edgeLabels.Contains("has high fived"), false);
                 Assert.AreEqual(edgeLabels.Contains("knows"), true);
                 Assert.AreEqual(edgeLabels.Contains("created"), true);
@@ -776,12 +776,12 @@ namespace Frontenac.Blueprints.Util.IO.GML
                 }
 
                 Assert.AreEqual(vertexCount, 6);
-                Assert.AreEqual(vertexIds.Count(), 6);
+                Assert.AreEqual(vertexIds.Count, 6);
                 Assert.AreEqual(vertexKeys.Contains("name"), true);
                 Assert.AreEqual(vertexKeys.Contains("age"), true);
                 Assert.AreEqual(vertexKeys.Contains("lang"), true);
                 Assert.AreEqual(vertexKeys.Contains("id2"), false);
-                Assert.AreEqual(vertexKeys.Count(), 3);
+                Assert.AreEqual(vertexKeys.Count, 3);
                 Assert.True(vertexNames.Contains("marko"));
                 Assert.True(vertexNames.Contains("josh"));
                 Assert.True(vertexNames.Contains("peter"));
@@ -790,12 +790,12 @@ namespace Frontenac.Blueprints.Util.IO.GML
                 Assert.True(vertexNames.Contains("lop"));
 
                 Assert.AreEqual(edgeCount, 6);
-                Assert.AreEqual(edgeIds.Count(), 6);
+                Assert.AreEqual(edgeIds.Count, 6);
                 Assert.AreEqual(edgeKeys.Contains("weight"), true);
                 Assert.AreEqual(edgeKeys.Contains("id2"), false);
                 Assert.AreEqual(edgeKeys.Contains("label2"), false);
-                Assert.AreEqual(edgeKeys.Count(), 1);
-                Assert.AreEqual(edgeLabels.Count(), 2);
+                Assert.AreEqual(edgeKeys.Count, 1);
+                Assert.AreEqual(edgeLabels.Count, 2);
                 Assert.AreEqual(edgeLabels.Contains("has high fived"), true);
                 Assert.AreEqual(edgeLabels.Contains("knows"), false);
                 Assert.AreEqual(edgeLabels.Contains("created"), true);
@@ -971,19 +971,19 @@ namespace Frontenac.Blueprints.Util.IO.GML
                 }
 
                 Assert.AreEqual(vertexCount, 6);
-                Assert.AreEqual(vertexIds.Count(), 6);
+                Assert.AreEqual(vertexIds.Count, 6);
                 Assert.AreEqual(vertexKeys.Contains("name"), true);
                 Assert.AreEqual(vertexKeys.Contains("age"), true);
                 Assert.AreEqual(vertexKeys.Contains("lang"), true);
                 Assert.AreEqual(vertexKeys.Contains("id2"), true);
-                Assert.AreEqual(vertexKeys.Count(), 4);
+                Assert.AreEqual(vertexKeys.Count, 4);
 
                 Assert.AreEqual(edgeCount, 6);
-                Assert.AreEqual(edgeIds.Count(), 6);
+                Assert.AreEqual(edgeIds.Count, 6);
                 Assert.AreEqual(edgeKeys.Contains("weight"), true);
                 Assert.AreEqual(edgeKeys.Contains("id2"), true);
                 Assert.AreEqual(edgeKeys.Contains("label2"), true);
-                Assert.AreEqual(edgeKeys.Count(), 3);
+                Assert.AreEqual(edgeKeys.Count, 3);
             }
             finally
             {

@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Diagnostics.Contracts;
 using System.Linq.Expressions;
 using Frontenac.Blueprints;
+using Frontenac.Blueprints.Geo;
 
 namespace Frontenac.Gremlinq
 {
@@ -14,6 +15,19 @@ namespace Frontenac.Gremlinq
             Contract.Ensures(Contract.Result<IQuery<TModel>>() != null);
 
             return new Query<TModel>(graph.Query());
+        }
+
+        public static IQuery<TModel> Has<TModel>(
+            this IQuery<TModel> query,
+            Expression<Func<TModel, GeoPoint>> propertySelector,
+            IGeoShape value)
+        {
+            Contract.Requires(query != null);
+            Contract.Requires(propertySelector != null);
+            Contract.Requires(value != null);
+
+            query.InnerQuery.Has(propertySelector.Resolve(), Compare.Equal, value);
+            return query;
         }
 
         public static IQuery<TModel> Has<TModel, TResult>(

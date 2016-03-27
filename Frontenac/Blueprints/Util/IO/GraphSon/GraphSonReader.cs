@@ -224,8 +224,7 @@ namespace Frontenac.Blueprints.Util.IO.GraphSON
             }
             finally
             {
-                if (sr != null)
-                    sr.Dispose();
+                sr?.Dispose();
             }
         }
     }

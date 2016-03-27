@@ -14,9 +14,10 @@ namespace Frontenac.Gremlinq.Contracts
             Contract.Requires(type != null);
         }
 
-        public bool TryGetType(IElement element, out Type type)
+        public bool TryGetType(IDictionary<string, object> element, IGraph graph, out Type type)
         {
             Contract.Requires(element != null);
+            Contract.Requires(graph != null);
             type = null;
             return false;
         }
@@ -35,6 +36,14 @@ namespace Frontenac.Gremlinq.Contracts
             Contract.Requires(graph != null);
             Contract.Requires(type != null);
             Contract.Ensures(Contract.Result<IEnumerable<IEdge>>() != null);
+
+            return null;
+        }
+
+        public IEnumerable<Type> GetTypes(IGraph graph)
+        {
+            Contract.Requires(graph != null);
+            Contract.Ensures(Contract.Result<IEnumerable<Type>>() != null);
 
             return null;
         }

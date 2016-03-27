@@ -30,7 +30,11 @@ namespace Frontenac.Blueprints.Util
 
         public IEnumerator<TS> GetEnumerator()
         {
-            return _iterables.SelectMany(current => current).GetEnumerator();
+            return _iterables.SelectMany(current =>
+            {
+                var collections = current as TS[] ?? current.ToArray();
+                return collections;
+            }).GetEnumerator();
         }
 
         IEnumerator IEnumerable.GetEnumerator()

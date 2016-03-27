@@ -39,6 +39,32 @@ namespace Frontenac.Blueprints.Impls.TG
             return new VerticesFromEdgesIterable(this, direction, labels);
         }
 
+        public IEnumerable<IVertex> GetVertices(Direction direction, string label, params object[] ids)
+        {
+            if (ids.Length == 0)
+                return GetVertices(direction, new[] {label});
+
+            return
+                GetEdges(direction, label)
+                    .Where(edge => ids.Any(o => o.Equals(edge.GetVertex(direction).Id)))
+                    .Select(edge => edge.GetVertex(direction));
+        }
+
+        public long GetNbEdges(Direction direction, string label)
+        {
+            ConcurrentDictionary<string, IEdge> edges = null;
+            if (direction == Direction.Out)
+            {
+                edges = OutEdges.Get(label);
+            }
+            else if(direction == Direction.In)
+            {
+                edges = InEdges.Get(label);
+            }
+
+            return edges?.Count ?? 0;
+        }
+
         public IVertexQuery Query()
         {
             return new DefaultVertexQuery(this);

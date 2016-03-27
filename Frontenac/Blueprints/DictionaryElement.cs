@@ -5,6 +5,7 @@ using System.Linq;
 
 namespace Frontenac.Blueprints
 {
+    
     [Serializable]
     public abstract class DictionaryElement : IElement
     {
@@ -57,7 +58,7 @@ namespace Frontenac.Blueprints
                 RemoveProperty(property);
         }
 
-        struct DictionaryEnumerator : IDictionaryEnumerator
+        private struct DictionaryEnumerator : IDictionaryEnumerator
         {
             readonly IEnumerator<KeyValuePair<string, object>> _en;
 
@@ -66,13 +67,7 @@ namespace Frontenac.Blueprints
                 _en = en;
             }
 
-            public object Current
-            {
-                get
-                {
-                    return Entry;
-                }
-            }
+            public object Current => Entry;
 
             public DictionaryEntry Entry
             {
@@ -135,7 +130,7 @@ namespace Frontenac.Blueprints
 
         public virtual bool Remove(KeyValuePair<string, object> item)
         {
-            var result = (Contains(item));
+            var result = Contains(item);
             if (result)
                 RemoveProperty(item.Key);
             return result;
@@ -151,22 +146,13 @@ namespace Frontenac.Blueprints
             }
         }
 
-        public virtual int Count
-        {
-            get { return GetPropertyKeys().Count(); }
-        }
+        public virtual int Count => GetPropertyKeys().Count();
 
-        public virtual object SyncRoot 
-        {
-            get { return this; }
-        }
+        public virtual object SyncRoot => this;
 
         public virtual bool IsSynchronized { get; protected set; }
 
-        ICollection IDictionary.Values
-        {
-            get { return GetPropertyKeys().Select(GetProperty).ToList(); }
-        }
+        ICollection IDictionary.Values => GetPropertyKeys().Select(GetProperty).ToList();
 
         public bool IsReadOnly { get; protected set; }
         public bool IsFixedSize { get; protected set; }
@@ -202,23 +188,14 @@ namespace Frontenac.Blueprints
             set { SetProperty(key, value); }
         }
 
-        public virtual ICollection<string> Keys
-        {
-            get { return GetPropertyKeys().ToList(); }
-        }
+        public virtual ICollection<string> Keys => GetPropertyKeys().ToList();
 
-        ICollection IDictionary.Keys
-        {
-            get { return GetPropertyKeys().ToList(); }
-        }
+        ICollection IDictionary.Keys => GetPropertyKeys().ToList();
 
-        public virtual ICollection<object> Values
-        {
-            get { return GetPropertyKeys().Select(GetProperty).ToList(); }
-        }
+        public virtual ICollection<object> Values => GetPropertyKeys().Select(GetProperty).ToList();
 
         public abstract object Id { get; }
-        public IGraph Graph { get; private set; }
+        public IGraph Graph { get; }
         public abstract object GetProperty(string key);
         public abstract IEnumerable<string> GetPropertyKeys();
         public abstract void SetProperty(string key, object value);

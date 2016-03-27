@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Threading;
 using Frontenac.Blueprints.Impls;
 using Frontenac.Blueprints.Util;
 using NUnit.Framework;
@@ -70,7 +69,7 @@ namespace Frontenac.Blueprints
 
                 if (graph.Features.SupportsVertexIndex)
                     set.Add(graph.GetVertices().First());
-                Assert.AreEqual(1, set.Count());
+                Assert.AreEqual(1, set.Count);
                 Assert.AreEqual(v.GetHashCode(), u.GetHashCode());
             }
             finally
@@ -159,7 +158,7 @@ namespace Frontenac.Blueprints
                 for (var i = 0; i < 100; i++)
                     vertices.Add(graph.AddVertex(null));
 
-                Assert.AreEqual(vertices.Count(), 100);
+                Assert.AreEqual(vertices.Count, 100);
                 if (graph.Features.SupportsVertexIteration)
                     Assert.AreEqual(100, Count(graph.GetVertices()));
                 if (graph.Features.SupportsEdgeIteration)
@@ -283,7 +282,7 @@ namespace Frontenac.Blueprints
                 Assert.AreEqual(vertexCount, Count(graph.GetVertices()));
                 PrintPerformance(graph.ToString(), vertexCount, "vertices Counted", StopWatch());
                 // must create unique ids
-                Assert.AreEqual(vertexCount, ids.Count());
+                Assert.AreEqual(vertexCount, ids.Count);
             }
             finally
             {
@@ -368,7 +367,7 @@ namespace Frontenac.Blueprints
 
                     if (graph.Features.SupportsVertexIteration)
                         Assert.AreEqual(50, Count(graph.GetVertices()));
-                    Assert.AreEqual(50, vertices.Count());
+                    Assert.AreEqual(50, vertices.Count);
                     foreach (var vertex in vertices)
                         Assert.AreEqual(15, vertex.GetPropertyKeys().Count());
                 }

@@ -79,7 +79,8 @@ namespace Frontenac.Blueprints.Util.IO.GraphSON
                 var graph = TinkerGraphFactory.CreateTinkerGraph();
                 var emptyGraph = new TinkerGrapĥ();
                 var edgeKeys = new HashSet<string> {GraphSonTokens.InV, GraphSonTokens.OutV, GraphSonTokens.Label};
-                var vertexKeys = new HashSet<string>();
+                var vertexKeys = new HashSet<string> {"init"};
+                vertexKeys.Remove("init");
 
                 using (var stream = new MemoryStream())
                 {

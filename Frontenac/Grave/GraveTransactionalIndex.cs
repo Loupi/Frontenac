@@ -100,8 +100,7 @@ namespace Frontenac.Grave
                 removeBuffer = new List<KeyValuePair<object, IElement>>();
                 _removeBuffer.Add(key, removeBuffer);
             }
-            if(removeBuffer != null)
-                removeBuffer.Add(new KeyValuePair<object, IElement>(value, element));
+            removeBuffer?.Add(new KeyValuePair<object, IElement>(value, element));
         }
 
         public void Commit()
@@ -131,19 +130,13 @@ namespace Frontenac.Grave
             _removeBuffer.Clear();
         }
 
-        public Type Type
-        {
-            get { return _index.IndexType; }
-        }
+        public Type Type => _index.IndexType;
 
-        public string Name
-        {
-            get { return _index.IndexName; }
-        }
+        public string Name => _index.IndexName;
 
         public IEnumerable<IElement> Query(string key, object query)
         {
-            throw new NotImplementedException();
+            throw new NotSupportedException();
         }
     }
 }

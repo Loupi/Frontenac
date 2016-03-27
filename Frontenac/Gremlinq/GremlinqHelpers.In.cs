@@ -99,7 +99,7 @@ namespace Frontenac.Gremlinq
 
         public static IEnumerable<IVertex<TInModel>> In<TOutModel, TInModel>(
             this IVertex<TOutModel> vertex,
-            Expression<Func<TOutModel, IEnumerable<TInModel>>> propertySelector) 
+            Expression<Func<TOutModel, ICollection<TInModel>>> propertySelector) 
             where TInModel : class
         {
             Contract.Requires(vertex != null);
@@ -111,7 +111,7 @@ namespace Frontenac.Gremlinq
 
         public static IEnumerable<IVertex<TInModel>> In<TInModel, TOutModel, TEdgeModel>(
             this IVertex<TOutModel> vertex,
-            Expression<Func<TOutModel, IEnumerable<KeyValuePair<TEdgeModel, TInModel>>>> propertySelector)
+            Expression<Func<TOutModel, ICollection<KeyValuePair<TEdgeModel, TInModel>>>> propertySelector)
             where TInModel : class
             where TEdgeModel : class 
         {
@@ -222,6 +222,14 @@ namespace Frontenac.Gremlinq
             Contract.Ensures(Contract.Result<IEnumerable<IVertex<TInModel>>>() != null);
 
             return vertices.SelectMany(t => t.In(edgePropertySelectors));
+        }
+
+        public static IEnumerable<IVertex<TInModel>> In<TInModel, TOutModel>(
+                this IEnumerable<IVertex<TOutModel>> vertices,
+                Expression<Func<TOutModel, ICollection<TInModel>>> propertySelector)
+                where TInModel : class
+        {
+            return vertices.SelectMany(t => t.In(propertySelector.Resolve())).As<TInModel>();
         }
     }
 }

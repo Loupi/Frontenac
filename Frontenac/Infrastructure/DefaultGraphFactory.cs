@@ -41,9 +41,12 @@ namespace Frontenac.Infrastructure
 
             if (disposing)
             {
-                foreach (var graph in _graphs.ToArray())
+                lock (_syncRoot)
                 {
-                    graph.Shutdown();
+                    foreach (var graph in _graphs.ToArray())
+                    {
+                        graph.Shutdown();
+                    }
                 }
             }
 

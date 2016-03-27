@@ -21,6 +21,16 @@ namespace Frontenac.Blueprints.Util.Wrappers.Id
             return new IdEdgeIterable(_baseVertex.GetEdges(direction, labels), IdInnerTinkerGrapĥ);
         }
 
+        public long GetNbEdges(Direction direction, string label)
+        {
+            return _baseVertex.GetNbEdges(direction, label);
+        }
+
+        public IEnumerable<IVertex> GetVertices(Direction direction, string label, params object[] ids)
+        {
+            return _baseVertex.GetVertices(direction, label, ids);
+        }
+
         public IEnumerable<IVertex> GetVertices(Direction direction, params string[] labels)
         {
             return new IdVertexIterable(_baseVertex.GetVertices(direction, labels), IdInnerTinkerGrapĥ);

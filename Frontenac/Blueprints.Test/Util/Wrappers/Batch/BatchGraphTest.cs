@@ -104,8 +104,7 @@ namespace Frontenac.Blueprints.Util.Wrappers.Batch
 
             public void Shutdown()
             {
-                if (_graph != null)
-                    _graph.Shutdown();
+                _graph?.Shutdown();
             }
 
             public void Commit()
@@ -121,10 +120,7 @@ namespace Frontenac.Blueprints.Util.Wrappers.Batch
                 VerifyCounts();
             }
 
-            public Features Features
-            {
-                get { return _graph.Features; }
-            }
+            public Features Features => _graph.Features;
 
             public IVertex AddVertex(object id)
             {

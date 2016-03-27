@@ -110,7 +110,7 @@ namespace Frontenac.Blueprints.Util.IO.GraphJson
                 
             if (isEdge)
             {
-                var edge = element as IEdge;
+                var edge = (IEdge) element;
                 var source = edge.GetVertex(Direction.In).Id;
                 var target = edge.GetVertex(Direction.Out).Id;
                 var caption = edge.Label;

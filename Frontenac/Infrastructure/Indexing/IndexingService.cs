@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics.Contracts;
+using System.Threading.Tasks;
 using Frontenac.Blueprints;
 
 namespace Frontenac.Infrastructure.Indexing
@@ -43,23 +44,23 @@ namespace Frontenac.Infrastructure.Indexing
 
         public void CreateIndexOfType(string indexName, string indexColumn, Parameter[] parameters)
         {
-            Contract.Requires(!String.IsNullOrWhiteSpace(indexName));
-            Contract.Requires(!String.IsNullOrWhiteSpace(indexColumn));
+            Contract.Requires(!string.IsNullOrWhiteSpace(indexName));
+            Contract.Requires(!string.IsNullOrWhiteSpace(indexColumn));
 
             IndexStore.CreateIndex(indexName, indexColumn, parameters);
         }
 
         public List<string> GetIndicesOfType(string indexType)
         {
-            Contract.Requires(!String.IsNullOrWhiteSpace(indexType));
+            Contract.Requires(!string.IsNullOrWhiteSpace(indexType));
 
             return IndexStore.GetIndices(indexType);
         }
 
         public long DropIndexOfType(string indexName, string indexColumn, Type indexType, bool isUserIndex)
         {
-            Contract.Requires(!String.IsNullOrWhiteSpace(indexName));
-            Contract.Requires(!String.IsNullOrWhiteSpace(indexColumn));
+            Contract.Requires(!string.IsNullOrWhiteSpace(indexName));
+            Contract.Requires(!string.IsNullOrWhiteSpace(indexColumn));
 
             return IndexStore.DeleteIndex(this, indexName, indexColumn, indexType, isUserIndex);
         }
@@ -84,10 +85,12 @@ namespace Frontenac.Infrastructure.Indexing
         public abstract void Commit();
         public abstract void Prepare();
         public abstract void Rollback();
+
+        public abstract Task CommitAsync();
         
         private bool _disposed;
 
-        public virtual void Dispose()
+        public void Dispose()
         {
             Dispose(true);
             GC.SuppressFinalize(this);

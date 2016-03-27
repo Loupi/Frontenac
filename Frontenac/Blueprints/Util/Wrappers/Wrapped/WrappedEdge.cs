@@ -19,10 +19,7 @@ namespace Frontenac.Blueprints.Util.Wrappers.Wrapped
             return new WrappedVertex(_edge.GetVertex(direction));
         }
 
-        public string Label
-        {
-            get { return _edge.Label; }
-        }
+        public string Label => _edge.Label;
 
         public IEdge Edge
         {

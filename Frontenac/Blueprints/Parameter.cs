@@ -14,37 +14,34 @@
 
         public override bool Equals(object obj)
         {
-            if (obj is Parameter)
+            var parameter = obj as Parameter;
+            if (parameter == null) return false;
+            var param = parameter;
+            var otherKey = param.Key;
+            var otherValue = param.Value;
+            if (otherKey == null)
             {
-                var param = obj as Parameter;
-                var otherKey = param.Key;
-                var otherValue = param.Value;
-                if (otherKey == null)
-                {
-                    if (Key != null)
-                        return false;
-                }
-                else
-                {
-                    if (!otherKey.Equals(Key))
-                        return false;
-                }
-
-                if (otherValue == null)
-                {
-                    if (Value != null)
-                        return false;
-                }
-                else
-                {
-                    if (!otherValue.Equals(Value))
-                        return false;
-                }
-
-                return true;
+                if (Key != null)
+                    return false;
+            }
+            else
+            {
+                if (!otherKey.Equals(Key))
+                    return false;
             }
 
-            return false;
+            if (otherValue == null)
+            {
+                if (Value != null)
+                    return false;
+            }
+            else
+            {
+                if (!otherValue.Equals(Value))
+                    return false;
+            }
+
+            return true;
         }
 
         public override int GetHashCode()
@@ -52,15 +49,15 @@
             const int prime = 31;
             var result = 1;
 // ReSharper disable NonReadonlyFieldInGetHashCode
-            result = prime*result + ((Key == null) ? 0 : Key.GetHashCode());
-            result = prime*result + ((Value == null) ? 0 : Value.GetHashCode());
+            result = prime*result + (Key?.GetHashCode() ?? 0);
+            result = prime*result + (Value?.GetHashCode() ?? 0);
 // ReSharper restore NonReadonlyFieldInGetHashCode
             return result;
         }
 
         public override string ToString()
         {
-            return string.Format("parameter[{0},{1}]", Key, Value);
+            return $"parameter[{Key},{Value}]";
         }
     }
 
@@ -71,15 +68,28 @@
         {
         }
 
-        public new TK Key
-        {
-            get { return (TK) base.Key; }
-        }
+        public new TK Key => (TK) base.Key;
 
         public new TV Value
         {
             get { return (TV) base.Value; }
             set { base.Value = value; }
+        }
+    }
+
+    public class NGram
+    {
+        public int Min { get; set; }
+        public int Max { get; set; }
+    }
+
+    public class AutoCompleteParameter : Parameter<string, NGram>
+    {
+        public NGram NGram { get; set; }
+
+        public AutoCompleteParameter(NGram value) : base("autocomplete", value)
+        {
+            NGram = value;
         }
     }
 }

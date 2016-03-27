@@ -22,11 +22,11 @@ namespace Frontenac.Infrastructure.Indexing
             IndexingService = indexingService;
         }
 
-        public IGenerationBasedIndex GenBasedIndex { get; private set; }
-        public IGraph Graph { get; private set; }
-        public string IndexName { get; private set; }
-        public Type IndexType { get; private set; }
-        public IndexingService IndexingService { get; private set; }
+        public IGenerationBasedIndex GenBasedIndex { get; }
+        public IGraph Graph { get; }
+        public string IndexName { get; }
+        public Type IndexType { get; }
+        public IndexingService IndexingService { get; }
 
         public virtual long Count(string key, object value)
         {
@@ -43,15 +43,9 @@ namespace Frontenac.Infrastructure.Indexing
             return ElementsFromHits(hits);
         }
 
-        public Type Type
-        {
-            get { return IndexType; }
-        }
+        public Type Type => IndexType;
 
-        public string Name
-        {
-            get { return IndexName; }
-        }
+        public string Name => IndexName;
 
         public virtual void Put(string key, object value, IElement element)
         {

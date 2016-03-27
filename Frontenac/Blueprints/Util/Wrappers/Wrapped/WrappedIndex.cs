@@ -15,15 +15,9 @@ namespace Frontenac.Blueprints.Util.Wrappers.Wrapped
             RawIndex = rawIndex;
         }
 
-        public string Name
-        {
-            get { return RawIndex.Name; }
-        }
+        public string Name => RawIndex.Name;
 
-        public Type Type
-        {
-            get { return RawIndex.Type; }
-        }
+        public Type Type => RawIndex.Type;
 
         public long Count(string key, object value)
         {

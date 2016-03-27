@@ -2,7 +2,7 @@
 {
     public class DefaultGremlinqContextFactory : IGremlinqContextFactory
     {
-        readonly DictionaryAdapterProxyFactory _proxyFactory = new DictionaryAdapterProxyFactory();
+        private readonly DictionaryAdapterProxyFactory _proxyFactory = new DictionaryAdapterProxyFactory();
 
         public virtual GremlinqContext Create()
         {

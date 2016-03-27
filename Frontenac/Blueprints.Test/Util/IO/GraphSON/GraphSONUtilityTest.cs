@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Linq;
 using System.Text;
 using Frontenac.Blueprints.Impls.TG;
 using NUnit.Framework;
@@ -255,7 +254,7 @@ namespace Frontenac.Blueprints.Util.IO.GraphSON
 
             var booleanArrayAsJson = (JArray) json["keyBooleanArray"];
             Assert.NotNull(booleanArrayAsJson);
-            Assert.AreEqual(3, booleanArrayAsJson.Count());
+            Assert.AreEqual(3, booleanArrayAsJson.Count);
         }
 
         [Test]
@@ -296,12 +295,12 @@ namespace Frontenac.Blueprints.Util.IO.GraphSON
             Assert.True(mapAsJson.ContainsKey("ints"));
             var intArrayAsJson = (JArray) mapAsJson["ints"];
             Assert.NotNull(intArrayAsJson);
-            Assert.AreEqual(3, intArrayAsJson.Count());
+            Assert.AreEqual(3, intArrayAsJson.Count);
 
             Assert.True(mapAsJson.ContainsKey("crazy"));
             var deepListAsJson = (JArray) mapAsJson["crazy"];
             Assert.NotNull(deepListAsJson);
-            Assert.AreEqual(3, deepListAsJson.Count());
+            Assert.AreEqual(3, deepListAsJson.Count);
 
             Assert.True(mapAsJson.ContainsKey("inner"));
             IDictionary<string, JToken> mapInMapAsJson = (JObject) mapAsJson["inner"];
@@ -433,7 +432,7 @@ namespace Frontenac.Blueprints.Util.IO.GraphSON
 
             var floatArrayAsJson = (JArray) json["keyFloatArray"];
             Assert.NotNull(floatArrayAsJson);
-            Assert.AreEqual(3, floatArrayAsJson.Count());
+            Assert.AreEqual(3, floatArrayAsJson.Count);
         }
 
         [Test]
@@ -535,11 +534,11 @@ namespace Frontenac.Blueprints.Util.IO.GraphSON
             Assert.True(listWithTypeAsJson.ContainsKey(GraphSonTokens.Value));
             var listAsJson = (JArray) listWithTypeAsJson[GraphSonTokens.Value];
             Assert.NotNull(listAsJson);
-            Assert.AreEqual(3, listAsJson.Count());
+            Assert.AreEqual(3, listAsJson.Count);
 
-            for (var ix = 0; ix < listAsJson.Count(); ix++)
+            foreach (var t in listAsJson)
             {
-                IDictionary<string, JToken> valueAsJson = (JObject) listAsJson[ix];
+                IDictionary<string, JToken> valueAsJson = (JObject) t;
                 Assert.NotNull(valueAsJson);
                 Assert.True(valueAsJson.ContainsKey(GraphSonTokens.Type));
                 Assert.AreEqual(GraphSonTokens.TypeBoolean, valueAsJson[GraphSonTokens.Type].Value<string>());
@@ -565,7 +564,7 @@ namespace Frontenac.Blueprints.Util.IO.GraphSON
 
             var catListAsJson = (JArray) json["cats"];
             Assert.NotNull(catListAsJson);
-            Assert.AreEqual(2, catListAsJson.Count());
+            Assert.AreEqual(2, catListAsJson.Count);
         }
 
         [Test]
@@ -673,7 +672,7 @@ namespace Frontenac.Blueprints.Util.IO.GraphSON
 
             var doubleArrayAsJson = (JArray) json["keyDoubleArray"];
             Assert.NotNull(doubleArrayAsJson);
-            Assert.AreEqual(3, doubleArrayAsJson.Count());
+            Assert.AreEqual(3, doubleArrayAsJson.Count);
         }
 
         [Test]
@@ -693,7 +692,7 @@ namespace Frontenac.Blueprints.Util.IO.GraphSON
 
             var intArrayAsJson = (JArray) json["keyIntArray"];
             Assert.NotNull(intArrayAsJson);
-            Assert.AreEqual(3, intArrayAsJson.Count());
+            Assert.AreEqual(3, intArrayAsJson.Count);
         }
 
         [Test]
@@ -718,11 +717,11 @@ namespace Frontenac.Blueprints.Util.IO.GraphSON
             Assert.True(listWithTypeAsJson.ContainsKey(GraphSonTokens.Value));
             var listAsJson = (JArray) listWithTypeAsJson[GraphSonTokens.Value];
             Assert.NotNull(listAsJson);
-            Assert.AreEqual(3, listAsJson.Count());
+            Assert.AreEqual(3, listAsJson.Count);
 
-            for (var ix = 0; ix < listAsJson.Count(); ix++)
+            foreach (var t in listAsJson)
             {
-                IDictionary<string, JToken> valueAsJson = (JObject) listAsJson[ix];
+                IDictionary<string, JToken> valueAsJson = (JObject) t;
                 Assert.NotNull(valueAsJson);
                 Assert.True(valueAsJson.ContainsKey(GraphSonTokens.Type));
                 //Porting Note: JSON.NET parse integers as longs
@@ -756,11 +755,11 @@ namespace Frontenac.Blueprints.Util.IO.GraphSON
             Assert.True(listWithTypeAsJson.ContainsKey(GraphSonTokens.Value));
             var listAsJson = (JArray) listWithTypeAsJson[GraphSonTokens.Value][0][GraphSonTokens.Value];
             Assert.NotNull(listAsJson);
-            Assert.AreEqual(3, listAsJson.Count());
+            Assert.AreEqual(3, listAsJson.Count);
 
-            for (var ix = 0; ix < listAsJson.Count(); ix++)
+            foreach (var t in listAsJson)
             {
-                IDictionary<string, JToken> valueAsJson = (JObject) listAsJson[ix];
+                IDictionary<string, JToken> valueAsJson = (JObject) t;
                 Assert.NotNull(valueAsJson);
                 Assert.True(valueAsJson.ContainsKey(GraphSonTokens.Type));
                 Assert.AreEqual(GraphSonTokens.TypeLong, valueAsJson[GraphSonTokens.Type].Value<string>());
@@ -791,11 +790,11 @@ namespace Frontenac.Blueprints.Util.IO.GraphSON
             Assert.True(listWithTypeAsJson.ContainsKey(GraphSonTokens.Value));
             var listAsJson = (JArray) listWithTypeAsJson[GraphSonTokens.Value];
             Assert.NotNull(listAsJson);
-            Assert.AreEqual(3, listAsJson.Count());
+            Assert.AreEqual(3, listAsJson.Count);
 
-            for (var ix = 0; ix < listAsJson.Count(); ix++)
+            foreach (var t in listAsJson)
             {
-                IDictionary<string, JToken> valueAsJson = (JObject) listAsJson[ix];
+                IDictionary<string, JToken> valueAsJson = (JObject) t;
                 Assert.NotNull(valueAsJson);
                 Assert.True(valueAsJson.ContainsKey(GraphSonTokens.Type));
                 Assert.AreEqual(GraphSonTokens.TypeString, valueAsJson[GraphSonTokens.Type].Value<string>());
@@ -821,7 +820,7 @@ namespace Frontenac.Blueprints.Util.IO.GraphSON
 
             IList<JToken> listAsJson = (JArray) json["keyList"];
             Assert.NotNull(listAsJson);
-            Assert.AreEqual(4, listAsJson.Count());
+            Assert.AreEqual(4, listAsJson.Count);
         }
 
         [Test]
@@ -841,7 +840,7 @@ namespace Frontenac.Blueprints.Util.IO.GraphSON
 
             var longArrayAsJson = (JArray) json["keyLongArray"];
             Assert.NotNull(longArrayAsJson);
-            Assert.AreEqual(3, longArrayAsJson.Count());
+            Assert.AreEqual(3, longArrayAsJson.Count);
         }
 
         [Test]
@@ -866,11 +865,11 @@ namespace Frontenac.Blueprints.Util.IO.GraphSON
             Assert.True(listWithTypeAsJson.ContainsKey(GraphSonTokens.Value));
             var listAsJson = (JArray) listWithTypeAsJson[GraphSonTokens.Value];
             Assert.NotNull(listAsJson);
-            Assert.AreEqual(3, listAsJson.Count());
+            Assert.AreEqual(3, listAsJson.Count);
 
-            for (var ix = 0; ix < listAsJson.Count(); ix++)
+            foreach (var t in listAsJson)
             {
-                IDictionary<string, JToken> valueAsJson = (JObject) listAsJson[ix];
+                IDictionary<string, JToken> valueAsJson = (JObject) t;
                 Assert.NotNull(valueAsJson);
                 Assert.True(valueAsJson.ContainsKey(GraphSonTokens.Type));
                 Assert.AreEqual(GraphSonTokens.TypeLong, valueAsJson[GraphSonTokens.Type].Value<string>());
@@ -1094,7 +1093,7 @@ namespace Frontenac.Blueprints.Util.IO.GraphSON
 
             var stringArrayAsJson = (JArray) json["keyStringArray"];
             Assert.NotNull(stringArrayAsJson);
-            Assert.AreEqual(3, stringArrayAsJson.Count());
+            Assert.AreEqual(3, stringArrayAsJson.Count);
         }
 
         [Test]

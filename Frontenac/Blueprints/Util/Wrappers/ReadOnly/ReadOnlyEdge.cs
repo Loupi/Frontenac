@@ -20,10 +20,7 @@ namespace Frontenac.Blueprints.Util.Wrappers.ReadOnly
             return new ReadOnlyVertex(ReadOnlyInnerTinkerGrapĥ, _baseEdge.GetVertex(direction));
         }
 
-        public string Label
-        {
-            get { return _baseEdge.Label; }
-        }
+        public string Label => _baseEdge.Label;
 
         public IEdge GetBaseEdge()
         {

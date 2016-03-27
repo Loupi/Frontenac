@@ -16,11 +16,11 @@ namespace Frontenac.Gremlinq
         private const string TypePropertyName = "__gtype__";
         private readonly string _typePropertyName;
 
-        readonly ConditionalWeakTable<IGraph, PerGraphInstanceTypes>  _perGraphInstanceTypes 
+        private readonly ConditionalWeakTable<IGraph, PerGraphInstanceTypes>  _perGraphInstanceTypes 
             = new ConditionalWeakTable<IGraph, PerGraphInstanceTypes>();
         
 // ReSharper disable ClassNeverInstantiated.Local
-        class PerGraphInstanceTypes
+        private class PerGraphInstanceTypes
 // ReSharper restore ClassNeverInstantiated.Local
         {
             public readonly Dictionary<Type, object> TypesBuffer = new Dictionary<Type, object>();
@@ -37,7 +37,7 @@ namespace Frontenac.Gremlinq
                     var index = indexableGraph.GetIndex(GremlinqVertexProperty, typeof(IVertex)) ??
                                 indexableGraph.CreateIndex(GremlinqVertexProperty, typeof(IVertex));
 
-                    vertex = Enumerable.OfType<IVertex>(index.Get(TypesIndexName, typePropertyName)).SingleOrDefault();
+                    vertex = Enumerable.OfType<IVertex>(index.Get(TypesIndexName, typePropertyName)).FirstOrDefault();
                     if (vertex == null)
                     {
                         vertex = graph.AddVertex(null);
@@ -56,7 +56,7 @@ namespace Frontenac.Gremlinq
                     keyIndexableGraph.CreateKeyIndex(typePropertyName, typeof(IEdge));
                 }*/   
 
-                return vertex ?? (graph.V(GremlinqVertexProperty, typePropertyName).SingleOrDefault());
+                return vertex ?? graph.V(GremlinqVertexProperty, typePropertyName).FirstOrDefault();
             }
 
             public void LoadTypesVertex(IGraph graph, string typePropertyName)
@@ -120,9 +120,8 @@ namespace Frontenac.Gremlinq
             element.SetProperty(_typePropertyName, id);
         }
 
-        public virtual bool TryGetType(IElement element, out Type type)
+        public virtual bool TryGetType(IDictionary<string, object> element, IGraph graph, out Type type)
         {
-            var graph = element.Graph;
             var instanceTypes = _perGraphInstanceTypes.GetOrCreateValue(graph);
             instanceTypes.LoadTypesVertex(graph, _typePropertyName);
 
@@ -134,7 +133,7 @@ namespace Frontenac.Gremlinq
             }
 
             var kp = instanceTypes.TypesBuffer
-                .SingleOrDefault(pair => GraphHelpers.IsNumber(pair.Value) && GraphHelpers.IsNumber(id)
+                .FirstOrDefault(pair => GraphHelpers.IsNumber(pair.Value) && GraphHelpers.IsNumber(id)
                     ? Convert.ToDouble(pair.Value).CompareTo(Convert.ToDouble(id)) == 0
                     : pair.Value != null && pair.Value.Equals(id));
             
@@ -152,10 +151,9 @@ namespace Frontenac.Gremlinq
             instanceTypes.LoadTypesVertex(graph, _typePropertyName);
 
             object id;
-            if (!instanceTypes.TypesBuffer.TryGetValue(type, out id))
-                return Enumerable.Empty<IVertex>();
-
-            return graph.GetVertices(_typePropertyName, id);
+            return !instanceTypes.TypesBuffer.TryGetValue(type, out id) 
+                ? Enumerable.Empty<IVertex>() 
+                : graph.GetVertices(_typePropertyName, id);
         }
 
         public IEnumerable<IEdge> GetEdgesOfType(IGraph graph, Type type)
@@ -164,10 +162,17 @@ namespace Frontenac.Gremlinq
             instanceTypes.LoadTypesVertex(graph, _typePropertyName);
 
             object id;
-            if (!instanceTypes.TypesBuffer.TryGetValue(type, out id))
-                return Enumerable.Empty<IEdge>();
+            return !instanceTypes.TypesBuffer.TryGetValue(type, out id) 
+                ? Enumerable.Empty<IEdge>() 
+                : graph.GetEdges(_typePropertyName, id);
+        }
 
-            return graph.GetEdges(_typePropertyName, id);
+        public IEnumerable<Type> GetTypes(IGraph graph)
+        {
+            var instanceTypes = _perGraphInstanceTypes.GetOrCreateValue(graph);
+            instanceTypes.LoadTypesVertex(graph, _typePropertyName);
+
+            return instanceTypes.TypesBuffer.Keys;
         }
     }
 }

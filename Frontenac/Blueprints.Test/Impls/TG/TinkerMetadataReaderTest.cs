@@ -27,14 +27,14 @@ namespace Frontenac.Blueprints.Impls.TG
         [Test]
         public void ExampleMetadataGetsCorrectEdgeKeyIndices()
         {
-            Assert.AreEqual(1, _tinkerGrapĥ.EdgeKeyIndex.Index.Count());
+            Assert.AreEqual(1, _tinkerGrapĥ.EdgeKeyIndex.Index.Count);
             Assert.AreEqual(1, _tinkerGrapĥ.GetEdges("weight", 0.5).Count());
         }
 
         [Test]
         public void ExampleMetadataGetsCorrectIndices()
         {
-            Assert.AreEqual(2, _tinkerGrapĥ.Indices.Count());
+            Assert.AreEqual(2, _tinkerGrapĥ.Indices.Count);
 
             var idxAge = _tinkerGrapĥ.GetIndex("age", typeof (IVertex));
             var vertices = idxAge.Get("age", 27);
@@ -48,7 +48,7 @@ namespace Frontenac.Blueprints.Impls.TG
         [Test]
         public void ExampleMetadataGetsCorrectVertexKeyIndices()
         {
-            Assert.AreEqual(1, _tinkerGrapĥ.VertexKeyIndex.Index.Count());
+            Assert.AreEqual(1, _tinkerGrapĥ.VertexKeyIndex.Index.Count);
             Assert.AreEqual(1, _tinkerGrapĥ.GetVertices("age", 27).Count());
         }
     }

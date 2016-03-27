@@ -35,7 +35,7 @@ namespace Frontenac.Gremlinq.RelationAccessors
 // ReSharper disable UnusedMember.Local
 // ReSharper disable UnusedTypeParameter
 // ReSharper disable UnusedParameter.Local
-        private static object CreateCollection<TModel>(IElement element, string key, RelationAccessor accessor)
+        private static object CreateCollection<TModel>(IElement element, string key, RelationAccessor accessor, RelationAttribute rel)
 // ReSharper restore UnusedParameter.Local
 // ReSharper restore UnusedTypeParameter
 // ReSharper restore UnusedMember.Local
@@ -43,7 +43,7 @@ namespace Frontenac.Gremlinq.RelationAccessors
             throw new NotSupportedException();
         }
 
-        public override object GetRelations(IElement element, string key)
+        public override object GetRelations(IElement element, string key, RelationAttribute rel)
         {
             var edge = element as IEdge;
             if (edge == null)
@@ -52,6 +52,10 @@ namespace Frontenac.Gremlinq.RelationAccessors
             IEnumerable<IVertex> vertices;
             string label;
             var direction = DirectionFromKey(key, out label);
+            if (rel != null)
+            {
+                direction = rel.Direction;
+            }
 
             switch (direction)
             {
@@ -72,7 +76,7 @@ namespace Frontenac.Gremlinq.RelationAccessors
             if (IsEnumerable && direction == Direction.Both)
                 return result;
 
-            return result.SingleOrDefault();
+            return result.FirstOrDefault();
         }
     }
 }

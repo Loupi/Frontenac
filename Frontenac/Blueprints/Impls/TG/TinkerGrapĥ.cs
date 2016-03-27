@@ -28,10 +28,10 @@ namespace Frontenac.Blueprints.Impls.TG
         private readonly string _directory;
         private readonly FileType _fileType;
 
-        internal long CurrentId = 0;
+        internal long CurrentId;
         internal TinkerKeyIndex EdgeKeyIndex;
         protected ConcurrentDictionary<string, IEdge> Edges = new ConcurrentDictionary<string, IEdge>();
-        internal ConcurrentDictionary<string, TinkerIndex> Indices = new ConcurrentDictionary<string, TinkerIndex>();
+        internal readonly ConcurrentDictionary<string, TinkerIndex> Indices = new ConcurrentDictionary<string, TinkerIndex>();
         protected ConcurrentDictionary<string, IVertex> InnerVertices = new ConcurrentDictionary<string, IVertex>();
 
         internal TinkerKeyIndex VertexKeyIndex;
@@ -265,7 +265,7 @@ namespace Frontenac.Blueprints.Impls.TG
             var outVertex = (TinkerVertex) edge.GetVertex(Direction.Out);
             var inVertex = (TinkerVertex) edge.GetVertex(Direction.In);
             IEdge removedEdge;
-            if (null != outVertex && null != outVertex.OutEdges)
+            if (outVertex?.OutEdges != null)
             {
                 var e = outVertex.OutEdges.Get(edge.Label);
                 if (null != e)
@@ -273,7 +273,7 @@ namespace Frontenac.Blueprints.Impls.TG
                     e.TryRemove(edge.Id.ToString(), out removedEdge);
                 }
             }
-            if (null != inVertex && null != inVertex.InEdges)
+            if (inVertex?.InEdges != null)
             {
                 var e = inVertex.InEdges.Get(edge.Label);
                 if (null != e)
@@ -304,10 +304,7 @@ namespace Frontenac.Blueprints.Impls.TG
             tinkerStorage.Save(this, _directory);
         }
 
-        public virtual Features Features
-        {
-            get { return null == _directory ? TinkerGraphFeatures : PersistentFeatures; }
-        }
+        public virtual Features Features => null == _directory ? TinkerGraphFeatures : PersistentFeatures;
 
         public virtual void CreateKeyIndex(string key, Type elementClass, params Parameter[] indexParameters)
         {
@@ -438,7 +435,7 @@ namespace Frontenac.Blueprints.Impls.TG
             {
                 Contract.Ensures(Contract.Result<IEnumerable<string>>() != null);
 
-                return null != _indexedKeys ? _indexedKeys.ToArray() : Enumerable.Empty<string>();
+                return _indexedKeys?.ToArray() ?? Enumerable.Empty<string>();
             }
         }
     }

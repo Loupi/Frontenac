@@ -10,7 +10,6 @@ namespace Frontenac.Blueprints.Util.Wrappers.ReadOnly
     /// </summary>
     public class ReadOnlyGraph : IGraph, IWrapperGraph
     {
-        private readonly Features _features;
         protected IGraph BaseGraph;
 
         public ReadOnlyGraph(IGraph baseGraph)
@@ -18,8 +17,8 @@ namespace Frontenac.Blueprints.Util.Wrappers.ReadOnly
             Contract.Requires(baseGraph != null);
 
             BaseGraph = baseGraph;
-            _features = BaseGraph.Features.CopyFeatures();
-            _features.IsWrapper = true;
+            Features = BaseGraph.Features.CopyFeatures();
+            Features.IsWrapper = true;
         }
 
         public void RemoveVertex(IVertex vertex)
@@ -81,10 +80,7 @@ namespace Frontenac.Blueprints.Util.Wrappers.ReadOnly
                                     t => new ReadOnlyVertexIterable(this, t.Vertices()));
         }
 
-        public Features Features
-        {
-            get { return _features; }
-        }
+        public Features Features { get; }
 
         public void Shutdown()
         {

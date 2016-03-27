@@ -9,7 +9,6 @@ namespace Frontenac.Blueprints.Util.Wrappers.Wrapped
     /// </summary>
     public class WrappedGraph : IGraph, IWrapperGraph
     {
-        private readonly Features _features;
         protected IGraph BaseGraph;
 
         public WrappedGraph(IGraph baseGraph)
@@ -17,8 +16,8 @@ namespace Frontenac.Blueprints.Util.Wrappers.Wrapped
             Contract.Requires(baseGraph != null);
 
             BaseGraph = baseGraph;
-            _features = BaseGraph.Features.CopyFeatures();
-            _features.IsWrapper = true;
+            Features = BaseGraph.Features.CopyFeatures();
+            Features.IsWrapper = true;
         }
 
         public IVertex AddVertex(object id)
@@ -82,10 +81,7 @@ namespace Frontenac.Blueprints.Util.Wrappers.Wrapped
                                     t => new WrappedVertexIterable(t.Vertices()));
         }
 
-        public Features Features
-        {
-            get { return _features; }
-        }
+        public Features Features { get; }
 
         public void Shutdown()
         {

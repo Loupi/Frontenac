@@ -168,7 +168,7 @@ namespace Frontenac.Blueprints.Util.IO.GraphSON
             var props = ReadProperties(json, true, _hasEmbeddedTypes);
             var edgeId = GetTypedValueFromJsonNode(json[GraphSonTokens.Id]);
             var nodeLabel = json[GraphSonTokens.Label] ?? string.Empty;
-            var label = nodeLabel == null ? null : nodeLabel.Value<string>();
+            var label = nodeLabel.Value<string>();
             var e = _factory.CreateEdge(edgeId, out_, in_, label);
 
             foreach (var entry in props.Where(entry => IncludeKey(entry.Key, _edgePropertyKeys, _edgePropertiesRule)))
@@ -202,12 +202,13 @@ namespace Frontenac.Blueprints.Util.IO.GraphSON
 
             // it's important to keep the order of these straight. check Edge first and then Vertex because there
             // are graph implementations that have Edge extend from Vertex
-            if (element is IEdge)
+            var edge1 = element as IEdge;
+            if (edge1 != null)
             {
-                var edge = element as IEdge;
+                var edge = edge1;
 
                 if (_includeReservedEdgeId)
-                    PutObject(jsonElement, GraphSonTokens.Id, element.Id);
+                    PutObject(jsonElement, GraphSonTokens.Id, edge1.Id);
 
                 if (_includeReservedEdgeType)
                     jsonElement.Add(GraphSonTokens.UnderscoreType, GraphSonTokens.Edge);

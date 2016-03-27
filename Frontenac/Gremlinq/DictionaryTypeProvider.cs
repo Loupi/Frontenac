@@ -33,7 +33,7 @@ namespace Frontenac.Gremlinq
             element.SetProperty(_typePropertyName, id);
         }
 
-        public virtual bool TryGetType(IElement element, out Type type)
+        public virtual bool TryGetType(IDictionary<string, object> element, IGraph graph, out Type type)
         {
             object id;
             if (!element.TryGetValue(_typePropertyName, out id) || !GraphHelpers.IsNumber(id))
@@ -64,6 +64,11 @@ namespace Frontenac.Gremlinq
                 throw new KeyNotFoundException(type.AssemblyQualifiedName);
 
             return graph.GetEdges(_typePropertyName, id);
+        }
+
+        public IEnumerable<Type> GetTypes(IGraph graph)
+        {
+            return _elementIdsToTypes.Values;
         }
     }
 }

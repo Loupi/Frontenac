@@ -260,31 +260,31 @@ namespace Frontenac.Gremlinq.Test
                 var v6 = result.Single(grouping => grouping.Key.ToString() == "v[6]");
                 var v7 = result.Single(grouping => grouping.Key.ToString() == "v[7]");
 
-                var elems = v1.SelectMany(list => list).ToList();
+                var elems = v1.SelectMany(list => list.ToList()).ToList();
                 Assert.AreEqual(3, elems.Count);
                 Assert.NotNull(elems.SingleOrDefault(vertex => vertex.ToString() == "v[2]"));
                 Assert.NotNull(elems.SingleOrDefault(vertex => vertex.ToString() == "v[3]"));
                 Assert.NotNull(elems.SingleOrDefault(vertex => vertex.ToString() == "v[4]"));
 
-                elems = v2.SelectMany(list => list).ToList();
+                elems = v2.SelectMany(list => list.ToList()).ToList();
                 Assert.AreEqual(0, elems.Count);
 
-                elems = v3.SelectMany(list => list).ToList();
+                elems = v3.SelectMany(list => list.ToList()).ToList();
                 Assert.AreEqual(0, elems.Count);
 
-                elems = v4.SelectMany(list => list).ToList();
+                elems = v4.SelectMany(list => list.ToList()).ToList();
                 Assert.AreEqual(2, elems.Count);
                 Assert.NotNull(elems.SingleOrDefault(vertex => vertex.ToString() == "v[3]"));
                 Assert.NotNull(elems.SingleOrDefault(vertex => vertex.ToString() == "v[5]"));
 
-                elems = v5.SelectMany(list => list).ToList();
+                elems = v5.SelectMany(list => list.ToList()).ToList();
                 Assert.AreEqual(0, elems.Count);
 
-                elems = v6.SelectMany(list => list).ToList();
+                elems = v6.SelectMany(list => list.ToList()).ToList();
                 Assert.AreEqual(1, elems.Count);
                 Assert.NotNull(elems.SingleOrDefault(vertex => vertex.ToString() == "v[3]"));
 
-                elems = v7.SelectMany(list => list).ToList();
+                elems = v7.SelectMany(list => list.ToList()).ToList();
                 Assert.AreEqual(0, elems.Count);
 
                 var result2 = g.V().Out()
@@ -293,7 +293,7 @@ namespace Frontenac.Gremlinq.Test
                              (s, vertices) => new
                                 {
                                     Key = s,
-                                    Values = vertices.SelectMany(list => list)
+                                    Values = vertices.SelectMany(list => list.ToList())
                                                      .Distinct()
                                                      .Where(vertex => Convert.ToInt32(vertex.GetProperty("age")) > 30)
                                                      .Select(vertex => (string)vertex.GetProperty("name"))

@@ -125,9 +125,9 @@ namespace Frontenac.Blueprints.Util.IO.GraphSON
                     }
                 }
                 Assert.AreEqual(count, 6);
-                Assert.AreEqual(edgeIds.Count(), 6);
-                Assert.AreEqual(edgeKeys.Count(), 1);
-                Assert.AreEqual(edgeValues.Count(), 4);
+                Assert.AreEqual(edgeIds.Count, 6);
+                Assert.AreEqual(edgeKeys.Count, 1);
+                Assert.AreEqual(edgeValues.Count, 4);
             }
             finally
             {
@@ -159,7 +159,7 @@ namespace Frontenac.Blueprints.Util.IO.GraphSON
                     // System.out.println(v);
                 }
                 Assert.AreEqual(count, 6);
-                Assert.AreEqual(vertexNames.Count(), 6);
+                Assert.AreEqual(vertexNames.Count, 6);
                 Assert.True(vertexNames.Contains("marko"));
                 Assert.True(vertexNames.Contains("josh"));
                 Assert.True(vertexNames.Contains("peter"));
@@ -199,7 +199,7 @@ namespace Frontenac.Blueprints.Util.IO.GraphSON
                     }
                 }
                 Assert.AreEqual(count, 6);
-                Assert.AreEqual(softwareVertices.Count(), 2);
+                Assert.AreEqual(softwareVertices.Count, 2);
                 foreach (var v in softwareVertices)
                 {
                     Assert.AreEqual(v.GetProperty("lang"), "java");
@@ -285,7 +285,7 @@ namespace Frontenac.Blueprints.Util.IO.GraphSON
                 {
                     vertices.Add(e.GetVertex(Direction.In));
                 }
-                Assert.AreEqual(vertices.Count(), 3);
+                Assert.AreEqual(vertices.Count, 3);
                 // ReSharper disable AssignNullToNotNullAttribute
                 Assert.True(vertices.Contains(lop));
                 Assert.True(vertices.Contains(josh));
@@ -302,7 +302,7 @@ namespace Frontenac.Blueprints.Util.IO.GraphSON
                 {
                     vertices.Add(e.GetVertex(Direction.In));
                 }
-                Assert.AreEqual(vertices.Count(), 1);
+                Assert.AreEqual(vertices.Count, 1);
                 Assert.True(vertices.Contains(lop));
 
                 // test josh
@@ -316,7 +316,7 @@ namespace Frontenac.Blueprints.Util.IO.GraphSON
                 {
                     vertices.Add(e.GetVertex(Direction.In));
                 }
-                Assert.AreEqual(vertices.Count(), 2);
+                Assert.AreEqual(vertices.Count, 2);
                 Assert.True(vertices.Contains(lop));
                 Assert.True(vertices.Contains(ripple));
                 // ReSharper restore AssignNullToNotNullAttribute
@@ -325,7 +325,7 @@ namespace Frontenac.Blueprints.Util.IO.GraphSON
                 {
                     vertices.Add(e.GetVertex(Direction.Out));
                 }
-                Assert.AreEqual(vertices.Count(), 1);
+                Assert.AreEqual(vertices.Count, 1);
                 Assert.True(vertices.Contains(marko));
 
                 // test vadas
@@ -339,7 +339,7 @@ namespace Frontenac.Blueprints.Util.IO.GraphSON
                 {
                     vertices.Add(e.GetVertex(Direction.Out));
                 }
-                Assert.AreEqual(vertices.Count(), 1);
+                Assert.AreEqual(vertices.Count, 1);
                 Assert.True(vertices.Contains(marko));
 
                 // test lop
@@ -353,7 +353,7 @@ namespace Frontenac.Blueprints.Util.IO.GraphSON
                 {
                     vertices.Add(e.GetVertex(Direction.Out));
                 }
-                Assert.AreEqual(vertices.Count(), 3);
+                Assert.AreEqual(vertices.Count, 3);
                 Assert.True(vertices.Contains(marko));
                 Assert.True(vertices.Contains(josh));
                 Assert.True(vertices.Contains(peter));
@@ -369,7 +369,7 @@ namespace Frontenac.Blueprints.Util.IO.GraphSON
                 {
                     vertices.Add(e.GetVertex(Direction.Out));
                 }
-                Assert.AreEqual(vertices.Count(), 1);
+                Assert.AreEqual(vertices.Count, 1);
                 Assert.True(vertices.Contains(josh));
             }
             finally

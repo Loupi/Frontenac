@@ -11,8 +11,8 @@ namespace Frontenac.Gremlinq.RelationAccessors
 {
     internal class EdgeVertexPairRelationAccessor : RelationAccessor
     {
-        delegate void AccessCollectionDelegate(IElement element, string key, RelationAccessor accessor, object value);
-        delegate void AccessCollectionDelegate2(IElement element, string key, RelationAccessor accessor, object id, object value);
+        delegate void AccessCollectionDelegate(IElement element, string key, RelationAccessor accessor, RelationAttribute rel, object value);
+        delegate void AccessCollectionDelegate2(IElement element, string key, RelationAccessor accessor, RelationAttribute rel, object id, object value);
         readonly AccessCollectionDelegate2 _addMethod;
         readonly AccessCollectionDelegate _removeMethod;
 
@@ -37,29 +37,29 @@ namespace Frontenac.Gremlinq.RelationAccessors
             if (isWrapped)
             {
                 var models = edges.Select(pair => new KeyValuePair<IEdge<TEdgeModel>, IVertex<TVertexModel>>(pair.Key.As<TEdgeModel>(), pair.Value.As<TVertexModel>()));
-                return isEnumerable ? (object)models : models.SingleOrDefault();
+                return isEnumerable ? (object)models : models.FirstOrDefault();
             }
             else
             {
                 var models = edges.Select(pair => new KeyValuePair<TEdgeModel, TVertexModel>(pair.Key.Proxy<TEdgeModel>(), pair.Value.Proxy<TVertexModel>()));
-                return isEnumerable ? (object)models : models.SingleOrDefault();
+                return isEnumerable ? (object)models : models.FirstOrDefault();
             }
         }
 
 // ReSharper disable UnusedMember.Local
-        private static object CreateCollection<TEdgeModel, TVertexModel>(IElement element, string key, RelationAccessor accessor)
+        private static object CreateCollection<TEdgeModel, TVertexModel>(IElement element, string key, RelationAccessor accessor, RelationAttribute rel)
 // ReSharper restore UnusedMember.Local
             where TEdgeModel : class
             where TVertexModel : class
         {
             Contract.Requires(!string.IsNullOrEmpty(key));
 
-            return new EdgeVertexRelationCollection<TEdgeModel, TVertexModel>((IVertex)element, key, accessor);
+            return new EdgeVertexRelationCollection<TEdgeModel, TVertexModel>((IVertex)element, key, accessor, rel);
         }
 
 // ReSharper disable UnusedMember.Local
 // ReSharper disable UnusedParameter.Local
-        private static void Add<TEdgeModel, TVertexModel>(IElement element, string key, RelationAccessor accessor, object id, object newValue)
+        private static void Add<TEdgeModel, TVertexModel>(IElement element, string key, RelationAccessor accessor, RelationAttribute rel, object id, object newValue)
 // ReSharper restore UnusedParameter.Local
 // ReSharper restore UnusedMember.Local
             where TEdgeModel : class
@@ -68,11 +68,11 @@ namespace Frontenac.Gremlinq.RelationAccessors
             Contract.Requires(!string.IsNullOrEmpty(key));
             Contract.Requires(newValue != null);
 
-            new EdgeVertexRelationCollection<TEdgeModel, TVertexModel>((IVertex)element, key, accessor).Add((KeyValuePair<TEdgeModel, TVertexModel>)newValue);
+            new EdgeVertexRelationCollection<TEdgeModel, TVertexModel>((IVertex)element, key, accessor, rel).Add((KeyValuePair<TEdgeModel, TVertexModel>)newValue);
         }
 
 // ReSharper disable UnusedMember.Local
-        private static void Remove<TEdgeModel, TVertexModel>(IElement element, string key, RelationAccessor accessor, object newValue)
+        private static void Remove<TEdgeModel, TVertexModel>(IElement element, string key, RelationAccessor accessor, RelationAttribute rel, object newValue)
 // ReSharper restore UnusedMember.Local
             where TEdgeModel : class
             where TVertexModel : class
@@ -80,15 +80,20 @@ namespace Frontenac.Gremlinq.RelationAccessors
             Contract.Requires(!string.IsNullOrEmpty(key));
             Contract.Requires(newValue != null);
 
-            new EdgeVertexRelationCollection<TEdgeModel, TVertexModel>((IVertex)element, key, accessor).Remove((KeyValuePair<TEdgeModel, TVertexModel>)newValue);
+            new EdgeVertexRelationCollection<TEdgeModel, TVertexModel>((IVertex)element, key, accessor, rel).Remove((KeyValuePair<TEdgeModel, TVertexModel>)newValue);
         }
 
-        public override object GetRelations(IElement element, string key)
+        public override object GetRelations(IElement element, string key, RelationAttribute rel)
         {
             var vertex = element as IVertex;
             IEnumerable<KeyValuePair<IEdge, IVertex>> rawEdges;
             string label;
             var direction = DirectionFromKey(key, out label);
+            if (rel != null)
+            {
+                label = rel.AdjustKey(key);
+                direction = rel.Direction;
+            }
 
             switch (direction)
             {
@@ -118,13 +123,14 @@ namespace Frontenac.Gremlinq.RelationAccessors
             if (vertex == null)
                 throw new InvalidOperationException();
 
+            var rel = (RelationAttribute)Attribute.GetCustomAttribute(property, typeof(RelationAttribute));
+
             var oldValue = dictionaryAdapter.GetProperty(key, false) as IDictionaryAdapter;
             if (oldValue != null)
-                _removeMethod(element, key, this, oldValue);
+                _removeMethod(element, key, this, rel, oldValue);
 
             string label;
             var direction = DirectionFromKey(key, out label);
-            var rel = (RelationAttribute)Attribute.GetCustomAttribute(property, typeof(RelationAttribute));
             if (rel != null)
             {
                 label = rel.AdjustKey(key);
@@ -150,7 +156,7 @@ namespace Frontenac.Gremlinq.RelationAccessors
                 vertex.Graph.RemoveEdge(edge);
             }
 
-            _addMethod(element, key, this, id, value);
+            _addMethod(element, key, this, rel, id, value);
         }
     }
 }

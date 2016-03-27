@@ -28,13 +28,10 @@ namespace Frontenac.Grave
 
             public EsentTransaction Transaction { get; set; }
             public TransactionScope TransactionScope { get; set; }
-            public Dictionary<string, GraveTransactionalIndex> TransactionalIndices { get; private set; } 
+            public Dictionary<string, GraveTransactionalIndex> TransactionalIndices { get; } 
         }
         
-        public TransactionContext Transaction
-        {
-            get { return _transactionContexts.Value; }
-        }
+        public TransactionContext Transaction => _transactionContexts.Value;
 
         private static readonly Features GraveTransactionalGraphFeatures = new Features
         {
@@ -72,10 +69,7 @@ namespace Frontenac.Grave
             SupportsLabelProperty = true
         };
 
-        public override Features Features
-        {
-            get { return GraveTransactionalGraphFeatures; }
-        }
+        public override Features Features => GraveTransactionalGraphFeatures;
 
         public GraveTransactionalGraph(IGraphFactory factory, 
                                        EsentInstance instance, 
@@ -112,10 +106,7 @@ namespace Frontenac.Grave
                     else
                     {
                         Rollback();
-                        if (transaction.Transaction != null)
-                        {
-                            transaction.Transaction.Dispose();
-                        }
+                        transaction.Transaction?.Dispose();
                     }
                 }
 

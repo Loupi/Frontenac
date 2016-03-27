@@ -29,7 +29,7 @@ namespace Frontenac.Blueprints.Util.Wrappers.Id
 
         public IEnumerator<IEdge> GetEnumerator()
         {
-            return (_iterable.OfType<IEdge>().Select(edge => new IdEdge(edge, _idGraph))).GetEnumerator();
+            return _iterable.OfType<IEdge>().Select(edge => new IdEdge(edge, _idGraph)).GetEnumerator();
         }
 
         IEnumerator IEnumerable.GetEnumerator()
@@ -49,8 +49,7 @@ namespace Frontenac.Blueprints.Util.Wrappers.Id
 
             if (disposing)
             {
-                if (_iterable is IDisposable)
-                    (_iterable as IDisposable).Dispose();
+                (_iterable as IDisposable)?.Dispose();
             }
 
             _disposed = true;

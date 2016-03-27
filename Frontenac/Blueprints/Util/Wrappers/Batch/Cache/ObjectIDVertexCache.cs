@@ -36,7 +36,7 @@ namespace Frontenac.Blueprints.Util.Wrappers.Batch.Cache
 
         public void NewTransaction()
         {
-            _map = _map.ToDictionary(t => t.Key, t => t.Value is IVertex ? (t.Value as IVertex).Id : t.Value);
+            _map = _map.ToDictionary(t => t.Key, t => t.Value is IVertex ? ((IVertex) t.Value).Id : t.Value);
         }
     }
 }

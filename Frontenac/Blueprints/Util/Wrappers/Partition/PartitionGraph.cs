@@ -6,7 +6,6 @@ namespace Frontenac.Blueprints.Util.Wrappers.Partition
 {
     public class PartitionGraph : IGraph, IWrapperGraph
     {
-        private readonly Features _features;
         private readonly ISet<string> _readPartitions;
         protected IGraph BaseGraph;
         private string _partitionKey;
@@ -24,8 +23,8 @@ namespace Frontenac.Blueprints.Util.Wrappers.Partition
             _partitionKey = partitionKey;
             _writePartition = writePartition;
             _readPartitions = new HashSet<string>(readPartitions);
-            _features = BaseGraph.Features.CopyFeatures();
-            _features.IsWrapper = true;
+            Features = BaseGraph.Features.CopyFeatures();
+            Features.IsWrapper = true;
         }
 
         public PartitionGraph(IGraph baseGraph, string partitionKey, string readWritePartition) :
@@ -127,10 +126,7 @@ namespace Frontenac.Blueprints.Util.Wrappers.Partition
             BaseGraph.RemoveVertex(((PartitionVertex) vertex).Vertex);
         }
 
-        public Features Features
-        {
-            get { return _features; }
-        }
+        public Features Features { get; }
 
         public IQuery Query()
         {
@@ -177,7 +173,7 @@ namespace Frontenac.Blueprints.Util.Wrappers.Partition
                 writePartition = partitionElement.GetPartition();
             else
                 writePartition = (string) element.GetProperty(_partitionKey);
-            return (null == writePartition || _readPartitions.Contains(writePartition));
+            return null == writePartition || _readPartitions.Contains(writePartition);
         }
 
         public override string ToString()

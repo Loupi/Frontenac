@@ -57,24 +57,28 @@ namespace Frontenac.Lucene
             }
             else if (value is double)
             {
-                double dval = Convert.ToDouble(value);
+                var dval = Convert.ToDouble(value);
                 _document.Add(new NumericField(key).SetDoubleValue(dval));
-            }
-            else if (value is GeoPoint)
-            {
-                var grid = new GeohashPrefixTree(SpatialContext.GEO, 11);
-                var strategy = new RecursivePrefixTreeStrategy(grid, key);
-                var geoCoordinate = value as GeoPoint;
-                var shape = SpatialContext.GEO.MakePoint(geoCoordinate.Latitude, geoCoordinate.Longitude);
-                var fields = strategy.CreateIndexableFields(shape);
-                foreach (var field in fields)
-                {
-                    _document.Add(field);
-                }
             }
             else
             {
-                result = false;
+                var point = value as GeoPoint;
+                if (point != null)
+                {
+                    var grid = new GeohashPrefixTree(SpatialContext.GEO, 11);
+                    var strategy = new RecursivePrefixTreeStrategy(grid, key);
+                    var geoCoordinate = point;
+                    var shape = SpatialContext.GEO.MakePoint(geoCoordinate.Latitude, geoCoordinate.Longitude);
+                    var fields = strategy.CreateIndexableFields(shape);
+                    foreach (var field in fields)
+                    {
+                        _document.Add(field);
+                    }
+                }
+                else
+                {
+                    result = false;
+                }
             }
 
             return result;

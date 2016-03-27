@@ -41,10 +41,7 @@ namespace Frontenac.Blueprints.Util.Wrappers.Partition
                 .ToArray();
         }
 
-        public override object Id
-        {
-            get { return Element.Id; }
-        }
+        public override object Id => Element.Id;
 
         public override void Remove()
         {

@@ -1,6 +1,5 @@
 ﻿using System.Collections.Generic;
 using System.IO;
-using System.Linq;
 using System.Text;
 using Frontenac.Blueprints.Impls.TG;
 using NUnit.Framework;
@@ -37,12 +36,12 @@ namespace Frontenac.Blueprints.Util.IO.GraphSON
             Assert.True(rootNode.ContainsKey(GraphSonTokens.Vertices));
 
             var vertices = (IList<JToken>) rootNode.Get(GraphSonTokens.Vertices);
-            Assert.AreEqual(7, vertices.Count());
+            Assert.AreEqual(7, vertices.Count);
 
             Assert.True(rootNode.ContainsKey(GraphSonTokens.Edges));
 
             var edges = (IList<JToken>) rootNode.Get(GraphSonTokens.Edges);
-            Assert.AreEqual(6, edges.Count());
+            Assert.AreEqual(6, edges.Count);
         }
 
         [Test]
@@ -69,12 +68,12 @@ namespace Frontenac.Blueprints.Util.IO.GraphSON
             Assert.True(rootNode.ContainsKey(GraphSonTokens.Vertices));
 
             var vertices = (JArray) rootNode.Get(GraphSonTokens.Vertices);
-            Assert.AreEqual(7, vertices.Count());
+            Assert.AreEqual(7, vertices.Count);
 
             Assert.True(rootNode.ContainsKey(GraphSonTokens.Edges));
 
             var edges = (JArray) rootNode.Get(GraphSonTokens.Edges);
-            Assert.AreEqual(6, edges.Count());
+            Assert.AreEqual(6, edges.Count);
         }
 
         [Test]
@@ -101,12 +100,12 @@ namespace Frontenac.Blueprints.Util.IO.GraphSON
             Assert.True(rootNode.ContainsKey(GraphSonTokens.Vertices));
 
             var vertices = (JArray) rootNode.Get(GraphSonTokens.Vertices);
-            Assert.AreEqual(7, vertices.Count());
+            Assert.AreEqual(7, vertices.Count);
 
             Assert.True(rootNode.ContainsKey(GraphSonTokens.Edges));
 
             var edges = (JArray) rootNode.Get(GraphSonTokens.Edges);
-            Assert.AreEqual(6, edges.Count());
+            Assert.AreEqual(6, edges.Count);
         }
     }
 }

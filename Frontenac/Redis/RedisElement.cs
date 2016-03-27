@@ -19,10 +19,7 @@ namespace Frontenac.Redis
             RedisInnerTinkerGrapĥ = innerTinkerGrapĥ;
         }
 
-        public override object Id
-        {
-            get { return RawId; }
-        }
+        public override object Id => RawId;
 
         public override object GetProperty(string key)
         {

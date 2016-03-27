@@ -20,7 +20,6 @@ namespace Frontenac.Blueprints.Util.Wrappers.Id
         public const string Id = "__id";
 
         private readonly IKeyIndexableGraph _baseGraph;
-        private readonly Features _features;
         private readonly bool _supportEdgeIds;
         private readonly bool _supportVertexIds;
         private IIdFactory _edgeIdFactory;
@@ -51,9 +50,9 @@ namespace Frontenac.Blueprints.Util.Wrappers.Id
             Contract.Requires(supportVertexIds || supportEdgeIds);
 
             _baseGraph = baseGraph;
-            _features = _baseGraph.Features.CopyFeatures();
-            _features.IsWrapper = true;
-            _features.IgnoresSuppliedIds = false;
+            Features = _baseGraph.Features.CopyFeatures();
+            Features.IsWrapper = true;
+            Features.IgnoresSuppliedIds = false;
 
             _supportVertexIds = supportVertexIds;
             _supportEdgeIds = supportEdgeIds;
@@ -123,7 +122,7 @@ namespace Frontenac.Blueprints.Util.Wrappers.Id
 
         public IEnumerable<IIndex> GetIndices()
         {
-            throw new NotImplementedException("sorry, you currently can't get a list of indexes through idInnerTinkerGrapĥ");
+            throw new NotSupportedException("sorry, you currently can't get a list of indexes through idInnerTinkerGrapĥ");
         }
 
         public void DropIndex(string indexName)
@@ -133,10 +132,7 @@ namespace Frontenac.Blueprints.Util.Wrappers.Id
             ((IIndexableGraph) _baseGraph).DropIndex(indexName);
         }
 
-        public Features Features
-        {
-            get { return _features; }
-        }
+        public Features Features { get; }
 
         public IVertex AddVertex(object id)
         {
@@ -159,7 +155,7 @@ namespace Frontenac.Blueprints.Util.Wrappers.Id
         public IVertex GetVertex(object id)
         {
             if (null == id)
-                throw new ArgumentNullException("id");
+                throw new ArgumentNullException(nameof(id));
 
             if (_supportVertexIds)
             {
@@ -272,7 +268,7 @@ namespace Frontenac.Blueprints.Util.Wrappers.Id
         public IEnumerable<string> GetIndexedKeys(Type elementClass)
         {
             var v = IsVertex(elementClass);
-            var supported = ((v && _supportVertexIds) || (!v && _supportEdgeIds));
+            var supported = (v && _supportVertexIds) || (!v && _supportEdgeIds);
 
             if (supported)
             {
@@ -297,14 +293,12 @@ namespace Frontenac.Blueprints.Util.Wrappers.Id
 
         public void Rollback()
         {
-            if (_baseGraph is ITransactionalGraph)
-                (_baseGraph as ITransactionalGraph).Rollback();
+            (_baseGraph as ITransactionalGraph)?.Rollback();
         }
 
         public void Commit()
         {
-            if (_baseGraph is ITransactionalGraph)
-                (_baseGraph as ITransactionalGraph).Commit();
+            (_baseGraph as ITransactionalGraph)?.Commit();
         }
 
         public IGraph GetBaseGraph()

@@ -2,6 +2,7 @@
 using System.Diagnostics.Contracts;
 using System.Linq;
 using Frontenac.Blueprints;
+using Frontenac.Blueprints.Util;
 
 namespace Frontenac.Gremlinq
 {
@@ -12,7 +13,7 @@ namespace Frontenac.Gremlinq
             Contract.Requires(element != null);
             Contract.Ensures(Contract.Result<IDictionary<string, object>>() != null);
 
-            return element.ToDictionary(t => t.Key, t => t.Value);
+            return element.GetProperties().ToDictionary(t => t.Key, t => t.Value);
         }
 
         public static IEnumerable<IDictionary<string, object>> Map(this IEnumerable<IElement> elements)

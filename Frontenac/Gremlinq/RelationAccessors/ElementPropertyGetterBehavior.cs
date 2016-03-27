@@ -33,7 +33,7 @@ namespace Frontenac.Gremlinq.RelationAccessors
             return null;
         }
 
-        public int ExecutionOrder { get; private set; }
+        public int ExecutionOrder { get; }
 
         public bool SetPropertyValue(IDictionaryAdapter dictionaryAdapter, string key, ref object value, PropertyDescriptor property)
         {
@@ -54,10 +54,7 @@ namespace Frontenac.Gremlinq.RelationAccessors
                         else
                         {
                             var relPair = accessor as EdgeVertexPairRelationAccessor;
-                            if (relPair != null)
-                            {
-                                relPair.SetRelation(dictionaryAdapter, element, property.Property, key, value, null);
-                            }
+                            relPair?.SetRelation(dictionaryAdapter, element, property.Property, key, value, null);
                         }
                     }
 
@@ -90,7 +87,7 @@ namespace Frontenac.Gremlinq.RelationAccessors
             if (element != null)
             {
                 RelationAccessor accessor;
-
+                var rel = (RelationAttribute)Attribute.GetCustomAttribute(property.Property, typeof(RelationAttribute));
                 if (!ifExists && TryGetAccessor(element, property.Property, property.PropertyType, out accessor))
                 {
                     ConcurrentDictionary<string, object> relations = null;
@@ -107,17 +104,21 @@ namespace Frontenac.Gremlinq.RelationAccessors
                     string newKey;
                     if (!_accessorOverrides.TryGetValue(keyName, out newKey))
                     {
-                        var rel = (RelationAttribute)Attribute.GetCustomAttribute(property.Property, typeof(RelationAttribute));
-                        newKey = rel != null ? rel.AdjustKey(key) : null;
+                        newKey = rel?.AdjustKey(key);
                         _accessorOverrides.TryAdd(keyName, newKey);
                     }
 
                     if (newKey == null)
+                    {
                         newKey = key;
+                        if (rel != null)
+                            newKey = rel.AdjustKey(key);
+                    }
+                    
                     
                     result = accessor.IsCollection
-                        ? accessor.CreateCollectionMethod(element, newKey, accessor)
-                        : accessor.GetRelations(element, newKey);
+                        ? accessor.CreateCollectionMethod(element, newKey, accessor, rel)
+                        : accessor.GetRelations(element, newKey, rel);
 
                     if (relations != null && accessor.IsEnumerable && key != null)
                         relations.TryAdd(key, result);
@@ -141,7 +142,7 @@ namespace Frontenac.Gremlinq.RelationAccessors
                 return storedValue;
 
             object convertedValue;
-            if (property.PropertyType.IsPrimitive)
+            if (property.PropertyType.IsPrimitive || property.PropertyType.IsEnum)
             {
                 var tc = TypeDescriptor.GetConverter(property.PropertyType);
                 convertedValue = tc.ConvertFromString(storedValue.ToString());
