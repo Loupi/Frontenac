@@ -1,6 +1,4 @@
-﻿using System;
-using System.Configuration;
-using System.Diagnostics.Contracts;
+﻿using System.Diagnostics.Contracts;
 using Frontenac.Blueprints;
 using Frontenac.ElasticSearch;
 using Frontenac.Infrastructure;

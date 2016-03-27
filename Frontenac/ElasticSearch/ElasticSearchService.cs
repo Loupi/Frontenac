@@ -73,7 +73,7 @@ namespace Frontenac.ElasticSearch
                 var docs = _client.Search<Ref>(s => s
                     .Index(indexName)
                     .AllTypes()
-                    .Query(q => q.Ids(new[] { id.ToString(CultureInfo.InvariantCulture) })));
+                    .Query(q => q.Ids(descriptor => descriptor.Values(id.ToString(CultureInfo.InvariantCulture)))));
                 if (docs.Total <= 0) continue;
                 var ids = docs.Documents.Select(@ref => @ref.Id).ToList();
 
@@ -109,7 +109,6 @@ namespace Frontenac.ElasticSearch
     public class ElasticSearchService : IndexingService, IIndexStore
     {
         private readonly ElasticClient _client;
-        private readonly FluentDictionary<string, AnalyzerBase> _analyzers;
 
         private readonly BulkStrategy _transaction;        
 
@@ -126,24 +125,6 @@ namespace Frontenac.ElasticSearch
             _client = CreateClient();
 
             _transaction = new BulkStrategy(_client, this);
-
-            var analyzer = new CustomAnalyzer
-            {
-                Filter = new List<string> { "standard", "asciifolding", "lowercase" },
-                Tokenizer = "keyword"
-            };
-
-            var autocomplete = new CustomAnalyzer
-            {
-                Filter = new List<string> { "standard", "asciifolding", "lowercase" },
-                Tokenizer = "edgeNGram"
-            };
-
-            _analyzers = new FluentDictionary<string, AnalyzerBase>
-            {
-                { "exact", analyzer },
-                { "autocomplete", autocomplete }
-            };
         }
 
         private static ElasticClient CreateClient()
@@ -167,7 +148,8 @@ namespace Frontenac.ElasticSearch
         public static void DropAll()
         {
             var client = CreateClient();
-            var indices = client.GetAliases(a => a.Indices("*")).Indices.Keys.ToList();
+            var indices = client.GetAlias(descriptor => descriptor.AllIndices()).Indices.Keys.ToList();
+            //TODO remove var indices = client.GetAliases(a => a.Indices("*")).Indices.Keys.ToList();
             foreach (var index in indices)
             {
                 client.DeleteIndex(index);
@@ -251,7 +233,7 @@ namespace Frontenac.ElasticSearch
             var response = _client.Search<Ref>(s => s
                 .Index(index)
                 .AllTypes()
-                .FielddataFields(key)
+                .FielddataFields(descriptor => descriptor.Field(key))
                 .Size(hitsLimit)
                 .Query(q => q.Wildcard(key, value.ToString().ToLowerInvariant())));
             return response.Documents.Select(r => r.Id).ToArray();
@@ -278,7 +260,7 @@ namespace Frontenac.ElasticSearch
                 return Enumerable.Empty<long>();
 
             var elasticQueries = new List<QueryContainer>();
-            var queryDescriptor = new QueryDescriptor<Ref>();
+            var queryDescriptor = new QueryContainerDescriptor<Ref>();
             
             foreach (var graveQueryElement in graveQueryElements)
             {
@@ -308,14 +290,14 @@ namespace Frontenac.ElasticSearch
                 ? elasticQueries[0] 
                 : queryDescriptor.Bool(b => b.MustNot(elasticQueries.ToArray()));
 
-            var response = _client.Search<Ref>(s => s.Indices(indices).AllTypes().Query(queryToRun).Size(hitsLimit));
+            var response = _client.Search<Ref>(s => s.Index(indices).AllTypes().Query(descriptor => queryToRun).Size(hitsLimit));
             return response.Documents.Select(@ref => @ref.Id);
         }
 
         public override long DeleteIndex(Type indexType, string indexName, bool isUserIndex)
         {
             var index = GetIndexName(indexType, indexName, isUserIndex);
-            _client.DeleteIndex(d => d.Index(index));
+            _client.DeleteIndex(index);
 
             string indexColumn;
             if (isUserIndex)
@@ -353,7 +335,7 @@ namespace Frontenac.ElasticSearch
             _transaction.Rollback();
         }
 
-        private static QueryContainer CreateGeoQuery(QueryDescriptor<Ref> q, string key, IGeoShape geoShape)
+        private static QueryContainer CreateGeoQuery(QueryContainerDescriptor<Ref> q, string key, IGeoShape geoShape)
         {
             var geoCircle = geoShape as GeoCircle;
             if (geoCircle != null)
@@ -377,12 +359,11 @@ namespace Frontenac.ElasticSearch
             var rect = rectangle;
             return q.GeoShapeEnvelope(e => e
                 .Name(key.ToLowerInvariant())
-                .Coordinates(new[]{new []{rect.TopLeft.Latitude, rect.TopLeft.Longitude},
-                new []
+                .Coordinates(new []
                 {
-                    rect.BottomRight.Latitude,
-                    rect.BottomRight.Longitude
-                }}));
+                    new GeoCoordinate(rect.TopLeft.Latitude, rect.TopLeft.Longitude),
+                    new GeoCoordinate(rect.BottomRight.Latitude, rect.BottomRight.Longitude), 
+                }));
         }
 
         private static QueryContainer CreateComparableQuery(ComparableQueryElement comparable)
@@ -446,7 +427,7 @@ namespace Frontenac.ElasticSearch
                 }
             }
 
-            var queryDescriptor = new QueryDescriptor<Ref>();
+            var queryDescriptor = new QueryContainerDescriptor<Ref>();
             var query = CreateQuery(queryDescriptor, comparable.Key.ToLowerInvariant(), 
                                     comparable.Value, min, max, minInclusive, maxInclusive);
 
@@ -479,7 +460,7 @@ namespace Frontenac.ElasticSearch
             return long.MaxValue;
         }
 
-        private static QueryContainer CreateQuery(QueryDescriptor<Ref> q, 
+        private static QueryContainer CreateQuery(QueryContainerDescriptor<Ref> q, 
                                                   string field, 
                                                   object value, 
                                                   object min, 
@@ -500,17 +481,19 @@ namespace Frontenac.ElasticSearch
                 return q.Range(r =>
 // ReSharper restore ImplicitlyCapturedClosure
                 {
-                    var iq = r.OnField(field);
+                    var iq = r.Field(field);
                     
 
                     var iq2 = minInclusive
-                                  ? iq.GreaterOrEquals(minVal)
-                                  : iq.Greater(minVal);
+                                  ? iq.GreaterThanOrEquals(minVal)
+                                  : iq.GreaterThan(minVal);
 
                     if (maxInclusive)
-                        iq2.LowerOrEquals(maxVal);
+                        iq2.LessThanOrEquals(maxVal);
                     else
-                        iq2.Lower(maxVal);
+                        iq2.LessThan(maxVal);
+
+                    return r;
                 });
             }
             
@@ -518,43 +501,47 @@ namespace Frontenac.ElasticSearch
             {
                 var minVal = min == null ? (DateTime?)null : Convert.ToDateTime(min);
                 var maxVal = max == null ? (DateTime?)null : Convert.ToDateTime(max);
-
+                
 // ReSharper disable ImplicitlyCapturedClosure
-                return q.Range(r =>
+                return q.DateRange(r =>
 // ReSharper restore ImplicitlyCapturedClosure
                 {
-                    var iq = r.OnField(field);
+                    var iq = r.Field(field);
 
                     var iq2 = minInclusive
-                                  ? iq.GreaterOrEquals(minVal)
-                                  : iq.Greater(minVal);
+                                  ? iq.GreaterThanOrEquals(minVal)
+                                  : iq.GreaterThan(minVal);
 
                     if(maxInclusive)
-                        iq2.LowerOrEquals(maxVal);
+                        iq2.LessThanOrEquals(maxVal);
                     else
-                        iq2.Lower(maxVal);
+                        iq2.LessThan(maxVal);
+
+                    return r;
                 });
             }
 
-            if (!isStringRange) return q.Term(t => t.OnField(field).Value(value));
+            if (!isStringRange) return q.Term(t => t.Field(field).Value(value));
             {
                 var minVal = Convert.ToString(min);
                 var maxVal = Convert.ToString(max);
 
 // ReSharper disable ImplicitlyCapturedClosure
-                return q.Range(r =>
+                return q.TermRange(r =>
 // ReSharper restore ImplicitlyCapturedClosure
                 {
-                    var iq = r.OnField(field);
+                    var iq = r.Field(field);
 
                     var iq2 = minInclusive
-                        ? iq.GreaterOrEquals(minVal)
-                        : iq.Greater(minVal);
+                        ? iq.GreaterThanOrEquals(minVal)
+                        : iq.GreaterThan(minVal);
 
                     if(maxInclusive)
-                        iq2.LowerOrEquals(maxVal);
+                        iq2.LessThanOrEquals(maxVal);
                     else
-                        iq2.Lower(maxVal);
+                        iq2.LessThan(maxVal);
+
+                    return r;
                 });
             }
         }
@@ -578,38 +565,41 @@ namespace Frontenac.ElasticSearch
             {
                 if (parameters[0] is Parameter<string, GeoPoint>)
 // ReSharper disable ImplicitlyCapturedClosure
-                    _client.CreateIndex(
-                        descriptor => descriptor.Index(fullName).AddMapping<object>(m => m.Properties(p => p
+                    _client.CreateIndex(fullName, descriptor =>
+                        descriptor.Mappings(md => md.Map(TypeName.From<object>(),
+                            mdd => mdd.Properties(p => p
+                                .GeoPoint(
+                                    mappingDescriptor => mappingDescriptor.Name(indexName.ToLowerInvariant()).LatLon())))));
 // ReSharper restore ImplicitlyCapturedClosure
-                            .GeoPoint(
-                                mappingDescriptor => mappingDescriptor.Name(indexName.ToLowerInvariant()).IndexLatLon()))));
                 else
                 {
                     var complete = parameters[0] as AutoCompleteParameter;
                     if (complete == null) return;
                     var autoComplete = complete;
+                    
 
-                    _client.CreateIndex(d => d.Index(fullName).Analysis(a => a.Analyzers(b =>
-                    {
-                        b.Clear();
-                        b.Add("default", _analyzers["autocomplete"]);
-                        return b;
-                    }).Tokenizers(tokenizers => tokenizers.Add("edgeNGram", new EdgeNGramTokenizer()
-                    {
-                        MinGram = autoComplete.NGram.Min,
-                        MaxGram = autoComplete.NGram.Max
-                    }))));
+                    _client.CreateIndex(fullName, id => id
+                        .Settings(settingsDescriptor => settingsDescriptor.Analysis(b =>
+                        {
+                            b.Analyzers(aa => aa.Custom("default",
+                                        cd => cd.Filters("standard", "asciifolding", "lowercase")
+                                                .Tokenizer("edgeNGram")));
+                            b.Tokenizers(td => td.EdgeNGram("edgeNGram", descriptor =>
+                                descriptor.MinGram(autoComplete.NGram.Min)
+                                          .MaxGram(autoComplete.NGram.Max)));
+                            return b;
+                        })));
                 }
             }
             else
-// ReSharper disable ImplicitlyCapturedClosure
-                _client.CreateIndex(d => d.Index(fullName).Analysis(a => a.Analyzers(b =>
-                {
-                    b.Clear();
-                    b.Add("default", _analyzers["exact"]);
-                    return b;
-                })));
-// ReSharper restore ImplicitlyCapturedClosure
+                _client.CreateIndex(fullName, descriptor => descriptor
+                    .Settings(settingsDescriptor => settingsDescriptor.Analysis(b =>
+                    {
+                        b.Analyzers(aa => aa.Custom("default",
+                                    cd => cd.Filters("standard", "asciifolding", "lowercase")
+                                            .Tokenizer("keyword")));
+                        return b;
+                    })));
         }
 
         public List<string> GetIndices(string indexType)
@@ -617,7 +607,7 @@ namespace Frontenac.ElasticSearch
             List<string> indices;
             if (_indices.TryGetValue(indexType, out indices))
                 return indices;
-            indices = _client.GetAliases(s => s.Indices(string.Concat(indexType, "*"))).Indices
+            indices = _client.GetAlias(descriptor => descriptor.Index(string.Concat(indexType, "*"))).Indices
                 .Where(pair => pair.Key.StartsWith(indexType))
                 .Select(pair => pair.Key.Substring(indexType.Length)).ToList();
             _indices.TryAdd(indexType, indices);
