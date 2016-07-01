@@ -9,6 +9,7 @@ using Frontenac.Blueprints.Util;
 using Frontenac.Infrastructure;
 using Frontenac.Infrastructure.Indexing;
 using Frontenac.Infrastructure.Serializers;
+using IdGen;
 using StackExchange.Redis;
 
 namespace Frontenac.Redis
@@ -16,9 +17,8 @@ namespace Frontenac.Redis
     [Serializable]
     public class RedisGraph : IndexedGraph, IIndexStore
     {
-        /*private static readonly IdGenerator IdGenerator = new IdGenerator(1);
-        private static readonly Generator IdGenerator2 = new Generator(1, new DateTime(2015, 1, 1, 0, 0, 0, DateTimeKind.Utc));
-        private static readonly UInt64Oxidation IdGenerator3 = new UInt64Oxidation(1);*/
+        private static readonly IdGenerator IdGenerator = 
+            new IdGenerator(1, new DateTime(2016, 1, 1, 0, 0, 0, DateTimeKind.Utc), new MaskConfig(46, 5, 12));
         
         private static readonly Features RedisGraphFeatures = new Features
         {
@@ -68,7 +68,7 @@ namespace Frontenac.Redis
                 //ignored
             }
 
-            return string.IsNullOrWhiteSpace(connectionString) ? "localhost:6379" : connectionString;
+            return string.IsNullOrWhiteSpace(connectionString) ? "192.168.112.102:6379" : connectionString;
         }
 
         private readonly IGraphFactory _factory;
@@ -111,8 +111,7 @@ namespace Frontenac.Redis
         }
 
         public override Features Features => RedisGraphFeatures;
-
-        //private int iv = 1;
+        
         public override IVertex AddVertex(object id)
         {
             IDatabase db;
@@ -120,12 +119,8 @@ namespace Frontenac.Redis
 
             var nextId = id.TryToInt64();
             if (!nextId.HasValue)
-                nextId = db.StringIncrement("globals:next_vertex_id");
-                //nextId = (long)IdGenerator.CreateId();
-                //nextId = (long)IdGenerator2.NextLong();
-                //nextId = iv++;
-                //nextId = (long)IdGenerator3.Oxidize();
-
+                nextId = IdGenerator.CreateId();
+                
             var vertex = new RedisVertex(nextId.Value, this);
 
             batch.SetAddAsync("globals:vertices", nextId);
@@ -182,7 +177,7 @@ namespace Frontenac.Redis
             TransactionManager.End();
         }
 
-        enum CollectionType
+        private enum CollectionType
         {
             Vertex,
             Edge,
@@ -190,7 +185,7 @@ namespace Frontenac.Redis
             EdgesOut
         }
 
-        static string GetCollectionKey(RedisGraph graph, CollectionType type, RedisElement element)
+        private static string GetCollectionKey(RedisGraph graph, CollectionType type, RedisElement element)
         {
             if (element == null)
             {
@@ -202,7 +197,7 @@ namespace Frontenac.Redis
                 if (type == CollectionType.EdgesIn) return graph.GetIdentifier(element, "edges:in");
                 if (type == CollectionType.EdgesOut) return graph.GetIdentifier(element, "edges:out");
             }
-            return String.Empty;
+            return string.Empty;
         }
 
         public override IEnumerable<IVertex> GetVertices()
@@ -212,20 +207,14 @@ namespace Frontenac.Redis
             return db.SetScan(key).Select(entry => new RedisVertex((long)entry, this));
         }
 
-        //private int ie = 1;
-
         public override IEdge AddEdge(object id, IVertex outVertex, IVertex inVertex, string label)
         {
             IDatabase db;
             var batch = TransactionManager.Begin(out db);
-
+            
             var nextId = id.TryToInt64();
             if (!nextId.HasValue)
-                nextId = db.StringIncrement("globals:next_edge_id");
-                //nextId = (long)IdGenerator.CreateId();
-                //nextId = (long)IdGenerator2.NextLong();
-                //nextId = ie++;
-                //nextId = (long)IdGenerator3.Oxidize();
+                nextId = IdGenerator.CreateId();
 
             var edge = new RedisEdge(nextId.Value, outVertex, inVertex, label, this);
             var vin = (RedisVertex)inVertex;
@@ -349,8 +338,8 @@ namespace Frontenac.Redis
 
                     foreach (var edge in db.SortedSetScan(GetLabeledIdentifier(vertex, "edges:out", labelVal2), default(RedisValue), 1000))
                     {
-                        var edgeId = (long) edge.Element;
-                        var targetId = (long) edge.Score;
+                        var edgeId = Math.Abs((long) edge.Element);
+                        var targetId = Math.Abs((long) edge.Score);
                         var targetVertex = new RedisVertex(targetId, this);
                         yield return new RedisEdge(edgeId, vertex, targetVertex, labelVal2, this);
                     }
@@ -369,8 +358,8 @@ namespace Frontenac.Redis
 
                 foreach (var edge in db.SortedSetScan(GetLabeledIdentifier(vertex, "edges:in", labelVal), default(RedisValue), 1000))
                 {
-                    var edgeId = (long) edge.Element;
-                    var targetId = (long) edge.Score;
+                    var edgeId = Math.Abs((long) edge.Element);
+                    var targetId = Math.Abs((long) edge.Score);
                     var targetVertex = new RedisVertex(targetId, this);
                     yield return new RedisEdge(edgeId, targetVertex, vertex, labelVal, this);
                 }
@@ -383,15 +372,15 @@ namespace Frontenac.Redis
 
             var db = Multiplexer.GetDatabase();
 
-            if (direction == Direction.Out)
-                return db.SortedSetLength(GetLabeledIdentifier(vertex, "edges:out", label));
-            else
-                return db.SortedSetLength(GetLabeledIdentifier(vertex, "edges:in", label));
-
+            return db.SortedSetLength(direction == Direction.Out 
+                ? GetLabeledIdentifier(vertex, "edges:out", label) 
+                : GetLabeledIdentifier(vertex, "edges:in", label));
         }
 
         public IEnumerable<IVertex> GetVertices(RedisVertex vertex, Direction direction, string label, IEnumerable<object> ids)
         {
+            Contract.Requires(ids != null);
+
             var db = Multiplexer.GetDatabase();
 
             var key = GetLabeledIdentifier(vertex, direction == Direction.Out 
@@ -419,7 +408,7 @@ namespace Frontenac.Redis
         {
             Contract.Requires(element != null);
 
-            int retry = 0;
+            var retry = 0;
 
             while (retry < 3)
             {
@@ -445,9 +434,9 @@ namespace Frontenac.Redis
             Contract.Requires(element != null);
 
             var prefix = element is RedisVertex ? "vertex:" : "edge:";
-            var identifier = String.Concat(prefix, element.RawId);
+            var identifier = string.Concat(prefix, element.RawId);
             if (suffix != null)
-                identifier = String.Concat(identifier, ":", suffix);
+                identifier = string.Concat(identifier, ":", suffix);
             return identifier;
         }
 
@@ -455,14 +444,14 @@ namespace Frontenac.Redis
         {
             Contract.Requires(element != null);
 
-            return String.Concat(GetIdentifier(element, suffix), ":", label);
+            return string.Concat(GetIdentifier(element, suffix), ":", label);
         }
 
         public List<string> GetPropertyKeys(RedisElement element)
         {
             Contract.Requires(element != null);
 
-            int retry = 0;
+            var retry = 0;
 
             while (retry < 3)
             {
@@ -520,11 +509,12 @@ namespace Frontenac.Redis
         {
             var config = new ConfigurationOptions
             {
-                ConnectTimeout = 30000,
-                ResponseTimeout = 30000,
+                ConnectTimeout = 60000,
+                ResponseTimeout = 60000,
                 ConnectRetry = 3,
-                SyncTimeout = 30000,
-                AllowAdmin = true
+                SyncTimeout = 60000,
+                AllowAdmin = true,
+                AbortOnConnectFail = false
             };
 
             var endpoints = GetConnectionString().Split(';');
@@ -550,8 +540,6 @@ namespace Frontenac.Redis
         protected override IIndex CreateIndexObject(string indexName, Type indexType, IIndexCollection indexCollection,
             IIndexCollection userIndexCollection)
         {
-            //var index = base.CreateIndexObject(indexName, indexType, indexCollection, userIndexCollection);
-            //return index;
             return new TransactedIndex(indexName, indexType, this, this, IndexingService, TransactionManager);
         }
 
@@ -625,9 +613,9 @@ namespace Frontenac.Redis
         public string GetRawIdentifier(string prefix, long id, string suffix)
         {
 
-            var identifier = String.Concat(prefix, id);
+            var identifier = string.Concat(prefix, id);
             if (suffix != null)
-                identifier = String.Concat(identifier, ":", suffix);
+                identifier = string.Concat(identifier, ":", suffix);
             return identifier;
         }
     }

@@ -308,8 +308,8 @@ namespace Frontenac.Gremlinq.Test
 
                 trans.Commit();
 
-                var ratingsVertexEnum = graph.VerticesOfType<IRating>().OrderByDescending(t => t.Model.Rating).ToArray();
-                Assert.NotNull(ratingsVertexEnum);
+                //var ratingsVertexEnum = graph.VerticesOfType<IRating>().OrderByDescending(t => t.Model.Rating).ToArray();
+                //Assert.NotNull(ratingsVertexEnum);
             }
             finally
             {

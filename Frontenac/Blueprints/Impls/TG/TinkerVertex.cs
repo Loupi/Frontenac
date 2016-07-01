@@ -10,8 +10,8 @@ namespace Frontenac.Blueprints.Impls.TG
     [Serializable]
     internal class TinkerVertex : TinkerElement, IVertex
     {
-        public ConcurrentDictionary<string, ConcurrentDictionary<string, IEdge>> InEdges = new ConcurrentDictionary<string, ConcurrentDictionary<string, IEdge>>();
-        public ConcurrentDictionary<string, ConcurrentDictionary<string, IEdge>> OutEdges = new ConcurrentDictionary<string, ConcurrentDictionary<string, IEdge>>();
+        public readonly ConcurrentDictionary<string, ConcurrentDictionary<string, IEdge>> InEdges = new ConcurrentDictionary<string, ConcurrentDictionary<string, IEdge>>();
+        public readonly ConcurrentDictionary<string, ConcurrentDictionary<string, IEdge>> OutEdges = new ConcurrentDictionary<string, ConcurrentDictionary<string, IEdge>>();
 
         public TinkerVertex(string id, TinkerGrapĥ tinkerGrapĥ)
             : base(id, tinkerGrapĥ)

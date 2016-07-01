@@ -82,7 +82,7 @@ namespace Frontenac.Infrastructure
 
             WaitForGeneration();
 
-            return IndexingService.VertexIndices.Get(key, key, value, int.MaxValue)
+            return IndexingService.VertexIndices.Get(key, key, value)
                 .Select(GetVertexInstance);
         }
 
@@ -204,9 +204,9 @@ namespace Frontenac.Infrastructure
 
         protected virtual IEnumerable<IEdge> IterateEdges(string key, object value)
         {
-            Contract.Requires(!String.IsNullOrWhiteSpace(key));
+            Contract.Requires(!string.IsNullOrWhiteSpace(key));
 
-            var edgeIds = IndexingService.EdgeIndices.Get(key, key, value, int.MaxValue);
+            var edgeIds = IndexingService.EdgeIndices.Get(key, key, value);
             return edgeIds.Select(edgeId => GetEdge(edgeId)).Where(edge => edge != null);
         }
 

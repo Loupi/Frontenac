@@ -161,7 +161,7 @@ namespace Frontenac.Blueprints.Util
                         var aVal = a.GetProperty(key);
                         var bVal = b.GetProperty(key);
                         if (Blueprints.GraphHelpers.IsNumber(aVal) && Blueprints.GraphHelpers.IsNumber(bVal))
-                            result = Convert.ToDouble(aVal).CompareTo(Convert.ToDouble(bVal)) == 0;
+                            result = Convert.ToInt64(aVal).CompareTo(Convert.ToInt64(bVal)) == 0;
                         else if (aVal != null)
                             result = aVal.Equals(bVal);
                         else

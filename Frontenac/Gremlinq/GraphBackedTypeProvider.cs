@@ -134,7 +134,7 @@ namespace Frontenac.Gremlinq
 
             var kp = instanceTypes.TypesBuffer
                 .FirstOrDefault(pair => GraphHelpers.IsNumber(pair.Value) && GraphHelpers.IsNumber(id)
-                    ? Convert.ToDouble(pair.Value).CompareTo(Convert.ToDouble(id)) == 0
+                    ? Convert.ToInt64(pair.Value).CompareTo(Convert.ToInt64(id)) == 0
                     : pair.Value != null && pair.Value.Equals(id));
             
             if (kp.Value != null)

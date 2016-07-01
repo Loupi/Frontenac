@@ -23,13 +23,11 @@ namespace Frontenac.Redis
         {
             db = _multiplexer.GetDatabase();
 
-            if (_batch == null)
-            {
-                if (Mode == RedisTransactionMode.BatchTransaction || Mode == RedisTransactionMode.SingleTransaction)
-                    _batch = db.CreateTransaction();
-                else
-                    _batch = db.CreateBatch();
-            }
+            if (_batch != null) return _batch;
+            if (Mode == RedisTransactionMode.BatchTransaction || Mode == RedisTransactionMode.SingleTransaction)
+                _batch = db.CreateTransaction();
+            else
+                _batch = db.CreateBatch();
 
             return _batch;
         }

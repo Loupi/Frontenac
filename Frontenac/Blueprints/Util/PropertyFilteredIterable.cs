@@ -143,7 +143,7 @@ namespace Frontenac.Blueprints.Util
                 if ((aVal == null) || (bVal == null))
                     return false;
                 if (Blueprints.GraphHelpers.IsNumber(aVal) && Blueprints.GraphHelpers.IsNumber(bVal))
-                    return Convert.ToDouble(aVal).CompareTo(Convert.ToDouble(bVal)) == 0;
+                    return Convert.ToInt64(aVal).CompareTo(Convert.ToInt64(bVal)) == 0;
                 return aVal.Equals(bVal);
             }
         }

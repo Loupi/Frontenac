@@ -229,6 +229,7 @@ namespace Frontenac.Gremlinq
                 Expression<Func<TOutModel, ICollection<TInModel>>> propertySelector)
                 where TInModel : class
         {
+            Contract.Requires(vertices != null);
             return vertices.SelectMany(t => t.In(propertySelector.Resolve())).As<TInModel>();
         }
     }
