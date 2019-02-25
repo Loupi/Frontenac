@@ -1,4 +1,5 @@
-﻿using System.Diagnostics.Contracts;
+﻿using System;
+using System.Diagnostics.Contracts;
 
 namespace Frontenac.Infrastructure.Indexing.Indexers
 {
@@ -7,9 +8,12 @@ namespace Frontenac.Infrastructure.Indexing.Indexers
     {
         public override void Index(IDocument document, string documentName, object content)
         {
-            Contract.Requires(document != null);
-            Contract.Requires(!string.IsNullOrWhiteSpace(documentName));
-            Contract.Requires(content != null);
+            if (document == null)
+                throw new ArgumentNullException(nameof(document));
+            if (string.IsNullOrWhiteSpace(documentName))
+                throw new ArgumentNullException(nameof(documentName));
+            if (content == null)
+                throw new ArgumentNullException(nameof(content));
         }
     }
 }

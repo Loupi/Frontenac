@@ -1,6 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Diagnostics.Contracts;
+using Frontenac.Blueprints.Contracts;
 
 namespace Frontenac.Blueprints.Util.Wrappers.ReadOnly
 {
@@ -11,8 +11,10 @@ namespace Frontenac.Blueprints.Util.Wrappers.ReadOnly
 
         public ReadOnlyIndex(ReadOnlyGraph graph, IIndex rawIndex)
         {
-            Contract.Requires(graph != null);
-            Contract.Requires(rawIndex != null);
+            if (graph == null)
+                throw new ArgumentNullException(nameof(graph));
+            if (rawIndex == null)
+                throw new ArgumentNullException(nameof(rawIndex));
 
             _graph = graph;
             RawIndex = rawIndex;
@@ -20,6 +22,8 @@ namespace Frontenac.Blueprints.Util.Wrappers.ReadOnly
 
         public void Remove(string key, object value, IElement element)
         {
+            IndexContract.ValidateRemove(key, value, element);
+
             throw new InvalidOperationException(ReadOnlyTokens.MutateErrorMessage);
         }
 
@@ -30,6 +34,8 @@ namespace Frontenac.Blueprints.Util.Wrappers.ReadOnly
 
         public IEnumerable<IElement> Get(string key, object value)
         {
+            IndexContract.ValidateGet(key, value);
+
             if (typeof (IVertex).IsAssignableFrom(Type))
                 return new ReadOnlyVertexIterable(_graph, (IEnumerable<IVertex>)RawIndex.Get(key, value));
             return new ReadOnlyEdgeIterable(_graph, (IEnumerable<IEdge>) RawIndex.Get(key, value));
@@ -44,6 +50,8 @@ namespace Frontenac.Blueprints.Util.Wrappers.ReadOnly
 
         public long Count(string key, object value)
         {
+            IndexContract.ValidateCount(key, value);
+
             return RawIndex.Count(key, value);
         }
 

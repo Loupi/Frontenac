@@ -1,6 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Diagnostics.Contracts;
+using Frontenac.Blueprints.Contracts;
 
 namespace Frontenac.Blueprints.Util.Wrappers.Wrapped
 {
@@ -11,13 +11,16 @@ namespace Frontenac.Blueprints.Util.Wrappers.Wrapped
         public WrappedIndexableGraph(IIndexableGraph baseIndexableGraph)
             : base(baseIndexableGraph)
         {
-            Contract.Requires(baseIndexableGraph != null);
+            if (baseIndexableGraph == null)
+                throw new ArgumentNullException(nameof(baseIndexableGraph));
 
             _baseIndexableGraph = baseIndexableGraph;
         }
 
         public void DropIndex(string indexName)
         {
+            IndexableGraphContract.ValidateDropIndex(indexName);
+
             _baseIndexableGraph.DropIndex(indexName);
         }
 
@@ -28,12 +31,15 @@ namespace Frontenac.Blueprints.Util.Wrappers.Wrapped
 
         public IIndex GetIndex(string indexName, Type indexClass)
         {
+            IndexableGraphContract.ValidateGetIndex(indexName, indexClass);
+
             var index = _baseIndexableGraph.GetIndex(indexName, indexClass);
             return null == index ? null : new WrappedIndex(index);
         }
 
         public IIndex CreateIndex(string indexName, Type indexClass, params Parameter[] indexParameters)
         {
+            IndexableGraphContract.ValidateCreateIndex(indexName, indexClass, indexParameters);
             return new WrappedIndex(_baseIndexableGraph.CreateIndex(indexName, indexClass, indexParameters));
         }
     }

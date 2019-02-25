@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
-using System.Diagnostics.Contracts;
 using System.Linq;
 using Castle.Components.DictionaryAdapter;
 using Frontenac.Blueprints;
@@ -20,7 +19,8 @@ namespace Frontenac.Gremlinq.RelationAccessors
 
         public EdgeVertexRelationCollection(IVertex vertex, string key, RelationAccessor accessor)
         {
-            Contract.Requires(!string.IsNullOrEmpty(key));
+            if (string.IsNullOrEmpty(key))
+                throw new ArgumentNullException(nameof(key));
 
             _vertex = vertex;
             _key = key;

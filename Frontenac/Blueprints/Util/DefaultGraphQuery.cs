@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
-using System.Diagnostics.Contracts;
 using System.Linq;
 
 namespace Frontenac.Blueprints.Util
@@ -16,7 +15,8 @@ namespace Frontenac.Blueprints.Util
 
         public DefaultGraphQuery(IGraph graph)
         {
-            Contract.Requires(graph != null);
+            if (graph == null)
+                throw new ArgumentNullException(nameof(graph));
 
             _graph = graph;
         }
@@ -33,8 +33,8 @@ namespace Frontenac.Blueprints.Util
 
         private IEnumerable<T> GetElementIterable<T>(Type elementClass) where T : IElement
         {
-            Contract.Requires(elementClass != null);
-            Contract.Ensures(Contract.Result<IEnumerable<T>>() != null);
+            if (elementClass == null)
+                throw new ArgumentNullException(nameof(elementClass));
 
             if (_graph is IKeyIndexableGraph)
             {
@@ -73,8 +73,10 @@ namespace Frontenac.Blueprints.Util
 
             public DefaultGraphQueryIterable(DefaultGraphQuery defaultQuery, IEnumerable<T> iterable)
             {
-                Contract.Requires(defaultQuery != null);
-                Contract.Requires(iterable != null);
+                if (defaultQuery == null)
+                    throw new ArgumentNullException(nameof(defaultQuery));
+                if (iterable == null)
+                    throw new ArgumentNullException(nameof(iterable));
 
                 _defaultQuery = defaultQuery;
                 _iterable = iterable;

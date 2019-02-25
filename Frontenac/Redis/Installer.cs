@@ -1,4 +1,4 @@
-﻿using System.Diagnostics.Contracts;
+﻿using System;
 using Frontenac.Blueprints;
 using Frontenac.ElasticSearch;
 using Frontenac.Infrastructure;
@@ -13,7 +13,8 @@ namespace Frontenac.Redis
     {
         public static void SetupRedis(this IContainer container)
         {
-            Contract.Requires(container != null);
+            if (container == null)
+                throw new ArgumentNullException(nameof(container));
 
             container.Register(LifeStyle.Singleton, typeof(ObjectIndexer), typeof(Indexer));
             container.Register(LifeStyle.Singleton, typeof(DefaultIndexerFactory), typeof(IIndexerFactory));

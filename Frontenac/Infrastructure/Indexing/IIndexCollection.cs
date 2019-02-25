@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Diagnostics.Contracts;
 using Frontenac.Blueprints;
 
@@ -12,9 +13,12 @@ namespace Frontenac.Infrastructure.Indexing
         public IntervalQueryElement(string key, object startValue, object endValue)
             : base(key)
         {
-            Contract.Requires(!string.IsNullOrWhiteSpace(key));
-            Contract.Requires(startValue != null);
-            Contract.Requires(endValue != null);
+            if (string.IsNullOrWhiteSpace(key))
+                throw new ArgumentNullException(nameof(key));
+            if (startValue == null)
+                throw new ArgumentNullException(nameof(startValue));
+            if (endValue == null)
+                throw new ArgumentNullException(nameof(endValue));
 
             EndValue = endValue;
             StartValue = startValue;
@@ -24,12 +28,12 @@ namespace Frontenac.Infrastructure.Indexing
         {
             get
             {
-                Contract.Ensures(Contract.Result<object>() != null);
                 return _startValue;
             }
             private set
             {
-                Contract.Requires(value != null);
+                if (value == null)
+                    throw new ArgumentNullException(nameof(value));
                 _startValue = value;
             }
         }
@@ -38,12 +42,12 @@ namespace Frontenac.Infrastructure.Indexing
         {
             get
             {
-                Contract.Ensures(Contract.Result<object>() != null);
                 return _endValue;
             }
             private set
             {
-                Contract.Requires(value != null);
+                if (value == null)
+                    throw new ArgumentNullException(nameof(value));
                 _endValue = value;
             }
         }

@@ -1,4 +1,5 @@
-﻿using System.Diagnostics.Contracts;
+﻿using System;
+using Frontenac.Blueprints.Contracts;
 
 namespace Frontenac.Blueprints.Util.Wrappers.Event
 {
@@ -13,14 +14,17 @@ namespace Frontenac.Blueprints.Util.Wrappers.Event
         public EventEdge(IEdge edge, EventGraph eventInnerTinkerGrapĥ)
             : base(edge, eventInnerTinkerGrapĥ)
         {
-            Contract.Requires(edge != null);
-            Contract.Requires(eventInnerTinkerGrapĥ != null);
+            if (edge == null)
+                throw new ArgumentNullException(nameof(edge));
+            if (eventInnerTinkerGrapĥ == null)
+                throw new ArgumentNullException(nameof(eventInnerTinkerGrapĥ));
 
             _edge = edge;
         }
 
         public IVertex GetVertex(Direction direction)
         {
+            EdgeContract.ValidateGetVertex(direction);
             return new EventVertex(GetBaseEdge().GetVertex(direction), EventInnerTinkerGrapĥ);
         }
 
@@ -31,8 +35,6 @@ namespace Frontenac.Blueprints.Util.Wrappers.Event
 
         public IEdge GetBaseEdge()
         {
-            Contract.Ensures(Contract.Result<IEdge>() != null);
-
             return _edge;
         }
     }

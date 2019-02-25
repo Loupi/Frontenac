@@ -1,5 +1,5 @@
-﻿using System.Collections.Generic;
-using System.Diagnostics.Contracts;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using Frontenac.Blueprints;
 
@@ -10,8 +10,8 @@ namespace Frontenac.Gremlinq
         public static IVertex<TModel> As<TModel>(this IVertex vertex) 
             where TModel : class
         {
-            Contract.Requires(vertex != null);
-            Contract.Ensures(Contract.Result<IVertex<TModel>>() != null);
+            if (vertex == null)
+                throw new ArgumentNullException(nameof(vertex));
 
             return new Vertex<TModel>(vertex, vertex.Proxy<TModel>());
         }
@@ -19,8 +19,8 @@ namespace Frontenac.Gremlinq
         public static IVertex<TCastModel> As<TCastModel>(this IVertex<TCastModel> vertex) 
             where TCastModel : class
         {
-            Contract.Requires(vertex != null);
-            Contract.Ensures(Contract.Result<IVertex<TCastModel>>() != null);
+            if (vertex == null)
+                throw new ArgumentNullException(nameof(vertex));
 
             return vertex;
         }
@@ -29,8 +29,8 @@ namespace Frontenac.Gremlinq
             where TModel : class 
             where TCastModel : class
         {
-            Contract.Requires(vertex != null);
-            Contract.Ensures(Contract.Result<IEnumerable<IVertex<TCastModel>>>() != null);
+            if (vertex == null)
+                throw new ArgumentNullException(nameof(vertex));
 
             return vertex.Cast<IVertex<TCastModel>>();
         }
@@ -38,8 +38,8 @@ namespace Frontenac.Gremlinq
         public static IEnumerable<IVertex<TModel>> As<TModel>(this IEnumerable<IVertex> vertices)
             where TModel : class
         {
-            Contract.Requires(vertices != null);
-            Contract.Ensures(Contract.Result<IEnumerable<IVertex<TModel>>>() != null);
+            if (vertices == null)
+                throw new ArgumentNullException(nameof(vertices));
 
             return vertices.Select(t => t.As<TModel>());
         }
@@ -47,8 +47,8 @@ namespace Frontenac.Gremlinq
         public static IEdge<TModel> As<TModel>(this IEdge edge) 
             where TModel : class
         {
-            Contract.Requires(edge != null);
-            Contract.Ensures(Contract.Result<IEdge>() != null);
+            if (edge == null)
+                throw new ArgumentNullException(nameof(edge));
 
             return new Edge<TModel>(edge, edge.Proxy<TModel>());
         }
@@ -56,8 +56,8 @@ namespace Frontenac.Gremlinq
         public static IEdge<TCastModel> As<TModel, TCastModel>(this IEdge<TModel> edge)
             where TModel : class
         {
-            Contract.Requires(edge != null);
-            Contract.Ensures(Contract.Result<IEdge<TCastModel>>() != null);
+            if (edge == null)
+                throw new ArgumentNullException(nameof(edge));
 
             return (IEdge<TCastModel>)edge;
         }
@@ -66,8 +66,8 @@ namespace Frontenac.Gremlinq
             where TModel : class
             where TCastModel : class
         {
-            Contract.Requires(edge != null);
-            Contract.Ensures(Contract.Result<IEnumerable<IEdge<TCastModel>>>() != null);
+            if (edge == null)
+                throw new ArgumentNullException(nameof(edge));
 
             return edge.Cast<IEdge<TCastModel>>();
         }
@@ -75,8 +75,8 @@ namespace Frontenac.Gremlinq
         public static IEnumerable<IEdge<TModel>> As<TModel>(this IEnumerable<IEdge> edges) 
             where TModel : class
         {
-            Contract.Requires(edges != null);
-            Contract.Ensures(Contract.Result<IEnumerable<IEdge<TModel>>>() != null);
+            if (edges == null)
+                throw new ArgumentNullException(nameof(edges));
 
             return edges.Select(t => t.As<TModel>());
         }

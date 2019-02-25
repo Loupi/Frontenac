@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Diagnostics.Contracts;
 using System.Linq;
 
 namespace Frontenac.Blueprints.Util.Wrappers.Batch.Cache
@@ -18,23 +17,31 @@ namespace Frontenac.Blueprints.Util.Wrappers.Batch.Cache
 
         public object GetEntry(object externalId)
         {
+            VertexCacheContract.ValidateGetEntry(externalId);
+
             var id = GetId(externalId);
             return _map.Get(id);
         }
 
         public void Set(IVertex vertex, object externalId)
         {
+            VertexCacheContract.ValidateSet(vertex, externalId);
+
             SetId(vertex, externalId);
         }
 
         public void SetId(object vertexId, object externalId)
         {
+            VertexCacheContract.ValidateSetId(vertexId, externalId);
+
             var id = GetId(externalId);
             _map[id] = vertexId;
         }
 
         public bool Contains(object externalId)
         {
+            VertexCacheContract.ValidateContains(externalId);
+
             return _map.ContainsKey(GetId(externalId));
         }
 
@@ -45,7 +52,8 @@ namespace Frontenac.Blueprints.Util.Wrappers.Batch.Cache
 
         private static long GetId(object externalId)
         {
-            Contract.Requires(Blueprints.GraphHelpers.IsNumber(externalId));
+            if(!Blueprints.GraphHelpers.IsNumber(externalId))
+                throw new ArgumentException("externalId must be a number");
 
             return Convert.ToInt64(externalId);
         }

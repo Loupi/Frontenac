@@ -1,11 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Diagnostics.Contracts;
-using Frontenac.Blueprints.Contracts;
 
 namespace Frontenac.Blueprints
 {
-    [ContractClass(typeof (QueryContract))]
     public interface IQuery
     {
         /// <summary>

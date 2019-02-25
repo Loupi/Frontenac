@@ -1,6 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Diagnostics.Contracts;
+using Frontenac.Blueprints.Contracts;
 
 namespace Frontenac.Blueprints.Util.Wrappers.Event
 {
@@ -16,8 +16,10 @@ namespace Frontenac.Blueprints.Util.Wrappers.Event
 
         public EventIndex(IIndex rawIndex, EventGraph eventGraph)
         {
-            Contract.Requires(rawIndex != null);
-            Contract.Requires(eventGraph != null);
+            if (rawIndex == null)
+                throw new ArgumentNullException(nameof(rawIndex));
+            if (eventGraph == null)
+                throw new ArgumentNullException(nameof(eventGraph));
 
             RawIndex = rawIndex;
             _eventGraph = eventGraph;
@@ -25,6 +27,8 @@ namespace Frontenac.Blueprints.Util.Wrappers.Event
 
         public void Remove(string key, object value, IElement element)
         {
+            IndexContract.ValidateRemove(key, value, element);
+
             var eventElement = element as EventElement;
             if (eventElement != null)
                 RawIndex.Remove(key, value, eventElement.GetBaseElement());
@@ -32,12 +36,16 @@ namespace Frontenac.Blueprints.Util.Wrappers.Event
 
         public void Put(string key, object value, IElement element)
         {
+            IndexContract.ValidatePut(key, value, element);
+
             var eventElement = element as EventElement;
             if (eventElement != null) RawIndex.Put(key, value, eventElement.GetBaseElement());
         }
 
         public IEnumerable<IElement> Get(string key, object value)
         {
+            IndexContract.ValidateGet(key, value);
+
             if (typeof (IVertex).IsAssignableFrom(Type))
                 return new EventVertexIterable((IEnumerable<IVertex>) RawIndex.Get(key, value), _eventGraph);
             return new EventEdgeIterable((IEnumerable<IEdge>) RawIndex.Get(key, value), _eventGraph);
@@ -50,8 +58,11 @@ namespace Frontenac.Blueprints.Util.Wrappers.Event
             return new EventEdgeIterable((IEnumerable<IEdge>) RawIndex.Query(key, value), _eventGraph);
         }
 
-        public long Count(string key, object value)
+        public long Count(
+            string key, object value)
         {
+            IndexContract.ValidateCount(key, value);
+
             return RawIndex.Count(key, value);
         }
 

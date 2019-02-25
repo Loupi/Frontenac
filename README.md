@@ -4,6 +4,13 @@ Frontenac
 A .NET port of the [Tinkerpop Stack](http://www.tinkerpop.com/).
 
 ## News
+* 2019-02-24
+ * Frontenac.Blueprints 2.5 released.
+ * Add support for .NET Standard 2.0
+ * Update dependencies
+ * Drop MS Code Contracts
+ * Drop Fody, Stamp.Fody and GitVersionTask
+
 * 2015-07-30
  * Frontenac.Blueprints 2.4 released.
  * New GraphJson format support.

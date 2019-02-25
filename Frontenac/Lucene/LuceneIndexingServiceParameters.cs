@@ -1,4 +1,4 @@
-﻿using System.Diagnostics.Contracts;
+﻿using System;
 
 namespace Frontenac.Lucene
 {
@@ -34,12 +34,12 @@ namespace Frontenac.Lucene
         {
             get
             {
-                Contract.Ensures(Contract.Result<LuceneIndexingServiceParameters>() != null);
                 return _default;
             }
             private set
             {
-                Contract.Requires(value != null);
+                if (value == null)
+                    throw new ArgumentNullException(nameof(value));
                 _default = value;
             }
         }
@@ -48,12 +48,12 @@ namespace Frontenac.Lucene
         {
             get
             {
-                Contract.Ensures(Contract.Result<string>() != null);
                 return _vertexIdColumnName;
             }
             set
             {
-                Contract.Requires(!string.IsNullOrWhiteSpace(value));
+                if (string.IsNullOrWhiteSpace(value))
+                    throw new ArgumentNullException(nameof(value));
                 _vertexIdColumnName = value;
             }
         }
@@ -62,12 +62,12 @@ namespace Frontenac.Lucene
         {
             get
             {
-                Contract.Ensures(Contract.Result<string>() != null);
                 return _vertexKeyColumnName;
             }
             set
             {
-                Contract.Requires(!string.IsNullOrWhiteSpace(value));
+                if (string.IsNullOrWhiteSpace(value))
+                    throw new ArgumentNullException(nameof(value));
                 _vertexKeyColumnName = value;
             }
         }
@@ -76,7 +76,6 @@ namespace Frontenac.Lucene
         {
             get
             {
-                Contract.Ensures(Contract.Result<string>() != null);
                 return _vertexIndexColumnName;
             }
             set { _vertexIndexColumnName = value; }
@@ -86,12 +85,12 @@ namespace Frontenac.Lucene
         {
             get
             {
-                Contract.Ensures(Contract.Result<string>() != null);
                 return _edgeIdColumnName;
             }
             set
             {
-                Contract.Requires(!string.IsNullOrWhiteSpace(value));
+                if (string.IsNullOrWhiteSpace(value))
+                    throw new ArgumentNullException(nameof(value));
                 _edgeIdColumnName = value;
             }
         }
@@ -100,12 +99,12 @@ namespace Frontenac.Lucene
         {
             get
             {
-                Contract.Ensures(Contract.Result<string>() != null);
                 return _edgeKeyColumnName;
             }
             set
             {
-                Contract.Requires(!string.IsNullOrWhiteSpace(value));
+                if (string.IsNullOrWhiteSpace(value))
+                    throw new ArgumentNullException(nameof(value));
                 _edgeKeyColumnName = value;
             }
         }
@@ -114,12 +113,12 @@ namespace Frontenac.Lucene
         {
             get
             {
-                Contract.Ensures(Contract.Result<string>() != null);
                 return _edgeIndexColumnName;
             }
             set
             {
-                Contract.Requires(!string.IsNullOrWhiteSpace(value));
+                if (string.IsNullOrWhiteSpace(value))
+                    throw new ArgumentNullException(nameof(value));
                 _edgeIndexColumnName = value;
             }
         }
@@ -128,12 +127,12 @@ namespace Frontenac.Lucene
         {
             get
             {
-                Contract.Ensures(Contract.Result<string>() != null);
                 return _nullColumnName;
             }
             set
             {
-                Contract.Requires(!string.IsNullOrWhiteSpace(value));
+                if (string.IsNullOrWhiteSpace(value))
+                    throw new ArgumentNullException(nameof(value));
                 _nullColumnName = value;
             }
         }

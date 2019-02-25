@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Diagnostics.Contracts;
 using System.IO;
 using System.Threading;
 using Frontenac.Grave.Properties;
@@ -18,8 +17,6 @@ namespace Frontenac.Grave.Esent
 
         public EsentInstance(IContentSerializer contentSerializer)
         {
-            Contract.Ensures(!string.IsNullOrWhiteSpace(_databaseName));
-
             string instanceName = Settings.Default.InstanceName;
             _databaseName = CleanDatabaseName(instanceName);
             _databasePath = Path.GetDirectoryName(instanceName);
@@ -79,8 +76,8 @@ namespace Frontenac.Grave.Esent
 
         public static string CleanDatabaseName(string databaseName)
         {
-            Contract.Requires(!string.IsNullOrWhiteSpace(databaseName));
-            Contract.Ensures(!string.IsNullOrWhiteSpace(Contract.Result<string>()));
+            if (string.IsNullOrWhiteSpace(databaseName))
+                throw new ArgumentNullException(nameof(databaseName));
 
             databaseName = databaseName.Trim();
 

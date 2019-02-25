@@ -1,21 +1,21 @@
-﻿using System.Diagnostics.Contracts;
+﻿using System;
 
 namespace Frontenac.Blueprints.Impls.TG
 {
-    [ContractClassFor(typeof (ITinkerStorage))]
-    public abstract class TinkerStorageContract : ITinkerStorage
+    public static class TinkerStorageContract
     {
-        public TinkerGrapĥ Load(string directory)
+        public static void ValidateLoad(string directory)
         {
-            Contract.Requires(!string.IsNullOrWhiteSpace(directory));
-            Contract.Ensures(Contract.Result<TinkerGrapĥ>() != null);
-            return null;
+            if (string.IsNullOrWhiteSpace(directory))
+                throw new ArgumentNullException(nameof(directory));
         }
 
-        public void Save(TinkerGrapĥ tinkerGrapĥ, string directory)
+        public static void ValidateSave(TinkerGrapĥ tinkerGrapĥ, string directory)
         {
-            Contract.Requires(tinkerGrapĥ != null);
-            Contract.Requires(!string.IsNullOrWhiteSpace(directory));
+            if (tinkerGrapĥ == null)
+                throw new ArgumentNullException(nameof(tinkerGrapĥ));
+            if (string.IsNullOrWhiteSpace(directory))
+                throw new ArgumentNullException(nameof(directory));
         }
     }
 }

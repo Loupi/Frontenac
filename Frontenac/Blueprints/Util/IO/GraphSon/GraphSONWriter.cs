@@ -1,5 +1,5 @@
-﻿using System.Collections.Generic;
-using System.Diagnostics.Contracts;
+﻿using System;
+using System.Collections.Generic;
 using System.IO;
 using Newtonsoft.Json;
 
@@ -17,7 +17,8 @@ namespace Frontenac.Blueprints.Util.IO.GraphSON
         /// <param name="graph">the Graph to pull the data from</param>
         public GraphSonWriter(IGraph graph)
         {
-            Contract.Requires(graph != null);
+            if (graph == null)
+                throw new ArgumentNullException(nameof(graph));
 
             _graph = graph;
         }
@@ -32,7 +33,8 @@ namespace Frontenac.Blueprints.Util.IO.GraphSON
         public void OutputGraph(string filename, IEnumerable<string> vertexPropertyKeys,
                                 IEnumerable<string> edgePropertyKeys, GraphSonMode mode)
         {
-            Contract.Requires(!string.IsNullOrWhiteSpace(filename));
+            if (string.IsNullOrWhiteSpace(filename))
+                throw new ArgumentNullException(nameof(filename));
 
             using (var fos = File.Open(filename, FileMode.Create))
             {
@@ -50,7 +52,8 @@ namespace Frontenac.Blueprints.Util.IO.GraphSON
         public void OutputGraph(Stream jsonOutputStream, IEnumerable<string> vertexPropertyKeys,
                                 IEnumerable<string> edgePropertyKeys, GraphSonMode mode)
         {
-            Contract.Requires(jsonOutputStream != null);
+            if (jsonOutputStream == null)
+                throw new ArgumentNullException(nameof(jsonOutputStream));
 
             var sw = new StreamWriter(jsonOutputStream);
             var jg = new JsonTextWriter(sw);
@@ -88,8 +91,10 @@ namespace Frontenac.Blueprints.Util.IO.GraphSON
         /// <param name="jsonOutputStream">the JSON OutputStream to write the Graph data to</param>
         public static void OutputGraph(IGraph graph, Stream jsonOutputStream)
         {
-            Contract.Requires(graph != null);
-            Contract.Requires(jsonOutputStream != null);
+            if (graph == null)
+                throw new ArgumentNullException(nameof(graph));
+            if (jsonOutputStream == null)
+                throw new ArgumentNullException(nameof(jsonOutputStream));
 
             var writer = new GraphSonWriter(graph);
             writer.OutputGraph(jsonOutputStream, null, null, GraphSonMode.NORMAL);
@@ -103,8 +108,10 @@ namespace Frontenac.Blueprints.Util.IO.GraphSON
         /// <param name="filename">the JSON file to write the Graph data to</param>
         public static void OutputGraph(IGraph graph, string filename)
         {
-            Contract.Requires(graph != null);
-            Contract.Requires(!string.IsNullOrWhiteSpace(filename));
+            if (graph == null)
+                throw new ArgumentNullException(nameof(graph));
+            if (string.IsNullOrWhiteSpace(filename))
+                throw new ArgumentNullException(nameof(filename));
 
             var writer = new GraphSonWriter(graph);
             writer.OutputGraph(filename, null, null, GraphSonMode.NORMAL);
@@ -118,8 +125,10 @@ namespace Frontenac.Blueprints.Util.IO.GraphSON
         /// <param name="mode">determines the format of the GraphSON</param>
         public static void OutputGraph(IGraph graph, Stream jsonOutputStream, GraphSonMode mode)
         {
-            Contract.Requires(graph != null);
-            Contract.Requires(jsonOutputStream != null);
+            if (graph == null)
+                throw new ArgumentNullException(nameof(graph));
+            if (jsonOutputStream == null)
+                throw new ArgumentNullException(nameof(jsonOutputStream));
 
             var writer = new GraphSonWriter(graph);
             writer.OutputGraph(jsonOutputStream, null, null, mode);
@@ -133,8 +142,10 @@ namespace Frontenac.Blueprints.Util.IO.GraphSON
         /// <param name="mode">determines the format of the GraphSON</param>
         public static void OutputGraph(IGraph graph, string filename, GraphSonMode mode)
         {
-            Contract.Requires(graph != null);
-            Contract.Requires(!string.IsNullOrWhiteSpace(filename));
+            if (graph == null)
+                throw new ArgumentNullException(nameof(graph));
+            if (string.IsNullOrWhiteSpace(filename))
+                throw new ArgumentNullException(nameof(filename));
 
             var writer = new GraphSonWriter(graph);
             writer.OutputGraph(filename, null, null, mode);
@@ -152,8 +163,10 @@ namespace Frontenac.Blueprints.Util.IO.GraphSON
                                        IEnumerable<string> vertexPropertyKeys, IEnumerable<string> edgePropertyKeys,
                                        GraphSonMode mode)
         {
-            Contract.Requires(graph != null);
-            Contract.Requires(jsonOutputStream != null);
+            if (graph == null)
+                throw new ArgumentNullException(nameof(graph));
+            if (jsonOutputStream == null)
+                throw new ArgumentNullException(nameof(jsonOutputStream));
 
             var writer = new GraphSonWriter(graph);
             writer.OutputGraph(jsonOutputStream, vertexPropertyKeys, edgePropertyKeys, mode);
@@ -171,8 +184,10 @@ namespace Frontenac.Blueprints.Util.IO.GraphSON
                                        IEnumerable<string> vertexPropertyKeys, IEnumerable<string> edgePropertyKeys,
                                        GraphSonMode mode)
         {
-            Contract.Requires(graph != null);
-            Contract.Requires(!string.IsNullOrWhiteSpace(filename));
+            if (graph == null)
+                throw new ArgumentNullException(nameof(graph));
+            if (string.IsNullOrWhiteSpace(filename))
+                throw new ArgumentNullException(nameof(filename));
 
             var writer = new GraphSonWriter(graph);
             writer.OutputGraph(filename, vertexPropertyKeys, edgePropertyKeys, mode);

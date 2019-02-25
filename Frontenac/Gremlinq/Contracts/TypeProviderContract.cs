@@ -1,23 +1,23 @@
 ﻿using System;
-using System.Diagnostics.Contracts;
 using Frontenac.Blueprints;
 
 namespace Frontenac.Gremlinq.Contracts
 {
-    [ContractClassFor(typeof (ITypeProvider))]
-    public abstract class TypeProviderContract : ITypeProvider
+    public static class TypeProviderContract
     {
-        public void SetType(IElement element, Type type)
+        public static void ValidateSetType(IElement element, Type type)
         {
-            Contract.Requires(element != null);
-            Contract.Requires(type != null);
+            if (element == null)
+                throw new ArgumentNullException(nameof(element));
+
+            if (type == null)
+                throw new ArgumentNullException(nameof(type));
         }
 
-        public bool TryGetType(IElement element, out Type type)
+        public static void ValidateTryGetType(IElement element)
         {
-            Contract.Requires(element != null);
-            type = null;
-            return false;
+            if (element == null)
+                throw new ArgumentNullException(nameof(element));
         }
     }
 }

@@ -1,6 +1,4 @@
 ﻿using System.Collections.Generic;
-using System.Diagnostics.Contracts;
-using Frontenac.Blueprints.Contracts;
 
 namespace Frontenac.Blueprints
 {
@@ -10,7 +8,6 @@ namespace Frontenac.Blueprints
     ///     The incoming edges are those edges for which the vertex is the head.
     ///     Diagrammatically, ---inEdges---> vertex ---outEdges--->.
     /// </summary>
-    [ContractClass(typeof (VertexContract))]
     public interface IVertex : IElement
     {
         /// <summary>

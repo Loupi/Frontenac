@@ -23,48 +23,64 @@ namespace Frontenac.Blueprints.Util.Wrappers.Event.Listener
 
         public void VertexAdded(IVertex vertex)
         {
+            GraphChangedListenerContract.ValidateVertexAdded(vertex);
+
             Interlocked.Increment(ref _addVertexEvent);
             _order.Enqueue(string.Concat("v-added-", vertex.Id));
         }
 
         public void VertexPropertyChanged(IVertex vertex, string s, object o, object n)
         {
+            GraphChangedListenerContract.ValidateVertexPropertyChanged(vertex, s, o, n);
+
             Interlocked.Increment(ref _vertexPropertyChangedEvent);
             _order.Enqueue(string.Concat("v-property-changed-", vertex.Id, "-", s, ":", o, "->", n));
         }
 
         public void VertexPropertyRemoved(IVertex vertex, string s, object o)
         {
+            GraphChangedListenerContract.ValidateVertexPropertyRemoved(vertex, s, o);
+
             Interlocked.Increment(ref _vertexPropertyRemovedEvent);
             _order.Enqueue(string.Concat("v-property-removed-", vertex.Id, "-", s, ":", o));
         }
 
         public void VertexRemoved(IVertex vertex, IDictionary<string, object> props)
         {
+            GraphChangedListenerContract.ValidateVertexRemoved(vertex, props);
+
             Interlocked.Increment(ref _vertexRemovedEvent);
             _order.Enqueue(string.Concat("v-removed-", vertex.Id));
         }
 
         public void EdgeAdded(IEdge edge)
         {
+            GraphChangedListenerContract.ValidateEdgeAdded(edge);
+
             Interlocked.Increment(ref _addEdgeEvent);
             _order.Enqueue(string.Concat("e-added-", edge.Id));
         }
 
         public void EdgePropertyChanged(IEdge edge, string s, object o, object n)
         {
+            GraphChangedListenerContract.ValidateEdgePropertyChanged(edge, s, o, n);
+
             Interlocked.Increment(ref _edgePropertyChangedEvent);
             _order.Enqueue(string.Concat("e-property-changed-", edge.Id, "-", s, ":", o, "->", n));
         }
 
         public void EdgePropertyRemoved(IEdge edge, string s, object o)
         {
+            GraphChangedListenerContract.ValidateEdgePropertyRemoved(edge, s, o);
+
             Interlocked.Increment(ref _edgePropertyRemovedEvent);
             _order.Enqueue(string.Concat("e-property-removed-", edge.Id, "-", s, ":", o));
         }
 
         public void EdgeRemoved(IEdge edge, IDictionary<string, object> props)
         {
+            GraphChangedListenerContract.ValidateEdgeRemoved(edge, props);
+
             Interlocked.Increment(ref _edgeRemovedEvent);
             _order.Enqueue(string.Concat("e-removed-", edge.Id));
         }

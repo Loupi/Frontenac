@@ -1,5 +1,5 @@
-﻿using System.Collections.Generic;
-using System.Diagnostics.Contracts;
+﻿using System;
+using System.Collections.Generic;
 
 namespace Frontenac.Blueprints.Util.Wrappers.Wrapped
 {
@@ -8,7 +8,8 @@ namespace Frontenac.Blueprints.Util.Wrappers.Wrapped
         public WrappedVertex(IVertex vertex)
             : base(vertex)
         {
-            Contract.Requires(vertex != null);
+            if (vertex == null)
+                throw new ArgumentNullException(nameof(vertex));
 
             Vertex = vertex;
         }

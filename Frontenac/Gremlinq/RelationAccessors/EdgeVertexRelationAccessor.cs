@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
-using System.Diagnostics.Contracts;
 using System.Linq;
 using Frontenac.Blueprints;
 
@@ -22,7 +21,8 @@ namespace Frontenac.Gremlinq.RelationAccessors
 // ReSharper restore UnusedMember.Local
             where TModel : class
         {
-            Contract.Requires(elements != null);
+            if (elements == null)
+                throw new ArgumentNullException(nameof(elements));
 
             var vertices = elements.OfType<IVertex>();
             var models = isWrapped

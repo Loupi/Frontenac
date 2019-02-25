@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
-using System.Diagnostics.Contracts;
 using System.Linq;
 
 namespace Frontenac.Blueprints.Util.Wrappers.Wrapped
@@ -13,7 +12,8 @@ namespace Frontenac.Blueprints.Util.Wrappers.Wrapped
 
         public WrappedVertexIterable(IEnumerable<IVertex> iterable)
         {
-            Contract.Requires(iterable != null);
+            if (iterable == null)
+                throw new ArgumentNullException(nameof(iterable));
 
             _iterable = iterable;
         }

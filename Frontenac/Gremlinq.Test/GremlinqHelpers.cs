@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Diagnostics.Contracts;
 using System.Linq.Expressions;
 using Frontenac.Blueprints;
 using Frontenac.Blueprints.Geo;
@@ -13,9 +12,12 @@ namespace Frontenac.Gremlinq.Test
             Expression<Func<TModel, GeoPoint>> propertySelector,
             IGeoShape value)
         {
-            Contract.Requires(query != null);
-            Contract.Requires(propertySelector != null);
-            Contract.Requires(value != null);
+            if (query == null)
+                throw new ArgumentNullException(nameof(query));
+            if (propertySelector == null)
+                throw new ArgumentNullException(nameof(propertySelector));
+            if (value == null)
+                throw new ArgumentNullException(nameof(value));
 
             query.InnerQuery.Has(propertySelector.Resolve(), Compare.Equal, value);
             return query;

@@ -1,6 +1,7 @@
-﻿using System.Collections.Generic;
-using System.Diagnostics.Contracts;
+﻿using System;
+using System.Collections.Generic;
 using Frontenac.Blueprints;
+using Frontenac.Blueprints.Contracts;
 using Frontenac.Blueprints.Util;
 
 namespace Frontenac.Redis
@@ -13,7 +14,8 @@ namespace Frontenac.Redis
         protected RedisElement(long id, RedisGraph innerTinkerGrapĥ)
             : base(innerTinkerGrapĥ)
         {
-            Contract.Requires(innerTinkerGrapĥ != null);
+            if (innerTinkerGrapĥ == null)
+                throw new ArgumentNullException(nameof(innerTinkerGrapĥ));
 
             RawId = id;
             RedisInnerTinkerGrapĥ = innerTinkerGrapĥ;
@@ -26,6 +28,7 @@ namespace Frontenac.Redis
 
         public override object GetProperty(string key)
         {
+            ElementContract.ValidateGetProperty(key);
             return RedisInnerTinkerGrapĥ.GetProperty(this, key);
         }
 
@@ -41,6 +44,7 @@ namespace Frontenac.Redis
 
         public override object RemoveProperty(string key)
         {
+            ElementContract.ValidateRemoveProperty(key);
             return RedisInnerTinkerGrapĥ.RemoveProperty(this, key);
         }
 

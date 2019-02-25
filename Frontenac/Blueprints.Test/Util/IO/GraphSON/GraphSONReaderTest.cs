@@ -93,9 +93,9 @@ namespace Frontenac.Blueprints.Util.IO.GraphSON
 
                 Assert.Fail();
             }
-            catch (Exception ex)
+            catch (Exception)
             {
-                Assert.True(ex.GetType().FullName == Blueprints.GraphHelpers.ContractExceptionName);
+                
             }
         }
 

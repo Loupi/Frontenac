@@ -1,4 +1,4 @@
-﻿using System.Diagnostics.Contracts;
+﻿using System;
 using Frontenac.Blueprints;
 
 namespace Frontenac.Gremlinq
@@ -7,16 +7,16 @@ namespace Frontenac.Gremlinq
     {
         public static IVertex InV(this IEdge edge)
         {
-            Contract.Requires(edge != null);
-            Contract.Ensures(Contract.Result<IVertex>() != null);
+            if (edge == null)
+                throw new ArgumentNullException(nameof(edge));
 
             return edge.GetVertex(Direction.In);
         }
 
         public static IVertex<TModel> InV<TModel>(this IEdge edge) where TModel : class
         {
-            Contract.Requires(edge != null);
-            Contract.Ensures(Contract.Result<IVertex<TModel>>() != null);
+            if (edge == null)
+                throw new ArgumentNullException(nameof(edge));
 
             return edge.InV().As<TModel>();
         }

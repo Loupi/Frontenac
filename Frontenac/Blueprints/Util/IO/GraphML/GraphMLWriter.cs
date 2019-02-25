@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Diagnostics.Contracts;
 using System.Globalization;
 using System.IO;
 using System.Linq;
@@ -343,7 +342,8 @@ namespace Frontenac.Blueprints.Util.IO.GraphML
         /// <param name="filename">the name of the file write the Graph data (as GraphML) to</param>
         public static void OutputGraph(IGraph graph, string filename)
         {
-            Contract.Requires(!string.IsNullOrWhiteSpace(filename));
+            if (string.IsNullOrWhiteSpace(filename))
+                throw new ArgumentNullException(nameof(filename));
 
             var writer = new GraphMlWriter(graph);
             writer.OutputGraph(filename);
@@ -359,7 +359,8 @@ namespace Frontenac.Blueprints.Util.IO.GraphML
         public static void OutputGraph(IGraph graph, string filename, Dictionary<string, string> vertexKeyTypes,
                                        Dictionary<string, string> edgeKeyTypes)
         {
-            Contract.Requires(!string.IsNullOrWhiteSpace(filename));
+            if (string.IsNullOrWhiteSpace(filename))
+                throw new ArgumentNullException(nameof(filename));
 
             var writer = new GraphMlWriter(graph);
             writer.SetVertexKeyTypes(vertexKeyTypes);

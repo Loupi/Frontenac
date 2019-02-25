@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Diagnostics.Contracts;
 using System.Linq;
+using Frontenac.Blueprints.Contracts;
 
 namespace Frontenac.Blueprints.Util.Wrappers.Id
 {
@@ -35,7 +35,8 @@ namespace Frontenac.Blueprints.Util.Wrappers.Id
         public IdGraph(IKeyIndexableGraph baseGraph)
             : this(baseGraph, true, true)
         {
-            Contract.Requires(baseGraph != null);
+            if (baseGraph == null)
+                throw new ArgumentNullException(nameof(baseGraph));
         }
 
         /// <summary>
@@ -47,8 +48,11 @@ namespace Frontenac.Blueprints.Util.Wrappers.Id
         /// <param name="supportEdgeIds">whether to support custom edge IDs</param>
         public IdGraph(IKeyIndexableGraph baseGraph, bool supportVertexIds, bool supportEdgeIds)
         {
-            Contract.Requires(baseGraph != null);
-            Contract.Requires(supportVertexIds || supportEdgeIds);
+            if (baseGraph == null)
+                throw new ArgumentNullException(nameof(baseGraph));
+
+            if(!(supportVertexIds || supportEdgeIds))
+                throw new ArgumentException("Edge or Vertex Ids support must be on");
 
             _baseGraph = baseGraph;
             _features = _baseGraph.Features.CopyFeatures();
@@ -72,12 +76,12 @@ namespace Frontenac.Blueprints.Util.Wrappers.Id
         {
             get
             {
-                Contract.Ensures(Contract.Result<IIdFactory>() != null);
                 return _vertexIdFactory;
             }
             set
             {
-                Contract.Requires(value != null);
+                if (value == null)
+                    throw new ArgumentNullException(nameof(value));
                 _vertexIdFactory = value;
             }
         }
@@ -91,18 +95,20 @@ namespace Frontenac.Blueprints.Util.Wrappers.Id
         {
             get
             {
-                Contract.Ensures(Contract.Result<IIdFactory>() != null);
                 return _edgeIdFactory;
             }
             set
             {
-                Contract.Requires(value != null);
+                if (value == null)
+                    throw new ArgumentNullException(nameof(value));
                 _edgeIdFactory = value;
             }
         }
 
         public IIndex CreateIndex(string indexName, Type indexClass, params Parameter[] indexParameters)
         {
+            IndexableGraphContract.ValidateCreateIndex(indexName, indexClass, indexParameters);
+
             VerifyBaseGraphIsIndexableGraph();
 
             if (IsVertex(indexClass))
@@ -115,6 +121,8 @@ namespace Frontenac.Blueprints.Util.Wrappers.Id
 
         public IIndex GetIndex(string indexName, Type indexClass)
         {
+            IndexableGraphContract.ValidateGetIndex(indexName, indexClass);
+
             VerifyBaseGraphIsIndexableGraph();
 
             var baseIndex = ((IIndexableGraph) _baseGraph).GetIndex(indexName, indexClass);
@@ -128,6 +136,8 @@ namespace Frontenac.Blueprints.Util.Wrappers.Id
 
         public void DropIndex(string indexName)
         {
+            IndexableGraphContract.ValidateDropIndex(indexName);
+
             VerifyBaseGraphIsIndexableGraph();
 
             ((IIndexableGraph) _baseGraph).DropIndex(indexName);
@@ -158,6 +168,7 @@ namespace Frontenac.Blueprints.Util.Wrappers.Id
 
         public IVertex GetVertex(object id)
         {
+            GraphContract.ValidateGetVertex(id);
             if (null == id)
                 throw new ArgumentNullException("id");
 
@@ -180,6 +191,7 @@ namespace Frontenac.Blueprints.Util.Wrappers.Id
 
         public void RemoveVertex(IVertex vertex)
         {
+            GraphContract.ValidateRemoveVertex(vertex);
             VerifyNativeElement(vertex);
             _baseGraph.RemoveVertex(((IdVertex) vertex).GetBaseVertex());
         }
@@ -191,6 +203,7 @@ namespace Frontenac.Blueprints.Util.Wrappers.Id
 
         public IEnumerable<IVertex> GetVertices(string key, object value)
         {
+            GraphContract.ValidateGetVertices(key, value);
             if (_supportVertexIds && key == Id)
                 throw new ArgumentException(string.Concat("index key ", Id, " is reserved by idInnerTinkerGrapĥ"));
             return new IdVertexIterable(_baseGraph.GetVertices(key, value), this);
@@ -198,6 +211,7 @@ namespace Frontenac.Blueprints.Util.Wrappers.Id
 
         public IEdge AddEdge(object id, IVertex outVertex, IVertex inVertex, string label)
         {
+            GraphContract.ValidateAddEdge(id, outVertex, inVertex, label);
             if (_uniqueIds && null != id && null != GetEdge(id))
                 throw new ArgumentException(string.Concat("edge with given id already exists: ", id));
 
@@ -257,20 +271,22 @@ namespace Frontenac.Blueprints.Util.Wrappers.Id
 
         public void DropKeyIndex(string key, Type elementClass)
         {
-            Contract.Ensures(key != Id);
-            Contract.Ensures(IsVertex(elementClass) && _supportVertexIds || IsEdge(elementClass) && _supportEdgeIds);
+            KeyIndexableGraphContract.ValidateDropKeyIndex(key, elementClass);
+
             _baseGraph.DropKeyIndex(key, elementClass);
         }
 
         public void CreateKeyIndex(string key, Type elementClass, params Parameter[] indexParameters)
         {
-            Contract.Ensures(key != Id);
-            Contract.Ensures(IsVertex(elementClass) && _supportVertexIds || IsEdge(elementClass) && _supportEdgeIds);
+            KeyIndexableGraphContract.ValidateCreateKeyIndex(key, elementClass, indexParameters);
+
             _baseGraph.CreateKeyIndex(key, elementClass, indexParameters);
         }
 
         public IEnumerable<string> GetIndexedKeys(Type elementClass)
         {
+            KeyIndexableGraphContract.ValidateGetIndexedKeys(elementClass);
+
             var v = IsVertex(elementClass);
             var supported = ((v && _supportVertexIds) || (!v && _supportEdgeIds));
 
@@ -334,16 +350,15 @@ namespace Frontenac.Blueprints.Util.Wrappers.Id
 
         private void VerifyBaseGraphIsIndexableGraph()
         {
-            Contract.Requires(_baseGraph is IIndexableGraph);
+            if (!(_baseGraph is IIndexableGraph))
+                throw new ArgumentException("_baseGraph must be of type IIndexableGraph");
         }
 
-        [Pure]
         private static bool IsVertex(Type c)
         {
             return typeof (IVertex).IsAssignableFrom(c);
         }
 
-        [Pure]
         private static bool IsEdge(Type c)
         {
             return typeof (IEdge).IsAssignableFrom(c);
@@ -362,7 +377,6 @@ namespace Frontenac.Blueprints.Util.Wrappers.Id
         private static void VerifyNativeElement(IElement e)
 // ReSharper restore UnusedParameter.Local
         {
-            Contract.Requires(e is IdElement);
             if(!(e is IdElement))
                 throw new ArgumentException("e must be of type IdElement");
         }
@@ -378,20 +392,9 @@ namespace Frontenac.Blueprints.Util.Wrappers.Id
         /// <summary>
         ///     A factory for IDs of newly-created vertices and edges (where an ID is not otherwise specified).
         /// </summary>
-        [ContractClass(typeof (IdFactoryContract))]
         public interface IIdFactory
         {
             object CreateId();
-        }
-
-        [ContractClassFor(typeof (IIdFactory))]
-        public abstract class IdFactoryContract : IIdFactory
-        {
-            public object CreateId()
-            {
-                Contract.Ensures(Contract.Result<object>() != null);
-                return null;
-            }
         }
     }
 }

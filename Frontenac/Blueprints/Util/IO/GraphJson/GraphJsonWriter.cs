@@ -1,4 +1,4 @@
-﻿using System.Diagnostics.Contracts;
+﻿using System;
 using System.IO;
 using System.Linq;
 using Newtonsoft.Json;
@@ -24,8 +24,10 @@ namespace Frontenac.Blueprints.Util.IO.GraphJson
         /// <param name="graph">the graph to serialize</param>
         public static void OutputGraph(IGraph graph, string filename)
         {
-            Contract.Requires(graph != null);
-            Contract.Requires(!string.IsNullOrWhiteSpace(filename));
+            if (graph == null)
+                throw new ArgumentNullException(nameof(graph));
+            if (string.IsNullOrWhiteSpace(filename))
+                throw new ArgumentNullException(nameof(filename));
 
             OutputGraph(graph, filename, GraphJsonSettings.Default);
         }
@@ -38,9 +40,12 @@ namespace Frontenac.Blueprints.Util.IO.GraphJson
         /// <param name="settings">Contains field names that the writer will use to map to BluePrints</param>
         public static void OutputGraph(IGraph graph, string filename, GraphJsonSettings settings)
         {
-            Contract.Requires(graph != null);
-            Contract.Requires(!string.IsNullOrWhiteSpace(filename));
-            Contract.Requires(settings != null);
+            if (graph == null)
+                throw new ArgumentNullException(nameof(graph));
+            if (string.IsNullOrWhiteSpace(filename))
+                throw new ArgumentNullException(nameof(filename));
+            if (settings == null)
+                throw new ArgumentNullException(nameof(settings));
 
             using (var fos = File.Open(filename, FileMode.Create))
             {
@@ -55,8 +60,10 @@ namespace Frontenac.Blueprints.Util.IO.GraphJson
         /// <param name="graph">the graph to serialize</param>
         public static void OutputGraph(IGraph graph, Stream jsonOutputStream)
         {
-            Contract.Requires(graph != null);
-            Contract.Requires(jsonOutputStream != null);
+            if (graph == null)
+                throw new ArgumentNullException(nameof(graph));
+            if (jsonOutputStream == null)
+                throw new ArgumentNullException(nameof(jsonOutputStream));
 
             OutputGraph(graph, jsonOutputStream, GraphJsonSettings.Default);
         }
@@ -69,9 +76,12 @@ namespace Frontenac.Blueprints.Util.IO.GraphJson
         /// <param name="settings">Contains field names that the writer will use to map to BluePrints</param>
         public static void OutputGraph(IGraph graph, Stream jsonOutputStream, GraphJsonSettings settings)
         {
-            Contract.Requires(graph != null);
-            Contract.Requires(jsonOutputStream != null);
-            Contract.Requires(settings != null);
+            if (graph == null)
+                throw new ArgumentNullException(nameof(graph));
+            if (jsonOutputStream == null)
+                throw new ArgumentNullException(nameof(jsonOutputStream));
+            if (settings == null)
+                throw new ArgumentNullException(nameof(settings));
 
             var sw = new StreamWriter(jsonOutputStream);
             var jg = new JsonTextWriter(sw);
@@ -101,9 +111,11 @@ namespace Frontenac.Blueprints.Util.IO.GraphJson
         /// </summary>
         private static JObject JsonFromElement(IElement element, GraphJsonSettings settings)
         {
-            Contract.Requires(element != null);
-            Contract.Requires(settings != null);
-            Contract.Ensures(Contract.Result<JObject>() != null);
+            if (element == null)
+                throw new ArgumentNullException(nameof(element));
+
+            if (settings == null)
+                throw new ArgumentNullException(nameof(settings));
 
             var isEdge = element is IEdge;
             var map = element.ToDictionary(t => t.Key, t => t.Value);

@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Diagnostics.Contracts;
 using System.Linq;
 using System.Threading;
 using Frontenac.Blueprints;
@@ -60,10 +59,14 @@ namespace Frontenac.Grave
                           IGraphConfiguration configuration)
             : base(indexingService)
         {
-            Contract.Requires(factory != null);
-            Contract.Requires(instance != null);
-            Contract.Requires(indexingService != null);
-            Contract.Requires(configuration != null);
+            if (factory == null)
+                throw new ArgumentNullException(nameof(factory));
+            if (instance == null)
+                throw new ArgumentNullException(nameof(instance));
+            if (indexingService == null)
+                throw new ArgumentNullException(nameof(indexingService));
+            if (configuration == null)
+                throw new ArgumentNullException(nameof(configuration));
 
             _factory = factory;
             EsentContext = instance.CreateContext();
@@ -244,9 +247,12 @@ namespace Frontenac.Grave
         private static IEnumerable<string> FilterLabels(Direction direction, ICollection<string> labels, Direction directionFilter,
                                                         IEnumerable<string> columns, string prefix)
         {
-            Contract.Requires(labels != null);
-            Contract.Requires(columns != null);
-            Contract.Requires(!String.IsNullOrWhiteSpace(prefix));
+            if (labels == null)
+                throw new ArgumentNullException(nameof(labels));
+            if (columns == null)
+                throw new ArgumentNullException(nameof(columns));
+            if (string.IsNullOrWhiteSpace(prefix))
+                throw new ArgumentNullException(nameof(prefix));
 
             if (direction == directionFilter || direction == Direction.Both)
             {
@@ -261,8 +267,11 @@ namespace Frontenac.Grave
 
         public virtual object GetProperty(GraveElement element, string key)
         {
-            Contract.Requires(element != null);
-            Contract.Requires(!string.IsNullOrWhiteSpace(key));
+            if (element == null)
+                throw new ArgumentNullException(nameof(element));
+
+            if (string.IsNullOrWhiteSpace(key))
+                throw new ArgumentNullException(nameof(key));
 
             var table = element is IVertex
                             ? (EsentTable)EsentContext.VertexTable
@@ -273,7 +282,8 @@ namespace Frontenac.Grave
 
         public virtual IEnumerable<string> GetPropertyKeys(GraveElement element)
         {
-            Contract.Requires(element != null);
+            if (element == null)
+                throw new ArgumentNullException(nameof(element));
 
             var table = element is IVertex
                             ? (EsentTable)EsentContext.VertexTable
@@ -284,8 +294,11 @@ namespace Frontenac.Grave
 
         public virtual void SetProperty(GraveElement element, string key, object value)
         {
-            Contract.Requires(element != null);
-            Contract.Requires(!string.IsNullOrWhiteSpace(key));
+            if (element == null)
+                throw new ArgumentNullException(nameof(element));
+
+            if (string.IsNullOrWhiteSpace(key))
+                throw new ArgumentNullException(nameof(key));
 
             var table = element is IVertex
                             ? (EsentTable)EsentContext.VertexTable
@@ -297,8 +310,11 @@ namespace Frontenac.Grave
 
         public virtual object RemoveProperty(GraveElement element, string key)
         {
-            Contract.Requires(element != null);
-            Contract.Requires(!string.IsNullOrWhiteSpace(key));
+            if (element == null)
+                throw new ArgumentNullException(nameof(element));
+
+            if (string.IsNullOrWhiteSpace(key))
+                throw new ArgumentNullException(nameof(key));
 
             var table = element is IVertex
                             ? (EsentTable)EsentContext.VertexTable

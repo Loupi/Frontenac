@@ -1,6 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Diagnostics.Contracts;
+using Frontenac.Blueprints.Contracts;
 
 namespace Frontenac.Blueprints.Util.Wrappers.ReadOnly
 {
@@ -11,13 +11,16 @@ namespace Frontenac.Blueprints.Util.Wrappers.ReadOnly
         public ReadOnlyIndexableGraph(IIndexableGraph baseIndexableGraph)
             : base(baseIndexableGraph)
         {
-            Contract.Requires(baseIndexableGraph != null);
+            if (baseIndexableGraph == null)
+                throw new ArgumentNullException(nameof(baseIndexableGraph));
 
             _baseIndexableGraph = baseIndexableGraph;
         }
 
         public void DropIndex(string indexName)
         {
+            IndexableGraphContract.ValidateDropIndex(indexName);
+
             throw new InvalidOperationException(ReadOnlyTokens.MutateErrorMessage);
         }
 
@@ -28,6 +31,8 @@ namespace Frontenac.Blueprints.Util.Wrappers.ReadOnly
 
         public IIndex GetIndex(string indexName, Type indexClass)
         {
+            IndexableGraphContract.ValidateGetIndex(indexName, indexClass);
+
             var index = _baseIndexableGraph.GetIndex(indexName, indexClass);
             return new ReadOnlyIndex(this, index);
         }

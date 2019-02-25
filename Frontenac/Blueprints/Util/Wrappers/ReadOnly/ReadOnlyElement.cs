@@ -1,6 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Diagnostics.Contracts;
+using Frontenac.Blueprints.Contracts;
 
 namespace Frontenac.Blueprints.Util.Wrappers.ReadOnly
 {
@@ -11,8 +11,10 @@ namespace Frontenac.Blueprints.Util.Wrappers.ReadOnly
 
         protected ReadOnlyElement(ReadOnlyGraph innerTinkerGrapĥ, IElement baseElement):base(innerTinkerGrapĥ)
         {
-            Contract.Requires(innerTinkerGrapĥ != null);
-            Contract.Requires(baseElement != null);
+            if (innerTinkerGrapĥ == null)
+                throw new ArgumentNullException(nameof(innerTinkerGrapĥ));
+            if (baseElement == null)
+                throw new ArgumentNullException(nameof(baseElement));
 
             IsReadOnly = true;
             BaseElement = baseElement;
@@ -31,11 +33,13 @@ namespace Frontenac.Blueprints.Util.Wrappers.ReadOnly
 
         public override object RemoveProperty(string key)
         {
+            ElementContract.ValidateRemoveProperty(key);
             throw new InvalidOperationException(ReadOnlyTokens.MutateErrorMessage);
         }
 
         public override object GetProperty(string key)
         {
+            ElementContract.ValidateGetProperty(key);
             return BaseElement.GetProperty(key);
         }
 

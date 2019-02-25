@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Diagnostics.Contracts;
 using System.Linq;
+using Frontenac.Blueprints.Contracts;
 
 namespace Frontenac.Blueprints.Util.Wrappers.Partition
 {
@@ -12,8 +12,10 @@ namespace Frontenac.Blueprints.Util.Wrappers.Partition
 
         public PartitionIndex(IIndex rawIndex, PartitionGraph graph)
         {
-            Contract.Requires(rawIndex != null);
-            Contract.Requires(graph != null);
+            if (rawIndex == null)
+                throw new ArgumentNullException(nameof(rawIndex));
+            if (graph == null)
+                throw new ArgumentNullException(nameof(graph));
 
             RawIndex = rawIndex;
             Graph = graph;
@@ -31,11 +33,15 @@ namespace Frontenac.Blueprints.Util.Wrappers.Partition
 
         public long Count(string key, object value)
         {
+            IndexContract.ValidateCount(key, value);
+
             return Get(key, value).LongCount();
         }
 
         public void Remove(string key, object value, IElement element)
         {
+            IndexContract.ValidateRemove(key, value, element);
+
             var partitionElement = element as PartitionElement;
             if (partitionElement != null)
                 RawIndex.Remove(key, value, partitionElement.GetBaseElement());
@@ -43,6 +49,8 @@ namespace Frontenac.Blueprints.Util.Wrappers.Partition
 
         public void Put(string key, object value, IElement element)
         {
+            IndexContract.ValidatePut(key, value, element);
+
             var partitionElement = element as PartitionElement;
             if (partitionElement != null)
                 RawIndex.Put(key, value, partitionElement.GetBaseElement());
@@ -50,6 +58,8 @@ namespace Frontenac.Blueprints.Util.Wrappers.Partition
 
         public IEnumerable<IElement> Get(string key, object value)
         {
+            IndexContract.ValidateGet(key, value);
+
             if (typeof (IVertex).IsAssignableFrom(Type))
                 return new PartitionVertexIterable((IEnumerable<IVertex>) RawIndex.Get(key, value), Graph);
             return new PartitionEdgeIterable((IEnumerable<IEdge>) RawIndex.Get(key, value), Graph);

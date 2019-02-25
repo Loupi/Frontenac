@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
-using System.Diagnostics.Contracts;
 using System.Linq;
 using System.Reflection;
 using Castle.Components.DictionaryAdapter;
@@ -30,7 +29,8 @@ namespace Frontenac.Gremlinq.RelationAccessors
             where TEdgeModel : class
             where TVertexModel : class
         {
-            Contract.Requires(elements != null);
+            if (elements == null)
+                throw new ArgumentNullException(nameof(elements));
 
             var edges = elements.OfType<KeyValuePair<IEdge, IVertex>>();
 
@@ -52,7 +52,8 @@ namespace Frontenac.Gremlinq.RelationAccessors
             where TEdgeModel : class
             where TVertexModel : class
         {
-            Contract.Requires(!string.IsNullOrEmpty(key));
+            if (string.IsNullOrEmpty(key))
+                throw new ArgumentNullException(nameof(key));
 
             return new EdgeVertexRelationCollection<TEdgeModel, TVertexModel>((IVertex)element, key, accessor);
         }
@@ -65,8 +66,10 @@ namespace Frontenac.Gremlinq.RelationAccessors
             where TEdgeModel : class
             where TVertexModel : class
         {
-            Contract.Requires(!string.IsNullOrEmpty(key));
-            Contract.Requires(newValue != null);
+            if (string.IsNullOrEmpty(key))
+                throw new ArgumentNullException(nameof(key));
+            if (newValue == null)
+                throw new ArgumentNullException(nameof(newValue));
 
             new EdgeVertexRelationCollection<TEdgeModel, TVertexModel>((IVertex)element, key, accessor).Add((KeyValuePair<TEdgeModel, TVertexModel>)newValue);
         }
@@ -77,8 +80,10 @@ namespace Frontenac.Gremlinq.RelationAccessors
             where TEdgeModel : class
             where TVertexModel : class
         {
-            Contract.Requires(!string.IsNullOrEmpty(key));
-            Contract.Requires(newValue != null);
+            if (string.IsNullOrEmpty(key))
+                throw new ArgumentNullException(nameof(key));
+            if (newValue == null)
+                throw new ArgumentNullException(nameof(newValue));
 
             new EdgeVertexRelationCollection<TEdgeModel, TVertexModel>((IVertex)element, key, accessor).Remove((KeyValuePair<TEdgeModel, TVertexModel>)newValue);
         }
@@ -111,8 +116,10 @@ namespace Frontenac.Gremlinq.RelationAccessors
 
         public void SetRelation(IDictionaryAdapter dictionaryAdapter, IElement element, PropertyInfo property, string key, object value, object id)
         {
-            Contract.Requires(dictionaryAdapter != null);
-            Contract.Requires(!string.IsNullOrEmpty(key));
+            if (dictionaryAdapter == null)
+                throw new ArgumentNullException(nameof(dictionaryAdapter));
+            if (string.IsNullOrEmpty(key))
+                throw new ArgumentNullException(nameof(key));
 
             var vertex = element as IVertex;
             if (vertex == null)

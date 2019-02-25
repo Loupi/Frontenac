@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Diagnostics.Contracts;
 using System.Runtime.Serialization;
 using Frontenac.Blueprints.Geo;
 using Frontenac.Infrastructure;
@@ -20,7 +19,8 @@ namespace Frontenac.Lucene
 
         public LuceneDocument(Document document)
         {
-            Contract.Requires(document != null);
+            if (document == null)
+                throw new ArgumentNullException(nameof(document));
 
             _document = document;
         }

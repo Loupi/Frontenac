@@ -1,4 +1,5 @@
-﻿using System.Diagnostics.Contracts;
+﻿using System;
+using System.Diagnostics.Contracts;
 
 namespace Frontenac.Infrastructure.Indexing
 {
@@ -7,7 +8,8 @@ namespace Frontenac.Infrastructure.Indexing
     {
         public bool Write(string key, object value)
         {
-            Contract.Requires(!string.IsNullOrWhiteSpace(key));
+            if (string.IsNullOrWhiteSpace(key))
+                throw new ArgumentNullException(nameof(key));
             return default(bool);
         }
 

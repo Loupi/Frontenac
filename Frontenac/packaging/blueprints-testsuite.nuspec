@@ -2,22 +2,26 @@
 <package xmlns="http://schemas.microsoft.com/packaging/2010/07/nuspec.xsd">
 	<metadata>
 		<id>Frontenac.Blueprints.TestSuite</id>
-		<version>2.3.10</version>
+		<version>2.5.0</version>
 		<authors>Loupi</authors>
 		<projectUrl>https://github.com/Loupi/Frontenac</projectUrl>
 		<requireLicenseAcceptance>false</requireLicenseAcceptance>
 		<description>A .NET port of the Tinkerpop Stack. Blueprints TestSuite provides a standard testsuite for the graph libraries that implement the Blueprints property graph model.</description>
 		<dependencies>
-			<dependency id="Frontenac.Blueprints" />
+			<dependency id="Frontenac.Blueprints" version="2.5.0" />
 		</dependencies>
+		<references>
+			<reference file="Frontenac.Blueprints.TestSuite.dll" />
+		</references>
 	</metadata>
 	<files>
-		<file src="..\Blueprints.TestSuite-.NET4.0\bin\Release\net40\Frontenac.Blueprints.dll" target="lib\net40\Frontenac.Blueprints.TestSuite.dll" />
-		
-		<file src="..\Blueprints.TestSuite-.NET4.0\bin\Release\net40-client\Frontenac.Blueprints.dll" target="lib\net40-client\Frontenac.Blueprints.TestSuite.dll" />
+		<file src="..\Blueprints.TestSuite-.NET4.0\bin\Release\net40\Frontenac.Blueprints.TestSuite.dll" target="lib\net40\Frontenac.Blueprints.TestSuite.dll" />
 		
 		<!--
-		<file src="..\Blueprints.TestSuite\bin\Release\net45\Frontenac.Blueprints.dll" target="lib\net45\Frontenac.Blueprints.TestSuite.dll" />
+		<file src="..\Blueprints.TestSuite-.NET4.0\bin\Release\net40-client\Frontenac.Blueprints.TestSuite.dll" target="lib\net40-client\Frontenac.Blueprints.TestSuite.dll" />
+		<file src="..\Blueprints.TestSuite\bin\Release\net45\Frontenac.Blueprints.TestSuite.dll" target="lib\net45\Frontenac.Blueprints.TestSuite.dll" />
 		-->
+
+		<file src="..\Blueprints.TestSuite-.NETSTANDARD\bin\Release\netstandard2.0\Frontenac.Blueprints.TestSuite.dll" target="lib\netstandard2.0\Frontenac.Blueprints.TestSuite.dll" />
 	</files>
 </package>

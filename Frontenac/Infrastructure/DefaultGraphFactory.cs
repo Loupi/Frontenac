@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Diagnostics.Contracts;
 using Frontenac.Blueprints;
 
 namespace Frontenac.Infrastructure
@@ -14,7 +13,8 @@ namespace Frontenac.Infrastructure
 
         public DefaultGraphFactory(IContainer container)
         {
-            Contract.Requires(container != null);
+            if (container == null)
+                throw new ArgumentNullException(nameof(container));
 
             _container = container;
         }

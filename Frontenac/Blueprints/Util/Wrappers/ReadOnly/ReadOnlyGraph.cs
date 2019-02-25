@@ -1,6 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Diagnostics.Contracts;
+using Frontenac.Blueprints.Contracts;
 
 namespace Frontenac.Blueprints.Util.Wrappers.ReadOnly
 {
@@ -15,7 +15,8 @@ namespace Frontenac.Blueprints.Util.Wrappers.ReadOnly
 
         public ReadOnlyGraph(IGraph baseGraph)
         {
-            Contract.Requires(baseGraph != null);
+            if (baseGraph == null)
+                throw new ArgumentNullException(nameof(baseGraph));
 
             BaseGraph = baseGraph;
             _features = BaseGraph.Features.CopyFeatures();
@@ -24,6 +25,7 @@ namespace Frontenac.Blueprints.Util.Wrappers.ReadOnly
 
         public void RemoveVertex(IVertex vertex)
         {
+            GraphContract.ValidateRemoveVertex(vertex);
             throw new InvalidOperationException(ReadOnlyTokens.MutateErrorMessage);
         }
 
@@ -34,6 +36,7 @@ namespace Frontenac.Blueprints.Util.Wrappers.ReadOnly
 
         public IVertex GetVertex(object id)
         {
+            GraphContract.ValidateGetVertex(id);
             var vertex = BaseGraph.GetVertex(id);
             return null == vertex ? null : new ReadOnlyVertex(this, vertex);
         }
@@ -66,6 +69,7 @@ namespace Frontenac.Blueprints.Util.Wrappers.ReadOnly
 
         public IEnumerable<IVertex> GetVertices(string key, object value)
         {
+            GraphContract.ValidateGetVertices(key, value);
             return new ReadOnlyVertexIterable(this, BaseGraph.GetVertices(key, value));
         }
 

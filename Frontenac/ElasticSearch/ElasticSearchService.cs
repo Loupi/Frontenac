@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Diagnostics.Contracts;
 using System.Globalization;
 using Frontenac.Blueprints;
 using Frontenac.Blueprints.Geo;
@@ -48,16 +47,16 @@ namespace Frontenac.ElasticSearch
 
         private string GetIndexName(Type indexType)
         {
-            Contract.Requires(indexType != null);
-            Contract.Ensures(!string.IsNullOrWhiteSpace(Contract.Result<string>()));
+            if (indexType == null)
+                throw new ArgumentNullException(nameof(indexType));
 
             return indexType == typeof(IVertex) ? VertexIndicesColumnName : EdgeIndicesColumnName;
         }
 
         private string GetUserIndexName(Type indexType)
         {
-            Contract.Requires(indexType != null);
-            Contract.Ensures(!string.IsNullOrWhiteSpace(Contract.Result<string>()));
+            if (indexType == null)
+                throw new ArgumentNullException(nameof(indexType));
 
             return indexType == typeof (IVertex) ? UserVertexIndicesColumnName : UserEdgeIndicesColumnName;
         }
@@ -211,7 +210,8 @@ namespace Frontenac.ElasticSearch
 
         static QueryContainer CreateComparableQuery(ComparableQueryElement comparable)
         {
-            Contract.Requires(comparable != null);
+            if (comparable == null)
+                throw new ArgumentNullException(nameof(comparable));
 
             object min;
             object max;
@@ -284,8 +284,8 @@ namespace Frontenac.ElasticSearch
 
         private static object GetMinValue(object value)
         {
-            Contract.Requires(value != null);
-            Contract.Ensures(Contract.Result<object>() != null);
+            if (value == null)
+                throw new ArgumentNullException(nameof(value));
 
             if (value is double || value is float)
                 return double.MinValue;
@@ -295,8 +295,8 @@ namespace Frontenac.ElasticSearch
 
         private static object GetMaxValue(object value)
         {
-            Contract.Requires(value != null);
-            Contract.Ensures(Contract.Result<object>() != null);
+            if (value == null)
+                throw new ArgumentNullException(nameof(value));
 
             if (value is double || value is float)
                 return double.MaxValue;

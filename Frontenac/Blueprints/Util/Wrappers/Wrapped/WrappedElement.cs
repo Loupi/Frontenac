@@ -1,5 +1,6 @@
-﻿using System.Collections.Generic;
-using System.Diagnostics.Contracts;
+﻿using System;
+using System.Collections.Generic;
+using Frontenac.Blueprints.Contracts;
 
 namespace Frontenac.Blueprints.Util.Wrappers.Wrapped
 {
@@ -7,7 +8,8 @@ namespace Frontenac.Blueprints.Util.Wrappers.Wrapped
     {
         protected WrappedElement(IElement element):base(element.Graph)
         {
-            Contract.Requires(element != null);
+            if (element == null)
+                throw new ArgumentNullException(nameof(element));
 
             Element = element;
         }
@@ -19,11 +21,13 @@ namespace Frontenac.Blueprints.Util.Wrappers.Wrapped
 
         public override object GetProperty(string key)
         {
+            ElementContract.ValidateGetProperty(key);
             return Element.GetProperty(key);
         }
 
         public override object RemoveProperty(string key)
         {
+            ElementContract.ValidateRemoveProperty(key);
             return Element.RemoveProperty(key);
         }
 

@@ -3,7 +3,6 @@ using System.Collections;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.ComponentModel;
-using System.Diagnostics.Contracts;
 using System.Reflection;
 using System.Runtime.CompilerServices;
 using Castle.Components.DictionaryAdapter;
@@ -190,7 +189,8 @@ namespace Frontenac.Gremlinq.RelationAccessors
 
         bool TryCreateAccessor(Type propertyType, bool elementIsEdge, out RelationAccessor accessor)
         {
-            Contract.Requires(propertyType != null);
+            if (propertyType == null)
+                throw new ArgumentNullException(nameof(propertyType));
 
             Type modelType;
             Type edgeType;
@@ -234,7 +234,8 @@ namespace Frontenac.Gremlinq.RelationAccessors
 
         static bool GetModels(Type propertyType, out Type modelType, out Type edgeType, out bool isCollection)
         {
-            Contract.Requires(propertyType != null);
+            if (propertyType == null)
+                throw new ArgumentNullException(nameof(propertyType));
 
             var isEnumerable = false;
 

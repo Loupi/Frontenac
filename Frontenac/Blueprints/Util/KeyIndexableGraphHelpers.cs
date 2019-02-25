@@ -1,5 +1,5 @@
-﻿using System.Collections.Generic;
-using System.Diagnostics.Contracts;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 
 namespace Frontenac.Blueprints.Util
@@ -20,9 +20,12 @@ namespace Frontenac.Blueprints.Util
         public static long ReIndexElements<T>(this IGraph graph, IEnumerable<T> elements, IEnumerable<string> keys)
             where T : IElement
         {
-            Contract.Requires(graph != null);
-            Contract.Requires(elements != null);
-            Contract.Requires(keys != null);
+            if (graph == null)
+                throw new ArgumentNullException(nameof(graph));
+            if (elements == null)
+                throw new ArgumentNullException(nameof(elements));
+            if (keys == null)
+                throw new ArgumentNullException(nameof(keys));
 
             var isTransactional = graph is ITransactionalGraph;
             var counter = 0;

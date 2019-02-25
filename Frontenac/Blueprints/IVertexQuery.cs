@@ -1,13 +1,10 @@
 ﻿using System.Collections.Generic;
-using System.Diagnostics.Contracts;
-using Frontenac.Blueprints.Contracts;
 
 namespace Frontenac.Blueprints
 {
     /// <summary>
     ///     A VertexQuery object defines a collection of filters and modifiers that are used to intelligently select edges from a vertex.
     /// </summary>
-    [ContractClass(typeof (VertexQueryContract))]
     public interface IVertexQuery : IQuery
     {
         /// <summary>

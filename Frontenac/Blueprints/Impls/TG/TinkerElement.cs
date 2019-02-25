@@ -1,8 +1,8 @@
 ﻿using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
-using System.Diagnostics.Contracts;
 using System.Linq;
+using Frontenac.Blueprints.Contracts;
 using Frontenac.Blueprints.Util;
 
 namespace Frontenac.Blueprints.Impls.TG
@@ -16,8 +16,10 @@ namespace Frontenac.Blueprints.Impls.TG
 
         protected TinkerElement(string id, TinkerGrapĥ tinkerGrapĥ):base(tinkerGrapĥ)
         {
-            Contract.Requires(id != null);
-            Contract.Requires(tinkerGrapĥ != null);
+            if (id == null)
+                throw new ArgumentNullException(nameof(id));
+            if (tinkerGrapĥ == null)
+                throw new ArgumentNullException(nameof(tinkerGrapĥ));
             TinkerGrapĥ = tinkerGrapĥ;
             RawId = id;
         }
@@ -29,6 +31,7 @@ namespace Frontenac.Blueprints.Impls.TG
 
         public override object GetProperty(string key)
         {
+            ElementContract.ValidateGetProperty(key);
             return Properties.Get(key);
         }
 
@@ -44,6 +47,7 @@ namespace Frontenac.Blueprints.Impls.TG
 
         public override object RemoveProperty(string key)
         {
+            ElementContract.ValidateRemoveProperty(key);
             var oldValue = Properties.JavaRemove(key);
             if (this is TinkerVertex)
                 TinkerGrapĥ.VertexKeyIndex.AutoRemove(key, oldValue, this);

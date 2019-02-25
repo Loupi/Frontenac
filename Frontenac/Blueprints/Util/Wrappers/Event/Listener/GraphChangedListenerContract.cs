@@ -1,55 +1,68 @@
-﻿using System.Collections.Generic;
-using System.Diagnostics.Contracts;
+﻿using System;
+using System.Collections.Generic;
 
 namespace Frontenac.Blueprints.Util.Wrappers.Event.Listener
 {
-    [ContractClassFor(typeof (IGraphChangedListener))]
-    public abstract class GraphChangedListenerContract : IGraphChangedListener
+    public static class GraphChangedListenerContract
     {
-        public void VertexAdded(IVertex vertex)
+        public static void ValidateVertexAdded(IVertex vertex)
         {
-            Contract.Requires(vertex != null);
+            if (vertex == null)
+                throw new ArgumentNullException(nameof(vertex));
         }
 
-        public void VertexPropertyChanged(IVertex vertex, string key, object oldValue, object setValue)
+        public static void ValidateVertexPropertyChanged(IVertex vertex, string key, object oldValue, object setValue)
         {
-            Contract.Requires(vertex != null);
-            Contract.Requires(!string.IsNullOrWhiteSpace(key));
+            if (vertex == null)
+                throw new ArgumentNullException(nameof(vertex));
+            if (string.IsNullOrWhiteSpace(key))
+                throw new ArgumentNullException(nameof(key));
         }
 
-        public void VertexPropertyRemoved(IVertex vertex, string key, object removedValue)
+        public static void ValidateVertexPropertyRemoved(IVertex vertex, string key, object removedValue)
         {
-            Contract.Requires(vertex != null);
-            Contract.Requires(!string.IsNullOrWhiteSpace(key));
+            if (vertex == null)
+                throw new ArgumentNullException(nameof(vertex));
+            if (string.IsNullOrWhiteSpace(key))
+                throw new ArgumentNullException(nameof(key));
         }
 
-        public void VertexRemoved(IVertex vertex, IDictionary<string, object> props)
+        public static void ValidateVertexRemoved(IVertex vertex, IDictionary<string, object> props)
         {
-            Contract.Requires(vertex != null);
-            Contract.Requires(props != null);
+            if (vertex == null)
+                throw new ArgumentNullException(nameof(vertex));
+            if (props == null)
+                throw new ArgumentNullException(nameof(props));
         }
 
-        public void EdgeAdded(IEdge edge)
+        public static void ValidateEdgeAdded(IEdge edge)
         {
-            Contract.Requires(edge != null);
+            if (edge == null)
+                throw new ArgumentNullException(nameof(edge));
         }
 
-        public void EdgePropertyChanged(IEdge edge, string key, object oldValue, object setValue)
+        public static void ValidateEdgePropertyChanged(IEdge edge, string key, object oldValue, object setValue)
         {
-            Contract.Requires(edge != null);
-            Contract.Requires(!string.IsNullOrWhiteSpace(key));
+            if (edge == null)
+                throw new ArgumentNullException(nameof(edge));
+            if (string.IsNullOrWhiteSpace(key))
+                throw new ArgumentNullException(nameof(key));
         }
 
-        public void EdgePropertyRemoved(IEdge edge, string key, object removedValue)
+        public static void ValidateEdgePropertyRemoved(IEdge edge, string key, object removedValue)
         {
-            Contract.Requires(edge != null);
-            Contract.Requires(!string.IsNullOrWhiteSpace(key));
+            if (edge == null)
+                throw new ArgumentNullException(nameof(edge));
+            if (string.IsNullOrWhiteSpace(key))
+                throw new ArgumentNullException(nameof(key));
         }
 
-        public void EdgeRemoved(IEdge edge, IDictionary<string, object> props)
+        public static void ValidateEdgeRemoved(IEdge edge, IDictionary<string, object> props)
         {
-            Contract.Requires(edge != null);
-            Contract.Requires(props != null);
+            if (edge == null)
+                throw new ArgumentNullException(nameof(edge));
+            if (props == null)
+                throw new ArgumentNullException(nameof(props));
         }
     }
 }

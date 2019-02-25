@@ -1,10 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics;
-using System.Diagnostics.Contracts;
 using System.Linq;
 using System.Runtime.CompilerServices;
 using Frontenac.Blueprints;
+using Frontenac.Gremlinq.Contracts;
 
 namespace Frontenac.Gremlinq
 {
@@ -88,13 +88,16 @@ namespace Frontenac.Gremlinq
 
         public GraphBackedTypeProvider(string typePropertyName)
         {
-            Contract.Requires(!string.IsNullOrEmpty(typePropertyName));
+            if (string.IsNullOrEmpty(typePropertyName))
+                throw new ArgumentNullException(nameof(typePropertyName));
 
             _typePropertyName = typePropertyName;
         }
 
         public virtual void SetType(IElement element, Type type)
         {
+            TypeProviderContract.ValidateSetType(element, type);
+
             var graph = element.Graph;
             var instanceTypes = _perGraphInstanceTypes.GetOrCreateValue(graph);
             instanceTypes.LoadTypesVertex(graph, _typePropertyName);

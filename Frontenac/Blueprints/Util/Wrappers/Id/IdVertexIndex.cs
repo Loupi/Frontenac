@@ -1,6 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Diagnostics.Contracts;
+using Frontenac.Blueprints.Contracts;
 
 namespace Frontenac.Blueprints.Util.Wrappers.Id
 {
@@ -11,8 +11,10 @@ namespace Frontenac.Blueprints.Util.Wrappers.Id
 
         public IdVertexIndex(IIndex baseIndex, IdGraph idGraph)
         {
-            Contract.Requires(baseIndex != null);
-            Contract.Requires(idGraph != null);
+            if (baseIndex == null)
+                throw new ArgumentNullException(nameof(baseIndex));
+            if (idGraph == null)
+                throw new ArgumentNullException(nameof(idGraph));
 
             _idGraph = idGraph;
             _baseIndex = baseIndex;
@@ -30,11 +32,15 @@ namespace Frontenac.Blueprints.Util.Wrappers.Id
 
         public void Put(string key, object value, IElement element)
         {
+            IndexContract.ValidatePut(key, value, element);
+
             _baseIndex.Put(key, value, GetBaseElement(element));
         }
 
         public IEnumerable<IElement> Get(string key, object value)
         {
+            IndexContract.ValidateGet(key, value);
+
             return new IdVertexIterable(_baseIndex.Get(key, value), _idGraph);
         }
 
@@ -45,18 +51,23 @@ namespace Frontenac.Blueprints.Util.Wrappers.Id
 
         public long Count(string key, object value)
         {
+            IndexContract.ValidateCount(key, value);
+
             return _baseIndex.Count(key, value);
         }
 
         public void Remove(string key, object value, IElement element)
         {
+            IndexContract.ValidateRemove(key, value, element);
+
             _baseIndex.Remove(key, value, GetBaseElement(element));
         }
 
         private IVertex GetBaseElement(IElement e)
         {
-            Contract.Requires(e is IdVertex);
-            Contract.Ensures(Contract.Result<IVertex>() != null);
+            if(!(e is IdVertex))
+                throw new ArgumentException("e must be of type IdVertex");
+
             return ((IdVertex) e).GetBaseVertex();
         }
 

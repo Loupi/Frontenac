@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Diagnostics.Contracts;
 using System.Linq;
 
 namespace Frontenac.Blueprints.Util.Wrappers.Batch.Cache
@@ -21,6 +20,8 @@ namespace Frontenac.Blueprints.Util.Wrappers.Batch.Cache
 
         public override string Compress(string input)
         {
+            StringCompressionContract.ValidateCompress(input);
+
             var url = SplitUrl(input);
             string prefix;
             _urlPrefix.TryGetValue(url[0], out prefix);
@@ -37,8 +38,8 @@ namespace Frontenac.Blueprints.Util.Wrappers.Batch.Cache
 
         private static string[] SplitUrl(string url)
         {
-            Contract.Requires(url != null);
-            Contract.Ensures(Contract.Result<string[]>() != null);
+            if (url == null)
+                throw new ArgumentNullException(nameof(url));
 
             var res = new string[2];
             var pos = UrlDelimiters.Select(delimiter => url.LastIndexOf(delimiter)).Concat(new[] {-1}).Max();
@@ -64,8 +65,6 @@ namespace Frontenac.Blueprints.Util.Wrappers.Batch.Cache
 
         private static string IntToBase36String(int value)
         {
-            Contract.Ensures(Contract.Result<string>() != null);
-
             return IntToStringFast(value, Base36Chars);
         }
 
@@ -74,8 +73,8 @@ namespace Frontenac.Blueprints.Util.Wrappers.Batch.Cache
         /// </summary>
         private static string IntToStringFast(int value, IList<char> baseChars)
         {
-            Contract.Requires(baseChars != null);
-            Contract.Ensures(Contract.Result<string>() != null);
+            if (baseChars == null)
+                throw new ArgumentNullException(nameof(baseChars));
 
             // 32 is the worst cast buffer size for base 2 and int.MaxValue
             var i = 32;

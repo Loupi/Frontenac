@@ -1,42 +1,37 @@
 ﻿{"nodes":[{
-  "name": "ripple",
-  "lang": "java",
-  "id": "5"
-},{
-  "age": 32,
-  "name": "josh",
-  "id": "4"
-},{
-  "age": 33,
-  "name": "loupi",
-  "lang": "c#",
-  "id": "7"
-},{
-  "age": 35,
-  "name": "peter",
-  "id": "6"
-},{
-  "age": 29,
-  "name": "marko",
-  "id": "1"
-},{
   "name": "lop",
   "lang": "java",
   "id": "3"
 },{
-  "age": 27,
   "name": "vadas",
+  "age": 27,
   "id": "2"
-}],"edges":[{
-  "weight": 0.2,
-  "source": "3",
-  "target": "6",
-  "caption": "created"
 },{
-  "weight": 0.5,
-  "source": "2",
-  "target": "1",
-  "caption": "knows"
+  "name": "ripple",
+  "lang": "java",
+  "id": "5"
+},{
+  "name": "josh",
+  "age": 32,
+  "id": "4"
+},{
+  "name": "loupi",
+  "lang": "c#",
+  "age": 33,
+  "id": "7"
+},{
+  "name": "peter",
+  "age": 35,
+  "id": "6"
+},{
+  "name": "marko",
+  "age": 29,
+  "id": "1"
+}],"edges":[{
+  "weight": 0.4,
+  "source": "3",
+  "target": "4",
+  "caption": "created"
 },{
   "weight": 0.4,
   "source": "3",
@@ -48,13 +43,18 @@
   "target": "1",
   "caption": "knows"
 },{
-  "weight": 0.4,
+  "weight": 0.2,
   "source": "3",
-  "target": "4",
+  "target": "6",
   "caption": "created"
 },{
   "weight": 1.0,
   "source": "5",
   "target": "4",
   "caption": "created"
+},{
+  "weight": 0.5,
+  "source": "2",
+  "target": "1",
+  "caption": "knows"
 }]}

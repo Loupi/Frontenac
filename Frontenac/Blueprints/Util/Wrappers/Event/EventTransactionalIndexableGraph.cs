@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Diagnostics.Contracts;
 
 namespace Frontenac.Blueprints.Util.Wrappers.Event
 {
@@ -14,7 +13,8 @@ namespace Frontenac.Blueprints.Util.Wrappers.Event
         public EventTransactionalIndexableGraph(IIndexableGraph baseIndexableGraph)
             : base(baseIndexableGraph)
         {
-            Contract.Requires(baseIndexableGraph is ITransactionalGraph);
+            if(!(baseIndexableGraph is ITransactionalGraph))
+                throw new ArgumentException("baseIndexableGraph must be of type ITransactionalGraph");
 
             TransactionalGraph = baseIndexableGraph as ITransactionalGraph;
             Trigger = new EventTrigger(this, true);

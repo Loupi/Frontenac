@@ -1,5 +1,5 @@
-﻿using System.Collections.Generic;
-using System.Diagnostics.Contracts;
+﻿using System;
+using System.Collections.Generic;
 
 namespace Frontenac.Blueprints.Util.Wrappers.Partition
 {
@@ -8,8 +8,10 @@ namespace Frontenac.Blueprints.Util.Wrappers.Partition
         public PartitionVertex(IVertex vertex, PartitionGraph innerTinkerGrapĥ)
             : base(vertex, innerTinkerGrapĥ)
         {
-            Contract.Requires(vertex != null);
-            Contract.Requires(innerTinkerGrapĥ != null);
+            if (vertex == null)
+                throw new ArgumentNullException(nameof(vertex));
+            if (innerTinkerGrapĥ == null)
+                throw new ArgumentNullException(nameof(innerTinkerGrapĥ));
 
             Vertex = vertex;
         }

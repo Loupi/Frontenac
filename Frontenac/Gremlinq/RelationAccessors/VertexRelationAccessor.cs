@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
-using System.Diagnostics.Contracts;
 using System.Linq;
 using System.Reflection;
 using Frontenac.Blueprints;
@@ -28,7 +27,8 @@ namespace Frontenac.Gremlinq.RelationAccessors
 // ReSharper restore UnusedMember.Local
             where TModel : class
         {
-            Contract.Requires(elements != null);
+            if (elements == null)
+                throw new ArgumentNullException(nameof(elements));
 
             var vertices = elements.OfType<IVertex>();
             var models = isWrapped
@@ -42,7 +42,8 @@ namespace Frontenac.Gremlinq.RelationAccessors
         private static object CreateCollection<TModel>(IElement element, string key, RelationAccessor accessor)
 // ReSharper restore UnusedMember.Local
         {
-            Contract.Requires(!string.IsNullOrEmpty(key));
+            if (string.IsNullOrEmpty(key))
+                throw new ArgumentNullException(nameof(key));
 
             return new VertexRelationCollection<TModel>((IVertex)element, key, accessor);
         }
@@ -54,7 +55,8 @@ namespace Frontenac.Gremlinq.RelationAccessors
 // ReSharper restore UnusedMember.Local
             where TModel : class
         {
-            Contract.Requires(!string.IsNullOrEmpty(key));
+            if (string.IsNullOrEmpty(key))
+                throw new ArgumentNullException(nameof(key));
 
             new VertexRelationCollection<TModel>((IVertex)element, key, accessor).Add((TModel)newValue);
         }
@@ -64,7 +66,8 @@ namespace Frontenac.Gremlinq.RelationAccessors
 // ReSharper restore UnusedMember.Local
             where TModel : class
         {
-            Contract.Requires(!string.IsNullOrEmpty(key));
+            if (string.IsNullOrEmpty(key))
+                throw new ArgumentNullException(nameof(key));
 
             new VertexRelationCollection<TModel>((IVertex)element, key, accessor).Remove((TModel)newValue);
         }
@@ -96,8 +99,10 @@ namespace Frontenac.Gremlinq.RelationAccessors
 
         public void SetRelation(IDictionaryAdapter dictionaryAdapter, IElement element, PropertyInfo property, string key, object value, object id)
         {
-            Contract.Requires(dictionaryAdapter != null);
-            Contract.Requires(!string.IsNullOrEmpty(key));
+            if (dictionaryAdapter == null)
+                throw new ArgumentNullException(nameof(dictionaryAdapter));
+            if (string.IsNullOrEmpty(key))
+                throw new ArgumentNullException(nameof(key));
 
             var vertex = element as IVertex;
             if(vertex == null)

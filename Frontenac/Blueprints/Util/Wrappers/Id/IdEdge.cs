@@ -1,4 +1,5 @@
-﻿using System.Diagnostics.Contracts;
+﻿using System;
+using Frontenac.Blueprints.Contracts;
 
 namespace Frontenac.Blueprints.Util.Wrappers.Id
 {
@@ -9,14 +10,17 @@ namespace Frontenac.Blueprints.Util.Wrappers.Id
         public IdEdge(IEdge baseEdge, IdGraph idInnerTinkerGrapĥ)
             : base(baseEdge, idInnerTinkerGrapĥ, idInnerTinkerGrapĥ.GetSupportEdgeIds())
         {
-            Contract.Requires(baseEdge != null);
-            Contract.Requires(idInnerTinkerGrapĥ != null);
+            if (baseEdge == null)
+                throw new ArgumentNullException(nameof(baseEdge));
+            if (idInnerTinkerGrapĥ == null)
+                throw new ArgumentNullException(nameof(idInnerTinkerGrapĥ));
 
             _baseEdge = baseEdge;
         }
 
         public IVertex GetVertex(Direction direction)
         {
+            EdgeContract.ValidateGetVertex(direction);
             return new IdVertex(((IEdge) BaseElement).GetVertex(direction), IdInnerTinkerGrapĥ);
         }
 
@@ -27,8 +31,6 @@ namespace Frontenac.Blueprints.Util.Wrappers.Id
 
         public IEdge GetBaseEdge()
         {
-            Contract.Ensures(Contract.Result<IEdge>() != null);
-
             return _baseEdge;
         }
 

@@ -1,4 +1,4 @@
-﻿using System.Diagnostics.Contracts;
+﻿using System;
 using Frontenac.Blueprints;
 
 namespace Frontenac.Infrastructure.Indexing
@@ -8,7 +8,8 @@ namespace Frontenac.Infrastructure.Indexing
         public ComparableQueryElement(string key, Compare comparison, object value)
             : base(key)
         {
-            Contract.Requires(!string.IsNullOrWhiteSpace(key));
+            if (string.IsNullOrWhiteSpace(key))
+                throw new ArgumentNullException(nameof(key));
 
             Comparison = comparison;
             Value = value;

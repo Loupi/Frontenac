@@ -1,6 +1,7 @@
-﻿using System.Collections.Generic;
-using System.Diagnostics.Contracts;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
+using Frontenac.Blueprints.Contracts;
 
 namespace Frontenac.Blueprints.Util.Wrappers.Partition
 {
@@ -11,8 +12,11 @@ namespace Frontenac.Blueprints.Util.Wrappers.Partition
 
         protected PartitionElement(IElement element, PartitionGraph partitionInnerTinkerGrapĥ):base(partitionInnerTinkerGrapĥ)
         {
-            Contract.Requires(element != null);
-            Contract.Requires(partitionInnerTinkerGrapĥ != null);
+            if (element == null)
+                throw new ArgumentNullException(nameof(element));
+
+            if (partitionInnerTinkerGrapĥ == null)
+                throw new ArgumentNullException(nameof(partitionInnerTinkerGrapĥ));
 
             Element = element;
             PartitionInnerTinkerGrapĥ = partitionInnerTinkerGrapĥ;
@@ -20,17 +24,21 @@ namespace Frontenac.Blueprints.Util.Wrappers.Partition
 
         public override void SetProperty(string key, object value)
         {
+            ElementContract.ValidateSetProperty(key, value);
+
             if (!key.Equals(PartitionInnerTinkerGrapĥ.PartitionKey))
                 Element.SetProperty(key, value);
         }
 
         public override object GetProperty(string key)
         {
+            ElementContract.ValidateGetProperty(key);
             return key.Equals(PartitionInnerTinkerGrapĥ.PartitionKey) ? null : Element.GetProperty(key);
         }
 
         public override object RemoveProperty(string key)
         {
+            ElementContract.ValidateRemoveProperty(key);
             return key.Equals(PartitionInnerTinkerGrapĥ.PartitionKey) ? null : Element.RemoveProperty(key);
         }
 
@@ -66,19 +74,18 @@ namespace Frontenac.Blueprints.Util.Wrappers.Partition
 
         public IElement GetBaseElement()
         {
-            Contract.Ensures(Contract.Result<IElement>() != null);
             return Element;
         }
 
         public string GetPartition()
         {
-            Contract.Ensures(!string.IsNullOrWhiteSpace(Contract.Result<string>()));
             return (string)Element.GetProperty(PartitionInnerTinkerGrapĥ.PartitionKey);
         }
 
         public void SetPartition(string partition)
         {
-            Contract.Requires(!string.IsNullOrWhiteSpace(partition));
+            if (string.IsNullOrWhiteSpace(partition))
+                throw new ArgumentNullException(nameof(partition));
             Element.SetProperty(PartitionInnerTinkerGrapĥ.PartitionKey, partition);
         }
 

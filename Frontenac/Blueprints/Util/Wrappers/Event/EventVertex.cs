@@ -1,5 +1,5 @@
-﻿using System.Collections.Generic;
-using System.Diagnostics.Contracts;
+﻿using System;
+using System.Collections.Generic;
 
 namespace Frontenac.Blueprints.Util.Wrappers.Event
 {
@@ -12,8 +12,10 @@ namespace Frontenac.Blueprints.Util.Wrappers.Event
         public EventVertex(IVertex vertex, EventGraph eventInnerTinkerGrapĥ)
             : base(vertex, eventInnerTinkerGrapĥ)
         {
-            Contract.Requires(vertex != null);
-            Contract.Requires(eventInnerTinkerGrapĥ != null);
+            if (vertex == null)
+                throw new ArgumentNullException(nameof(vertex));
+            if (eventInnerTinkerGrapĥ == null)
+                throw new ArgumentNullException(nameof(eventInnerTinkerGrapĥ));
 
             Vertex = vertex;
         }

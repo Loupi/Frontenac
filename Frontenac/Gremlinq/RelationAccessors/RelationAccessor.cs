@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections;
-using System.Diagnostics.Contracts;
 using System.Reflection;
 using Frontenac.Blueprints;
 
@@ -33,7 +32,8 @@ namespace Frontenac.Gremlinq.RelationAccessors
         //To boost reflected method invocation speed
         protected Delegate CreateMagicMethod(string delegateName, Type delegateType, params Type[] modelTypes)
         {
-            Contract.Requires(delegateName != null);
+            if (delegateName == null)
+                throw new ArgumentNullException(nameof(delegateName));
 
             var method = GetType().GetMethod(delegateName, BindingFlags.Static | BindingFlags.NonPublic);
             var genericMethod = method.MakeGenericMethod(modelTypes);
@@ -44,7 +44,8 @@ namespace Frontenac.Gremlinq.RelationAccessors
 
         public static Direction DirectionFromKey(string key, out string newKey)
         {
-            Contract.Requires(!string.IsNullOrEmpty(key));
+            if (string.IsNullOrEmpty(key))
+                throw new ArgumentNullException(nameof(key));
 
             Direction result;
             var minKey = key.ToLowerInvariant();

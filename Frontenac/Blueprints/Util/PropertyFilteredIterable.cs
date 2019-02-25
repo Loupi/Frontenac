@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
-using System.Diagnostics.Contracts;
 using System.Linq;
 
 namespace Frontenac.Blueprints.Util
@@ -20,8 +19,10 @@ namespace Frontenac.Blueprints.Util
 
         public PropertyFilteredIterable(string key, object value, IEnumerable<T> iterable)
         {
-            Contract.Requires(!string.IsNullOrWhiteSpace(key));
-            Contract.Requires(iterable != null);
+            if (string.IsNullOrWhiteSpace(key))
+                throw new ArgumentNullException(nameof(key));
+            if (iterable == null)
+                throw new ArgumentNullException(nameof(iterable));
 
             _key = key;
             _value = value;
@@ -71,7 +72,8 @@ namespace Frontenac.Blueprints.Util
 
             public PropertyFilteredIterableIterable(PropertyFilteredIterable<TU> propertyFilteredIterable)
             {
-                Contract.Requires(propertyFilteredIterable != null);
+                if (propertyFilteredIterable == null)
+                    throw new ArgumentNullException(nameof(propertyFilteredIterable));
 
                 _propertyFilteredIterable = propertyFilteredIterable;
                 _itty = _propertyFilteredIterable._iterable.GetEnumerator();

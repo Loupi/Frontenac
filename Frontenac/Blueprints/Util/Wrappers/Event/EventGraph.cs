@@ -1,6 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Diagnostics.Contracts;
+using Frontenac.Blueprints.Contracts;
 using Frontenac.Blueprints.Util.Wrappers.Event.Listener;
 
 namespace Frontenac.Blueprints.Util.Wrappers.Event
@@ -24,7 +24,8 @@ namespace Frontenac.Blueprints.Util.Wrappers.Event
 
         public EventGraph(IGraph baseGraph)
         {
-            Contract.Requires(baseGraph != null);
+            if (baseGraph == null)
+                throw new ArgumentNullException(nameof(baseGraph));
 
             BaseGraph = baseGraph;
             _features = BaseGraph.Features.CopyFeatures();
@@ -77,6 +78,7 @@ namespace Frontenac.Blueprints.Util.Wrappers.Event
 
         public IVertex GetVertex(object id)
         {
+            GraphContract.ValidateGetVertex(id);
             var vertex = BaseGraph.GetVertex(id);
             return null == vertex ? null : new EventVertex(vertex, this);
         }
@@ -86,6 +88,7 @@ namespace Frontenac.Blueprints.Util.Wrappers.Event
         /// </note>
         public void RemoveVertex(IVertex vertex)
         {
+            GraphContract.ValidateRemoveVertex(vertex);
             var vertexToRemove = vertex;
             if (vertex is EventVertex)
                 vertexToRemove = (vertex as EventVertex).Vertex;
@@ -105,6 +108,7 @@ namespace Frontenac.Blueprints.Util.Wrappers.Event
 
         public IEnumerable<IVertex> GetVertices(string key, object value)
         {
+            GraphContract.ValidateGetVertices(key, value);
             return new EventVertexIterable(BaseGraph.GetVertices(key, value), this);
         }
 
@@ -113,6 +117,7 @@ namespace Frontenac.Blueprints.Util.Wrappers.Event
         /// </note>
         public IEdge AddEdge(object id, IVertex outVertex, IVertex inVertex, string label)
         {
+            GraphContract.ValidateAddEdge(id, outVertex, inVertex, label);
             var outVertexToSet = outVertex;
             if (outVertex is EventVertex)
                 outVertexToSet = (outVertex as EventVertex).Vertex;
@@ -191,58 +196,70 @@ namespace Frontenac.Blueprints.Util.Wrappers.Event
 
         public void AddListener(IGraphChangedListener listener)
         {
-            Contract.Requires(listener != null);
+            if (listener == null)
+                throw new ArgumentNullException(nameof(listener));
 
             GraphChangedListeners.Add(listener);
         }
 
         public IEnumerator<IGraphChangedListener> GetListenerIterator()
         {
-            Contract.Ensures(Contract.Result<IEnumerator<IGraphChangedListener>>() != null);
-
             return GraphChangedListeners.GetEnumerator();
         }
 
         public EventTrigger GetTrigger()
         {
-            Contract.Ensures(Contract.Result<EventTrigger>() != null);
-
             return Trigger;
         }
 
         public void RemoveListener(IGraphChangedListener listener)
         {
-            Contract.Requires(listener != null);
+            if (listener == null)
+                throw new ArgumentNullException(nameof(listener));
 
             GraphChangedListeners.Remove(listener);
         }
 
         protected void OnVertexAdded(IVertex vertex)
         {
-            Contract.Requires(vertex != null);
+            GraphChangedListenerContract.ValidateVertexAdded(vertex);
+
+            if (vertex == null)
+                throw new ArgumentNullException(nameof(vertex));
 
             Trigger.AddEvent(new VertexAddedEvent(vertex));
         }
 
         protected void OnVertexRemoved(IVertex vertex, IDictionary<string, object> props)
         {
-            Contract.Requires(vertex != null);
-            Contract.Requires(props != null);
+            GraphChangedListenerContract.ValidateVertexRemoved(vertex, props);
+
+            if (vertex == null)
+                throw new ArgumentNullException(nameof(vertex));
+            if (props == null)
+                throw new ArgumentNullException(nameof(props));
 
             Trigger.AddEvent(new VertexRemovedEvent(vertex, props));
         }
 
         protected void OnEdgeAdded(IEdge edge)
         {
-            Contract.Requires(edge != null);
+            GraphChangedListenerContract.ValidateEdgeAdded(edge);
+
+            if (edge == null)
+                throw new ArgumentNullException(nameof(edge));
 
             Trigger.AddEvent(new EdgeAddedEvent(edge));
         }
 
         protected void OnEdgeRemoved(IEdge edge, IDictionary<string, object> props)
         {
-            Contract.Requires(edge != null);
-            Contract.Requires(props != null);
+            GraphChangedListenerContract.ValidateEdgeRemoved(edge, props);
+
+            if (edge == null)
+                throw new ArgumentNullException(nameof(edge));
+            if (props == null)
+                throw new ArgumentNullException(nameof(props));
 
             Trigger.AddEvent(new EdgeRemovedEvent(edge, props));
         }

@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Diagnostics.Contracts;
 using System.Linq.Expressions;
 using Frontenac.Blueprints;
 
@@ -10,8 +9,8 @@ namespace Frontenac.Gremlinq
     {
         public static IEnumerable<IEdge> E(this IGraph graph)
         {
-            Contract.Requires(graph != null);
-            Contract.Ensures(Contract.Result<IEnumerable<IEdge>>() != null);
+            if (graph == null)
+                throw new ArgumentNullException(nameof(graph));
 
             return graph.GetEdges();
         }
@@ -19,35 +18,38 @@ namespace Frontenac.Gremlinq
         public static IEnumerable<IEdge<TModel>> E<TModel>(this IGraph graph)
             where TModel : class 
         {
-            Contract.Requires(graph != null);
-            Contract.Ensures(Contract.Result<IEnumerable<IEdge<TModel>>>() != null);
+            if (graph == null)
+                throw new ArgumentNullException(nameof(graph));
 
             return graph.GetEdges().As<TModel>();
         }
 
         public static IEdge E(this IGraph graph, object id)
         {
-            Contract.Requires(graph != null);
-            Contract.Requires(id != null);
-            Contract.Ensures(Contract.Result<IEdge>() != null);
+            if (id == null)
+                throw new ArgumentNullException(nameof(graph));
+            if (id == null)
+                throw new ArgumentNullException(nameof(id));
 
             return graph.GetEdge(id);
         }
 
         public static IEdge<TModel> E<TModel>(this IGraph graph, object id) where TModel : class
         {
-            Contract.Requires(graph != null);
-            Contract.Requires(id != null);
-            Contract.Ensures(Contract.Result<IEdge<TModel>>() != null);
+            if (id == null)
+                throw new ArgumentNullException(nameof(graph));
+            if (id == null)
+                throw new ArgumentNullException(nameof(id));
 
             return graph.E(id).As<TModel>();
         }
 
         public static IEnumerable<IEdge> E(this IGraph graph, string propertyName, object value)
         {
-            Contract.Requires(graph != null);
-            Contract.Requires(!string.IsNullOrWhiteSpace(propertyName));
-            Contract.Ensures(Contract.Result<IEnumerable<IEdge>>() != null);
+            if (graph == null)
+                throw new ArgumentNullException(nameof(graph));
+            if (string.IsNullOrWhiteSpace(propertyName))
+                throw new ArgumentNullException(nameof(propertyName));
 
             return graph.GetEdges(propertyName, value);
         }
@@ -56,9 +58,10 @@ namespace Frontenac.Gremlinq
             Expression<Func<TModel, TValue>> propertySelector,
             TValue value) where TModel : class
         {
-            Contract.Requires(graph != null);
-            Contract.Requires(propertySelector != null);
-            Contract.Ensures(Contract.Result<IEnumerable<IEdge<TModel>>>() != null);
+            if (graph == null)
+                throw new ArgumentNullException(nameof(graph));
+            if (propertySelector == null)
+                throw new ArgumentNullException(nameof(propertySelector));
 
             return graph.E(propertySelector.Resolve(), value).As<TModel>();
         }

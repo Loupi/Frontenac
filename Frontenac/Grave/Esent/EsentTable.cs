@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Diagnostics.Contracts;
 using System.Linq;
 using System.Runtime.InteropServices;
 using System.Text;
@@ -21,9 +20,12 @@ namespace Frontenac.Grave.Esent
 
         protected EsentTable(Session session, string name, IContentSerializer contentSerializer)
         {
-            Contract.Requires(session != null);
-            Contract.Requires(!string.IsNullOrWhiteSpace(name));
-            Contract.Requires(contentSerializer != null);
+            if (session == null)
+                throw new ArgumentNullException(nameof(session));
+            if (string.IsNullOrWhiteSpace(name))
+                throw new ArgumentNullException(nameof(name));
+            if (contentSerializer == null)
+                throw new ArgumentNullException(nameof(contentSerializer));
 
             Session = session;
             TableName = name;
@@ -34,20 +36,18 @@ namespace Frontenac.Grave.Esent
         {
             get
             {
-                Contract.Ensures(!string.IsNullOrWhiteSpace(Contract.Result<string>()));
                 return _tableName;
             }
             protected set
             {
-                Contract.Requires(!string.IsNullOrWhiteSpace(value));
+                if (string.IsNullOrWhiteSpace(value))
+                    throw new ArgumentNullException(nameof(value));
                 _tableName = value;
             }
         }
 
         protected virtual JET_TABLECREATE GetTableDefinition()
         {
-            Contract.Ensures(Contract.Result<JET_TABLECREATE>() != null);
-
             var idIndexKey = string.Format("+{0}\0\0", IdColumnName);
 
             return new JET_TABLECREATE
@@ -116,8 +116,6 @@ namespace Frontenac.Grave.Esent
 
         public IEnumerable<string> GetColumnsForRow(int id)
         {
-            Contract.Ensures(Contract.Result<IEnumerable<string>>() != null);
-
             if (!SetCursor(id)) return Enumerable.Empty<string>();
             int nbColumns;
             JET_ENUMCOLUMN[] columnIds;
@@ -139,8 +137,6 @@ namespace Frontenac.Grave.Esent
 
         public IEnumerable<string> GetColumns()
         {
-            Contract.Ensures(Contract.Result<IEnumerable<string>>() != null);
-
             return Columns.Keys.ToArray();
         }
 
@@ -174,7 +170,8 @@ namespace Frontenac.Grave.Esent
 
         public object DeleteCell(int id, string columnName)
         {
-            Contract.Requires(!string.IsNullOrWhiteSpace(columnName));
+            if (string.IsNullOrWhiteSpace(columnName))
+                throw new ArgumentNullException(nameof(columnName));
 
             object result = null;
             JET_COLUMNID columnId;
@@ -208,7 +205,8 @@ namespace Frontenac.Grave.Esent
 
         public object ReadCell(int id, string columnName)
         {
-            Contract.Requires(!string.IsNullOrWhiteSpace(columnName));
+            if (string.IsNullOrWhiteSpace(columnName))
+                throw new ArgumentNullException(nameof(columnName));
 
             object result = null;
             JET_COLUMNID columnId;
@@ -221,7 +219,8 @@ namespace Frontenac.Grave.Esent
 
         public void WriteCell(int id, string columnName, object value)
         {
-            Contract.Requires(!string.IsNullOrWhiteSpace(columnName));
+            if (string.IsNullOrWhiteSpace(columnName))
+                throw new ArgumentNullException(nameof(columnName));
 
             if (!SetCursor(id)) return;
             CreateColumn(columnName);
@@ -249,14 +248,16 @@ namespace Frontenac.Grave.Esent
 
         public void CreateColumn(string columnName)
         {
-            Contract.Requires(!string.IsNullOrWhiteSpace(columnName));
+            if (string.IsNullOrWhiteSpace(columnName))
+                throw new ArgumentNullException(nameof(columnName));
             CreateColumn(columnName, _contentSerializer.IsBinary ? JET_coltyp.LongBinary : JET_coltyp.LongText,
                          ColumndefGrbit.ColumnMaybeNull);
         }
 
         public bool CreateColumn(string columnName, JET_coltyp colType, ColumndefGrbit grBit)
         {
-            Contract.Requires(!string.IsNullOrWhiteSpace(columnName));
+            if (string.IsNullOrWhiteSpace(columnName))
+                throw new ArgumentNullException(nameof(columnName));
 
             JET_COLUMNID columnId;
             if (Columns.TryGetValue(columnName, out columnId)) return false;

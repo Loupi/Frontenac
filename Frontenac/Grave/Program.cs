@@ -1,4 +1,4 @@
-﻿using System.Diagnostics.Contracts;
+﻿using System;
 using Frontenac.Blueprints;
 using Frontenac.Blueprints.Impls.TG;
 using Frontenac.CastleWindsor;
@@ -16,7 +16,8 @@ namespace Frontenac.Grave
     {
         public static void SetupGrave(this IContainer container)
         {
-            Contract.Requires(container != null);
+            if (container == null)
+                throw new ArgumentNullException(nameof(container));
 
             container.Register(LifeStyle.Singleton, typeof(ObjectIndexer), typeof(Indexer));
             container.Register(LifeStyle.Singleton, typeof(DefaultIndexerFactory), typeof(IIndexerFactory));

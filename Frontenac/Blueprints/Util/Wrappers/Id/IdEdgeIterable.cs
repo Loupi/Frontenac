@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
-using System.Diagnostics.Contracts;
 using System.Linq;
 
 namespace Frontenac.Blueprints.Util.Wrappers.Id
@@ -14,8 +13,10 @@ namespace Frontenac.Blueprints.Util.Wrappers.Id
 
         public IdEdgeIterable(IEnumerable<IElement> iterable, IdGraph idGraph)
         {
-            Contract.Requires(iterable != null);
-            Contract.Requires(idGraph != null);
+            if (iterable == null)
+                throw new ArgumentNullException(nameof(iterable));
+            if (idGraph == null)
+                throw new ArgumentNullException(nameof(idGraph));
 
             _iterable = iterable;
             _idGraph = idGraph;

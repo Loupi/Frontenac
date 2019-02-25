@@ -1,4 +1,4 @@
-﻿using System.Diagnostics.Contracts;
+﻿using System;
 
 namespace Frontenac.Blueprints.Util
 {
@@ -13,10 +13,14 @@ namespace Frontenac.Blueprints.Util
         /// <returns>the vertex created in the graph with the provided properties set</returns>
         public static IVertex AddVertex(this IGraph graph, object id, params object[] properties)
         {
-            Contract.Requires(graph != null);
-            Contract.Requires(properties != null);
-            Contract.Requires(properties.Length%2 == 0);
-            Contract.Ensures(Contract.Result<IVertex>() != null);
+            if (graph == null)
+                throw new ArgumentNullException(nameof(graph));
+
+            if (properties == null)
+                throw new ArgumentNullException(nameof(properties));
+
+            if (properties.Length % 2 != 0)
+                throw new ArgumentException("properties length must be even");
 
             var vertex = graph.AddVertex(id);
             for (var i = 0; i < properties.Length; i = i + 2)
@@ -38,13 +42,23 @@ namespace Frontenac.Blueprints.Util
         public static IEdge AddEdge(this IGraph graph, object id, IVertex outVertex, IVertex inVertex, string label,
                                     params object[] properties)
         {
-            Contract.Requires(graph != null);
-            Contract.Requires(outVertex != null);
-            Contract.Requires(inVertex != null);
-            Contract.Requires(!string.IsNullOrWhiteSpace(label));
-            Contract.Requires(properties != null);
-            Contract.Requires(properties.Length%2 == 0);
-            Contract.Ensures(Contract.Result<IEdge>() != null);
+            if (graph == null)
+                throw new ArgumentNullException(nameof(graph));
+
+            if (outVertex == null)
+                throw new ArgumentNullException(nameof(outVertex));
+
+            if (inVertex == null)
+                throw new ArgumentNullException(nameof(inVertex));
+
+            if (string.IsNullOrWhiteSpace(label))
+                throw new ArgumentNullException(nameof(label));
+
+            if (properties == null)
+                throw new ArgumentNullException(nameof(properties));
+
+            if (properties.Length % 2 != 0)
+                throw new ArgumentException("properties length must be even");
 
             var edge = graph.AddEdge(id, outVertex, inVertex, label);
             for (var i = 0; i < properties.Length; i = i + 2)
@@ -62,8 +76,10 @@ namespace Frontenac.Blueprints.Util
         /// <param name="to">the graph to copy to</param>
         public static void CopyGraph(this IGraph from, IGraph to)
         {
-            Contract.Requires(from != null);
-            Contract.Requires(to != null);
+            if (@from == null)
+                throw new ArgumentNullException(nameof(@from));
+            if (to == null)
+                throw new ArgumentNullException(nameof(to));
 
             foreach (var fromVertex in @from.GetVertices())
             {

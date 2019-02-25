@@ -16,21 +16,29 @@ namespace Frontenac.Blueprints.Util.Wrappers.Batch.Cache
 
         public object GetEntry(object externalId)
         {
+            VertexCacheContract.ValidateGetEntry(externalId);
+
             return _map.Get(externalId);
         }
 
         public void Set(IVertex vertex, object externalId)
         {
+            VertexCacheContract.ValidateSet(vertex, externalId);
+
             SetId(vertex, externalId);
         }
 
         public void SetId(object vertexId, object externalId)
         {
+            VertexCacheContract.ValidateSetId(vertexId, externalId);
+
             _map[externalId] = vertexId;
         }
 
         public bool Contains(object externalId)
         {
+            VertexCacheContract.ValidateContains(externalId);
+
             return _map.ContainsKey(externalId);
         }
 

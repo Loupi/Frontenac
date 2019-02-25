@@ -1,8 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Diagnostics.Contracts;
 using System.Linq;
 using Frontenac.Blueprints;
+using Frontenac.Blueprints.Contracts;
 
 namespace Frontenac.Infrastructure.Indexing
 {
@@ -10,10 +10,14 @@ namespace Frontenac.Infrastructure.Indexing
     {
         public Index(string indexName, Type indexType, IGraph graph, IGenerationBasedIndex genBasedIndex, IndexingService indexingService)
         {
-            Contract.Requires(!string.IsNullOrWhiteSpace(indexName));
-            Contract.Requires(graph != null);
-            Contract.Requires(genBasedIndex != null);
-            Contract.Requires(indexingService != null);
+            if (string.IsNullOrWhiteSpace(indexName))
+                throw new ArgumentNullException(nameof(indexName));
+            if (graph == null)
+                throw new ArgumentNullException(nameof(graph));
+            if (genBasedIndex == null)
+                throw new ArgumentNullException(nameof(genBasedIndex));
+            if (indexingService == null)
+                throw new ArgumentNullException(nameof(indexingService));
 
             IndexName = indexName;
             IndexType = indexType;
@@ -30,6 +34,8 @@ namespace Frontenac.Infrastructure.Indexing
 
         public virtual long Count(string key, object value)
         {
+            IndexContract.ValidateCount(key, value);
+
             GenBasedIndex.WaitForGeneration();
 
             return IndexingService.Get(IndexType, IndexName, key, value, true).Count();
@@ -37,6 +43,8 @@ namespace Frontenac.Infrastructure.Indexing
 
         public virtual IEnumerable<IElement> Get(string key, object value)
         {
+            IndexContract.ValidateGet(key, value);
+
             GenBasedIndex.WaitForGeneration();
 
             var hits = IndexingService.Get(IndexType, IndexName, key, value, true);
@@ -55,6 +63,8 @@ namespace Frontenac.Infrastructure.Indexing
 
         public virtual void Put(string key, object value, IElement element)
         {
+            IndexContract.ValidatePut(key, value, element);
+
             var id = Convert.ToInt64(element.Id);
             var generation = IndexType == typeof(IVertex)
                                  ? IndexingService.UserVertexIndices.Set(id, Name, key, value)
@@ -69,6 +79,8 @@ namespace Frontenac.Infrastructure.Indexing
 
         public virtual void Remove(string key, object value, IElement element)
         {
+            IndexContract.ValidateRemove(key, value, element);
+
             var id = Convert.ToInt64(element.Id);
             var generation = IndexingService.DeleteUserDocuments(IndexType, id, key, value);
             GenBasedIndex.UpdateGeneration(generation);
@@ -76,8 +88,8 @@ namespace Frontenac.Infrastructure.Indexing
 
         public IEnumerable<IElement> ElementsFromHits(IEnumerable<long> hits)
         {
-            Contract.Requires(hits != null);
-            Contract.Ensures(Contract.Result<IEnumerable<IElement>>() != null);
+            if (hits == null)
+                throw new ArgumentNullException(nameof(hits));
 
             IEnumerable<IElement> elements;
 

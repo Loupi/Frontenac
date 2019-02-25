@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Diagnostics.Contracts;
 using System.Linq;
 using Frontenac.Blueprints;
 
@@ -19,7 +18,8 @@ namespace Frontenac.Infrastructure.Indexing
 
         public TransactionalIndexCollection(IndexCollection indexCollection)
         {
-            Contract.Requires(indexCollection != null);
+            if (indexCollection == null)
+                throw new ArgumentNullException(nameof(indexCollection));
 
             _indexCollection = indexCollection;
         }

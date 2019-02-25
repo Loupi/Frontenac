@@ -1,6 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Diagnostics.Contracts;
+using Frontenac.Blueprints.Contracts;
 
 namespace Frontenac.Blueprints.Util.Wrappers
 {
@@ -17,9 +17,12 @@ namespace Frontenac.Blueprints.Util.Wrappers
         public WrapperVertexQuery(IVertexQuery query, Func<IVertexQuery, IEnumerable<IEdge>> edgesSelector,
                                   Func<IVertexQuery, IEnumerable<IVertex>> verticesSelector)
         {
-            Contract.Requires(query != null);
-            Contract.Requires(edgesSelector != null);
-            Contract.Requires(verticesSelector != null);
+            if (query == null)
+                throw new ArgumentNullException(nameof(query));
+            if (edgesSelector == null)
+                throw new ArgumentNullException(nameof(edgesSelector));
+            if (verticesSelector == null)
+                throw new ArgumentNullException(nameof(verticesSelector));
 
             Query = query;
             EdgesSelector = edgesSelector;
@@ -50,24 +53,32 @@ namespace Frontenac.Blueprints.Util.Wrappers
 
         public IQuery Has(string key, object value)
         {
+            QueryContract.ValidateHas(key, value);
+
             Query = Query.Has(key, value) as IVertexQuery;
             return this;
         }
 
         public IQuery Has<T>(string key, Compare compare, T value)
         {
+            QueryContract.ValidateHas(key, compare, value);
+
             Query = Query.Has(key, compare, value) as IVertexQuery;
             return this;
         }
 
         public IQuery Interval<T>(string key, T startValue, T endValue)
         {
+            QueryContract.ValidateInterval(key, startValue, endValue);
+
             Query = Query.Interval(key, startValue, endValue) as IVertexQuery;
             return this;
         }
 
         public IQuery Limit(long max)
         {
+            QueryContract.ValidateLimit(max);
+
             Query = Query.Limit(max) as IVertexQuery;
             return this;
         }

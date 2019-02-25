@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Diagnostics.Contracts;
 using Frontenac.Infrastructure.Serializers;
 using Microsoft.Isam.Esent.Interop;
 
@@ -14,9 +13,12 @@ namespace Frontenac.Grave.Esent
 
         public EsentContext(EsentInstance instance, string databaseName, IContentSerializer contentSerializer)
         {
-            Contract.Requires(instance != null);
-            Contract.Requires(contentSerializer != null);
-            Contract.Requires(!string.IsNullOrEmpty(databaseName));
+            if (instance == null)
+                throw new ArgumentNullException(nameof(instance));
+            if (contentSerializer == null)
+                throw new ArgumentNullException(nameof(contentSerializer));
+            if (string.IsNullOrEmpty(databaseName))
+                throw new ArgumentNullException(nameof(databaseName));
 
             _instance = instance;
             _session = _instance.CreateSession();
@@ -61,8 +63,6 @@ namespace Frontenac.Grave.Esent
 
         public EsentVertexTable GetVerticesCursor()
         {
-            Contract.Ensures(Contract.Result<EsentVertexTable>() != null);
-
             var cursor = new EsentVertexTable(_session, _contentSerializer);
             cursor.Open(_dbid);
             return cursor;
@@ -70,8 +70,6 @@ namespace Frontenac.Grave.Esent
 
         public EsentEdgesTable GetEdgesCursor()
         {
-            Contract.Ensures(Contract.Result<EsentEdgesTable>() != null);
-
             var cursor = new EsentEdgesTable(_session, _contentSerializer);
             cursor.Open(_dbid);
             return cursor;

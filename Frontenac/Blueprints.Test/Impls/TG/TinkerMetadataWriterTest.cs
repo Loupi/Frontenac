@@ -41,14 +41,14 @@ namespace Frontenac.Blueprints.Impls.TG
                 {
                     if (stream == null) return;
 
-                    var ms = new MemoryStream((int) stream.Length);
+                    var ms = new MemoryStream((int)stream.Length);
                     stream.CopyTo(ms);
 
                     var expected = ms.ToArray();
                     var actual = bos.ToArray();
 
 
-                    
+
 
                     Assert.AreEqual(expected.Length, actual.Length);
 

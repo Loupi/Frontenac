@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Diagnostics.Contracts;
 using Frontenac.Infrastructure.Indexing;
 using Frontenac.Infrastructure.Indexing.Indexers;
 
@@ -11,7 +10,8 @@ namespace Frontenac.Infrastructure
 
         public DefaultIndexerFactory(IContainer container)
         {
-            Contract.Requires(container != null);
+            if (container == null)
+                throw new ArgumentNullException(nameof(container));
 
             _container = container;
         }

@@ -1,6 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Diagnostics.Contracts;
+using Frontenac.Blueprints.Contracts;
 
 namespace Frontenac.Blueprints.Util.Wrappers.Event
 {
@@ -17,23 +17,30 @@ namespace Frontenac.Blueprints.Util.Wrappers.Event
         public EventIndexableGraph(IIndexableGraph baseIndexableGraph)
             : base(baseIndexableGraph)
         {
-            Contract.Requires(baseIndexableGraph != null);
+            if (baseIndexableGraph == null)
+                throw new ArgumentNullException(nameof(baseIndexableGraph));
 
             _baseIndexableGraph = baseIndexableGraph;
         }
 
         public void DropIndex(string indexName)
         {
+            IndexableGraphContract.ValidateDropIndex(indexName);
+
             _baseIndexableGraph.DropIndex(indexName);
         }
 
         public IIndex CreateIndex(string indexName, Type indexClass, params Parameter[] indexParameters)
         {
+            IndexableGraphContract.ValidateCreateIndex(indexName, indexClass, indexParameters);
+
             return new EventIndex(_baseIndexableGraph.CreateIndex(indexName, indexClass, indexParameters), this);
         }
 
         public IIndex GetIndex(string indexName, Type indexClass)
         {
+            IndexableGraphContract.ValidateGetIndex(indexName, indexClass);
+
             var index = _baseIndexableGraph.GetIndex(indexName, indexClass);
             return null == index ? null : new EventIndex(index, this);
         }

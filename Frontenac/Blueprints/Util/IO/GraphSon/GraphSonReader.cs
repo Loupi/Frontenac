@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Diagnostics.Contracts;
 using System.IO;
 using Frontenac.Blueprints.Util.Wrappers.Batch;
 using Newtonsoft.Json;
@@ -20,7 +19,8 @@ namespace Frontenac.Blueprints.Util.IO.GraphSON
         /// <param name="graph">the graph to populate with the JSON data</param>
         public GraphSonReader(IGraph graph)
         {
-            Contract.Requires(graph != null);
+            if (graph == null)
+                throw new ArgumentNullException(nameof(graph));
 
             _graph = graph;
         }
@@ -32,7 +32,8 @@ namespace Frontenac.Blueprints.Util.IO.GraphSON
         /// <param name="jsonInputStream">a Stream of JSON data</param>
         public void InputGraph(Stream jsonInputStream)
         {
-            Contract.Requires(jsonInputStream != null);
+            if (jsonInputStream == null)
+                throw new ArgumentNullException(nameof(jsonInputStream));
 
             InputGraph(_graph, jsonInputStream, 1000);
         }
@@ -44,7 +45,8 @@ namespace Frontenac.Blueprints.Util.IO.GraphSON
         /// <param name="filename">name of a file of JSON data</param>
         public void InputGraph(string filename)
         {
-            Contract.Requires(!string.IsNullOrWhiteSpace(filename));
+            if (string.IsNullOrWhiteSpace(filename))
+                throw new ArgumentNullException(nameof(filename));
 
             InputGraph(_graph, filename, 1000);
         }
@@ -57,8 +59,10 @@ namespace Frontenac.Blueprints.Util.IO.GraphSON
         /// <param name="bufferSize">the amount of elements to hold in memory before committing a transactions (only valid for TransactionalGraphs)</param>
         public void InputGraph(Stream jsonInputStream, int bufferSize)
         {
-            Contract.Requires(jsonInputStream != null);
-            Contract.Requires(bufferSize > 0);
+            if (jsonInputStream == null)
+                throw new ArgumentNullException(nameof(jsonInputStream));
+            if (bufferSize <= 0)
+                throw new ArgumentException("bufferSize must be greater than zero");
 
             InputGraph(_graph, jsonInputStream, bufferSize);
         }
@@ -71,8 +75,10 @@ namespace Frontenac.Blueprints.Util.IO.GraphSON
         /// <param name="bufferSize">the amount of elements to hold in memory before committing a transactions (only valid for TransactionalGraphs)</param>
         public void InputGraph(string filename, int bufferSize)
         {
-            Contract.Requires(!string.IsNullOrWhiteSpace(filename));
-            Contract.Requires(bufferSize > 0);
+            if (string.IsNullOrWhiteSpace(filename))
+                throw new ArgumentNullException(nameof(filename));
+            if (bufferSize <= 0)
+                throw new ArgumentException("bufferSize must be greater than zero");
 
             InputGraph(_graph, filename, bufferSize);
         }
@@ -85,8 +91,10 @@ namespace Frontenac.Blueprints.Util.IO.GraphSON
         /// <param name="jsonInputStream">a Stream of JSON data</param>
         public static void InputGraph(IGraph graph, Stream jsonInputStream)
         {
-            Contract.Requires(graph != null);
-            Contract.Requires(jsonInputStream != null);
+            if (graph == null)
+                throw new ArgumentNullException(nameof(graph));
+            if (jsonInputStream == null)
+                throw new ArgumentNullException(nameof(jsonInputStream));
 
             InputGraph(graph, jsonInputStream, 1000);
         }
@@ -99,26 +107,34 @@ namespace Frontenac.Blueprints.Util.IO.GraphSON
         /// <param name="filename">name of a file of JSON data</param>
         public static void InputGraph(IGraph graph, string filename)
         {
-            Contract.Requires(graph != null);
-            Contract.Requires(!string.IsNullOrWhiteSpace(filename));
+            if (graph == null)
+                throw new ArgumentNullException(nameof(graph));
+            if (string.IsNullOrWhiteSpace(filename))
+                throw new ArgumentNullException(nameof(filename));
 
             InputGraph(graph, filename, 1000);
         }
 
         public static void InputGraph(IGraph inputGraph, Stream jsonInputStream, int bufferSize)
         {
-            Contract.Requires(inputGraph != null);
-            Contract.Requires(jsonInputStream != null);
-            Contract.Requires(bufferSize > 0);
+            if (inputGraph == null)
+                throw new ArgumentNullException(nameof(inputGraph));
+            if (jsonInputStream == null)
+                throw new ArgumentNullException(nameof(jsonInputStream));
+            if (bufferSize <= 0)
+                throw new ArgumentException("bufferSize must be greater than zero");
 
             InputGraph(inputGraph, jsonInputStream, bufferSize, null, null);
         }
 
         public static void InputGraph(IGraph inputGraph, string filename, int bufferSize)
         {
-            Contract.Requires(inputGraph != null);
-            Contract.Requires(!string.IsNullOrWhiteSpace(filename));
-            Contract.Requires(bufferSize > 0);
+            if (inputGraph == null)
+                throw new ArgumentNullException(nameof(inputGraph));
+            if (string.IsNullOrWhiteSpace(filename))
+                throw new ArgumentNullException(nameof(filename));
+            if (bufferSize <= 0)
+                throw new ArgumentException("bufferSize must be greater than zero");
 
             InputGraph(inputGraph, filename, bufferSize, null, null);
         }
@@ -135,9 +151,12 @@ namespace Frontenac.Blueprints.Util.IO.GraphSON
         public static void InputGraph(IGraph inputGraph, string filename, int bufferSize,
                                       IEnumerable<string> edgePropertyKeys, IEnumerable<string> vertexPropertyKeys)
         {
-            Contract.Requires(inputGraph != null);
-            Contract.Requires(!string.IsNullOrWhiteSpace(filename));
-            Contract.Requires(bufferSize > 0);
+            if (inputGraph == null)
+                throw new ArgumentNullException(nameof(inputGraph));
+            if (string.IsNullOrWhiteSpace(filename))
+                throw new ArgumentNullException(nameof(filename));
+            if (bufferSize <= 0)
+                throw new ArgumentException("bufferSize must be greater than zero");
 
             using (var fis = File.OpenRead(filename))
             {
@@ -157,9 +176,12 @@ namespace Frontenac.Blueprints.Util.IO.GraphSON
         public static void InputGraph(IGraph inputGraph, Stream jsonInputStream, int bufferSize,
                                       IEnumerable<string> edgePropertyKeys, IEnumerable<string> vertexPropertyKeys)
         {
-            Contract.Requires(inputGraph != null);
-            Contract.Requires(jsonInputStream != null);
-            Contract.Requires(bufferSize > 0);
+            if (inputGraph == null)
+                throw new ArgumentNullException(nameof(inputGraph));
+            if (jsonInputStream == null)
+                throw new ArgumentNullException(nameof(jsonInputStream));
+            if (bufferSize <= 0)
+                throw new ArgumentException("bufferSize must be greater than zero");
 
             StreamReader sr = null;
 

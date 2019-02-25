@@ -1,5 +1,5 @@
-﻿using System.Collections.Generic;
-using System.Diagnostics.Contracts;
+﻿using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Runtime.Serialization.Formatters.Binary;
@@ -21,7 +21,8 @@ namespace Frontenac.Blueprints
 
         public static TValue Get<TKey, TValue>(this IDictionary<TKey, TValue> dictionary, TKey key)
         {
-            Contract.Requires(dictionary != null);
+            if (dictionary == null)
+                throw new ArgumentNullException(nameof(dictionary));
 
             TValue ret;
             dictionary.TryGetValue(key, out ret);
@@ -30,7 +31,8 @@ namespace Frontenac.Blueprints
 
         public static TValue Get<TValue>(this IList<TValue> list, int at)
         {
-            Contract.Requires(list != null);
+            if (list == null)
+                throw new ArgumentNullException(nameof(list));
 
             var ret = list.ElementAtOrDefault(at);
             return ret;
@@ -49,7 +51,8 @@ namespace Frontenac.Blueprints
 
         public static TValue Put<TKey, TValue>(this IDictionary<TKey, TValue> dictionary, TKey key, TValue value)
         {
-            Contract.Requires(dictionary != null);
+            if (dictionary == null)
+                throw new ArgumentNullException(nameof(dictionary));
 
             TValue ret;
             if (dictionary.TryGetValue(key, out ret))
@@ -58,8 +61,7 @@ namespace Frontenac.Blueprints
                 dictionary.Add(key, value);
             return ret;
         }
-
-        [Pure]
+        
         public static bool IsNumber(object expression)
         {
             return expression is byte ||
@@ -86,7 +88,8 @@ namespace Frontenac.Blueprints
 
         public static void SaveDotNet(this IGraph graph, string directory)
         {
-            Contract.Requires(graph != null);
+            if (graph == null)
+                throw new ArgumentNullException(nameof(graph));
 
             var filePath = string.Concat(directory, GraphFileDotNet);
             DeleteFile(filePath);
@@ -105,14 +108,16 @@ namespace Frontenac.Blueprints
 
         public static void LoadGml(this IGraph graph, string directory)
         {
-            Contract.Requires(graph != null);
+            if (graph == null)
+                throw new ArgumentNullException(nameof(graph));
 
             GmlReader.InputGraph(graph, string.Concat(directory, GraphFileGml));
         }
 
         public static void SaveGml(this IGraph graph, string directory)
         {
-            Contract.Requires(graph != null);
+            if (graph == null)
+                throw new ArgumentNullException(nameof(graph));
 
             var filePath = string.Concat(directory, GraphFileGml);
             DeleteFile(filePath);
@@ -121,14 +126,16 @@ namespace Frontenac.Blueprints
 
         public static void LoadGraphml(this IGraph graph, string directory)
         {
-            Contract.Requires(graph != null);
+            if (graph == null)
+                throw new ArgumentNullException(nameof(graph));
 
             GraphMlReader.InputGraph(graph, string.Concat(directory, GraphFileGraphml));
         }
 
         public static void SaveGraphml(this IGraph graph, string directory)
         {
-            Contract.Requires(graph != null);
+            if (graph == null)
+                throw new ArgumentNullException(nameof(graph));
 
             var filePath = string.Concat(directory, GraphFileGraphml);
             DeleteFile(filePath);
@@ -137,14 +144,16 @@ namespace Frontenac.Blueprints
 
         public static void LoadGraphson(this IGraph graph, string directory)
         {
-            Contract.Requires(graph != null);
+            if (graph == null)
+                throw new ArgumentNullException(nameof(graph));
 
             GraphSonReader.InputGraph(graph, string.Concat(directory, GraphFileGraphson));
         }
 
         public static void SaveGraphson(this IGraph graph, string directory)
         {
-            Contract.Requires(graph != null);
+            if (graph == null)
+                throw new ArgumentNullException(nameof(graph));
 
             var filePath = string.Concat(directory, GraphFileGraphson);
             DeleteFile(filePath);
@@ -153,7 +162,8 @@ namespace Frontenac.Blueprints
 
         public static void CreateTinkerGraph(this IGraph graph)
         {
-            Contract.Requires(graph != null);
+            if (graph == null)
+                throw new ArgumentNullException(nameof(graph));
 
             TinkerGraphFactory.CreateTinkerGraph(graph);
         }

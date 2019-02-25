@@ -15,13 +15,13 @@ namespace Frontenac.Blueprints
             GraphTest = graphTest;
         }
 
-        [TestFixtureSetUp]
+        [OneTimeSetUp]
         public virtual void FixtureSetUp()
         {
             StopWatch();
         }
 
-        [TestFixtureTearDown]
+        [OneTimeTearDown]
         public virtual void FixtureTearDown()
         {
             PrintTestPerformance(_name, StopWatch());

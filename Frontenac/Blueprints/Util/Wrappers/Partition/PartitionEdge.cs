@@ -1,4 +1,5 @@
-﻿using System.Diagnostics.Contracts;
+﻿using System;
+using Frontenac.Blueprints.Contracts;
 
 namespace Frontenac.Blueprints.Util.Wrappers.Partition
 {
@@ -9,14 +10,17 @@ namespace Frontenac.Blueprints.Util.Wrappers.Partition
         public PartitionEdge(IEdge edge, PartitionGraph innerTinkerGrapĥ)
             : base(edge, innerTinkerGrapĥ)
         {
-            Contract.Requires(edge != null);
-            Contract.Requires(innerTinkerGrapĥ != null);
+            if (edge == null)
+                throw new ArgumentNullException(nameof(edge));
+            if (innerTinkerGrapĥ == null)
+                throw new ArgumentNullException(nameof(innerTinkerGrapĥ));
 
             _edge = edge;
         }
 
         public IVertex GetVertex(Direction direction)
         {
+            EdgeContract.ValidateGetVertex(direction);
             return new PartitionVertex(_edge.GetVertex(direction), PartitionInnerTinkerGrapĥ);
         }
 
@@ -27,7 +31,6 @@ namespace Frontenac.Blueprints.Util.Wrappers.Partition
 
         public IEdge GetBaseEdge()
         {
-            Contract.Ensures(Contract.Result<IEdge>() != null);
             return _edge;
         }
     }

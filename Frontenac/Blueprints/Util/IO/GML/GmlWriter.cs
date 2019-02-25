@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
-using System.Diagnostics.Contracts;
 using System.Globalization;
 using System.IO;
 using System.Text;
@@ -38,7 +37,8 @@ namespace Frontenac.Blueprints.Util.IO.GML
         /// <param name="graph">he Graph to pull the data from</param>
         public GmlWriter(IGraph graph)
         {
-            Contract.Requires(graph != null);
+            if (graph == null)
+                throw new ArgumentNullException(nameof(graph));
 
             _graph = graph;
         }
@@ -73,12 +73,12 @@ namespace Frontenac.Blueprints.Util.IO.GML
         {
             get
             {
-                Contract.Ensures(!string.IsNullOrWhiteSpace(Contract.Result<string>()));
                 return _vertexIdKey;
             }
             set
             {
-                Contract.Requires(!string.IsNullOrWhiteSpace(value));
+                if (string.IsNullOrWhiteSpace(value))
+                    throw new ArgumentNullException(nameof(value));
                 _vertexIdKey = value;
             }
         }
@@ -91,12 +91,12 @@ namespace Frontenac.Blueprints.Util.IO.GML
         {
             get
             {
-                Contract.Ensures(!string.IsNullOrWhiteSpace(Contract.Result<string>()));
                 return _edgeIdKey;
             }
             set
             {
-                Contract.Requires(!string.IsNullOrWhiteSpace(value));
+                if (string.IsNullOrWhiteSpace(value))
+                    throw new ArgumentNullException(nameof(value));
                 _edgeIdKey = value;
             }
         }
@@ -107,7 +107,8 @@ namespace Frontenac.Blueprints.Util.IO.GML
         /// <param name="filename">the GML file to write the Graph data to</param>
         public void OutputGraph(string filename)
         {
-            Contract.Requires(!string.IsNullOrWhiteSpace(filename));
+            if (string.IsNullOrWhiteSpace(filename))
+                throw new ArgumentNullException(nameof(filename));
 
             using (var fos = File.Open(filename, FileMode.Create))
             {
@@ -121,7 +122,8 @@ namespace Frontenac.Blueprints.Util.IO.GML
         /// <param name="gMlOutputStream">the GML OutputStream to write the Graph data to</param>
         public void OutputGraph(Stream gMlOutputStream)
         {
-            Contract.Requires(gMlOutputStream != null);
+            if (gMlOutputStream == null)
+                throw new ArgumentNullException(nameof(gMlOutputStream));
 
             // ISO 8859-1 as specified in the GML documentation
             var writer = new StreamWriter(gMlOutputStream, Encoding.GetEncoding("ISO-8859-1"));
@@ -143,9 +145,12 @@ namespace Frontenac.Blueprints.Util.IO.GML
 
         private void WriteGraph(StreamWriter writer, IEnumerable<IVertex> vertices, IEnumerable<IEdge> edges)
         {
-            Contract.Requires(writer != null);
-            Contract.Requires(vertices != null);
-            Contract.Requires(edges != null);
+            if (writer == null)
+                throw new ArgumentNullException(nameof(writer));
+            if (vertices == null)
+                throw new ArgumentNullException(nameof(vertices));
+            if (edges == null)
+                throw new ArgumentNullException(nameof(edges));
 
             var ids = new Dictionary<IVertex, int>();
 
@@ -158,9 +163,12 @@ namespace Frontenac.Blueprints.Util.IO.GML
 
         private void WriteVertices(StreamWriter writer, IEnumerable<IVertex> vertices, Dictionary<IVertex, int> ids)
         {
-            Contract.Requires(writer != null);
-            Contract.Requires(vertices != null);
-            Contract.Requires(ids != null);
+            if (writer == null)
+                throw new ArgumentNullException(nameof(writer));
+            if (vertices == null)
+                throw new ArgumentNullException(nameof(vertices));
+            if (ids == null)
+                throw new ArgumentNullException(nameof(ids));
 
             var count = 1;
             foreach (var v in vertices)
@@ -181,8 +189,10 @@ namespace Frontenac.Blueprints.Util.IO.GML
 
         private void WriteVertex(StreamWriter writer, IVertex v, int id)
         {
-            Contract.Requires(writer != null);
-            Contract.Requires(v != null);
+            if (writer == null)
+                throw new ArgumentNullException(nameof(writer));
+            if (v == null)
+                throw new ArgumentNullException(nameof(v));
 
             writer.Write(Tab);
             writer.Write(GmlTokens.Node);
@@ -196,9 +206,12 @@ namespace Frontenac.Blueprints.Util.IO.GML
 
         private void WriteEdges(StreamWriter writer, IEnumerable<IEdge> edges, Dictionary<IVertex, int> ids)
         {
-            Contract.Requires(writer != null);
-            Contract.Requires(edges != null);
-            Contract.Requires(ids != null);
+            if (writer == null)
+                throw new ArgumentNullException(nameof(writer));
+            if (edges == null)
+                throw new ArgumentNullException(nameof(edges));
+            if (ids == null)
+                throw new ArgumentNullException(nameof(ids));
 
             foreach (var e in edges)
                 WriteEdgeProperties(writer, e, ids.Get(e.GetVertex(Direction.Out)), ids.Get(e.GetVertex(Direction.In)));
@@ -206,8 +219,10 @@ namespace Frontenac.Blueprints.Util.IO.GML
 
         private void WriteEdgeProperties(StreamWriter writer, IEdge e, int source, int target)
         {
-            Contract.Requires(writer != null);
-            Contract.Requires(e != null);
+            if (writer == null)
+                throw new ArgumentNullException(nameof(writer));
+            if (e == null)
+                throw new ArgumentNullException(nameof(e));
 
             writer.Write(Tab);
             writer.Write(GmlTokens.Edge);
@@ -225,8 +240,10 @@ namespace Frontenac.Blueprints.Util.IO.GML
 
         private void WriteElementProperties(StreamWriter writer, IElement e)
         {
-            Contract.Requires(writer != null);
-            Contract.Requires(e != null);
+            if (writer == null)
+                throw new ArgumentNullException(nameof(writer));
+            if (e == null)
+                throw new ArgumentNullException(nameof(e));
 
             var blueprintsId = e.Id;
             if (!UseId)
@@ -242,8 +259,10 @@ namespace Frontenac.Blueprints.Util.IO.GML
 
         private void WriteProperties(StreamWriter writer, IElement e)
         {
-            Contract.Requires(writer != null);
-            Contract.Requires(e != null);
+            if (writer == null)
+                throw new ArgumentNullException(nameof(writer));
+            if (e == null)
+                throw new ArgumentNullException(nameof(e));
 
             foreach (var key in e.GetPropertyKeys())
             {
@@ -259,7 +278,8 @@ namespace Frontenac.Blueprints.Util.IO.GML
 
         private void WriteProperty(StreamWriter writer, object property, int tab)
         {
-            Contract.Requires(writer != null);
+            if (writer == null)
+                throw new ArgumentNullException(nameof(writer));
 
             if (Blueprints.GraphHelpers.IsNumber(property))
                 WriteNumberProperty(writer, property);
@@ -271,8 +291,10 @@ namespace Frontenac.Blueprints.Util.IO.GML
 
         private void WriteMapProperty(StreamWriter writer, IDictionary map, int tabs)
         {
-            Contract.Requires(writer != null);
-            Contract.Requires(map != null);
+            if (writer == null)
+                throw new ArgumentNullException(nameof(writer));
+            if (map == null)
+                throw new ArgumentNullException(nameof(map));
 
             writer.Write(OpenList);
             tabs++;
@@ -288,7 +310,8 @@ namespace Frontenac.Blueprints.Util.IO.GML
 
         private static void WriteTabs(TextWriter writer, int tabs)
         {
-            Contract.Requires(writer != null);
+            if (writer == null)
+                throw new ArgumentNullException(nameof(writer));
 
             for (var i = 0; i <= tabs; i++)
                 writer.Write(Tab);
@@ -296,8 +319,10 @@ namespace Frontenac.Blueprints.Util.IO.GML
 
         private static void WriteNumberProperty(TextWriter writer, object number)
         {
-            Contract.Requires(writer != null);
-            Contract.Requires(number != null);
+            if (writer == null)
+                throw new ArgumentNullException(nameof(writer));
+            if (number == null)
+                throw new ArgumentNullException(nameof(number));
 
             writer.Write(Convert.ToString(number, CultureInfo.InvariantCulture));
             writer.Write(NewLine);
@@ -305,8 +330,10 @@ namespace Frontenac.Blueprints.Util.IO.GML
 
         private static void WriteStringProperty(TextWriter writer, object string_)
         {
-            Contract.Requires(writer != null);
-            Contract.Requires(string_ != null);
+            if (writer == null)
+                throw new ArgumentNullException(nameof(writer));
+            if (string_ == null)
+                throw new ArgumentNullException(nameof(string_));
 
             writer.Write("\"");
             writer.Write(string_.ToString());
@@ -316,8 +343,10 @@ namespace Frontenac.Blueprints.Util.IO.GML
 
         private static void WriteKey(TextWriter writer, string command)
         {
-            Contract.Requires(writer != null);
-            Contract.Requires(command != null);
+            if (writer == null)
+                throw new ArgumentNullException(nameof(writer));
+            if (command == null)
+                throw new ArgumentNullException(nameof(command));
 
             writer.Write(Tab);
             writer.Write(Tab);
@@ -327,8 +356,10 @@ namespace Frontenac.Blueprints.Util.IO.GML
 
         private void PopulateLists(List<IVertex> vertices, List<IEdge> edges)
         {
-            Contract.Requires(vertices != null);
-            Contract.Requires(edges != null);
+            if (vertices == null)
+                throw new ArgumentNullException(nameof(vertices));
+            if (edges == null)
+                throw new ArgumentNullException(nameof(edges));
 
             vertices.AddRange(_graph.GetVertices());
             edges.AddRange(_graph.GetEdges());
@@ -341,8 +372,10 @@ namespace Frontenac.Blueprints.Util.IO.GML
         /// <param name="graphMlOutputStream">the GML OutputStream to write the Graph data to</param>
         public static void OutputGraph(IGraph graph, Stream graphMlOutputStream)
         {
-            Contract.Requires(graph != null);
-            Contract.Requires(graphMlOutputStream != null);
+            if (graph == null)
+                throw new ArgumentNullException(nameof(graph));
+            if (graphMlOutputStream == null)
+                throw new ArgumentNullException(nameof(graphMlOutputStream));
 
             var writer = new GmlWriter(graph);
             writer.OutputGraph(graphMlOutputStream);
@@ -355,8 +388,10 @@ namespace Frontenac.Blueprints.Util.IO.GML
         /// <param name="filename">the GML file to write the Graph data to</param>
         public static void OutputGraph(IGraph graph, string filename)
         {
-            Contract.Requires(graph != null);
-            Contract.Requires(!string.IsNullOrWhiteSpace(filename));
+            if (graph == null)
+                throw new ArgumentNullException(nameof(graph));
+            if (string.IsNullOrWhiteSpace(filename))
+                throw new ArgumentNullException(nameof(filename));
 
             var writer = new GmlWriter(graph);
             writer.OutputGraph(filename);

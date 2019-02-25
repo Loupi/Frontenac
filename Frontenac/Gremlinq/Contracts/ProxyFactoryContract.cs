@@ -1,18 +1,17 @@
 ﻿using System;
 using System.Collections;
-using System.Diagnostics.Contracts;
 
 namespace Frontenac.Gremlinq.Contracts
 {
-    [ContractClassFor(typeof(IProxyFactory))]
-    public abstract class ProxyFactoryContract : IProxyFactory
+    public static class ProxyFactoryContract
     {
-        public object Create(IDictionary element, Type type)
+        public static void ValidateCreate(IDictionary element, Type type)
         {
-            Contract.Requires(element != null);
-            Contract.Requires(type != null);
-            Contract.Ensures(Contract.Result<object>() != null);
-            return null;
+            if (element == null)
+                throw new ArgumentNullException(nameof(element));
+
+            if (type == null)
+                throw new ArgumentNullException(nameof(type));
         }
     }
 }

@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Diagnostics.Contracts;
 using System.Linq;
 using System.Linq.Expressions;
 using Frontenac.Blueprints;
@@ -11,9 +10,10 @@ namespace Frontenac.Gremlinq
     {
         public static IEnumerable<IVertex> Out(this IVertex vertex, int branchFactor, params string[] labels)
         {
-            Contract.Requires(vertex != null);
-            Contract.Requires(labels != null);
-            Contract.Ensures(Contract.Result<IEnumerable<IVertex>>() != null);
+            if (vertex == null)
+                throw new ArgumentNullException(nameof(vertex));
+            if (labels == null)
+                throw new ArgumentNullException(nameof(labels));
 
             var finalLabels = labels.Length == 0 ? vertex.GetPropertyKeys() : labels;
             return finalLabels.SelectMany(t => vertex.Out(t).Take(branchFactor));
@@ -21,9 +21,10 @@ namespace Frontenac.Gremlinq
 
         public static IEnumerable<IVertex> Out(this IEnumerable<IVertex> vertices, int branchFactor, params string[] labels)
         {
-            Contract.Requires(vertices != null);
-            Contract.Requires(labels != null);
-            Contract.Ensures(Contract.Result<IEnumerable<IVertex>>() != null);
+            if (vertices == null)
+                throw new ArgumentNullException(nameof(vertices));
+            if (labels == null)
+                throw new ArgumentNullException(nameof(labels));
 
             return vertices.SelectMany(t => t.Out(branchFactor, labels)).Take(branchFactor);
         }
@@ -34,9 +35,10 @@ namespace Frontenac.Gremlinq
             Expression<Func<TInModel, TOutModel>> propertySelector) 
             where TOutModel : class
         {
-            Contract.Requires(vertex != null);
-            Contract.Requires(propertySelector != null);
-            Contract.Ensures(Contract.Result<IEnumerable<IVertex<TOutModel>>>() != null);
+            if (vertex == null)
+                throw new ArgumentNullException(nameof(vertex));
+            if (propertySelector == null)
+                throw new ArgumentNullException(nameof(propertySelector));
 
             return vertex.Out(branchFactor, propertySelector.Resolve()).As<TOutModel>();
         }
@@ -47,9 +49,10 @@ namespace Frontenac.Gremlinq
             Expression<Func<TInModel, TOutModel>> propertySelector) 
             where TOutModel : class
         {
-            Contract.Requires(vertices != null);
-            Contract.Requires(propertySelector != null);
-            Contract.Ensures(Contract.Result<IEnumerable<IVertex<TOutModel>>>() != null);
+            if (vertices == null)
+                throw new ArgumentNullException(nameof(vertices));
+            if (propertySelector == null)
+                throw new ArgumentNullException(nameof(propertySelector));
 
             return vertices.SelectMany(t => t.Out(branchFactor, propertySelector)).Take(branchFactor);
         }
@@ -60,27 +63,30 @@ namespace Frontenac.Gremlinq
             Expression<Func<IVertex<TInModel>, IVertex<TOutModel>>> propertySelector) 
             where TOutModel : class
         {
-            Contract.Requires(vertices != null);
-            Contract.Requires(propertySelector != null);
-            Contract.Ensures(Contract.Result<IEnumerable<IVertex<TOutModel>>>() != null);
+            if (vertices == null)
+                throw new ArgumentNullException(nameof(vertices));
+            if (propertySelector == null)
+                throw new ArgumentNullException(nameof(propertySelector));
 
             return vertices.Out(branchFactor, propertySelector.Resolve()).As<TOutModel>();
         }
 
         public static IEnumerable<IVertex> Out(this IVertex vertex, params string[] labels)
         {
-            Contract.Requires(vertex != null);
-            Contract.Requires(labels != null);
-            Contract.Ensures(Contract.Result<IEnumerable<IVertex>>() != null);
+            if (vertex == null)
+                throw new ArgumentNullException(nameof(vertex));
+            if (labels == null)
+                throw new ArgumentNullException(nameof(labels));
 
             return vertex.GetVertices(Direction.Out, labels);
         }
 
         public static IEnumerable<IVertex> Out(this IEnumerable<IVertex> vertices, params string[] labels)
         {
-            Contract.Requires(vertices != null);
-            Contract.Requires(labels != null);
-            Contract.Ensures(Contract.Result<IEnumerable<IVertex>>() != null);
+            if (vertices == null)
+                throw new ArgumentNullException(nameof(vertices));
+            if (labels == null)
+                throw new ArgumentNullException(nameof(labels));
 
             return vertices.SelectMany(t => t.Out(labels));
         }
@@ -90,9 +96,10 @@ namespace Frontenac.Gremlinq
             Expression<Func<TInModel, TOutModel>> propertySelector) 
             where TOutModel : class
         {
-            Contract.Requires(vertex != null);
-            Contract.Requires(propertySelector != null);
-            Contract.Ensures(Contract.Result<IEnumerable<IVertex<TOutModel>>>() != null);
+            if (vertex == null)
+                throw new ArgumentNullException(nameof(vertex));
+            if (propertySelector == null)
+                throw new ArgumentNullException(nameof(propertySelector));
 
             return vertex.Out(propertySelector.Resolve()).As<TOutModel>();
         }
@@ -102,9 +109,10 @@ namespace Frontenac.Gremlinq
             Expression<Func<TInModel, IEnumerable<TOutModel>>> propertySelector) 
             where TOutModel : class
         {
-            Contract.Requires(vertex != null);
-            Contract.Requires(propertySelector != null);
-            Contract.Ensures(Contract.Result<IEnumerable<IVertex<TOutModel>>>() != null);
+            if (vertex == null)
+                throw new ArgumentNullException(nameof(vertex));
+            if (propertySelector == null)
+                throw new ArgumentNullException(nameof(propertySelector));
 
             return vertex.Out(propertySelector.Resolve()).As<TOutModel>();
         }
@@ -115,9 +123,10 @@ namespace Frontenac.Gremlinq
             where TOutModel : class
             where TEdgeModel : class 
         {
-            Contract.Requires(vertex != null);
-            Contract.Requires(propertySelector != null);
-            Contract.Ensures(Contract.Result<IEnumerable<IVertex<TOutModel>>>() != null);
+            if (vertex == null)
+                throw new ArgumentNullException(nameof(vertex));
+            if (propertySelector == null)
+                throw new ArgumentNullException(nameof(propertySelector));
 
             return vertex.Out(propertySelector.Resolve()).As<TOutModel>();
         }
@@ -129,9 +138,10 @@ namespace Frontenac.Gremlinq
             where TEdgeModel : class
             where TInModel : class  
         {
-            Contract.Requires(vertex != null);
-            Contract.Requires(propertySelector != null);
-            Contract.Ensures(Contract.Result<IEnumerable<IVertex<TOutModel>>>() != null);
+            if (vertex == null)
+                throw new ArgumentNullException(nameof(vertex));
+            if (propertySelector == null)
+                throw new ArgumentNullException(nameof(propertySelector));
 
             return vertex.Out(propertySelector.Resolve()).As<TOutModel>();
         }
@@ -143,9 +153,10 @@ namespace Frontenac.Gremlinq
             where TEdgeModel : class 
             where TInModel : class 
         {
-            Contract.Requires(vertex != null);
-            Contract.Requires(propertySelector != null);
-            Contract.Ensures(Contract.Result<IEnumerable<IVertex<TOutModel>>>() != null);
+            if (vertex == null)
+                throw new ArgumentNullException(nameof(vertex));
+            if (propertySelector == null)
+                throw new ArgumentNullException(nameof(propertySelector));
 
             return vertex.Out(propertySelector.Resolve()).As<TOutModel>();
         }
@@ -155,9 +166,10 @@ namespace Frontenac.Gremlinq
             Expression<Func<TInModel, TOutModel>> propertySelector) 
             where TOutModel : class
         {
-            Contract.Requires(vertices != null);
-            Contract.Requires(propertySelector != null);
-            Contract.Ensures(Contract.Result<IEnumerable<IVertex<TOutModel>>>() != null);
+            if (vertices == null)
+                throw new ArgumentNullException(nameof(vertices));
+            if (propertySelector == null)
+                throw new ArgumentNullException(nameof(propertySelector));
 
             return vertices.SelectMany(t => t.Out(propertySelector.Resolve())).As<TOutModel>();
         }
@@ -167,9 +179,10 @@ namespace Frontenac.Gremlinq
             Expression<Func<IVertex<TInModel>, IVertex<TOutModel>>> propertySelector) 
             where TOutModel : class
         {
-            Contract.Requires(vertices != null);
-            Contract.Requires(propertySelector != null);
-            Contract.Ensures(Contract.Result<IEnumerable<IVertex<TOutModel>>>() != null);
+            if (vertices == null)
+                throw new ArgumentNullException(nameof(vertices));
+            if (propertySelector == null)
+                throw new ArgumentNullException(nameof(propertySelector));
 
             return vertices.SelectMany(t => t.Out(propertySelector.Resolve())).As<TOutModel>();
         }
@@ -179,9 +192,10 @@ namespace Frontenac.Gremlinq
             Expression<Func<TModel, TOutModel>> edgePropertySelector) 
             where TOutModel : class
         {
-            Contract.Requires(edge != null);
-            Contract.Requires(edgePropertySelector != null);
-            Contract.Ensures(Contract.Result<IVertex<TOutModel>>() != null);
+            if (edge == null)
+                throw new ArgumentNullException(nameof(edge));
+            if (edgePropertySelector == null)
+                throw new ArgumentNullException(nameof(edgePropertySelector));
 
             var vertex = edge.GetVertex(Direction.Out);
             return new Vertex<TOutModel>(vertex, vertex.Proxy<TOutModel>());
@@ -192,9 +206,10 @@ namespace Frontenac.Gremlinq
             Expression<Func<TModel, IEnumerable<TOutModel>>> edgePropertySelector)
             where TOutModel : class
         {
-            Contract.Requires(edge != null);
-            Contract.Requires(edgePropertySelector != null);
-            Contract.Ensures(Contract.Result<IVertex<TOutModel>>() != null);
+            if (edge == null)
+                throw new ArgumentNullException(nameof(edge));
+            if (edgePropertySelector == null)
+                throw new ArgumentNullException(nameof(edgePropertySelector));
 
             var vertex = edge.GetVertex(Direction.Out);
             return new Vertex<TOutModel>(vertex, vertex.Proxy<TOutModel>());
@@ -205,9 +220,10 @@ namespace Frontenac.Gremlinq
             params Expression<Func<TInModel, TOutModel>>[] edgePropertySelectors) 
             where TOutModel : class
         {
-            Contract.Requires(vertex != null);
-            Contract.Requires(edgePropertySelectors != null);
-            Contract.Ensures(Contract.Result<IEnumerable<IVertex<TOutModel>>>() != null);
+            if (vertex == null)
+                throw new ArgumentNullException(nameof(vertex));
+            if (edgePropertySelectors == null)
+                throw new ArgumentNullException(nameof(edgePropertySelectors));
 
             return vertex.GetVertices(Direction.Out, edgePropertySelectors.Select(Resolve).ToArray()).As<TOutModel>();
         }
@@ -217,9 +233,10 @@ namespace Frontenac.Gremlinq
             params Expression<Func<TInModel, TOutModel>>[] edgePropertySelectors)
             where TOutModel : class
         {
-            Contract.Requires(vertices != null);
-            Contract.Requires(edgePropertySelectors != null);
-            Contract.Ensures(Contract.Result<IEnumerable<IVertex<TOutModel>>>() != null);
+            if (vertices == null)
+                throw new ArgumentNullException(nameof(vertices));
+            if (edgePropertySelectors == null)
+                throw new ArgumentNullException(nameof(edgePropertySelectors));
 
             return vertices.SelectMany(t => t.Out(edgePropertySelectors));
         }

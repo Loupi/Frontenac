@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Diagnostics.Contracts;
 
 namespace Frontenac.Gremlinq
 {
@@ -11,7 +10,8 @@ namespace Frontenac.Gremlinq
 
         public StaticGremlinqContextFactory(IDictionary<int, Type> types)
         {
-            Contract.Requires(types != null);
+            if (types == null)
+                throw new ArgumentNullException(nameof(types));
 
             _typeProvider = new DictionaryTypeProvider(DictionaryTypeProvider.DefaulTypePropertyName, types);
         }

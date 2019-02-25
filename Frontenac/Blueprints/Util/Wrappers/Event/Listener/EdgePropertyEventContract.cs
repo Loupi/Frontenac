@@ -1,21 +1,18 @@
-﻿using System.Diagnostics.Contracts;
+﻿using System;
 
 namespace Frontenac.Blueprints.Util.Wrappers.Event.Listener
 {
-    [ContractClassFor(typeof (EdgePropertyEvent))]
-    public abstract class EdgePropertyEventContract : EdgePropertyEvent
+    public static class EdgePropertyEventContract
     {
-        protected EdgePropertyEventContract(IEdge edge, string key, object oldValue, object newValue)
-            : base(edge, key, oldValue, newValue)
-        {
-        }
-
-        protected override void Fire(IGraphChangedListener listener, IEdge edge, string key, object oldValue,
+        public static void ValidateFire(IGraphChangedListener listener, IEdge edge, string key, object oldValue,
                                      object newValue)
         {
-            Contract.Requires(listener != null);
-            Contract.Requires(edge != null);
-            Contract.Requires(!string.IsNullOrWhiteSpace(key));
+            if (listener == null)
+                throw new ArgumentNullException(nameof(listener));
+            if (edge == null)
+                throw new ArgumentNullException(nameof(edge));
+            if (string.IsNullOrWhiteSpace(key))
+                throw new ArgumentNullException(nameof(key));
         }
     }
 }

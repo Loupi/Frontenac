@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Diagnostics.Contracts;
 using System.IO;
 using System.Runtime.Serialization.Formatters.Binary;
 using Frontenac.Blueprints.Util.IO.GML;
@@ -26,8 +25,6 @@ namespace Frontenac.Blueprints.Impls.TG
 
         public ITinkerStorage GetTinkerStorage(TinkerGrapĥ.FileType fileType)
         {
-            Contract.Ensures(Contract.Result<ITinkerStorage>() != null);
-
             switch (fileType)
             {
                 case TinkerGrapĥ.FileType.Gml:
@@ -47,7 +44,6 @@ namespace Frontenac.Blueprints.Impls.TG
         ///     Base class for loading and saving a TinkerGrapĥ where the implementation separates the data from the
         ///     meta data stored in the TinkerGrapĥ.
         /// </summary>
-        [ContractClass(typeof (AbstractSeparateTinkerStorageContract))]
         private abstract class AbstractSeparateTinkerStorage : AbstractTinkerStorage
         {
             private const string GraphFileMetadata = "/tinkergraph-metadata.dat";
@@ -64,6 +60,8 @@ namespace Frontenac.Blueprints.Impls.TG
 
             public override TinkerGrapĥ Load(string directory)
             {
+                TinkerStorageContract.ValidateLoad(directory);
+
                 if (!Directory.Exists(directory))
                     throw new Exception(string.Concat("Directory ", directory, " does not exist"));
 
@@ -79,6 +77,8 @@ namespace Frontenac.Blueprints.Impls.TG
 
             public override void Save(TinkerGrapĥ tinkerGrapĥ, string directory)
             {
+                TinkerStorageContract.ValidateSave(tinkerGrapĥ, directory);
+
                 if (!Directory.Exists(directory))
                     Directory.CreateDirectory(directory);
 
@@ -88,20 +88,22 @@ namespace Frontenac.Blueprints.Impls.TG
                 TinkerMetadataWriter.Save(tinkerGrapĥ, filePath);
             }
         }
-
-        [ContractClassFor(typeof (AbstractSeparateTinkerStorage))]
-        private abstract class AbstractSeparateTinkerStorageContract : AbstractSeparateTinkerStorage
+        private static class AbstractSeparateTinkerStorageContract
         {
-            public override void LoadGraphData(TinkerGrapĥ tinkerGrapĥ, string directory)
+            public static void ValidateLoadGraphData(TinkerGrapĥ tinkerGrapĥ, string directory)
             {
-                Contract.Requires(tinkerGrapĥ != null);
-                Contract.Requires(!string.IsNullOrWhiteSpace(directory));
+                if (tinkerGrapĥ == null)
+                    throw new ArgumentNullException(nameof(tinkerGrapĥ));
+                if (string.IsNullOrWhiteSpace(directory))
+                    throw new ArgumentNullException(nameof(directory));
             }
 
-            public override void SaveGraphData(TinkerGrapĥ tinkerGrapĥ, string directory)
+            public static void ValidateSaveGraphData(TinkerGrapĥ tinkerGrapĥ, string directory)
             {
-                Contract.Requires(tinkerGrapĥ != null);
-                Contract.Requires(!string.IsNullOrWhiteSpace(directory));
+                if (tinkerGrapĥ == null)
+                    throw new ArgumentNullException(nameof(tinkerGrapĥ));
+                if (string.IsNullOrWhiteSpace(directory))
+                    throw new ArgumentNullException(nameof(directory));
             }
         }
 
@@ -119,7 +121,8 @@ namespace Frontenac.Blueprints.Impls.TG
             /// <param name="path"></param>
             protected static void DeleteFile(string path)
             {
-                Contract.Requires(!string.IsNullOrWhiteSpace(path));
+                if (string.IsNullOrWhiteSpace(path))
+                    throw new ArgumentNullException(nameof(path));
 
                 if (File.Exists(path))
                     File.Delete(path);
@@ -135,6 +138,8 @@ namespace Frontenac.Blueprints.Impls.TG
 
             public override TinkerGrapĥ Load(string directory)
             {
+                TinkerStorageContract.ValidateLoad(directory);
+
                 using (var stream = File.OpenRead(string.Concat(directory, GraphFileDotNet)))
                 {
                     var formatter = new BinaryFormatter();
@@ -144,6 +149,8 @@ namespace Frontenac.Blueprints.Impls.TG
 
             public override void Save(TinkerGrapĥ tinkerGrapĥ, string directory)
             {
+                TinkerStorageContract.ValidateSave(tinkerGrapĥ, directory);
+
                 var filePath = string.Concat(directory, GraphFileDotNet);
                 DeleteFile(filePath);
                 using (var stream = File.Create(string.Concat(directory, GraphFileDotNet)))
@@ -163,11 +170,15 @@ namespace Frontenac.Blueprints.Impls.TG
 
             public override void LoadGraphData(TinkerGrapĥ tinkerGrapĥ, string directory)
             {
+                AbstractSeparateTinkerStorageContract.ValidateLoadGraphData(tinkerGrapĥ, directory);
+
                 GmlReader.InputGraph(tinkerGrapĥ, string.Concat(directory, GraphFileGml));
             }
 
             public override void SaveGraphData(TinkerGrapĥ tinkerGrapĥ, string directory)
             {
+                AbstractSeparateTinkerStorageContract.ValidateSaveGraphData(tinkerGrapĥ, directory);
+
                 var filePath = string.Concat(directory, GraphFileGml);
                 DeleteFile(filePath);
                 GmlWriter.OutputGraph(tinkerGrapĥ, filePath);
@@ -183,11 +194,15 @@ namespace Frontenac.Blueprints.Impls.TG
 
             public override void LoadGraphData(TinkerGrapĥ tinkerGrapĥ, string directory)
             {
+                AbstractSeparateTinkerStorageContract.ValidateLoadGraphData(tinkerGrapĥ, directory);
+
                 GraphMlReader.InputGraph(tinkerGrapĥ, string.Concat(directory, GraphFileGraphml));
             }
 
             public override void SaveGraphData(TinkerGrapĥ tinkerGrapĥ, string directory)
             {
+                AbstractSeparateTinkerStorageContract.ValidateSaveGraphData(tinkerGrapĥ, directory);
+
                 var filePath = string.Concat(directory, GraphFileGraphml);
                 DeleteFile(filePath);
                 GraphMlWriter.OutputGraph(tinkerGrapĥ, filePath);
@@ -203,11 +218,15 @@ namespace Frontenac.Blueprints.Impls.TG
 
             public override void LoadGraphData(TinkerGrapĥ tinkerGrapĥ, string directory)
             {
+                AbstractSeparateTinkerStorageContract.ValidateLoadGraphData(tinkerGrapĥ, directory);
+
                 GraphSonReader.InputGraph(tinkerGrapĥ, string.Concat(directory, GraphFileGraphson));
             }
 
             public override void SaveGraphData(TinkerGrapĥ tinkerGrapĥ, string directory)
             {
+                AbstractSeparateTinkerStorageContract.ValidateSaveGraphData(tinkerGrapĥ, directory);
+
                 var filePath = string.Concat(directory, GraphFileGraphson);
                 DeleteFile(filePath);
                 GraphSonWriter.OutputGraph(tinkerGrapĥ, filePath, GraphSonMode.EXTENDED);
