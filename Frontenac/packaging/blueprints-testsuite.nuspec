@@ -5,6 +5,7 @@
 		<version>2.5.0</version>
 		<authors>Loupi</authors>
 		<projectUrl>https://github.com/Loupi/Frontenac</projectUrl>
+		<license type="expression">MIT</license>
 		<requireLicenseAcceptance>false</requireLicenseAcceptance>
 		<description>A .NET port of the Tinkerpop Stack. Blueprints TestSuite provides a standard testsuite for the graph libraries that implement the Blueprints property graph model.</description>
 		<dependencies>

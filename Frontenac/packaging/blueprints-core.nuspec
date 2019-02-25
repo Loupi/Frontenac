@@ -5,6 +5,7 @@
 		<version>2.5.0</version>
 		<authors>Loupi</authors>
 		<projectUrl>https://github.com/Loupi/Frontenac</projectUrl>
+		<license type="expression">MIT</license>
 		<requireLicenseAcceptance>false</requireLicenseAcceptance>
 		<description>A .NET port of the Tinkerpop Stack. Blueprints provides a set of interfaces for the property graph data model.</description>
 		<dependencies>
