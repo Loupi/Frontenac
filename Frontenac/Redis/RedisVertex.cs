@@ -8,16 +8,16 @@ namespace Frontenac.Redis
 {
     public class RedisVertex : RedisElement, IVertex
     {        
-        public RedisVertex(long id, RedisGraph innerTinkerGrapĥ) 
-            : base(id, innerTinkerGrapĥ)
+        public RedisVertex(long id, RedisGraph graph) 
+            : base(id, graph)
         {
-            if (innerTinkerGrapĥ == null)
-                throw new ArgumentNullException(nameof(innerTinkerGrapĥ));
+            if (graph == null)
+                throw new ArgumentNullException(nameof(graph));
         }
 
         public IEnumerable<IEdge> GetEdges(Direction direction, params string[] labels)
         {
-            return RedisInnerTinkerGrapĥ.GetEdges(this, direction, labels);
+            return RedisGraph.GetEdges(this, direction, labels);
         }
 
         public IEnumerable<IVertex> GetVertices(Direction direction, params string[] labels)
@@ -27,14 +27,14 @@ namespace Frontenac.Redis
 
         public long GetNbEdges(Direction direction, string label)
         {
-            return RedisInnerTinkerGrapĥ.GetNbEdges(this, direction, label);
+            return RedisGraph.GetNbEdges(this, direction, label);
         }
 
         public IEnumerable<IVertex> GetVertices(Direction direction, string label, params object[]ids)
         {
             return ids.Length == 0 
                 ? GetVertices(direction, new[] {label}) 
-                : RedisInnerTinkerGrapĥ.GetVertices(this, direction, label, ids);
+                : RedisGraph.GetVertices(this, direction, label, ids);
         }
 
         public IVertexQuery Query()
@@ -51,7 +51,7 @@ namespace Frontenac.Redis
 
         public override void Remove()
         {
-            RedisInnerTinkerGrapĥ.RemoveVertex(this);
+            RedisGraph.RemoveVertex(this);
         }
 
         public override string ToString()

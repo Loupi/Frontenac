@@ -16,7 +16,7 @@ namespace Frontenac.Blueprints.Util.IO.GML
         [Test]
         public void Example2GmlTestingMapParsing()
         {
-            var graph = new TinkerGrapĥ();
+            var graph = new TinkerGraph();
 
             using (var stream = GetResource<GmlReaderTest>("example2.gml"))
             {
@@ -42,7 +42,7 @@ namespace Frontenac.Blueprints.Util.IO.GML
         [Test]
         public void ExampleGmlGetsCorrectNumberOfElements()
         {
-            var graph = new TinkerGrapĥ();
+            var graph = new TinkerGraph();
             using (var stream = GetResource<GmlReaderTest>("example.gml"))
             {
                 GmlReader.InputGraph(graph, stream);
@@ -55,7 +55,7 @@ namespace Frontenac.Blueprints.Util.IO.GML
         [Test]
         public void ExampleGmlGetsCorrectProperties()
         {
-            var graph = new TinkerGrapĥ();
+            var graph = new TinkerGraph();
             using (var stream = GetResource<GmlReaderTest>("example.gml"))
             {
                 GmlReader.InputGraph(graph, stream);
@@ -86,7 +86,7 @@ namespace Frontenac.Blueprints.Util.IO.GML
         [Test]
         public void ExampleGmlGetsCorrectTopology()
         {
-            var graph = new TinkerGrapĥ();
+            var graph = new TinkerGraph();
             using (var stream = GetResource<GmlReaderTest>("example.gml"))
             {
                 GmlReader.InputGraph(graph, stream);
@@ -116,7 +116,7 @@ namespace Frontenac.Blueprints.Util.IO.GML
             {
                 using (var stream = GetResource<GmlReaderTest>("malformed.gml"))
                 {
-                    GmlReader.InputGraph(new TinkerGrapĥ(), stream);
+                    GmlReader.InputGraph(new TinkerGraph(), stream);
                 }
                 Assert.Fail();
             }

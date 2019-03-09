@@ -202,19 +202,19 @@ namespace Frontenac.Grave.Tests
     [TestFixture(Category = "GraveTransactionalGraphGraphTestSuite")]
     public class GraveTransactionalGraphTestImpl : GraphTest
     {
-        public override TinkerGrapĥ GenerateGraph()
+        public override TinkerGraph GenerateGraph()
         {
             return GenerateGraph("InnerGraph");
         }
 
-        public override TinkerGrapĥ GenerateGraph(string graphDirectoryName)
+        public override TinkerGraph GenerateGraph(string graphDirectoryName)
         {
             return GraveFactory.CreateTransactionalGraph();
         }
 
         public static string GetGraveGraphDirectory()
         {
-            return Path.Combine(Directory.GetCurrentDirectory(), "GraveInnerTinkerGrapĥ");
+            return Path.Combine(Directory.GetCurrentDirectory(), "GraveGraph");
         }
     }
 
@@ -317,7 +317,7 @@ namespace Frontenac.Grave.Tests
         [Test]
         public void TestShutdownStartManyTimes()
         {
-            var InnerGraph = (GraveInnerTinkerGrapĥ) GraphTest.GenerateGraph();
+            var InnerGraph = (GraveGraph) GraphTest.GenerateGraph();
             try
             {
                 for (var i = 0; i < 25; i++)
@@ -337,7 +337,7 @@ namespace Frontenac.Grave.Tests
             const int iterations = 150;
             for (var i = 0; i < iterations; i++)
             {
-                InnerGraph = (GraveInnerTinkerGrapĥ) GraphTest.GenerateGraph();
+                InnerGraph = (GraveGraph) GraphTest.GenerateGraph();
                 try
                 {
                     Assert.AreEqual(50, Count(InnerGraph.GetVertices()));

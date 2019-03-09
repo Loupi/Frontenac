@@ -4,28 +4,28 @@ using System.IO;
 namespace Frontenac.Blueprints.Impls.TG
 {
     /// <summary>
-    ///     Writes TinkerGrapĥ metadata to an OutputStream.
+    ///     Writes TinkerGraph metadata to an OutputStream.
     /// </summary>
     internal class TinkerMetadataWriter
     {
-        private readonly TinkerGrapĥ _tinkerGrapĥ;
+        private readonly TinkerGraph _tinkerGraph;
 
         /// <summary>
-        ///     the TinkerGrapĥ to pull the data from
+        ///     the TinkerGraph to pull the data from
         /// </summary>
-        /// <param name="tinkerGrapĥ"></param>
-        public TinkerMetadataWriter(TinkerGrapĥ tinkerGrapĥ)
+        /// <param name="tinkerGraph"></param>
+        public TinkerMetadataWriter(TinkerGraph tinkerGraph)
         {
-            if (tinkerGrapĥ == null)
-                throw new ArgumentNullException(nameof(tinkerGrapĥ));
+            if (tinkerGraph == null)
+                throw new ArgumentNullException(nameof(tinkerGraph));
 
-            _tinkerGrapĥ = tinkerGrapĥ;
+            _tinkerGraph = tinkerGraph;
         }
 
         /// <summary>
-        ///     Write TinkerGrapĥ metadata to a file.
+        ///     Write TinkerGraph metadata to a file.
         /// </summary>
-        /// <param name="filename">the name of the file to write the TinkerGrapĥ metadata to</param>
+        /// <param name="filename">the name of the file to write the TinkerGraph metadata to</param>
         public void Save(string filename)
         {
             if (string.IsNullOrWhiteSpace(filename))
@@ -38,9 +38,9 @@ namespace Frontenac.Blueprints.Impls.TG
         }
 
         /// <summary>
-        ///     Write TinkerGrapĥ metadata to an OutputStream.
+        ///     Write TinkerGraph metadata to an OutputStream.
         /// </summary>
-        /// <param name="outputStream">the OutputStream to write the TinkerGrapĥ metadata to</param>
+        /// <param name="outputStream">the OutputStream to write the TinkerGraph metadata to</param>
         public void Save(Stream outputStream)
         {
             if (outputStream == null)
@@ -48,56 +48,56 @@ namespace Frontenac.Blueprints.Impls.TG
 
             using (var writer = new BinaryWriter(outputStream))
             {
-                writer.Write(_tinkerGrapĥ.CurrentId);
-                WriteIndices(writer, _tinkerGrapĥ);
-                WriteVertexKeyIndices(writer, _tinkerGrapĥ);
-                WriteEdgeKeyIndices(writer, _tinkerGrapĥ);
+                writer.Write(_tinkerGraph.CurrentId);
+                WriteIndices(writer, _tinkerGraph);
+                WriteVertexKeyIndices(writer, _tinkerGraph);
+                WriteEdgeKeyIndices(writer, _tinkerGraph);
             }
         }
 
         /// <summary>
-        ///     Write TinkerGrapĥ metadata to an OutputStream.
+        ///     Write TinkerGraph metadata to an OutputStream.
         /// </summary>
-        /// <param name="tinkerGrapĥ">the TinkerGrapĥ to pull the metadata from</param>
-        /// <param name="outputStream">the OutputStream to write the TinkerGrapĥ metadata to</param>
-        public static void Save(TinkerGrapĥ tinkerGrapĥ, Stream outputStream)
+        /// <param name="tinkerGraph">the TinkerGraph to pull the metadata from</param>
+        /// <param name="outputStream">the OutputStream to write the TinkerGraph metadata to</param>
+        public static void Save(TinkerGraph tinkerGraph, Stream outputStream)
         {
-            if (tinkerGrapĥ == null)
-                throw new ArgumentNullException(nameof(tinkerGrapĥ));
+            if (tinkerGraph == null)
+                throw new ArgumentNullException(nameof(tinkerGraph));
             if (outputStream == null)
                 throw new ArgumentNullException(nameof(outputStream));
 
-            var writer = new TinkerMetadataWriter(tinkerGrapĥ);
+            var writer = new TinkerMetadataWriter(tinkerGraph);
             writer.Save(outputStream);
         }
 
         /// <summary>
-        ///     Write TinkerGrapĥ metadata to a file.
+        ///     Write TinkerGraph metadata to a file.
         /// </summary>
-        /// <param name="tinkerGrapĥ">the TinkerGrapĥ to pull the data from</param>
-        /// <param name="filename">the name of the file to write the TinkerGrapĥ metadata to</param>
-        public static void Save(TinkerGrapĥ tinkerGrapĥ, string filename)
+        /// <param name="tinkerGraph">the TinkerGraph to pull the data from</param>
+        /// <param name="filename">the name of the file to write the TinkerGraph metadata to</param>
+        public static void Save(TinkerGraph tinkerGraph, string filename)
         {
-            if (tinkerGrapĥ == null)
-                throw new ArgumentNullException(nameof(tinkerGrapĥ));
+            if (tinkerGraph == null)
+                throw new ArgumentNullException(nameof(tinkerGraph));
             if (string.IsNullOrWhiteSpace(filename))
                 throw new ArgumentNullException(nameof(filename));
 
-            var writer = new TinkerMetadataWriter(tinkerGrapĥ);
+            var writer = new TinkerMetadataWriter(tinkerGraph);
             writer.Save(filename);
         }
 
-        private static void WriteIndices(BinaryWriter writer, TinkerGrapĥ tinkerGrapĥ)
+        private static void WriteIndices(BinaryWriter writer, TinkerGraph tinkerGraph)
         {
             if (writer == null)
                 throw new ArgumentNullException(nameof(writer));
-            if (tinkerGrapĥ == null)
-                throw new ArgumentNullException(nameof(tinkerGrapĥ));
+            if (tinkerGraph == null)
+                throw new ArgumentNullException(nameof(tinkerGraph));
 
             // Write the number of indices
-            writer.Write(tinkerGrapĥ.Indices.Count);
+            writer.Write(tinkerGraph.Indices.Count);
 
-            foreach (var index in tinkerGrapĥ.Indices)
+            foreach (var index in tinkerGraph.Indices)
             {
                 // Write the index name
                 writer.Write(index.Key);
@@ -150,17 +150,17 @@ namespace Frontenac.Blueprints.Impls.TG
             }
         }
 
-        private static void WriteVertexKeyIndices(BinaryWriter writer, TinkerGrapĥ tinkerGrapĥ)
+        private static void WriteVertexKeyIndices(BinaryWriter writer, TinkerGraph tinkerGraph)
         {
             if (writer == null)
                 throw new ArgumentNullException(nameof(writer));
-            if (tinkerGrapĥ == null)
-                throw new ArgumentNullException(nameof(tinkerGrapĥ));
+            if (tinkerGraph == null)
+                throw new ArgumentNullException(nameof(tinkerGraph));
 
             // Write the number of vertex key indices
-            writer.Write(tinkerGrapĥ.VertexKeyIndex.Index.Count);
+            writer.Write(tinkerGraph.VertexKeyIndex.Index.Count);
 
-            foreach (var index in tinkerGrapĥ.VertexKeyIndex.Index)
+            foreach (var index in tinkerGraph.VertexKeyIndex.Index)
             {
                 // Write the key index name
                 writer.Write(index.Key);
@@ -183,17 +183,17 @@ namespace Frontenac.Blueprints.Impls.TG
             }
         }
 
-        private static void WriteEdgeKeyIndices(BinaryWriter writer, TinkerGrapĥ tinkerGrapĥ)
+        private static void WriteEdgeKeyIndices(BinaryWriter writer, TinkerGraph tinkerGraph)
         {
             if (writer == null)
                 throw new ArgumentNullException(nameof(writer));
-            if (tinkerGrapĥ == null)
-                throw new ArgumentNullException(nameof(tinkerGrapĥ));
+            if (tinkerGraph == null)
+                throw new ArgumentNullException(nameof(tinkerGraph));
 
             // Write the number of edge key indices
-            writer.Write(tinkerGrapĥ.EdgeKeyIndex.Index.Count);
+            writer.Write(tinkerGraph.EdgeKeyIndex.Index.Count);
 
-            foreach (var index in tinkerGrapĥ.EdgeKeyIndex.Index)
+            foreach (var index in tinkerGraph.EdgeKeyIndex.Index)
             {
                 // Write the key index name
                 writer.Write(index.Key);

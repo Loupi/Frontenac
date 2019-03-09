@@ -7,18 +7,18 @@ namespace Frontenac.Blueprints.Util.Wrappers.Id
     public abstract class IdElement : DictionaryElement
     {
         protected readonly IElement BaseElement;
-        protected readonly IdGraph IdInnerTinkerGrapĥ;
+        protected readonly IdGraph IdGraph;
         protected readonly bool PropertyBased;
 
-        protected IdElement(IElement baseElement, IdGraph idInnerTinkerGrapĥ, bool propertyBased):base(idInnerTinkerGrapĥ)
+        protected IdElement(IElement baseElement, IdGraph idGraph, bool propertyBased):base(idGraph)
         {
             if (baseElement == null)
                 throw new ArgumentNullException(nameof(baseElement));
-            if (idInnerTinkerGrapĥ == null)
-                throw new ArgumentNullException(nameof(idInnerTinkerGrapĥ));
+            if (idGraph == null)
+                throw new ArgumentNullException(nameof(idGraph));
 
             BaseElement = baseElement;
-            IdInnerTinkerGrapĥ = idInnerTinkerGrapĥ;
+            IdGraph = idGraph;
             PropertyBased = propertyBased;
         }
 
@@ -70,9 +70,9 @@ namespace Frontenac.Blueprints.Util.Wrappers.Id
         {
             var vertex = this as IVertex;
             if (vertex != null)
-                IdInnerTinkerGrapĥ.RemoveVertex(vertex);
+                IdGraph.RemoveVertex(vertex);
             else
-                IdInnerTinkerGrapĥ.RemoveEdge((IEdge) this);
+                IdGraph.RemoveEdge((IEdge) this);
         }
 
         public override int GetHashCode()

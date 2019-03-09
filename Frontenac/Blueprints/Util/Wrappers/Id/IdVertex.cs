@@ -7,20 +7,20 @@ namespace Frontenac.Blueprints.Util.Wrappers.Id
     {
         private readonly IVertex _baseVertex;
 
-        public IdVertex(IVertex baseVertex, IdGraph idInnerTinkerGrapĥ)
-            : base(baseVertex, idInnerTinkerGrapĥ, idInnerTinkerGrapĥ.GetSupportVertexIds())
+        public IdVertex(IVertex baseVertex, IdGraph idGraph)
+            : base(baseVertex, idGraph, idGraph.GetSupportVertexIds())
         {
             if (baseVertex == null)
                 throw new ArgumentNullException(nameof(baseVertex));
-            if (idInnerTinkerGrapĥ == null)
-                throw new ArgumentNullException(nameof(idInnerTinkerGrapĥ));
+            if (idGraph == null)
+                throw new ArgumentNullException(nameof(idGraph));
 
             _baseVertex = baseVertex;
         }
 
         public IEnumerable<IEdge> GetEdges(Direction direction, params string[] labels)
         {
-            return new IdEdgeIterable(_baseVertex.GetEdges(direction, labels), IdInnerTinkerGrapĥ);
+            return new IdEdgeIterable(_baseVertex.GetEdges(direction, labels), IdGraph);
         }
 
         public long GetNbEdges(Direction direction, string label)
@@ -35,19 +35,19 @@ namespace Frontenac.Blueprints.Util.Wrappers.Id
 
         public IEnumerable<IVertex> GetVertices(Direction direction, params string[] labels)
         {
-            return new IdVertexIterable(_baseVertex.GetVertices(direction, labels), IdInnerTinkerGrapĥ);
+            return new IdVertexIterable(_baseVertex.GetVertices(direction, labels), IdGraph);
         }
 
         public IVertexQuery Query()
         {
             return new WrapperVertexQuery(_baseVertex.Query(),
-                                          t => new IdEdgeIterable(t.Edges(), IdInnerTinkerGrapĥ),
-                                          t => new IdVertexIterable(t.Vertices(), IdInnerTinkerGrapĥ));
+                                          t => new IdEdgeIterable(t.Edges(), IdGraph),
+                                          t => new IdVertexIterable(t.Vertices(), IdGraph));
         }
 
         public IEdge AddEdge(object id, string label, IVertex vertex)
         {
-            return IdInnerTinkerGrapĥ.AddEdge(id, this, vertex, label);
+            return IdGraph.AddEdge(id, this, vertex, label);
         }
 
         public IVertex GetBaseVertex()

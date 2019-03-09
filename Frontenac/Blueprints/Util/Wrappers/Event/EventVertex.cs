@@ -9,25 +9,25 @@ namespace Frontenac.Blueprints.Util.Wrappers.Event
     /// </summary>
     public class EventVertex : EventElement, IVertex
     {
-        public EventVertex(IVertex vertex, EventGraph eventInnerTinkerGrapĥ)
-            : base(vertex, eventInnerTinkerGrapĥ)
+        public EventVertex(IVertex vertex, EventGraph eventGraph)
+            : base(vertex, eventGraph)
         {
             if (vertex == null)
                 throw new ArgumentNullException(nameof(vertex));
-            if (eventInnerTinkerGrapĥ == null)
-                throw new ArgumentNullException(nameof(eventInnerTinkerGrapĥ));
+            if (eventGraph == null)
+                throw new ArgumentNullException(nameof(eventGraph));
 
             Vertex = vertex;
         }
 
         public IEnumerable<IEdge> GetEdges(Direction direction, params string[] labels)
         {
-            return new EventEdgeIterable(Vertex.GetEdges(direction, labels), EventInnerTinkerGrapĥ);
+            return new EventEdgeIterable(Vertex.GetEdges(direction, labels), EventGraph);
         }
 
         public IEnumerable<IVertex> GetVertices(Direction direction, params string[] labels)
         {
-            return new EventVertexIterable(Vertex.GetVertices(direction, labels), EventInnerTinkerGrapĥ);
+            return new EventVertexIterable(Vertex.GetVertices(direction, labels), EventGraph);
         }
 
         public IEnumerable<IVertex> GetVertices(Direction direction, string label, params object[] ids)
@@ -43,13 +43,13 @@ namespace Frontenac.Blueprints.Util.Wrappers.Event
         public IVertexQuery Query()
         {
             return new WrapperVertexQuery(Vertex.Query(),
-                                          t => new EventEdgeIterable(t.Edges(), EventInnerTinkerGrapĥ),
-                                          t => new EventVertexIterable(t.Vertices(), EventInnerTinkerGrapĥ));
+                                          t => new EventEdgeIterable(t.Edges(), EventGraph),
+                                          t => new EventVertexIterable(t.Vertices(), EventGraph));
         }
 
         public IEdge AddEdge(object id, string label, IVertex vertex)
         {
-            return EventInnerTinkerGrapĥ.AddEdge(id, this, vertex, label);
+            return EventGraph.AddEdge(id, this, vertex, label);
         }
 
         public IVertex Vertex { get; protected set; }

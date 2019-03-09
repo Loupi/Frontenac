@@ -10,8 +10,8 @@ namespace Frontenac.Grave
         private readonly IVertex _inVertex;
         private readonly IVertex _outVertex;
 
-        public GraveEdge(int id, IVertex outVertex, IVertex inVertex, string label, GraveGraph innerTinkerGrapĥ)
-            : base(innerTinkerGrapĥ, id)
+        public GraveEdge(int id, IVertex outVertex, IVertex inVertex, string label, GraveGraph graph)
+            : base(graph, id)
         {
             if (outVertex == null)
                 throw new ArgumentNullException(nameof(outVertex));
@@ -19,8 +19,8 @@ namespace Frontenac.Grave
                 throw new ArgumentNullException(nameof(inVertex));
             if (string.IsNullOrWhiteSpace(label))
                 throw new ArgumentNullException(nameof(label));
-            if (innerTinkerGrapĥ == null)
-                throw new ArgumentNullException(nameof(innerTinkerGrapĥ));
+            if (graph == null)
+                throw new ArgumentNullException(nameof(graph));
 
             _outVertex = outVertex;
             _inVertex = inVertex;
@@ -29,7 +29,7 @@ namespace Frontenac.Grave
 
         public override void Remove()
         {
-            GraveInnerTinkerGrapĥ.RemoveEdge(this);
+            GraveGraph.RemoveEdge(this);
         }
 
         public IVertex GetVertex(Direction direction)

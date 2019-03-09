@@ -7,13 +7,13 @@ namespace Frontenac.Blueprints.Util.Wrappers.Partition
     {
         private readonly IEdge _edge;
 
-        public PartitionEdge(IEdge edge, PartitionGraph innerTinkerGrapĥ)
-            : base(edge, innerTinkerGrapĥ)
+        public PartitionEdge(IEdge edge, PartitionGraph graph)
+            : base(edge, graph)
         {
             if (edge == null)
                 throw new ArgumentNullException(nameof(edge));
-            if (innerTinkerGrapĥ == null)
-                throw new ArgumentNullException(nameof(innerTinkerGrapĥ));
+            if (graph == null)
+                throw new ArgumentNullException(nameof(graph));
 
             _edge = edge;
         }
@@ -21,7 +21,7 @@ namespace Frontenac.Blueprints.Util.Wrappers.Partition
         public IVertex GetVertex(Direction direction)
         {
             EdgeContract.ValidateGetVertex(direction);
-            return new PartitionVertex(_edge.GetVertex(direction), PartitionInnerTinkerGrapĥ);
+            return new PartitionVertex(_edge.GetVertex(direction), PartitionGraph);
         }
 
         public string Label => _edge.Label;

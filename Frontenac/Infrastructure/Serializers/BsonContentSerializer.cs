@@ -18,7 +18,7 @@ namespace Frontenac.Infrastructure.Serializers
         public byte[] Serialize(object value)
         {
             var ms = new MemoryStream();
-            using (var writer = new BsonWriter(ms))
+            using (var writer = new BsonDataWriter(ms))
             {
                 _serializer.Serialize(writer, new BsonWrapper {Data = value});
                 return ms.ToArray();
@@ -27,7 +27,7 @@ namespace Frontenac.Infrastructure.Serializers
 
         public object Deserialize(byte[] raw)
         {
-            using (var reader = new BsonReader(new MemoryStream(raw)))
+            using (var reader = new BsonDataReader(new MemoryStream(raw)))
             {
                 return ((BsonWrapper) _serializer.Deserialize(reader)).Data;
             }

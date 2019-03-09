@@ -12,7 +12,7 @@ namespace Frontenac.Blueprints.Util
         [Test]
         public void TestCopyElementProperties()
         {
-            var graph = new TinkerGrapĥ();
+            var graph = new TinkerGraph();
             var v = graph.AddVertex(null);
             v.SetProperty("name", "marko");
             v.SetProperty("age", 31);
@@ -43,7 +43,7 @@ namespace Frontenac.Blueprints.Util
         [Test]
         public void TestHaveEqualProperties()
         {
-            var graph = new TinkerGrapĥ();
+            var graph = new TinkerGraph();
             var a = graph.AddVertex(null);
             var b = graph.AddVertex(null);
             var c = graph.AddVertex(null);
@@ -112,7 +112,7 @@ namespace Frontenac.Blueprints.Util
         [Test]
         public void TestSetProperties()
         {
-            var graph = new TinkerGrapĥ();
+            var graph = new TinkerGraph();
             var vertex = graph.AddVertex(null);
             var map = new Dictionary<string, object>();
             map.Put("name", "pierre");
@@ -131,7 +131,7 @@ namespace Frontenac.Blueprints.Util
         [Test]
         public void TestSetPropertiesVarArgs()
         {
-            var graph = new TinkerGrapĥ();
+            var graph = new TinkerGraph();
             var vertex = graph.AddVertex(null);
             vertex.SetProperties("name", "pierre");
             Assert.AreEqual(vertex.GetPropertyKeys().Count(), 1);
@@ -148,7 +148,7 @@ namespace Frontenac.Blueprints.Util
                 vertex.SetProperties("a", 12, "b");
                 Assert.Fail();
             }
-            catch (Exception x)
+            catch (Exception)
             {
 
             }

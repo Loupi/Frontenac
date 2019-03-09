@@ -37,8 +37,8 @@ namespace Frontenac.Blueprints.Util.Wrappers.Batch
             var counter = new VertexEdgeCounter();
 
             var tgraph = _ignoreIDs
-                             ? new MockTransactionalGraph(new IgnoreIdTinkerGrapĥ())
-                             : new MockTransactionalGraph(new TinkerGrapĥ());
+                             ? new MockTransactionalGraph(new IgnoreIdTinkerGraph())
+                             : new MockTransactionalGraph(new TinkerGraph());
             try
             {
                 var graph = new BlGraph(this, tgraph, counter, ids);
@@ -292,7 +292,7 @@ namespace Frontenac.Blueprints.Util.Wrappers.Batch
         {
             const int numEdges = 1000;
             var quads = GenerateQuads(100, numEdges, new[] {"knows", "friend"});
-            var tg = new TinkerGrapĥ();
+            var tg = new TinkerGraph();
             try
             {
                 var bg = new BatchGraph(new WritethroughGraph(tg), VertexIdType.String, 100);
@@ -328,7 +328,7 @@ namespace Frontenac.Blueprints.Util.Wrappers.Batch
         {
             const int numEdges = 1000;
             var quads = GenerateQuads(100, numEdges, new[] {"knows", "friend"});
-            var tg = new IgnoreIdTinkerGrapĥ();
+            var tg = new IgnoreIdTinkerGraph();
             try
             {
                 var bg = new BatchGraph(new WritethroughGraph(tg), VertexIdType.String, 100);
@@ -406,7 +406,7 @@ namespace Frontenac.Blueprints.Util.Wrappers.Batch
         {
             const int numEdges = 10000;
             var quads = GenerateQuads(100, numEdges, new[] {"knows", "friend"});
-            var graph = new TinkerGrapĥ();
+            var graph = new TinkerGraph();
             try
             {
                 var bgraph = new BatchGraph(new WritethroughGraph(graph), VertexIdType.String, 1000);

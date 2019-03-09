@@ -28,11 +28,11 @@ namespace Frontenac.Blueprints.Util.IO.GML
         [Test]
         public void TestEncoding()
         {
-            var g = new TinkerGrapĥ();
+            var g = new TinkerGraph();
             var v = g.AddVertex(1);
             v.SetProperty("text", "\u00E9");
 
-            var g2 = new TinkerGrapĥ();
+            var g2 = new TinkerGraph();
             using (var bos = new MemoryStream())
             {
                 var w = new GmlWriter(g) {Strict = true, UseId = true};
@@ -49,7 +49,7 @@ namespace Frontenac.Blueprints.Util.IO.GML
         [Test]
         public void TestNormal()
         {
-            var g = new TinkerGrapĥ();
+            var g = new TinkerGraph();
             using (var stream = GetResource<GmlReaderTest>("example.gml"))
             {
                 GmlReader.InputGraph(g, stream);
@@ -74,7 +74,7 @@ namespace Frontenac.Blueprints.Util.IO.GML
         public void TestRoundTrip()
         {
             var g1 = TinkerGraphFactory.CreateTinkerGraph();
-            var g2 = new TinkerGrapĥ();
+            var g2 = new TinkerGraph();
             using (var bos = new MemoryStream())
             {
                 var w = new GmlWriter(g1) {UseId = true};
@@ -107,7 +107,7 @@ namespace Frontenac.Blueprints.Util.IO.GML
             v.SetProperty("goodproperty5", "numbers are cool");
             v.SetProperty("a", "one letter is ok");
 
-            var g2 = new TinkerGrapĥ();
+            var g2 = new TinkerGraph();
             using (var bos = new MemoryStream())
             {
                 var w = new GmlWriter(g1) {Strict = true, UseId = true};
@@ -139,7 +139,7 @@ namespace Frontenac.Blueprints.Util.IO.GML
         [Test]
         public void TestUseIds()
         {
-            var g = new TinkerGrapĥ();
+            var g = new TinkerGraph();
             using (var stream = GetResource<GmlReaderTest>("example.gml"))
             {
                 GmlReader.InputGraph(g, stream);

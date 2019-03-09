@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
+using System.Configuration;
 using System.Globalization;
 using Frontenac.Blueprints;
 using Frontenac.Blueprints.Geo;
@@ -231,7 +232,8 @@ namespace Frontenac.ElasticSearch
             var response = _client.Search<Ref>(s => s
                 .Index(index)
                 .AllTypes()
-                .FielddataFields(descriptor => descriptor.Field(key))
+                .DocValueFields(descriptor => descriptor.Field(key))
+                //.StoredFields(descriptor => descriptor.Field(key))
                 .Size(hitsLimit)
                 .Query(q => q.Wildcard(key, value.ToString().ToLowerInvariant())));
             return response.Documents.Select(r => r.Id).ToArray();
@@ -568,7 +570,7 @@ namespace Frontenac.ElasticSearch
                         descriptor.Mappings(md => md.Map(TypeName.From<object>(),
                             mdd => mdd.Properties(p => p
                                 .GeoPoint(
-                                    mappingDescriptor => mappingDescriptor.Name(indexName.ToLowerInvariant()).LatLon())))));
+                                    mappingDescriptor => mappingDescriptor.Name(indexName.ToLowerInvariant())/*.LatLon()*/)))));
 // ReSharper restore ImplicitlyCapturedClosure
                 else
                 {
@@ -607,8 +609,8 @@ namespace Frontenac.ElasticSearch
             if (_indices.TryGetValue(indexType, out indices))
                 return indices;
             indices = _client.GetAlias(descriptor => descriptor.Index(string.Concat(indexType, "*"))).Indices
-                .Where(pair => pair.Key.StartsWith(indexType))
-                .Select(pair => pair.Key.Substring(indexType.Length)).ToList();
+                .Where(pair => pair.Key.Cluster.StartsWith(indexType))
+                .Select(pair => pair.Key.Name.Substring(indexType.Length)).ToList();
             _indices.TryAdd(indexType, indices);
             return indices;
         }

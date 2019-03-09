@@ -1,5 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Configuration;
+using System.Diagnostics.Contracts;
 using System.Linq;
 using System.Threading.Tasks;
 using Frontenac.Blueprints;
@@ -86,14 +88,6 @@ namespace Frontenac.Redis
                           IGraphConfiguration configuration)
             :base(indexingService)
         {
-<<<<<<< HEAD
-            Contract.Requires(factory != null);
-            Contract.Requires(serializer != null);
-            Contract.Requires(multiplexer != null);
-            Contract.Requires(indexingService != null);
-            Contract.Requires(configuration != null);
-            
-=======
             if (factory == null)
                 throw new ArgumentNullException(nameof(factory));
             if (serializer == null)
@@ -105,7 +99,6 @@ namespace Frontenac.Redis
             if (configuration == null)
                 throw new ArgumentNullException(nameof(configuration));
 
->>>>>>> master
             _factory = factory;
             Serializer = serializer;
             Multiplexer = multiplexer;
@@ -381,7 +374,8 @@ namespace Frontenac.Redis
 
         public virtual long GetNbEdges(RedisVertex vertex, Direction direction, string label)
         {
-            Contract.Requires(vertex != null);
+            if (vertex == null)
+                throw new ArgumentNullException(nameof(vertex));
 
             var db = Multiplexer.GetDatabase();
 
@@ -392,7 +386,8 @@ namespace Frontenac.Redis
 
         public IEnumerable<IVertex> GetVertices(RedisVertex vertex, Direction direction, string label, IEnumerable<object> ids)
         {
-            Contract.Requires(ids != null);
+            if (ids == null)
+                throw new ArgumentNullException(nameof(ids));
 
             var db = Multiplexer.GetDatabase();
 
@@ -610,7 +605,8 @@ namespace Frontenac.Redis
 
         public Dictionary<long, Dictionary<string, object>> GetElementsMap(IEnumerable<long> ids)
         {
-            Contract.Requires(ids != null);
+            if (ids == null)
+                throw new ArgumentNullException(nameof(ids));
 
             var db = Multiplexer.GetDatabase();
             var batch = db.CreateBatch();

@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Diagnostics;
 using Frontenac.Blueprints;
 using Frontenac.Blueprints.Contracts;
 using Frontenac.Blueprints.Util;
@@ -11,8 +12,8 @@ namespace Frontenac.Redis
         private readonly IVertex _inVertex;
         private readonly IVertex _outVertex;
 
-        public RedisEdge(long id, IVertex outVertex, IVertex inVertex, string label, RedisGraph innerTinkerGrapĥ)
-            : base(id, innerTinkerGrapĥ)
+        public RedisEdge(long id, IVertex outVertex, IVertex inVertex, string label, RedisGraph graph)
+            : base(id, graph)
         {
             if (outVertex == null)
                 throw new ArgumentNullException(nameof(outVertex));
@@ -20,8 +21,8 @@ namespace Frontenac.Redis
                 throw new ArgumentNullException(nameof(inVertex));
             if (string.IsNullOrWhiteSpace(label))
                 throw new ArgumentNullException(nameof(label));
-            if (innerTinkerGrapĥ == null)
-                throw new ArgumentNullException(nameof(innerTinkerGrapĥ));
+            if (graph == null)
+                throw new ArgumentNullException(nameof(graph));
 
             _outVertex = outVertex;
             _inVertex = inVertex;
@@ -30,7 +31,7 @@ namespace Frontenac.Redis
 
         public override void Remove()
         {
-            RedisInnerTinkerGrapĥ.RemoveEdge(this);
+            RedisGraph.RemoveEdge(this);
         }
 
         public IVertex GetVertex(Direction direction)

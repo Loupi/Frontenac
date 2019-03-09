@@ -7,13 +7,13 @@ namespace Frontenac.Blueprints.Util.Wrappers.Id
     {
         private readonly IEdge _baseEdge;
 
-        public IdEdge(IEdge baseEdge, IdGraph idInnerTinkerGrapĥ)
-            : base(baseEdge, idInnerTinkerGrapĥ, idInnerTinkerGrapĥ.GetSupportEdgeIds())
+        public IdEdge(IEdge baseEdge, IdGraph idGraph)
+            : base(baseEdge, idGraph, idGraph.GetSupportEdgeIds())
         {
             if (baseEdge == null)
                 throw new ArgumentNullException(nameof(baseEdge));
-            if (idInnerTinkerGrapĥ == null)
-                throw new ArgumentNullException(nameof(idInnerTinkerGrapĥ));
+            if (idGraph == null)
+                throw new ArgumentNullException(nameof(idGraph));
 
             _baseEdge = baseEdge;
         }
@@ -21,7 +21,7 @@ namespace Frontenac.Blueprints.Util.Wrappers.Id
         public IVertex GetVertex(Direction direction)
         {
             EdgeContract.ValidateGetVertex(direction);
-            return new IdVertex(((IEdge) BaseElement).GetVertex(direction), IdInnerTinkerGrapĥ);
+            return new IdVertex(((IEdge) BaseElement).GetVertex(direction), IdGraph);
         }
 
         public string Label => ((IEdge) BaseElement).Label;

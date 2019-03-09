@@ -15,7 +15,7 @@ namespace Frontenac.Blueprints.Util.IO.GraphSON
         public void InputGraphCompactFullCycle()
         {
             var graph = TinkerGraphFactory.CreateTinkerGraph();
-            var emptyGraph = new TinkerGrapĥ();
+            var emptyGraph = new TinkerGraph();
 
             var edgeKeys = new HashSet<string>
                 {
@@ -77,7 +77,7 @@ namespace Frontenac.Blueprints.Util.IO.GraphSON
             try
             {
                 var graph = TinkerGraphFactory.CreateTinkerGraph();
-                var emptyGraph = new TinkerGrapĥ();
+                var emptyGraph = new TinkerGraph();
                 var edgeKeys = new HashSet<string> {GraphSonTokens.InV, GraphSonTokens.OutV, GraphSonTokens.Label};
                 var vertexKeys = new HashSet<string> {"init"};
                 vertexKeys.Remove("init");
@@ -104,7 +104,7 @@ namespace Frontenac.Blueprints.Util.IO.GraphSON
         public void InputGraphExtendedFullCycle()
         {
             var graph = TinkerGraphFactory.CreateTinkerGraph();
-            var emptyGraph = new TinkerGrapĥ();
+            var emptyGraph = new TinkerGraph();
 
             using (var stream = new MemoryStream())
             {
@@ -147,7 +147,7 @@ namespace Frontenac.Blueprints.Util.IO.GraphSON
         [Test]
         public void InputGraphModeCompact()
         {
-            var graph = new TinkerGrapĥ();
+            var graph = new TinkerGraph();
 
             const string json =
                 "{ \"mode\":\"COMPACT\",\"vertices\": [ {\"_id\":1, \"test\": \"please work\", \"testlist\":[1, 2, 3, null], \"testmap\":{\"big\":10000000000, \"small\":0.4954959595959}}, {\"_id\":2, \"testagain\":\"please work again\"}], \"edges\":[{\"_id\":100, \"_outV\":1, \"_inV\":2, \"_label\":\"works\", \"teste\": \"please worke\"}]}";
@@ -201,7 +201,7 @@ namespace Frontenac.Blueprints.Util.IO.GraphSON
         [Test]
         public void InputGraphModeExtended()
         {
-            var graph = new TinkerGrapĥ();
+            var graph = new TinkerGraph();
 
             const string json =
                 "{ \"mode\":\"EXTENDED\", \"vertices\": [ {\"_id\":1, \"_type\":\"vertex\", \"test\": { \"type\":\"string\", \"value\":\"please work\"}, \"testlist\":{\"type\":\"list\", \"value\":[{\"type\":\"int\", \"value\":1}, {\"type\":\"int\",\"value\":2}, {\"type\":\"int\",\"value\":3}]}, \"testmap\":{\"type\":\"map\", \"value\":{\"big\":{\"type\":\"long\", \"value\":10000000000}, \"small\":{\"type\":\"double\", \"value\":0.4954959595959}}}}, {\"_id\":2, \"_type\":\"vertex\", \"testagain\":{\"type\":\"string\", \"value\":\"please work again\"}}], \"edges\":[{\"_id\":100, \"_type\":\"edge\", \"_outV\":1, \"_inV\":2, \"_label\":\"works\", \"teste\": {\"type\":\"string\", \"value\":\"please worke\"}}]}";
@@ -242,7 +242,7 @@ namespace Frontenac.Blueprints.Util.IO.GraphSON
         [Test]
         public void InputGraphModeNormal()
         {
-            var graph = new TinkerGrapĥ();
+            var graph = new TinkerGraph();
 
             const string json =
                 "{ \"mode\":\"NORMAL\",\"vertices\": [ {\"_id\":1, \"_type\":\"vertex\", \"test\": \"please work\", \"testlist\":[1, 2, 3, null], \"testmap\":{\"big\":10000000000, \"small\":0.4954959595959}}, {\"_id\":2, \"_type\":\"vertex\", \"testagain\":\"please work again\"}], \"edges\":[{\"_id\":100, \"_type\":\"edge\", \"_outV\":1, \"_inV\":2, \"_label\":\"works\", \"teste\": \"please worke\"}]}";

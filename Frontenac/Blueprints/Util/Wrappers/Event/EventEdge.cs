@@ -11,13 +11,13 @@ namespace Frontenac.Blueprints.Util.Wrappers.Event
     {
         private readonly IEdge _edge;
 
-        public EventEdge(IEdge edge, EventGraph eventInnerTinkerGrapĥ)
-            : base(edge, eventInnerTinkerGrapĥ)
+        public EventEdge(IEdge edge, EventGraph eventGraph)
+            : base(edge, eventGraph)
         {
             if (edge == null)
                 throw new ArgumentNullException(nameof(edge));
-            if (eventInnerTinkerGrapĥ == null)
-                throw new ArgumentNullException(nameof(eventInnerTinkerGrapĥ));
+            if (eventGraph == null)
+                throw new ArgumentNullException(nameof(eventGraph));
 
             _edge = edge;
         }
@@ -25,7 +25,7 @@ namespace Frontenac.Blueprints.Util.Wrappers.Event
         public IVertex GetVertex(Direction direction)
         {
             EdgeContract.ValidateGetVertex(direction);
-            return new EventVertex(GetBaseEdge().GetVertex(direction), EventInnerTinkerGrapĥ);
+            return new EventVertex(GetBaseEdge().GetVertex(direction), EventGraph);
         }
 
         public string Label => _edge.Label;

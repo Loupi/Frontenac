@@ -19,31 +19,5 @@ namespace Frontenac.Gremlinq.Contracts
             if (element == null)
                 throw new ArgumentNullException(nameof(element));
         }
-
-        public IEnumerable<IVertex> GetVerticesOfType(IGraph graph, Type type)
-        {
-            Contract.Requires(graph != null);
-            Contract.Requires(type != null);
-            Contract.Ensures(Contract.Result<IEnumerable<IVertex>>() != null);
-            
-            return null;
-        }
-
-        public IEnumerable<IEdge> GetEdgesOfType(IGraph graph, Type type)
-        {
-            Contract.Requires(graph != null);
-            Contract.Requires(type != null);
-            Contract.Ensures(Contract.Result<IEnumerable<IEdge>>() != null);
-
-            return null;
-        }
-
-        public IEnumerable<Type> GetTypes(IGraph graph)
-        {
-            Contract.Requires(graph != null);
-            Contract.Ensures(Contract.Result<IEnumerable<Type>>() != null);
-
-            return null;
-        }
     }
 }

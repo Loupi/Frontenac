@@ -15,7 +15,7 @@ namespace Frontenac.Blueprints.Util.IO.GraphSON
         [SetUp]
         public void Setup()
         {
-            _tinkerGrapĥ.Clear();
+            _tinkerGraph.Clear();
             _inputStreamVertexJson1 = new MemoryStream(Encoding.Default.GetBytes(VertexJson1));
             _inputStreamEdgeJsonLight = new MemoryStream(Encoding.Default.GetBytes(EdgeJsonLight));
         }
@@ -26,7 +26,7 @@ namespace Frontenac.Blueprints.Util.IO.GraphSON
             Dispose();
         }
 
-        private readonly TinkerGrapĥ _tinkerGrapĥ = new TinkerGrapĥ();
+        private readonly TinkerGraph _tinkerGraph = new TinkerGraph();
 
         private const string VertexJson1 = "{\"name\":\"marko\",\"age\":29,\"_id\":1,\"_type\":\"vertex\"}";
         private const string VertexJson2 = "{\"name\":\"vadas\",\"age\":27,\"_id\":2,\"_type\":\"vertex\"}";
@@ -59,7 +59,7 @@ namespace Frontenac.Blueprints.Util.IO.GraphSON
 
             if (disposing)
             {
-                _tinkerGrapĥ.Shutdown();
+                _tinkerGraph.Shutdown();
                 _inputStreamVertexJson1.Dispose();
                 _inputStreamEdgeJsonLight.Dispose();
             }
@@ -110,7 +110,7 @@ namespace Frontenac.Blueprints.Util.IO.GraphSON
         [Test]
         public void EdgeFromJsonIgnoreWeightValid()
         {
-            var g = new TinkerGrapĥ();
+            var g = new TinkerGraph();
             var factory = new GraphElementFactory(g);
 
             var v1 = GraphSonUtility.VertexFromJson((JObject) JsonConvert.DeserializeObject(VertexJson1), factory,
@@ -138,7 +138,7 @@ namespace Frontenac.Blueprints.Util.IO.GraphSON
         [Test]
         public void EdgeFromJsonInputStreamCompactLabelOrIdOnEdge()
         {
-            var g = new TinkerGrapĥ();
+            var g = new TinkerGraph();
             var factory = new GraphElementFactory(g);
 
             var v1 = GraphSonUtility.VertexFromJson((JObject) JsonConvert.DeserializeObject(VertexJson1), factory,
@@ -155,7 +155,7 @@ namespace Frontenac.Blueprints.Util.IO.GraphSON
         [Test]
         public void EdgeFromJsonInputStreamCompactNoIdOnEdge()
         {
-            IGraph g = new TinkerGrapĥ();
+            IGraph g = new TinkerGraph();
             IElementFactory factory = new GraphElementFactory(g);
 
             var vertexKeys = new HashSet<string> {GraphSonTokens.Id};
@@ -175,7 +175,7 @@ namespace Frontenac.Blueprints.Util.IO.GraphSON
         [Test]
         public void EdgeFromJsonNormalLabelOrIdOnEdge()
         {
-            var g = new TinkerGrapĥ();
+            var g = new TinkerGraph();
             var factory = new GraphElementFactory(g);
 
             var v1 = GraphSonUtility.VertexFromJson((JObject) JsonConvert.DeserializeObject(VertexJson1), factory,
@@ -193,7 +193,7 @@ namespace Frontenac.Blueprints.Util.IO.GraphSON
         [Test]
         public void EdgeFromJsonStringValid()
         {
-            var g = new TinkerGrapĥ();
+            var g = new TinkerGraph();
             var factory = new GraphElementFactory(g);
 
             var v1 = GraphSonUtility.VertexFromJson(VertexJson1, factory, GraphSonMode.NORMAL, null);
@@ -215,7 +215,7 @@ namespace Frontenac.Blueprints.Util.IO.GraphSON
         [Test]
         public void EdgeFromJsonValid()
         {
-            var g = new TinkerGrapĥ();
+            var g = new TinkerGraph();
             var factory = new GraphElementFactory(g);
 
             var v1 = GraphSonUtility.VertexFromJson((JObject) JsonConvert.DeserializeObject(VertexJson1), factory,
@@ -240,7 +240,7 @@ namespace Frontenac.Blueprints.Util.IO.GraphSON
         [Test]
         public void JsonFromElementBooleanArrayPropertyNoKeysNoTypes()
         {
-            var v = _tinkerGrapĥ.AddVertex(1);
+            var v = _tinkerGraph.AddVertex(1);
             var booleanArray = new[] {true, false, true};
 
             v.SetProperty("keyBooleanArray", booleanArray);
@@ -260,7 +260,7 @@ namespace Frontenac.Blueprints.Util.IO.GraphSON
         [Test]
         public void JsonFromElementCrazyPropertyNoKeysNoTypes()
         {
-            var v = _tinkerGrapĥ.AddVertex(1);
+            var v = _tinkerGraph.AddVertex(1);
             var mix = new List<object> {new Cat("smithers"), true};
 
             var deepCats = new List<object> {new Cat("mcallister")};
@@ -312,10 +312,10 @@ namespace Frontenac.Blueprints.Util.IO.GraphSON
         [Test]
         public void JsonFromElementEdgeCompactAllKeys()
         {
-            var v1 = _tinkerGrapĥ.AddVertex(1);
-            var v2 = _tinkerGrapĥ.AddVertex(2);
+            var v1 = _tinkerGraph.AddVertex(1);
+            var v2 = _tinkerGraph.AddVertex(2);
 
-            var e = _tinkerGrapĥ.AddEdge(3, v1, v2, "test");
+            var e = _tinkerGraph.AddEdge(3, v1, v2, "test");
             e.SetProperty("weight", 0.5);
 
             IDictionary<string, JToken> json = GraphSonUtility.JsonFromElement(e, null, GraphSonMode.COMPACT);
@@ -332,11 +332,11 @@ namespace Frontenac.Blueprints.Util.IO.GraphSON
         [Test]
         public void JsonFromElementEdgeCompactIdOnlyAsExclude()
         {
-            var factory = new GraphElementFactory(_tinkerGrapĥ);
-            var v1 = _tinkerGrapĥ.AddVertex(1);
-            var v2 = _tinkerGrapĥ.AddVertex(2);
+            var factory = new GraphElementFactory(_tinkerGraph);
+            var v1 = _tinkerGraph.AddVertex(1);
+            var v2 = _tinkerGraph.AddVertex(2);
 
-            var e = _tinkerGrapĥ.AddEdge(3, v1, v2, "test");
+            var e = _tinkerGraph.AddEdge(3, v1, v2, "test");
             e.SetProperty("weight", 0.5);
             e.SetProperty("x", "y");
 
@@ -369,10 +369,10 @@ namespace Frontenac.Blueprints.Util.IO.GraphSON
         [Test]
         public void JsonFromElementEdgeCompactIdOnlyAsInclude()
         {
-            var v1 = _tinkerGrapĥ.AddVertex(1);
-            var v2 = _tinkerGrapĥ.AddVertex(2);
+            var v1 = _tinkerGraph.AddVertex(1);
+            var v2 = _tinkerGraph.AddVertex(2);
 
-            var e = _tinkerGrapĥ.AddEdge(3, v1, v2, "test");
+            var e = _tinkerGraph.AddEdge(3, v1, v2, "test");
             e.SetProperty("weight", 0.5);
 
             var propertiesToInclude = new HashSet<String> {GraphSonTokens.Id};
@@ -392,10 +392,10 @@ namespace Frontenac.Blueprints.Util.IO.GraphSON
         [Test]
         public void JsonFromElementEdgeNoPropertiesNoKeysNoTypes()
         {
-            var v1 = _tinkerGrapĥ.AddVertex(1);
-            var v2 = _tinkerGrapĥ.AddVertex(2);
+            var v1 = _tinkerGraph.AddVertex(1);
+            var v2 = _tinkerGraph.AddVertex(2);
 
-            var e = _tinkerGrapĥ.AddEdge(3, v1, v2, "test");
+            var e = _tinkerGraph.AddEdge(3, v1, v2, "test");
             e.SetProperty("weight", 0.5);
 
             IDictionary<string, JToken> json = GraphSonUtility.JsonFromElement(e, null, GraphSonMode.NORMAL);
@@ -418,7 +418,7 @@ namespace Frontenac.Blueprints.Util.IO.GraphSON
         [Test]
         public void JsonFromElementFloatArrayPropertyNoKeysNoTypes()
         {
-            var v = _tinkerGrapĥ.AddVertex(1);
+            var v = _tinkerGraph.AddVertex(1);
             var floatArray = new[] {1.0, 2.0, 3.0};
 
             v.SetProperty("keyFloatArray", floatArray);
@@ -438,7 +438,7 @@ namespace Frontenac.Blueprints.Util.IO.GraphSON
         [Test]
         public void JsonFromElementNullsNoKeysNoTypes()
         {
-            var g = new TinkerGrapĥ();
+            var g = new TinkerGraph();
             var v = g.AddVertex(1);
 
             var map = new Dictionary<string, object>();
@@ -475,7 +475,7 @@ namespace Frontenac.Blueprints.Util.IO.GraphSON
         [Test]
         public void JsonFromElementNullsNoKeysWithTypes()
         {
-            var g = new TinkerGrapĥ();
+            var g = new TinkerGraph();
             var v = g.AddVertex(1);
 
             var map = new Dictionary<string, object>();
@@ -515,7 +515,7 @@ namespace Frontenac.Blueprints.Util.IO.GraphSON
         [Test]
         public void JsonFromElementVertexBooleanListPropertiesNoKeysWithTypes()
         {
-            var v = _tinkerGrapĥ.AddVertex(1);
+            var v = _tinkerGraph.AddVertex(1);
             var list = new List<bool> {true, true, true};
 
             v.SetProperty("keyList", list);
@@ -550,7 +550,7 @@ namespace Frontenac.Blueprints.Util.IO.GraphSON
         [Test]
         public void JsonFromElementVertexCatArrayPropertyNoKeysNoTypes()
         {
-            var v = _tinkerGrapĥ.AddVertex(1);
+            var v = _tinkerGraph.AddVertex(1);
             var cats = new List<Cat> {new Cat("smithers"), new Cat("mcallister")};
 
             v.SetProperty("cats", cats);
@@ -570,7 +570,7 @@ namespace Frontenac.Blueprints.Util.IO.GraphSON
         [Test]
         public void JsonFromElementVertexCatPropertyNoKeysNoTypes()
         {
-            var v = _tinkerGrapĥ.AddVertex(1);
+            var v = _tinkerGraph.AddVertex(1);
             v.SetProperty("mycat", new Cat("smithers"));
 
             IDictionary<string, JToken> json = GraphSonUtility.JsonFromElement(v, null, GraphSonMode.NORMAL);
@@ -585,7 +585,7 @@ namespace Frontenac.Blueprints.Util.IO.GraphSON
         [Test]
         public void JsonFromElementVertexCatPropertyNoKeysWithTypes()
         {
-            var v = _tinkerGrapĥ.AddVertex(1);
+            var v = _tinkerGraph.AddVertex(1);
             v.SetProperty("mycat", new Cat("smithers"));
 
             IDictionary<string, JToken> json = GraphSonUtility.JsonFromElement(v, null, GraphSonMode.EXTENDED);
@@ -602,7 +602,7 @@ namespace Frontenac.Blueprints.Util.IO.GraphSON
         [Test]
         public void JsonFromElementVertexCompactAllOnly()
         {
-            var v = _tinkerGrapĥ.AddVertex(1);
+            var v = _tinkerGraph.AddVertex(1);
             v.SetProperty("name", "marko");
 
             IDictionary<string, JToken> json = GraphSonUtility.JsonFromElement(v, null, GraphSonMode.COMPACT);
@@ -616,8 +616,8 @@ namespace Frontenac.Blueprints.Util.IO.GraphSON
         [Test]
         public void JsonFromElementVertexCompactIdNameOnlyAsExclude()
         {
-            var factory = new GraphElementFactory(_tinkerGrapĥ);
-            var v = _tinkerGrapĥ.AddVertex(1);
+            var factory = new GraphElementFactory(_tinkerGraph);
+            var v = _tinkerGraph.AddVertex(1);
             v.SetProperty("name", "marko");
 
             var propertiesToExclude = new HashSet<String> {GraphSonTokens.UnderscoreType};
@@ -638,7 +638,7 @@ namespace Frontenac.Blueprints.Util.IO.GraphSON
         [Test]
         public void JsonFromElementVertexCompactIdOnlyAsInclude()
         {
-            var v = _tinkerGrapĥ.AddVertex(1);
+            var v = _tinkerGraph.AddVertex(1);
             v.SetProperty("name", "marko");
 
             var propertiesToInclude = new HashSet<String>
@@ -658,7 +658,7 @@ namespace Frontenac.Blueprints.Util.IO.GraphSON
         [Test]
         public void JsonFromElementVertexDoubleArrayPropertyNoKeysNoTypes()
         {
-            var v = _tinkerGrapĥ.AddVertex(1);
+            var v = _tinkerGraph.AddVertex(1);
             var doubleArray = new[] {1.0, 2.0, 3.0};
 
             v.SetProperty("keyDoubleArray", doubleArray);
@@ -678,7 +678,7 @@ namespace Frontenac.Blueprints.Util.IO.GraphSON
         [Test]
         public void JsonFromElementVertexIntArrayPropertyNoKeysNoTypes()
         {
-            var v = _tinkerGrapĥ.AddVertex(1);
+            var v = _tinkerGraph.AddVertex(1);
             var intArray = new[] {1, 2, 3};
 
             v.SetProperty("keyIntArray", intArray);
@@ -698,7 +698,7 @@ namespace Frontenac.Blueprints.Util.IO.GraphSON
         [Test]
         public void JsonFromElementVertexIntListPropertiesNoKeysWithTypes()
         {
-            var v = _tinkerGrapĥ.AddVertex(1);
+            var v = _tinkerGraph.AddVertex(1);
             var list = new List<int> {1, 1, 1};
 
             v.SetProperty("keyList", list);
@@ -734,7 +734,7 @@ namespace Frontenac.Blueprints.Util.IO.GraphSON
         [Test]
         public void JsonFromElementVertexListOfListPropertiesNoKeysWithTypes()
         {
-            var v = _tinkerGrapĥ.AddVertex(1);
+            var v = _tinkerGraph.AddVertex(1);
             var list = new List<int> {1, 1, 1};
 
             var listList = new List<List<int>> {list};
@@ -771,7 +771,7 @@ namespace Frontenac.Blueprints.Util.IO.GraphSON
         [Test]
         public void JsonFromElementVertexListPropertiesNoKeysWithTypes()
         {
-            var v = _tinkerGrapĥ.AddVertex(1);
+            var v = _tinkerGraph.AddVertex(1);
             var list = new List<string> {"this", "this", "this"};
 
             v.SetProperty("keyList", list);
@@ -806,7 +806,7 @@ namespace Frontenac.Blueprints.Util.IO.GraphSON
         [Test]
         public void JsonFromElementVertexListPropertyNoKeysNoTypes()
         {
-            var v = _tinkerGrapĥ.AddVertex(1);
+            var v = _tinkerGraph.AddVertex(1);
             var list = new List<object> {"this", "that", "other", true};
 
             v.SetProperty("keyList", list);
@@ -826,7 +826,7 @@ namespace Frontenac.Blueprints.Util.IO.GraphSON
         [Test]
         public void JsonFromElementVertexLongArrayPropertyNoKeysNoTypes()
         {
-            var v = _tinkerGrapĥ.AddVertex(1);
+            var v = _tinkerGraph.AddVertex(1);
             var longArray = new long[] {1, 2, 3};
 
             v.SetProperty("keyLongArray", longArray);
@@ -846,7 +846,7 @@ namespace Frontenac.Blueprints.Util.IO.GraphSON
         [Test]
         public void JsonFromElementVertexLongListPropertiesNoKeysWithTypes()
         {
-            var v = _tinkerGrapĥ.AddVertex(1);
+            var v = _tinkerGraph.AddVertex(1);
             var list = new List<long> {1000L, 1000L, 1000L};
 
             v.SetProperty("keyList", list);
@@ -881,7 +881,7 @@ namespace Frontenac.Blueprints.Util.IO.GraphSON
         [Test]
         public void JsonFromElementVertexMapPropertiesNoKeysWithTypes()
         {
-            IVertex v = _tinkerGrapĥ.AddVertex(1);
+            IVertex v = _tinkerGraph.AddVertex(1);
 
             var map = new Dictionary<string, object>();
             map.Put("this", "some");
@@ -922,7 +922,7 @@ namespace Frontenac.Blueprints.Util.IO.GraphSON
         [Test]
         public void JsonFromElementVertexMapPropertyNoKeysNoTypes()
         {
-            var v = _tinkerGrapĥ.AddVertex(1);
+            var v = _tinkerGraph.AddVertex(1);
             var map = new Dictionary<string, object>();
             map.Put("this", "some");
             map.Put("that", 1);
@@ -947,7 +947,7 @@ namespace Frontenac.Blueprints.Util.IO.GraphSON
         [Test]
         public void JsonFromElementVertexNoPropertiesNoKeysNoTypes()
         {
-            var v = _tinkerGrapĥ.AddVertex(1);
+            var v = _tinkerGraph.AddVertex(1);
             v.SetProperty("name", "marko");
 
             IDictionary<string, JToken> json = GraphSonUtility.JsonFromElement(v, null, GraphSonMode.NORMAL);
@@ -963,7 +963,7 @@ namespace Frontenac.Blueprints.Util.IO.GraphSON
         [Test]
         public void JsonFromElementVertexNoPropertiesWithKeysNoTypes()
         {
-            var v = _tinkerGrapĥ.AddVertex(1);
+            var v = _tinkerGraph.AddVertex(1);
             v.SetProperty("x", "X");
             v.SetProperty("y", "Y");
             v.SetProperty("z", "Z");
@@ -985,7 +985,7 @@ namespace Frontenac.Blueprints.Util.IO.GraphSON
         [Test]
         public void JsonFromElementVertexPrimitivePropertiesNoKeysNoTypes()
         {
-            var v = _tinkerGrapĥ.AddVertex(1);
+            var v = _tinkerGraph.AddVertex(1);
             v.SetProperty("keyString", "string");
             v.SetProperty("keyLong", 1L);
             v.SetProperty("keyInt", 2);
@@ -1018,7 +1018,7 @@ namespace Frontenac.Blueprints.Util.IO.GraphSON
         [Test]
         public void JsonFromElementVertexPrimitivePropertiesNoKeysWithTypes()
         {
-            var v = _tinkerGrapĥ.AddVertex(1);
+            var v = _tinkerGraph.AddVertex(1);
             v.SetProperty("keyString", "string");
             v.SetProperty("keyLong", 1L);
             v.SetProperty("keyInt", 2);
@@ -1079,7 +1079,7 @@ namespace Frontenac.Blueprints.Util.IO.GraphSON
         [Test]
         public void JsonFromElementVertexStringArrayPropertyNoKeysNoTypes()
         {
-            var v = _tinkerGrapĥ.AddVertex(1);
+            var v = _tinkerGraph.AddVertex(1);
             var stringArray = new[] {"this", "that", "other"};
 
             v.SetProperty("keyStringArray", stringArray);
@@ -1099,12 +1099,12 @@ namespace Frontenac.Blueprints.Util.IO.GraphSON
         [Test]
         public void JsonFromElementVertexVertexPropertiesWithKeysNoTypes()
         {
-            var v = _tinkerGrapĥ.AddVertex(1);
+            var v = _tinkerGraph.AddVertex(1);
             v.SetProperty("x", "X");
             v.SetProperty("y", "Y");
             v.SetProperty("z", "Z");
 
-            var innerV = _tinkerGrapĥ.AddVertex(2);
+            var innerV = _tinkerGraph.AddVertex(2);
             innerV.SetProperty("x", "X");
             innerV.SetProperty("y", "Y");
             innerV.SetProperty("z", "Z");
@@ -1136,7 +1136,7 @@ namespace Frontenac.Blueprints.Util.IO.GraphSON
         [Test]
         public void VertexFromJsonIgnoreKeyValid()
         {
-            var g = new TinkerGrapĥ();
+            var g = new TinkerGraph();
             var factory = new GraphElementFactory(g);
 
             var ignoreAge = new HashSet<string> {"age"};
@@ -1155,7 +1155,7 @@ namespace Frontenac.Blueprints.Util.IO.GraphSON
         [Test]
         public void VertexFromJsonInputStreamValid()
         {
-            var g = new TinkerGrapĥ();
+            var g = new TinkerGraph();
             var factory = new GraphElementFactory(g);
 
             var v = GraphSonUtility.VertexFromJson(_inputStreamVertexJson1, factory, GraphSonMode.NORMAL, null);
@@ -1171,7 +1171,7 @@ namespace Frontenac.Blueprints.Util.IO.GraphSON
         [Test]
         public void VertexFromJsonStringValid()
         {
-            var g = new TinkerGrapĥ();
+            var g = new TinkerGraph();
             var factory = new GraphElementFactory(g);
 
             var v = GraphSonUtility.VertexFromJson(VertexJson1, factory, GraphSonMode.NORMAL, null);
@@ -1187,7 +1187,7 @@ namespace Frontenac.Blueprints.Util.IO.GraphSON
         [Test]
         public void VertexFromJsonValid()
         {
-            var g = new TinkerGrapĥ();
+            var g = new TinkerGraph();
             var factory = new GraphElementFactory(g);
 
             var v = GraphSonUtility.VertexFromJson((JObject) JsonConvert.DeserializeObject(VertexJson1), factory,

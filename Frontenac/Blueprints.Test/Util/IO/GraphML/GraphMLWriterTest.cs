@@ -10,11 +10,11 @@ namespace Frontenac.Blueprints.Util.IO.GraphML
         [Test]
         public void TestEncoding()
         {
-            var g = new TinkerGrapĥ();
+            var g = new TinkerGraph();
             var v = g.AddVertex(1);
             v.SetProperty("text", "\u00E9");
 
-            var g2 = new TinkerGrapĥ();
+            var g2 = new TinkerGraph();
             using (var bos = new MemoryStream())
             {
                 var w = new GraphMlWriter(g);
@@ -31,7 +31,7 @@ namespace Frontenac.Blueprints.Util.IO.GraphML
         [Test]
         public void TestNormal()
         {
-            var g = new TinkerGrapĥ();
+            var g = new TinkerGraph();
             using (var stream = GetResource<GraphMlReader>("graph-example-1.xml"))
             {
                 GraphMlReader.InputGraph(g, stream);
@@ -60,7 +60,7 @@ namespace Frontenac.Blueprints.Util.IO.GraphML
         [Test]
         public void TestWithEdgeLabel()
         {
-            var g = new TinkerGrapĥ();
+            var g = new TinkerGraph();
 
             using (var stream = GetResource<GraphMlReader>("graph-example-1.xml"))
             {

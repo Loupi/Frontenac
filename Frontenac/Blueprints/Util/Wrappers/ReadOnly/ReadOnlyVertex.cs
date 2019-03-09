@@ -7,11 +7,11 @@ namespace Frontenac.Blueprints.Util.Wrappers.ReadOnly
     {
         private readonly IVertex _baseVertex;
 
-        public ReadOnlyVertex(ReadOnlyGraph innerTinkerGrapĥ, IVertex baseVertex)
-            : base(innerTinkerGrapĥ, baseVertex)
+        public ReadOnlyVertex(ReadOnlyGraph graph, IVertex baseVertex)
+            : base(graph, baseVertex)
         {
-            if (innerTinkerGrapĥ == null)
-                throw new ArgumentNullException(nameof(innerTinkerGrapĥ));
+            if (graph == null)
+                throw new ArgumentNullException(nameof(graph));
             if (baseVertex == null)
                 throw new ArgumentNullException(nameof(baseVertex));
 
@@ -20,12 +20,12 @@ namespace Frontenac.Blueprints.Util.Wrappers.ReadOnly
 
         public IEnumerable<IEdge> GetEdges(Direction direction, params string[] labels)
         {
-            return new ReadOnlyEdgeIterable(ReadOnlyInnerTinkerGrapĥ, ((IVertex) BaseElement).GetEdges(direction, labels));
+            return new ReadOnlyEdgeIterable(ReadOnlyGraph, ((IVertex) BaseElement).GetEdges(direction, labels));
         }
 
         public IEnumerable<IVertex> GetVertices(Direction direction, params string[] labels)
         {
-            return new ReadOnlyVertexIterable(ReadOnlyInnerTinkerGrapĥ, ((IVertex) BaseElement).GetVertices(direction, labels));
+            return new ReadOnlyVertexIterable(ReadOnlyGraph, ((IVertex) BaseElement).GetVertices(direction, labels));
         }
 
         public IEnumerable<IVertex> GetVertices(Direction direction, string label, params object[] ids)
@@ -46,8 +46,8 @@ namespace Frontenac.Blueprints.Util.Wrappers.ReadOnly
         public IVertexQuery Query()
         {
             return new WrapperVertexQuery(_baseVertex.Query(),
-                                          t => new ReadOnlyEdgeIterable(ReadOnlyInnerTinkerGrapĥ, t.Edges()),
-                                          t => new ReadOnlyVertexIterable(ReadOnlyInnerTinkerGrapĥ, t.Vertices()));
+                                          t => new ReadOnlyEdgeIterable(ReadOnlyGraph, t.Edges()),
+                                          t => new ReadOnlyVertexIterable(ReadOnlyGraph, t.Vertices()));
         }
     }
 }

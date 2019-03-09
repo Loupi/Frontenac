@@ -74,7 +74,7 @@ namespace Frontenac.Redis.Test
                     }
                     var currentTime = StopWatch();
                     totalTime = totalTime + currentTime;
-                    PrintPerformance(graph.ToString(), counter, "TinkerGrapĥ elements touched", currentTime);
+                    PrintPerformance(graph.ToString(), counter, "TinkerGraph elements touched", currentTime);
                 }
             }
             finally
@@ -82,7 +82,7 @@ namespace Frontenac.Redis.Test
                 graph.Shutdown();
             }
 
-            PrintPerformance("TinkerGraph", 1, "TinkerGrapĥ experiment average", (long) (totalTime/TotalRuns));
+            PrintPerformance("TinkerGraph", 1, "TinkerGraph experiment average", (long) (totalTime/TotalRuns));
         }
     }
 }

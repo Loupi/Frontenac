@@ -8,44 +8,44 @@ namespace Frontenac.Blueprints.Util.Wrappers.Partition
     public abstract class PartitionElement : DictionaryElement
     {
         protected readonly IElement Element;
-        protected PartitionGraph PartitionInnerTinkerGrapĥ;
+        protected PartitionGraph PartitionGraph;
 
-        protected PartitionElement(IElement element, PartitionGraph partitionInnerTinkerGrapĥ):base(partitionInnerTinkerGrapĥ)
+        protected PartitionElement(IElement element, PartitionGraph partitionGraph):base(partitionGraph)
         {
             if (element == null)
                 throw new ArgumentNullException(nameof(element));
 
-            if (partitionInnerTinkerGrapĥ == null)
-                throw new ArgumentNullException(nameof(partitionInnerTinkerGrapĥ));
+            if (partitionGraph == null)
+                throw new ArgumentNullException(nameof(partitionGraph));
 
             Element = element;
-            PartitionInnerTinkerGrapĥ = partitionInnerTinkerGrapĥ;
+            PartitionGraph = partitionGraph;
         }
 
         public override void SetProperty(string key, object value)
         {
             ElementContract.ValidateSetProperty(key, value);
 
-            if (!key.Equals(PartitionInnerTinkerGrapĥ.PartitionKey))
+            if (!key.Equals(PartitionGraph.PartitionKey))
                 Element.SetProperty(key, value);
         }
 
         public override object GetProperty(string key)
         {
             ElementContract.ValidateGetProperty(key);
-            return key.Equals(PartitionInnerTinkerGrapĥ.PartitionKey) ? null : Element.GetProperty(key);
+            return key.Equals(PartitionGraph.PartitionKey) ? null : Element.GetProperty(key);
         }
 
         public override object RemoveProperty(string key)
         {
             ElementContract.ValidateRemoveProperty(key);
-            return key.Equals(PartitionInnerTinkerGrapĥ.PartitionKey) ? null : Element.RemoveProperty(key);
+            return key.Equals(PartitionGraph.PartitionKey) ? null : Element.RemoveProperty(key);
         }
 
         public override IEnumerable<string> GetPropertyKeys()
         {
             return Element.GetPropertyKeys()
-                .Except(new[] { PartitionInnerTinkerGrapĥ.PartitionKey })
+                .Except(new[] { PartitionGraph.PartitionKey })
                 .ToArray();
         }
 
@@ -76,14 +76,14 @@ namespace Frontenac.Blueprints.Util.Wrappers.Partition
 
         public string GetPartition()
         {
-            return (string)Element.GetProperty(PartitionInnerTinkerGrapĥ.PartitionKey);
+            return (string)Element.GetProperty(PartitionGraph.PartitionKey);
         }
 
         public void SetPartition(string partition)
         {
             if (string.IsNullOrWhiteSpace(partition))
                 throw new ArgumentNullException(nameof(partition));
-            Element.SetProperty(PartitionInnerTinkerGrapĥ.PartitionKey, partition);
+            Element.SetProperty(PartitionGraph.PartitionKey, partition);
         }
 
         public override string ToString()

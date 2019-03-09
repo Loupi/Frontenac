@@ -28,7 +28,7 @@ namespace Frontenac.Blueprints.Util.IO.GraphSON
                 }
                 PrintPerformance(graph.ToString(), null, "graph-example-1 loaded", StopWatch());
 
-                // note that TinkerGrapĥ converts ids to string internally, but the various WrapperGraphs
+                // note that TinkerGraph converts ids to string internally, but the various WrapperGraphs
                 // might like the original data type of the ID. so...this tests getVertex with the original
                 // type (integer) but then compares on getId() are ToString() to deal with scenarios
                 // where those ids are dealt with differently per graph implementation.

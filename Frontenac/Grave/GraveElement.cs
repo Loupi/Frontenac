@@ -8,16 +8,16 @@ namespace Frontenac.Grave
 {
     public abstract class GraveElement : DictionaryElement
     {
-        protected readonly GraveGraph GraveInnerTinkerGrapĥ;
+        protected readonly GraveGraph GraveGraph;
         internal readonly int RawId;
         
-        protected GraveElement(GraveGraph innerTinkerGrapĥ, int id)
-            : base(innerTinkerGrapĥ)
+        protected GraveElement(GraveGraph graph, int id)
+            : base(graph)
         {
-            if (innerTinkerGrapĥ == null)
-                throw new ArgumentNullException(nameof(innerTinkerGrapĥ));
+            if (graph == null)
+                throw new ArgumentNullException(nameof(graph));
 
-            GraveInnerTinkerGrapĥ = innerTinkerGrapĥ;
+            GraveGraph = graph;
             RawId = id;
         }
 
@@ -25,24 +25,24 @@ namespace Frontenac.Grave
 
         public override object GetProperty(string key)
         {
-            return GraveInnerTinkerGrapĥ.GetProperty(this, key);
+            return GraveGraph.GetProperty(this, key);
         }
 
         public override IEnumerable<string> GetPropertyKeys()
         {
-            return GraveInnerTinkerGrapĥ.GetPropertyKeys(this);
+            return GraveGraph.GetPropertyKeys(this);
         }
 
         public override void SetProperty(string key, object value)
         {
             ElementContract.ValidateSetProperty(key, value);
-            GraveInnerTinkerGrapĥ.SetProperty(this, key, value);
+            GraveGraph.SetProperty(this, key, value);
         }
 
         public override object RemoveProperty(string key)
         {
             ElementContract.ValidateRemoveProperty(key);
-            return GraveInnerTinkerGrapĥ.RemoveProperty(this, key);
+            return GraveGraph.RemoveProperty(this, key);
         }
 
         public override int GetHashCode()

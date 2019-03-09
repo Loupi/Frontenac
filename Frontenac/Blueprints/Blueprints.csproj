@@ -157,7 +157,7 @@
     <Compile Include="ICloseableIterable.cs" />
     <Compile Include="Impls\TG\TinkerEdge.cs" />
     <Compile Include="Impls\TG\TinkerElement.cs" />
-    <Compile Include="Impls\TG\TinkerGrapĥ.cs" />
+    <Compile Include="Impls\TG\TinkerGraph.cs" />
     <Compile Include="Impls\TG\TinkerGraphFactory.cs" />
     <Compile Include="Impls\TG\TinkerIndex.cs" />
     <Compile Include="Impls\TG\TinkerMetadataReader.cs" />

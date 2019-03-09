@@ -1,5 +1,5 @@
+using System;
 using System.Diagnostics;
-using System.Diagnostics.Contracts;
 using Frontenac.Blueprints;
 using Frontenac.Infrastructure;
 using Frontenac.Infrastructure.Indexing;
@@ -20,11 +20,20 @@ namespace Frontenac.Redis
             IGraphConfiguration configuration) 
             : base(factory, serializer, multiplexer, indexingService, configuration)
         {
-            Contract.Requires(factory != null);
-            Contract.Requires(serializer != null);
-            Contract.Requires(multiplexer != null);
-            Contract.Requires(indexingService != null);
-            Contract.Requires(configuration != null);
+            if (factory == null)
+                throw new ArgumentNullException(nameof(factory));
+
+            if (serializer == null)
+                throw new ArgumentNullException(nameof(serializer));
+
+            if (multiplexer == null)
+                throw new ArgumentNullException(nameof(multiplexer));
+
+            if (indexingService == null)
+                throw new ArgumentNullException(nameof(indexingService));
+
+            if (configuration == null)
+                throw new ArgumentNullException(nameof(configuration));
 
             _factory = factory;
         }

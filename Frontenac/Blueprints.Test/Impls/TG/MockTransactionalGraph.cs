@@ -4,7 +4,7 @@ using Frontenac.Blueprints.Contracts;
 namespace Frontenac.Blueprints.Impls.TG
 {
     /// <summary>
-    ///     Mocking TinkerGrapĥ as a transactional graph for testing purposes. This implementation does not actually
+    ///     Mocking TinkerGraph as a transactional graph for testing purposes. This implementation does not actually
     ///     implement transactional behavior but only counts transaction starts, successes and failures so that
     ///     these can be compared to expected behavior.
     ///     This class is only meant for testing.

@@ -2,6 +2,6 @@
 {
     public static class ReadOnlyTokens
     {
-        public const string MutateErrorMessage = "It is not possible to mutate a ReadOnlyInnerTinkerGrapĥ";
+        public const string MutateErrorMessage = "It is not possible to mutate a ReadOnlyGraph";
     }
 }

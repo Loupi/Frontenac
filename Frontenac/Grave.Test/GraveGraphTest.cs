@@ -478,7 +478,7 @@ namespace Frontenac.Grave.Tests
             var path = GraveGraphTest.GetGraveGraphDirectory() + "/" + directory;
             DeleteDirectory(path);
 
-            var sourceGraph = new TinkerGrapĥ();
+            var sourceGraph = new TinkerGraph();
             sourceGraph.CreateTinkerGraph();
 
             try
@@ -570,7 +570,7 @@ namespace Frontenac.Grave.Tests
             }
         }
 
-        /*private void CompareGraphs(TinkerGrapĥ g1, IIndexableGraph g2, FileType fileType)
+        /*private void CompareGraphs(TinkerGraph g1, IIndexableGraph g2, FileType fileType)
         {
             foreach (var v1 in g1.GetVertices())
             {

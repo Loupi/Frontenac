@@ -166,9 +166,11 @@ namespace Frontenac.Gremlinq
             Expression<Func<TInModel, TOutModel>> propertySelector)
             where TOutModel : class
         {
-            Contract.Requires(vertices != null);
-            Contract.Requires(propertySelector != null);
-            Contract.Ensures(Contract.Result<IEnumerable<IVertex<TOutModel>>>() != null);
+            if (vertices == null)
+                throw new ArgumentNullException(nameof(vertices));
+
+            if (propertySelector == null)
+                throw new ArgumentNullException(nameof(propertySelector));
 
             return vertices.SelectMany(t => t.Out(propertySelector.Resolve())).As<TOutModel>();
         }

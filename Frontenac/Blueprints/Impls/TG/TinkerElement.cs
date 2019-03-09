@@ -10,17 +10,17 @@ namespace Frontenac.Blueprints.Impls.TG
     [Serializable]
     internal abstract class TinkerElement : DictionaryElement
     {
-        protected readonly TinkerGrapĥ TinkerGrapĥ;
+        protected readonly TinkerGraph TinkerGraph;
         protected readonly string RawId;
         protected readonly ConcurrentDictionary<string, object> Properties = new ConcurrentDictionary<string, object>();
 
-        protected TinkerElement(string id, TinkerGrapĥ tinkerGrapĥ):base(tinkerGrapĥ)
+        protected TinkerElement(string id, TinkerGraph tinkerGraph):base(tinkerGraph)
         {
             if (id == null)
                 throw new ArgumentNullException(nameof(id));
-            if (tinkerGrapĥ == null)
-                throw new ArgumentNullException(nameof(tinkerGrapĥ));
-            TinkerGrapĥ = tinkerGrapĥ;
+            if (tinkerGraph == null)
+                throw new ArgumentNullException(nameof(tinkerGraph));
+            TinkerGraph = tinkerGraph;
             RawId = id;
         }
 
@@ -40,9 +40,9 @@ namespace Frontenac.Blueprints.Impls.TG
             this.ValidateProperty(key, value);
             var oldValue = Properties.Put(key, value);
             if (this is TinkerVertex)
-                TinkerGrapĥ.VertexKeyIndex.AutoUpdate(key, value, oldValue, this);
+                TinkerGraph.VertexKeyIndex.AutoUpdate(key, value, oldValue, this);
             else
-                TinkerGrapĥ.EdgeKeyIndex.AutoUpdate(key, value, oldValue, this);
+                TinkerGraph.EdgeKeyIndex.AutoUpdate(key, value, oldValue, this);
         }
 
         public override object RemoveProperty(string key)
@@ -50,9 +50,9 @@ namespace Frontenac.Blueprints.Impls.TG
             ElementContract.ValidateRemoveProperty(key);
             var oldValue = Properties.JavaRemove(key);
             if (this is TinkerVertex)
-                TinkerGrapĥ.VertexKeyIndex.AutoRemove(key, oldValue, this);
+                TinkerGraph.VertexKeyIndex.AutoRemove(key, oldValue, this);
             else
-                TinkerGrapĥ.EdgeKeyIndex.AutoRemove(key, oldValue, this);
+                TinkerGraph.EdgeKeyIndex.AutoRemove(key, oldValue, this);
 
             return oldValue;
         }

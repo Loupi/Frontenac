@@ -9,9 +9,9 @@ namespace Frontenac.Blueprints
     [Serializable]
     public abstract class DictionaryElement : IElement
     {
-        protected DictionaryElement(IGraph tinkerGrapĥ)
+        protected DictionaryElement(IGraph tinkerGraph)
         {
-            Graph = tinkerGrapĥ;
+            Graph = tinkerGraph;
         }
         
         public virtual IEnumerator<KeyValuePair<string, object>> GetEnumerator()

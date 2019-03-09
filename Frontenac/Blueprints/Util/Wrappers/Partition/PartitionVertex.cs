@@ -5,25 +5,25 @@ namespace Frontenac.Blueprints.Util.Wrappers.Partition
 {
     public class PartitionVertex : PartitionElement, IVertex
     {
-        public PartitionVertex(IVertex vertex, PartitionGraph innerTinkerGrapĥ)
-            : base(vertex, innerTinkerGrapĥ)
+        public PartitionVertex(IVertex vertex, PartitionGraph graph)
+            : base(vertex, graph)
         {
             if (vertex == null)
                 throw new ArgumentNullException(nameof(vertex));
-            if (innerTinkerGrapĥ == null)
-                throw new ArgumentNullException(nameof(innerTinkerGrapĥ));
+            if (graph == null)
+                throw new ArgumentNullException(nameof(graph));
 
             Vertex = vertex;
         }
 
         public IEnumerable<IEdge> GetEdges(Direction direction, params string[] labels)
         {
-            return new PartitionEdgeIterable(Vertex.GetEdges(direction, labels), PartitionInnerTinkerGrapĥ);
+            return new PartitionEdgeIterable(Vertex.GetEdges(direction, labels), PartitionGraph);
         }
 
         public IEnumerable<IVertex> GetVertices(Direction direction, params string[] labels)
         {
-            return new PartitionVertexIterable(Vertex.GetVertices(direction, labels), PartitionInnerTinkerGrapĥ);
+            return new PartitionVertexIterable(Vertex.GetVertices(direction, labels), PartitionGraph);
         }
 
         public IEnumerable<IVertex> GetVertices(Direction direction, string label, params object[] ids)
@@ -39,8 +39,8 @@ namespace Frontenac.Blueprints.Util.Wrappers.Partition
         public IVertexQuery Query()
         {
             return new WrapperVertexQuery(Vertex.Query(),
-                                          t => new PartitionEdgeIterable(t.Edges(), PartitionInnerTinkerGrapĥ),
-                                          t => new PartitionVertexIterable(t.Vertices(), PartitionInnerTinkerGrapĥ));
+                                          t => new PartitionEdgeIterable(t.Edges(), PartitionGraph),
+                                          t => new PartitionVertexIterable(t.Vertices(), PartitionGraph));
         }
 
         public IEdge AddEdge(object id, string label, IVertex vertex)

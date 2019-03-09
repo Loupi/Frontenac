@@ -5,8 +5,8 @@ using Frontenac.Blueprints.Contracts;
 namespace Frontenac.Blueprints.Util.Wrappers.Event
 {
     /// <summary>
-    ///     EventIndexableGraph is merely a proxy to index methods exposing eventInnerTinkerGrapĥ methods in the "evented" way. Like the
-    ///     eventInnerTinkerGrapĥ it extends from, this graph implementations raise notifications to the listeners for the
+    ///     EventIndexableGraph is merely a proxy to index methods exposing eventGraph methods in the "evented" way. Like the
+    ///     eventGraph it extends from, this graph implementations raise notifications to the listeners for the
     ///     following events: new vertex/edge, vertex/edge property changed, vertex/edge property removed,
     ///     vertex/edge removed.
     /// </summary>

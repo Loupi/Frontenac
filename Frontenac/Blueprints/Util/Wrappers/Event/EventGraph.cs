@@ -6,13 +6,13 @@ using Frontenac.Blueprints.Util.Wrappers.Event.Listener;
 namespace Frontenac.Blueprints.Util.Wrappers.Event
 {
     /// <summary>
-    ///     An eventInnerTinkerGrapĥ is a wrapper to existing Graph implementations and provides for graph events to be raised
+    ///     An eventGraph is a wrapper to existing Graph implementations and provides for graph events to be raised
     ///     to one or more listeners on changes to the Graph. Notifications to the listeners occur for the
     ///     following events: new vertex/edge, vertex/edge property changed, vertex/edge property removed,
     ///     vertex/edge removed.
     ///     The limiting factor to events being raised is related to out-of-process functions changing graph elements.
-    ///     To gather events from eventInnerTinkerGrapĥ, simply provide an implementation of the {@link GraphChangedListener} to
-    ///     the eventInnerTinkerGrapĥ by utilizing the addListener method. eventInnerTinkerGrapĥ allows the addition of multiple GraphChangedListener
+    ///     To gather events from eventGraph, simply provide an implementation of the {@link GraphChangedListener} to
+    ///     the eventGraph by utilizing the addListener method. eventGraph allows the addition of multiple GraphChangedListener
     ///     implementations. Each listener will be notified in the order that it was added.
     /// </summary>
     public class EventGraph : IGraph, IWrapperGraph, IDisposable

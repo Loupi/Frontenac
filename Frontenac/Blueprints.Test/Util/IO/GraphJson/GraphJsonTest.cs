@@ -30,7 +30,7 @@ namespace Frontenac.Blueprints.Util.IO.GraphJson
         [Test]
         public void ReadTinkerGraph()
         {
-            var g = new TinkerGrapĥ();
+            var g = new TinkerGraph();
 
             using (var example = GetResource<GraphJsonTest>("graph-example-1.json"))
             {
@@ -47,7 +47,7 @@ namespace Frontenac.Blueprints.Util.IO.GraphJson
         [Test]
         public void ReadCharlizGraph()
         {
-            var g = new TinkerGrapĥ();
+            var g = new TinkerGraph();
 
             using (var example = GetResource<GraphJsonTest>("Charliz.json"))
             {

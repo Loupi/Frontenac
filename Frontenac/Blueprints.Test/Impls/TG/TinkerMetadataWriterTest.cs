@@ -6,13 +6,13 @@ namespace Frontenac.Blueprints.Impls.TG
     [TestFixture(Category = "TinkerMetadataWriterTest")]
     public class TinkerMetadataWriterTest : BaseTest
     {
-        private static void CreateKeyIndices(TinkerGrapĥ g)
+        private static void CreateKeyIndices(TinkerGraph g)
         {
             g.CreateKeyIndex("name", typeof (IVertex));
             g.CreateKeyIndex("weight", typeof (IEdge));
         }
 
-        private static void CreateManualIndices(TinkerGrapĥ g)
+        private static void CreateManualIndices(TinkerGraph g)
         {
             var idxAge = g.CreateIndex("age", typeof (IVertex));
             var v1 = g.GetVertex(1);

@@ -12,17 +12,17 @@ namespace Frontenac.Gremlinq
         public static IEnumerable<IVertex<TModel>> VerticesOfType<TModel>(this IGraph graph) 
             where TModel : class
         {
-            Contract.Requires(graph != null);
-            Contract.Ensures(Contract.Result<IEnumerable<IVertex<TModel>>>() != null);
-            
+            if (graph == null)
+                throw new ArgumentNullException(nameof(graph));
+
             return GremlinqContext.Current.TypeProvider.GetVerticesOfType(graph, typeof(TModel)).As<TModel>();
         }
 
         public static IEnumerable<IEdge<TModel>> EdgesOfType<TModel>(this IGraph graph)
             where TModel : class
         {
-            Contract.Requires(graph != null);
-            Contract.Ensures(Contract.Result<IEnumerable<IEdge<TModel>>>() != null);
+            if (graph == null)
+                throw new ArgumentNullException(nameof(graph));
 
             return GremlinqContext.Current.TypeProvider.GetEdgesOfType(graph, typeof(TModel)).As<TModel>();
         }
@@ -114,7 +114,8 @@ namespace Frontenac.Gremlinq
 
         public static TBase Transient<TBase>(this Dictionary<string, object> rawValues, IGraph graph, Type baseType = null)
         {
-            Contract.Requires(rawValues != null);
+            if (rawValues == null)
+                throw new ArgumentNullException(nameof(rawValues));
 
             Type proxyType;
             if (!GremlinqContext.Current.TypeProvider.TryGetType(rawValues, graph, out proxyType))
@@ -181,8 +182,8 @@ namespace Frontenac.Gremlinq
 
         public static MemberInfo InnerResolve(this Expression e)
         {
-            Contract.Requires(e != null);
-            Contract.Ensures(Contract.Result<MemberInfo>() != null);
+            if (e == null)
+                throw new ArgumentNullException(nameof(e));
 
             if (e.NodeType == ExpressionType.Lambda)
                 return ((LambdaExpression)e).Body.InnerResolve();
@@ -219,8 +220,8 @@ namespace Frontenac.Gremlinq
 
         public static IEnumerable<IVertex> OfType(this IEnumerable<IVertex> elements, Type typeOf)
         {
-            Contract.Requires(elements != null);
-            Contract.Ensures(Contract.Result<IEnumerable<IVertex>>() != null);
+            if (elements == null)
+                throw new ArgumentNullException(nameof(elements));
 
             Type type;
             var context = GremlinqContext.Current;

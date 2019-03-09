@@ -194,12 +194,12 @@ namespace Frontenac.Blueprints.Impls.TG
     {
         public override IGraph GenerateGraph()
         {
-            return new TinkerGrapĥ();
+            return new TinkerGraph();
         }
 
         public override IGraph GenerateGraph(string graphDirectoryName)
         {
-            return new TinkerGrapĥ(GetThinkerGraphDirectory());
+            return new TinkerGraph(GetThinkerGraphDirectory());
         }
 
         public override ITransactionalGraph GenerateTransactionalGraph()
@@ -238,7 +238,7 @@ namespace Frontenac.Blueprints.Impls.TG
         {
         }
 
-        private void TestGraphFileType(string directory, TinkerGrapĥ.FileType fileType)
+        private void TestGraphFileType(string directory, TinkerGraph.FileType fileType)
         {
             var path = TinkerGraphTestImpl.GetThinkerGraphDirectory() + "/" + directory;
             DeleteDirectory(path);
@@ -246,7 +246,7 @@ namespace Frontenac.Blueprints.Impls.TG
             var sourceGraph = TinkerGraphFactory.CreateTinkerGraph();
             try
             {
-                var targetGraph = new TinkerGrapĥ(path, fileType);
+                var targetGraph = new TinkerGraph(path, fileType);
                 try
                 {
                     CreateKeyIndices(targetGraph);
@@ -264,7 +264,7 @@ namespace Frontenac.Blueprints.Impls.TG
                     targetGraph.Shutdown();
                 }
 
-                var compareGraph = new TinkerGrapĥ(path, fileType);
+                var compareGraph = new TinkerGraph(path, fileType);
                 try
                 {
                     PrintTestPerformance("load Graph: " + fileType, StopWatch());
@@ -319,7 +319,7 @@ namespace Frontenac.Blueprints.Impls.TG
             }
         }
 
-        private static void CompareGraphs(IGraph g1, IIndexableGraph g2, TinkerGrapĥ.FileType fileType)
+        private static void CompareGraphs(IGraph g1, IIndexableGraph g2, TinkerGraph.FileType fileType)
         {
             foreach (var v1 in g1.GetVertices())
             {
@@ -340,7 +340,7 @@ namespace Frontenac.Blueprints.Impls.TG
                 CompareVertices(e1, e2, Direction.In);
                 CompareVertices(e2, e2, Direction.Out);
 
-                if (fileType == TinkerGrapĥ.FileType.Gml)
+                if (fileType == TinkerGraph.FileType.Gml)
                 {
                     // For GML we need to iterate the properties manually to catch the
                     // case where the property returned from GML is an integer
@@ -414,7 +414,7 @@ namespace Frontenac.Blueprints.Impls.TG
         public void TestClear()
         {
             DeleteDirectory(TinkerGraphTestImpl.GetThinkerGraphDirectory());
-            var graph = (TinkerGrapĥ) GraphTest.GenerateGraph();
+            var graph = (TinkerGraph) GraphTest.GenerateGraph();
             try
             {
                 StopWatch();
@@ -445,32 +445,32 @@ namespace Frontenac.Blueprints.Impls.TG
         [Test]
         public void TestGraphFileTypeGml()
         {
-            TestGraphFileType("Graph-test-gml", TinkerGrapĥ.FileType.Gml);
+            TestGraphFileType("Graph-test-gml", TinkerGraph.FileType.Gml);
         }
 
         [Test]
         public void TestGraphFileTypeGraphMl()
         {
-            TestGraphFileType("Graph-test-graphml", TinkerGrapĥ.FileType.Graphml);
+            TestGraphFileType("Graph-test-graphml", TinkerGraph.FileType.Graphml);
         }
 
         [Test]
         public void TestGraphFileTypeGraphSon()
         {
-            TestGraphFileType("InnerGraph-test-graphson", TinkerGrapĥ.FileType.Graphson);
+            TestGraphFileType("InnerGraph-test-graphson", TinkerGraph.FileType.Graphson);
         }
 
         [Test]
         public void TestGraphFileTypeJava()
         {
-            TestGraphFileType("Graph-test-java", TinkerGrapĥ.FileType.DotNet);
+            TestGraphFileType("Graph-test-java", TinkerGraph.FileType.DotNet);
         }
 
         [Test]
         public void TestShutdownStartManyTimes()
         {
             DeleteDirectory(TinkerGraphTestImpl.GetThinkerGraphDirectory());
-            var graph = (TinkerGrapĥ) GraphTest.GenerateGraph("Graph");
+            var graph = (TinkerGraph) GraphTest.GenerateGraph("Graph");
             try
             {
                 for (var i = 0; i < 25; i++)
@@ -490,7 +490,7 @@ namespace Frontenac.Blueprints.Impls.TG
             const int iterations = 150;
             for (var i = 0; i < iterations; i++)
             {
-                graph = (TinkerGrapĥ) GraphTest.GenerateGraph("graph");
+                graph = (TinkerGraph) GraphTest.GenerateGraph("graph");
                 try
                 {
                     Assert.AreEqual(50, Count(graph.GetVertices()));

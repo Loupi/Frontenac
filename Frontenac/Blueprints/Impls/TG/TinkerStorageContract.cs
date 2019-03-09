@@ -10,10 +10,10 @@ namespace Frontenac.Blueprints.Impls.TG
                 throw new ArgumentNullException(nameof(directory));
         }
 
-        public static void ValidateSave(TinkerGrapĥ tinkerGrapĥ, string directory)
+        public static void ValidateSave(TinkerGraph tinkerGraph, string directory)
         {
-            if (tinkerGrapĥ == null)
-                throw new ArgumentNullException(nameof(tinkerGrapĥ));
+            if (tinkerGraph == null)
+                throw new ArgumentNullException(nameof(tinkerGraph));
             if (string.IsNullOrWhiteSpace(directory))
                 throw new ArgumentNullException(nameof(directory));
         }

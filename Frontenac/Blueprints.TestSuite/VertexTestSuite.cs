@@ -601,7 +601,7 @@ namespace Frontenac.Blueprints
             }
             catch (Exception ex)
             {
-                if (!(x is ArgumentException))
+                if (!(ex is ArgumentException))
                 {
                     throw;
                 }
@@ -629,7 +629,7 @@ namespace Frontenac.Blueprints
             }
             catch (Exception ex)
             {
-                if (!(x is ArgumentException))
+                if (!(ex is ArgumentException))
                 {
                     throw;
                 }

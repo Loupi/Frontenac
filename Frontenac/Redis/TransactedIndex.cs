@@ -1,5 +1,4 @@
 using System;
-using System.Diagnostics.Contracts;
 using Frontenac.Blueprints;
 using Frontenac.Infrastructure.Indexing;
 
@@ -14,11 +13,20 @@ namespace Frontenac.Redis
             : base(indexName, indexType, graph, genBasedIndex, indexingService)
 
         {
-            Contract.Requires(!string.IsNullOrWhiteSpace(indexName));
-            Contract.Requires(graph != null);
-            Contract.Requires(genBasedIndex != null);
-            Contract.Requires(indexingService != null);
-            Contract.Requires(transactionManager != null);
+            if (string.IsNullOrWhiteSpace(indexName))
+                throw new ArgumentNullException(nameof(indexName));
+
+            if (graph == null)
+                throw new ArgumentNullException(nameof(graph));
+
+            if (genBasedIndex == null)
+                throw new ArgumentNullException(nameof(genBasedIndex));
+
+            if (indexingService == null)
+                throw new ArgumentNullException(nameof(indexingService));
+
+            if (transactionManager == null)
+                throw new ArgumentNullException(nameof(transactionManager));
 
             _transactionManager = transactionManager;
         }

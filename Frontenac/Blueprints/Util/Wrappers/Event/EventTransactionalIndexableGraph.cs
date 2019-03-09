@@ -3,7 +3,7 @@
 namespace Frontenac.Blueprints.Util.Wrappers.Event
 {
     /// <summary>
-    ///     The transactional and indexable implementation of eventInnerTinkerGrapĥ where events are raised in batch in the order they
+    ///     The transactional and indexable implementation of eventGraph where events are raised in batch in the order they
     ///     changes occured to the graph, but only after a successful commit to the underlying graph.
     /// </summary>
     public class EventTransactionalIndexableGraph : EventIndexableGraph, ITransactionalGraph

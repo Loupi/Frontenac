@@ -3,9 +3,9 @@
 namespace Frontenac.Blueprints.Util.Wrappers.Event.Listener
 {
     /// <summary>
-    ///     Interface for a listener to eventInnerTinkerGrapĥ change events.
+    ///     Interface for a listener to eventGraph change events.
     ///     Implementations of this interface should be added to the list of listeners on the addListener method on
-    ///     the eventInnerTinkerGrapĥ.
+    ///     the eventGraph.
     /// </summary>
     public interface IGraphChangedListener
     {

@@ -39,8 +39,6 @@ namespace Frontenac.Gremlinq
 
         public virtual bool TryGetType(IDictionary<string, object> element, IGraph graph, out Type type)
         {
-            TypeProviderContract.ValidateTryGetType(element);
-
             object id;
             if (!element.TryGetValue(_typePropertyName, out id) || !GraphHelpers.IsNumber(id))
             {

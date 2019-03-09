@@ -4,9 +4,9 @@ namespace Frontenac.Blueprints.Impls.TG
 {
     public static class TinkerGraphFactory
     {
-        public static TinkerGrapĥ CreateTinkerGraph()
+        public static TinkerGraph CreateTinkerGraph()
         {
-            var graph = new TinkerGrapĥ();
+            var graph = new TinkerGraph();
             CreateTinkerGraph(graph);
             return graph;
         }

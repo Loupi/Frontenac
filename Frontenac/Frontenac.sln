@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio 14
-VisualStudioVersion = 14.0.25123.0
+# Visual Studio 15
+VisualStudioVersion = 15.0.28307.136
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = ".nuget", ".nuget", "{2BC1E84F-7185-4AC7-A8F7-27C658C58577}"
 	ProjectSection(SolutionItems) = preProject
@@ -37,8 +37,6 @@ EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Redis", "Redis\Redis.csproj", "{8C80B2EB-F101-4082-8B60-50AB34AEB689}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Redis.Test", "Redis.Test\Redis.Test.csproj", "{1B7B96D7-6E15-43E5-A7D9-C516F414AA77}"
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Cypher", "Cypher\Cypher.csproj", "{9728E298-80D9-4C4F-836B-72CBB634E3AE}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -160,16 +158,11 @@ Global
 		{1B7B96D7-6E15-43E5-A7D9-C516F414AA77}.Release (.NET 4.0)|Any CPU.Build.0 = Release|Any CPU
 		{1B7B96D7-6E15-43E5-A7D9-C516F414AA77}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{1B7B96D7-6E15-43E5-A7D9-C516F414AA77}.Release|Any CPU.Build.0 = Release|Any CPU
-		{9728E298-80D9-4C4F-836B-72CBB634E3AE}.Debug (.NET 4.0)|Any CPU.ActiveCfg = Debug|Any CPU
-		{9728E298-80D9-4C4F-836B-72CBB634E3AE}.Debug (.NET 4.0)|Any CPU.Build.0 = Debug|Any CPU
-		{9728E298-80D9-4C4F-836B-72CBB634E3AE}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{9728E298-80D9-4C4F-836B-72CBB634E3AE}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{9728E298-80D9-4C4F-836B-72CBB634E3AE}.Release (.NET 4.0)|Any CPU.ActiveCfg = Release|Any CPU
-		{9728E298-80D9-4C4F-836B-72CBB634E3AE}.Release (.NET 4.0)|Any CPU.Build.0 = Release|Any CPU
-		{9728E298-80D9-4C4F-836B-72CBB634E3AE}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{9728E298-80D9-4C4F-836B-72CBB634E3AE}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {BA07BF7F-2BDC-462A-B22D-0B8E1497756F}
 	EndGlobalSection
 EndGlobal

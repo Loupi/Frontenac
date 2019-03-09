@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using Frontenac.Blueprints;
 using Frontenac.Blueprints.Contracts;
 using Frontenac.Blueprints.Util;
@@ -8,16 +9,16 @@ namespace Frontenac.Grave
 {
     public class GraveVertex : GraveElement, IVertex
     {
-        public GraveVertex(GraveGraph innerTinkerGrapĥ, int id)
-            : base(innerTinkerGrapĥ, id)
+        public GraveVertex(GraveGraph graph, int id)
+            : base(graph, id)
         {
-            if (innerTinkerGrapĥ == null)
-                throw new ArgumentNullException(nameof(innerTinkerGrapĥ));
+            if (graph == null)
+                throw new ArgumentNullException(nameof(graph));
         }
 
         public IEnumerable<IEdge> GetEdges(Direction direction, params string[] labels)
         {
-            return GraveInnerTinkerGrapĥ.GetEdges(this, direction, labels);
+            return GraveGraph.GetEdges(this, direction, labels);
         }
 
         public long GetNbEdges(Direction direction, string label)
@@ -53,7 +54,7 @@ namespace Frontenac.Grave
 
         public override void Remove()
         {
-            GraveInnerTinkerGrapĥ.RemoveVertex(this);
+            GraveGraph.RemoveVertex(this);
         }
 
         public override string ToString()

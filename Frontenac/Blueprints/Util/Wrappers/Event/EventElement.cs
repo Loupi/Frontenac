@@ -12,18 +12,18 @@ namespace Frontenac.Blueprints.Util.Wrappers.Event
     public abstract class EventElement : DictionaryElement
     {
         protected readonly IElement Element;
-        protected readonly EventGraph EventInnerTinkerGrapĥ;
+        protected readonly EventGraph EventGraph;
 
-        protected EventElement(IElement element, EventGraph eventInnerTinkerGrapĥ):base(eventInnerTinkerGrapĥ)
+        protected EventElement(IElement element, EventGraph eventGraph):base(eventGraph)
         {
             if (element == null)
                 throw new ArgumentNullException(nameof(element));
 
-            if (eventInnerTinkerGrapĥ == null)
-                throw new ArgumentNullException(nameof(eventInnerTinkerGrapĥ));
+            if (eventGraph == null)
+                throw new ArgumentNullException(nameof(eventGraph));
 
             Element = element;
-            EventInnerTinkerGrapĥ = eventInnerTinkerGrapĥ;
+            EventGraph = eventGraph;
         }
 
         public override IEnumerable<string> GetPropertyKeys()
@@ -83,9 +83,9 @@ namespace Frontenac.Blueprints.Util.Wrappers.Event
         {
             var vertex = this as IVertex;
             if (vertex != null)
-                EventInnerTinkerGrapĥ.RemoveVertex(vertex);
+                EventGraph.RemoveVertex(vertex);
             else
-                EventInnerTinkerGrapĥ.RemoveEdge((IEdge) this);
+                EventGraph.RemoveEdge((IEdge) this);
         }
 
         protected void OnVertexPropertyChanged(IVertex vertex, string key, object oldValue, object newValue)
@@ -97,7 +97,7 @@ namespace Frontenac.Blueprints.Util.Wrappers.Event
             if (string.IsNullOrWhiteSpace(key))
                 throw new ArgumentNullException(nameof(key));
 
-            EventInnerTinkerGrapĥ.GetTrigger().AddEvent(new VertexPropertyChangedEvent(vertex, key, oldValue, newValue));
+            EventGraph.GetTrigger().AddEvent(new VertexPropertyChangedEvent(vertex, key, oldValue, newValue));
         }
 
         protected void OnEdgePropertyChanged(IEdge edge, string key, object oldValue, object newValue)
@@ -109,7 +109,7 @@ namespace Frontenac.Blueprints.Util.Wrappers.Event
             if (string.IsNullOrWhiteSpace(key))
                 throw new ArgumentNullException(nameof(key));
 
-            EventInnerTinkerGrapĥ.GetTrigger().AddEvent(new EdgePropertyChangedEvent(edge, key, oldValue, newValue));
+            EventGraph.GetTrigger().AddEvent(new EdgePropertyChangedEvent(edge, key, oldValue, newValue));
         }
 
         protected void OnVertexPropertyRemoved(IVertex vertex, string key, object removedValue)
@@ -121,7 +121,7 @@ namespace Frontenac.Blueprints.Util.Wrappers.Event
             if (string.IsNullOrWhiteSpace(key))
                 throw new ArgumentNullException(nameof(key));
 
-            EventInnerTinkerGrapĥ.GetTrigger().AddEvent(new VertexPropertyRemovedEvent(vertex, key, removedValue));
+            EventGraph.GetTrigger().AddEvent(new VertexPropertyRemovedEvent(vertex, key, removedValue));
         }
 
         protected void OnEdgePropertyRemoved(IEdge edge, string key, object removedValue)
@@ -133,7 +133,7 @@ namespace Frontenac.Blueprints.Util.Wrappers.Event
             if (string.IsNullOrWhiteSpace(key))
                 throw new ArgumentNullException(nameof(key));
 
-            EventInnerTinkerGrapĥ.GetTrigger().AddEvent(new EdgePropertyRemovedEvent(edge, key, removedValue));
+            EventGraph.GetTrigger().AddEvent(new EdgePropertyRemovedEvent(edge, key, removedValue));
         }
 
         public override string ToString()

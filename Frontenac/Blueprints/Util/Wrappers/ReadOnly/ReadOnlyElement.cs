@@ -7,18 +7,18 @@ namespace Frontenac.Blueprints.Util.Wrappers.ReadOnly
     public abstract class ReadOnlyElement : DictionaryElement
     {
         protected readonly IElement BaseElement;
-        protected readonly ReadOnlyGraph ReadOnlyInnerTinkerGrapĥ;
+        protected readonly ReadOnlyGraph ReadOnlyGraph;
 
-        protected ReadOnlyElement(ReadOnlyGraph innerTinkerGrapĥ, IElement baseElement):base(innerTinkerGrapĥ)
+        protected ReadOnlyElement(ReadOnlyGraph graph, IElement baseElement):base(graph)
         {
-            if (innerTinkerGrapĥ == null)
-                throw new ArgumentNullException(nameof(innerTinkerGrapĥ));
+            if (graph == null)
+                throw new ArgumentNullException(nameof(graph));
             if (baseElement == null)
                 throw new ArgumentNullException(nameof(baseElement));
 
             IsReadOnly = true;
             BaseElement = baseElement;
-            ReadOnlyInnerTinkerGrapĥ = innerTinkerGrapĥ;
+            ReadOnlyGraph = graph;
         }
 
         public override IEnumerable<string> GetPropertyKeys()

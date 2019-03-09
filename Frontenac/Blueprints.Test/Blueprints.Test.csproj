@@ -74,7 +74,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Impls\TG\IgnoreIdTinkerGrapĥ.cs" />
+    <Compile Include="Impls\TG\IgnoreIdTinkerGraph.cs" />
     <Compile Include="Impls\TG\IgnoreIdTinkerGraphTest.cs" />
     <Compile Include="Impls\TG\MockTransactionalGraph.cs" />
     <Compile Include="Impls\TG\TinkerBenchmarkTestSuite.cs" />

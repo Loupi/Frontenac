@@ -36,7 +36,7 @@ namespace Frontenac.Grave
             container.Register(LifeStyle.Transient, typeof(GraveGraph), typeof(IGraph), typeof(IKeyIndexableGraph), typeof(IIndexableGraph));
 
 
-            container.Register(LifeStyle.Transient, typeof(TinkerGrapĥ), typeof(IGraph));
+            container.Register(LifeStyle.Transient, typeof(TinkerGraph), typeof(IGraph));
         }
 
 
