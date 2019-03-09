@@ -1,4 +1,4 @@
-﻿using System.Diagnostics.Contracts;
+﻿using System;
 using System.IO;
 using System.IO.Pipes;
 using System.Threading.Tasks;
@@ -17,8 +17,10 @@ namespace Frontenac.Blueprints.Util.IO.GraphML
         /// <param name="toGraph">the graph to take data to</param>
         public static void MigrateGraph(IGraph fromGraph, IGraph toGraph)
         {
-            Contract.Requires(fromGraph != null);
-            Contract.Requires(toGraph != null);
+            if (fromGraph == null)
+                throw new ArgumentNullException(nameof(fromGraph));
+            if (toGraph == null)
+                throw new ArgumentNullException(nameof(toGraph));
 
             const int pipeSize = 1024;
             var outPipe = new AnonymousPipeServerStream(PipeDirection.Out, HandleInheritability.Inheritable, pipeSize);

@@ -1,36 +1,35 @@
-﻿using System.Diagnostics.Contracts;
+﻿using System;
 
 namespace Frontenac.Blueprints.Util.Wrappers.Batch.Cache
 {
-    [ContractClassFor(typeof (IVertexCache))]
-    public abstract class VertexCacheContract : IVertexCache
+    public abstract class VertexCacheContract
     {
-        public object GetEntry(object externalId)
+        public static void ValidateGetEntry(object externalId)
         {
-            Contract.Requires(externalId != null);
-            return null;
+            if (externalId == null)
+                throw new ArgumentNullException(nameof(externalId));
         }
 
-        public void Set(IVertex vertex, object externalId)
+        public static void ValidateSet(IVertex vertex, object externalId)
         {
-            Contract.Requires(vertex != null);
-            Contract.Requires(externalId != null);
+            if (vertex == null)
+                throw new ArgumentNullException(nameof(vertex));
+            if (externalId == null)
+                throw new ArgumentNullException(nameof(externalId));
         }
 
-        public void SetId(object vertexId, object externalId)
+        public static void ValidateSetId(object vertexId, object externalId)
         {
-            Contract.Requires(vertexId != null);
-            Contract.Requires(externalId != null);
+            if (vertexId == null)
+                throw new ArgumentNullException(nameof(vertexId));
+            if (externalId == null)
+                throw new ArgumentNullException(nameof(externalId));
         }
 
-        public bool Contains(object externalId)
+        public static void ValidateContains(object externalId)
         {
-            Contract.Requires(externalId != null);
-            return default(bool);
-        }
-
-        public void NewTransaction()
-        {
+            if (externalId == null)
+                throw new ArgumentNullException(nameof(externalId));
         }
     }
 }

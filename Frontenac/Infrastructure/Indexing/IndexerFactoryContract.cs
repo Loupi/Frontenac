@@ -9,14 +9,15 @@ namespace Frontenac.Infrastructure.Indexing
     {
         public Indexer Create(Type contentType)
         {
-            Contract.Requires(contentType != null);
-            Contract.Ensures(Contract.Result<Indexer>() != null);
+            if (contentType == null)
+                throw new ArgumentNullException(nameof(contentType));
             return null;
         }
 
         public void Destroy(Indexer indexer)
         {
-            Contract.Requires(indexer != null);
+            if (indexer == null)
+                throw new ArgumentNullException(nameof(indexer));
         }
     }
 }

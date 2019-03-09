@@ -1,4 +1,5 @@
-﻿using System.Diagnostics.Contracts;
+﻿using System;
+using System.Diagnostics.Contracts;
 
 namespace Frontenac.Infrastructure.Indexing
 {
@@ -7,8 +8,8 @@ namespace Frontenac.Infrastructure.Indexing
     {
         public IDocument Create(object document)
         {
-            Contract.Requires(document != null);
-            Contract.Ensures(Contract.Result<IDocument>() != null);
+            if (document == null)
+                throw new ArgumentNullException(nameof(document));
             return null;
         }
     }

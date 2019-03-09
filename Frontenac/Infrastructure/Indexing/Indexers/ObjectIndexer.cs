@@ -1,5 +1,5 @@
-﻿using System.Collections;
-using System.Diagnostics.Contracts;
+﻿using System;
+using System.Collections;
 using System.Security.Principal;
 using System.Text;
 using Fasterflect;
@@ -14,8 +14,9 @@ namespace Frontenac.Infrastructure.Indexing.Indexers
 
         public ObjectIndexer(IIndexerFactory indexerFactory)
         {
-            Contract.Requires(indexerFactory != null);
-            
+            if (indexerFactory == null)
+                throw new ArgumentNullException(nameof(indexerFactory));
+
             _indexerFactory = indexerFactory;
         }
 
@@ -27,7 +28,8 @@ namespace Frontenac.Infrastructure.Indexing.Indexers
 
         private void Recurse(uint depth, IDocument document, object value, StringBuilder nameBuilder)
         {
-            Contract.Requires(value != null);
+            if (value == null)
+                throw new ArgumentNullException(nameof(value));
 
             var type = value.GetType();
 

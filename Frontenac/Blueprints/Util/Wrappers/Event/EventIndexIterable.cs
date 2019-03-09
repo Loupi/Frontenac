@@ -1,6 +1,6 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
-using System.Diagnostics.Contracts;
 using System.Linq;
 
 namespace Frontenac.Blueprints.Util.Wrappers.Event
@@ -15,8 +15,10 @@ namespace Frontenac.Blueprints.Util.Wrappers.Event
 
         public EventIndexIterable(IEnumerable<IIndex> iterable, EventGraph eventGraph)
         {
-            Contract.Requires(iterable != null);
-            Contract.Requires(eventGraph != null);
+            if (iterable == null)
+                throw new ArgumentNullException(nameof(iterable));
+            if (eventGraph == null)
+                throw new ArgumentNullException(nameof(eventGraph));
 
             _iterable = iterable;
             _eventGraph = eventGraph;

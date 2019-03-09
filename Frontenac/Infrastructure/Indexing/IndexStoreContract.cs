@@ -15,27 +15,34 @@ namespace Frontenac.Infrastructure.Indexing
 
         public void CreateIndex(string indexName, string indexColumn, Parameter[] parameters)
         {
-            Contract.Requires(!String.IsNullOrWhiteSpace(indexName));
-            Contract.Requires(!String.IsNullOrWhiteSpace(indexColumn));
+            if (string.IsNullOrWhiteSpace(indexName))
+                throw new ArgumentNullException(nameof(indexName));
+            if (string.IsNullOrWhiteSpace(indexColumn))
+                throw new ArgumentNullException(nameof(indexColumn));
         }
 
         public List<string> GetIndices(string indexType)
         {
-            Contract.Requires(!String.IsNullOrWhiteSpace(indexType));
+            if (string.IsNullOrWhiteSpace(indexType))
+                throw new ArgumentNullException(nameof(indexType));
             return null;
         }
 
         public long DeleteIndex(IndexingService indexingService, string indexName, string indexColumn, Type indexType, bool isUserIndex)
         {
-            Contract.Requires(indexingService != null);
-            Contract.Requires(!String.IsNullOrWhiteSpace(indexName));
-            Contract.Requires(!String.IsNullOrWhiteSpace(indexColumn));
+            if (indexingService == null)
+                throw new ArgumentNullException(nameof(indexingService));
+            if (string.IsNullOrWhiteSpace(indexName))
+                throw new ArgumentNullException(nameof(indexName));
+            if (string.IsNullOrWhiteSpace(indexColumn))
+                throw new ArgumentNullException(nameof(indexColumn));
             return 0;
         }
 
         public long DeleteIndex(Type indexType, string indexName, bool isUserIndex)
         {
-            Contract.Requires(!string.IsNullOrWhiteSpace(indexName));
+            if (string.IsNullOrWhiteSpace(indexName))
+                throw new ArgumentNullException(nameof(indexName));
             return default(long);
         }
 

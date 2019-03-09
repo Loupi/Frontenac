@@ -8,8 +8,10 @@ namespace Frontenac.Infrastructure.Indexing
     {
         public IIndexCollection Create(string indicesColumnName, Type indexType, bool isUserIndex, IndexingService indexingService)
         {
-            Contract.Requires(!string.IsNullOrWhiteSpace(indicesColumnName));
-            Contract.Requires(indexingService != null);
+            if (string.IsNullOrWhiteSpace(indicesColumnName))
+                throw new ArgumentNullException(nameof(indicesColumnName));
+            if (indexingService == null)
+                throw new ArgumentNullException(nameof(indexingService));
             return null;
         }
     }

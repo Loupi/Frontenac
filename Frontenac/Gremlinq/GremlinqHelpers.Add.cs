@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Diagnostics.Contracts;
 using System.Linq.Expressions;
 using Frontenac.Blueprints;
 
@@ -11,8 +10,8 @@ namespace Frontenac.Gremlinq
         public static IVertex<TModel> AddVertex<TModel>(this IGraph graph) 
             where TModel : class
         {
-            Contract.Requires(graph != null);
-            Contract.Ensures(Contract.Result<IVertex<TModel>>() != null);
+            if (graph == null)
+                throw new ArgumentNullException(nameof(graph));
 
             var vertex = graph.AddVertex(null);
             GremlinqContext.Current.TypeProvider.SetType(vertex, typeof(TModel));
@@ -22,9 +21,10 @@ namespace Frontenac.Gremlinq
         public static IVertex<TModel> AddVertex<TModel>(this IGraph graph, Action<TModel> assignMembers) 
             where TModel : class
         {
-            Contract.Requires(graph != null);
-            Contract.Requires(assignMembers != null);
-            Contract.Ensures(Contract.Result<IVertex<TModel>>() != null);
+            if (graph == null)
+                throw new ArgumentNullException(nameof(graph));
+            if (assignMembers == null)
+                throw new ArgumentNullException(nameof(assignMembers));
 
             var vertex = graph.AddVertex(null);
             GremlinqContext.Current.TypeProvider.SetType(vertex, typeof(TModel));
@@ -34,9 +34,10 @@ namespace Frontenac.Gremlinq
         public static IVertex<TModel> AddVertex<TModel>(this IGraph graph, object id)
             where TModel : class
         {
-            Contract.Requires(graph != null);
-            Contract.Requires(id != null);
-            Contract.Ensures(Contract.Result<IVertex<TModel>>() != null);
+            if (id == null)
+                throw new ArgumentNullException(nameof(graph));
+            if (id == null)
+                throw new ArgumentNullException(nameof(id));
 
             var vertex = graph.AddVertex(id);
             GremlinqContext.Current.TypeProvider.SetType(vertex, typeof(TModel));
@@ -46,10 +47,12 @@ namespace Frontenac.Gremlinq
         public static IVertex<TModel> AddVertex<TModel>(this IGraph graph, object id, Action<TModel> assignMembers)
             where TModel : class
         {
-            Contract.Requires(graph != null);
-            Contract.Requires(id != null);
-            Contract.Requires(assignMembers != null);
-            Contract.Ensures(Contract.Result<IVertex<TModel>>() != null);
+            if (id == null)
+                throw new ArgumentNullException(nameof(graph));
+            if (id == null)
+                throw new ArgumentNullException(nameof(id));
+            if (assignMembers == null)
+                throw new ArgumentNullException(nameof(assignMembers));
 
             var vertex = graph.AddVertex(id);
             GremlinqContext.Current.TypeProvider.SetType(vertex, typeof(TModel));
@@ -61,10 +64,12 @@ namespace Frontenac.Gremlinq
             Expression<Func<TOutModel, TInModel>> edgePropertySelector,
             IVertex<TInModel> inVertex)
         {
-            Contract.Requires(outVertex != null);
-            Contract.Requires(edgePropertySelector != null);
-            Contract.Requires(inVertex != null);
-            Contract.Ensures(Contract.Result<IEdge>() != null);
+            if (outVertex == null)
+                throw new ArgumentNullException(nameof(outVertex));
+            if (edgePropertySelector == null)
+                throw new ArgumentNullException(nameof(edgePropertySelector));
+            if (inVertex == null)
+                throw new ArgumentNullException(nameof(inVertex));
 
             return outVertex.AddEdge(id, edgePropertySelector.Resolve(), inVertex);
         }
@@ -74,10 +79,12 @@ namespace Frontenac.Gremlinq
             Expression<Func<TOutModel, IEnumerable<TInModel>>> edgePropertySelector,
             IVertex<TInModel> inVertex)
         {
-            Contract.Requires(outVertex != null);
-            Contract.Requires(edgePropertySelector != null);
-            Contract.Requires(inVertex != null);
-            Contract.Ensures(Contract.Result<IEdge>() != null);
+            if (outVertex == null)
+                throw new ArgumentNullException(nameof(outVertex));
+            if (edgePropertySelector == null)
+                throw new ArgumentNullException(nameof(edgePropertySelector));
+            if (inVertex == null)
+                throw new ArgumentNullException(nameof(inVertex));
 
             return outVertex.AddEdge(id, edgePropertySelector.Resolve(), inVertex);
         }
@@ -89,10 +96,12 @@ namespace Frontenac.Gremlinq
             where TModel : class
             where TInModel : class 
         {
-            Contract.Requires(outVertex != null);
-            Contract.Requires(edgePropertySelector != null);
-            Contract.Requires(inVertex != null);
-            Contract.Ensures(Contract.Result<IEdge<TModel>>() != null);
+            if (outVertex == null)
+                throw new ArgumentNullException(nameof(outVertex));
+            if (edgePropertySelector == null)
+                throw new ArgumentNullException(nameof(edgePropertySelector));
+            if (inVertex == null)
+                throw new ArgumentNullException(nameof(inVertex));
 
             var edge = outVertex.AddEdge(id, edgePropertySelector.Resolve(), inVertex);
             GremlinqContext.Current.TypeProvider.SetType(edge, typeof(TModel));
@@ -106,10 +115,12 @@ namespace Frontenac.Gremlinq
             where TModel : class
             where TInModel : class 
         {
-            Contract.Requires(outVertex != null);
-            Contract.Requires(edgePropertySelector != null);
-            Contract.Requires(inVertex != null);
-            Contract.Ensures(Contract.Result<IEdge<TModel>>() != null);
+            if (outVertex == null)
+                throw new ArgumentNullException(nameof(outVertex));
+            if (edgePropertySelector == null)
+                throw new ArgumentNullException(nameof(edgePropertySelector));
+            if (inVertex == null)
+                throw new ArgumentNullException(nameof(inVertex));
 
             var edge = outVertex.AddEdge(id, edgePropertySelector.Resolve(), inVertex);
             GremlinqContext.Current.TypeProvider.SetType(edge, typeof(TModel));
@@ -124,11 +135,14 @@ namespace Frontenac.Gremlinq
             where TModel : class
             where TInModel : class 
         {
-            Contract.Requires(outVertex != null);
-            Contract.Requires(edgePropertySelector != null);
-            Contract.Requires(inVertex != null);
-            Contract.Requires(assignMembers != null);
-            Contract.Ensures(Contract.Result<IEdge<TModel>>() != null);
+            if (outVertex == null)
+                throw new ArgumentNullException(nameof(outVertex));
+            if (edgePropertySelector == null)
+                throw new ArgumentNullException(nameof(edgePropertySelector));
+            if (inVertex == null)
+                throw new ArgumentNullException(nameof(inVertex));
+            if (assignMembers == null)
+                throw new ArgumentNullException(nameof(assignMembers));
 
             var edge = outVertex.AddEdge(id, edgePropertySelector.Resolve(), inVertex);
             GremlinqContext.Current.TypeProvider.SetType(edge, typeof(TModel));
@@ -144,11 +158,14 @@ namespace Frontenac.Gremlinq
             where TInModel : class 
             where TEdgeModel : class, TModel
         {
-            Contract.Requires(outVertex != null);
-            Contract.Requires(edgePropertySelector != null);
-            Contract.Requires(inVertex != null);
-            Contract.Requires(assignMembers != null);
-            Contract.Ensures(Contract.Result<IEdge<TModel>>() != null);
+            if (outVertex == null)
+                throw new ArgumentNullException(nameof(outVertex));
+            if (edgePropertySelector == null)
+                throw new ArgumentNullException(nameof(edgePropertySelector));
+            if (inVertex == null)
+                throw new ArgumentNullException(nameof(inVertex));
+            if (assignMembers == null)
+                throw new ArgumentNullException(nameof(assignMembers));
 
             var edge = outVertex.AddEdge(id, edgePropertySelector.Resolve(), inVertex);
             GremlinqContext.Current.TypeProvider.SetType(edge, typeof(TEdgeModel));
@@ -163,11 +180,14 @@ namespace Frontenac.Gremlinq
             where TModel : class
             where TInModel : class 
         {
-            Contract.Requires(outVertex != null);
-            Contract.Requires(edgePropertySelector != null);
-            Contract.Requires(inVertex != null);
-            Contract.Requires(assignMembers != null);
-            Contract.Ensures(Contract.Result<IEdge<TModel>>() != null);
+            if (outVertex == null)
+                throw new ArgumentNullException(nameof(outVertex));
+            if (edgePropertySelector == null)
+                throw new ArgumentNullException(nameof(edgePropertySelector));
+            if (inVertex == null)
+                throw new ArgumentNullException(nameof(inVertex));
+            if (assignMembers == null)
+                throw new ArgumentNullException(nameof(assignMembers));
 
             var edge = outVertex.AddEdge(id, edgePropertySelector.Resolve(), inVertex);
             GremlinqContext.Current.TypeProvider.SetType(edge, typeof(TModel));
@@ -183,10 +203,12 @@ namespace Frontenac.Gremlinq
             where TInModel : class 
             where TEdgeModel : class, TModel
         {
-            Contract.Requires(outVertex != null);
-            Contract.Requires(edgePropertySelector != null);
-            Contract.Requires(inVertex != null);
-            Contract.Ensures(Contract.Result<IEdge<TModel>>() != null);
+            if (outVertex == null)
+                throw new ArgumentNullException(nameof(outVertex));
+            if (edgePropertySelector == null)
+                throw new ArgumentNullException(nameof(edgePropertySelector));
+            if (inVertex == null)
+                throw new ArgumentNullException(nameof(inVertex));
 
             var edge = outVertex.AddEdge(id, edgePropertySelector.Resolve(), inVertex);
             GremlinqContext.Current.TypeProvider.SetType(edge, typeof(TEdgeModel));
@@ -198,7 +220,8 @@ namespace Frontenac.Gremlinq
             where TEdgeModel : class
             where TVertexModel : class
         {
-            Contract.Requires(relation != null);
+            if (relation == null)
+                throw new ArgumentNullException(nameof(relation));
 
             relation.Add(new KeyValuePair<TEdgeModel, TVertexModel>(null, vertex));
         }
@@ -208,7 +231,8 @@ namespace Frontenac.Gremlinq
             where TEdgeModel : class
             where TVertexModel : class
         {
-            Contract.Requires(relation != null);
+            if (relation == null)
+                throw new ArgumentNullException(nameof(relation));
 
             relation.Add(new KeyValuePair<TEdgeModel, TVertexModel>(edge, vertex));
         }
@@ -218,8 +242,10 @@ namespace Frontenac.Gremlinq
             where TEdgeModel : class
             where TVertexModel : class
         {
-            Contract.Requires(relation != null);
-            Contract.Requires(assignEdge != null);
+            if (relation == null)
+                throw new ArgumentNullException(nameof(relation));
+            if (assignEdge == null)
+                throw new ArgumentNullException(nameof(assignEdge));
 
             var edgeModel = Transient<TEdgeModel>();
             assignEdge(edgeModel);
@@ -233,8 +259,10 @@ namespace Frontenac.Gremlinq
             where TVertexModel : class
             where TDerivedEdgeModel: class, TEdgeModel
         {
-            Contract.Requires(relation != null);
-            Contract.Requires(assignEdge != null);
+            if (relation == null)
+                throw new ArgumentNullException(nameof(relation));
+            if (assignEdge == null)
+                throw new ArgumentNullException(nameof(assignEdge));
 
             var edgeModel = Transient<TDerivedEdgeModel>();
             assignEdge(edgeModel);

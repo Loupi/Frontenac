@@ -1,8 +1,5 @@
-﻿using System.Diagnostics.Contracts;
-
-namespace Frontenac.Blueprints.Util.Wrappers.Batch.Cache
+﻿namespace Frontenac.Blueprints.Util.Wrappers.Batch.Cache
 {
-    [ContractClass(typeof (StringCompressionContract))]
     public abstract class StringCompression
     {
         public static StringCompression NoCompression = new NullStringCompression();
@@ -13,6 +10,7 @@ namespace Frontenac.Blueprints.Util.Wrappers.Batch.Cache
         {
             public override string Compress(string input)
             {
+                StringCompressionContract.ValidateCompress(input);
                 return input;
             }
         }

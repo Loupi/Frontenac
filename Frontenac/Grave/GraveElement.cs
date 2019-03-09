@@ -1,6 +1,7 @@
-﻿using System.Collections.Generic;
-using System.Diagnostics.Contracts;
+﻿using System;
+using System.Collections.Generic;
 using Frontenac.Blueprints;
+using Frontenac.Blueprints.Contracts;
 using Frontenac.Blueprints.Util;
 
 namespace Frontenac.Grave
@@ -13,7 +14,8 @@ namespace Frontenac.Grave
         protected GraveElement(GraveGraph innerTinkerGrapĥ, int id)
             : base(innerTinkerGrapĥ)
         {
-            Contract.Requires(innerTinkerGrapĥ != null);
+            if (innerTinkerGrapĥ == null)
+                throw new ArgumentNullException(nameof(innerTinkerGrapĥ));
 
             GraveInnerTinkerGrapĥ = innerTinkerGrapĥ;
             RawId = id;
@@ -33,11 +35,13 @@ namespace Frontenac.Grave
 
         public override void SetProperty(string key, object value)
         {
+            ElementContract.ValidateSetProperty(key, value);
             GraveInnerTinkerGrapĥ.SetProperty(this, key, value);
         }
 
         public override object RemoveProperty(string key)
         {
+            ElementContract.ValidateRemoveProperty(key);
             return GraveInnerTinkerGrapĥ.RemoveProperty(this, key);
         }
 

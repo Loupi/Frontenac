@@ -1,4 +1,4 @@
-﻿using System.Diagnostics.Contracts;
+﻿using System;
 
 namespace Frontenac.Blueprints.Util
 {
@@ -21,16 +21,16 @@ namespace Frontenac.Blueprints.Util
 
         public static string VertexString(this IVertex vertex)
         {
-            Contract.Requires(vertex != null);
-            Contract.Ensures(Contract.Result<string>() != null);
+            if (vertex == null)
+                throw new ArgumentNullException(nameof(vertex));
 
             return string.Concat(V, LBracket, vertex.Id, RBracket);
         }
 
         public static string EdgeString(this IEdge edge)
         {
-            Contract.Requires(edge != null);
-            Contract.Ensures(Contract.Result<string>() != null);
+            if (edge == null)
+                throw new ArgumentNullException(nameof(edge));
 
             return string.Concat(E, LBracket, edge.Id, RBracket, LBracket, edge.GetVertex(Direction.Out).Id,
                                  Dash, edge.Label, Arrow, edge.GetVertex(Direction.In).Id, RBracket);
@@ -38,17 +38,18 @@ namespace Frontenac.Blueprints.Util
 
         public static string GraphString(this IGraph graph, string internalString)
         {
-            Contract.Requires(graph != null);
-            Contract.Requires(!string.IsNullOrWhiteSpace(internalString));
-            Contract.Ensures(Contract.Result<string>() != null);
+            if (graph == null)
+                throw new ArgumentNullException(nameof(graph));
+            if (string.IsNullOrWhiteSpace(internalString))
+                throw new ArgumentNullException(nameof(internalString));
 
             return string.Concat(graph.GetType().Name.ToLower(), LBracket, internalString, RBracket);
         }
 
         public static string IndexString(this IIndex index)
         {
-            Contract.Requires(index != null);
-            Contract.Ensures(Contract.Result<string>() != null);
+            if (index == null)
+                throw new ArgumentNullException(nameof(index));
 
             return string.Concat("index", LBracket, index.Name, Colon, index.Type.Name, RBracket);
         }

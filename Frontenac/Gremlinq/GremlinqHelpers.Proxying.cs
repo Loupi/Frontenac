@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Diagnostics.Contracts;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Reflection;
@@ -33,9 +32,10 @@ namespace Frontenac.Gremlinq
             Action<TModel> assignMembers)
             where TModel : class
         {
-            Contract.Requires(vertex != null);
-            Contract.Requires(assignMembers != null);
-            Contract.Ensures(Contract.Result<IVertex<TModel>>() != null);
+            if (vertex == null)
+                throw new ArgumentNullException(nameof(vertex));
+            if (assignMembers == null)
+                throw new ArgumentNullException(nameof(assignMembers));
 
             var wrapper = vertex.As<TModel>();
             assignMembers(wrapper.Model);
@@ -47,9 +47,10 @@ namespace Frontenac.Gremlinq
             Action<TModel> assignMembers)
             where TModel : class
         {
-            Contract.Requires(edge != null);
-            Contract.Requires(assignMembers != null);
-            Contract.Ensures(Contract.Result<IEdge<TModel>>() != null);
+            if (edge == null)
+                throw new ArgumentNullException(nameof(edge));
+            if (assignMembers == null)
+                throw new ArgumentNullException(nameof(assignMembers));
 
             var wrapper = edge.As<TModel>();
             assignMembers(wrapper.Model);
@@ -58,9 +59,11 @@ namespace Frontenac.Gremlinq
 
         public static object Proxy(this IElement element, Type type)
         {
-            Contract.Requires(element != null);
-            Contract.Requires(type != null);
-            Contract.Ensures(Contract.Result<object>() != null);
+            if (element == null)
+                throw new ArgumentNullException(nameof(element));
+
+            if (type == null)
+                throw new ArgumentNullException(nameof(type));
 
             var proxy = GremlinqContext.Current.ProxyFactory.Create(element, type);
             return proxy;
@@ -68,8 +71,8 @@ namespace Frontenac.Gremlinq
 
         public static IEnumerable<object> Proxy(this IEnumerable<IElement> elements, Type type)
         {
-            Contract.Requires(elements != null);
-            Contract.Ensures(Contract.Result<IEnumerable<object>>() != null);
+            if (elements == null)
+                throw new ArgumentNullException(nameof(elements));
 
             return elements.Select(element => element.Proxy(type));
         }
@@ -77,8 +80,8 @@ namespace Frontenac.Gremlinq
         public static TModel Proxy<TModel>(this IElement element) 
             where TModel : class
         {
-            Contract.Requires(element != null);
-            //Contract.Ensures(Contract.Result<TModel>() != null);
+            if (element == null)
+                throw new ArgumentNullException(nameof(element));
 
             var proxy = (TModel)element.ProxyBestFit(typeof(TModel));
             return proxy;
@@ -87,8 +90,6 @@ namespace Frontenac.Gremlinq
         public static TModel Transient<TModel>()
             where TModel : class
         {
-            Contract.Ensures(Contract.Result<TModel>() != null);
-
             var dictionary = new Dictionary<string, object>();
             var proxy = (TModel)GremlinqContext.Current.ProxyFactory.Create(dictionary, typeof(TModel));
             return proxy;
@@ -97,16 +98,14 @@ namespace Frontenac.Gremlinq
         public static TModel Transient<TModel>(this IGraph graph)
             where TModel : class
         {
-            Contract.Ensures(Contract.Result<TModel>() != null);
-
             return Transient<TModel>();
         }
 
         public static TModel Transient<TModel>(this IGraph graph, Action<TModel> assignMembers)
             where TModel : class
         {
-            Contract.Requires(assignMembers != null);
-            Contract.Ensures(Contract.Result<TModel>() != null);
+            if (assignMembers == null)
+                throw new ArgumentNullException(nameof(assignMembers));
 
             var proxy = Transient<TModel>(graph);
             assignMembers(proxy);
@@ -130,8 +129,11 @@ namespace Frontenac.Gremlinq
 
         public static object ProxyBestFit(this IElement element, Type baseType)
         {
-            Contract.Requires(element != null);
-            Contract.Requires(baseType != null);
+            if (element == null)
+                throw new ArgumentNullException(nameof(element));
+
+            if (baseType == null)
+                throw new ArgumentNullException(nameof(baseType));
 
             Type type;
             var proxyType = GremlinqContext.Current.TypeProvider.TryGetType(element, element.Graph, out type) ? type : baseType;
@@ -151,16 +153,16 @@ namespace Frontenac.Gremlinq
         public static IEnumerable<TModel> Proxy<TModel>(this IEnumerable<IElement> elements)
             where TModel : class
         {
-            Contract.Requires(elements != null);
-            Contract.Ensures(Contract.Result<IEnumerable<object>>() != null);
+            if (elements == null)
+                throw new ArgumentNullException(nameof(elements));
 
             return elements.Select(element => element.Proxy<TModel>());
         }
 
         public static string Resolve(this Expression e)
         {
-            Contract.Requires(e != null);
-            Contract.Ensures(Contract.Result<string>() != null);
+            if (e == null)
+                throw new ArgumentNullException(nameof(e));
 
             if (e.NodeType == ExpressionType.Lambda)
             {
@@ -193,8 +195,8 @@ namespace Frontenac.Gremlinq
 
         public static Type Type(this IElement element)
         {
-            Contract.Requires(element != null);
-            Contract.Ensures(Contract.Result<Type>() != null);
+            if (element == null)
+                throw new ArgumentNullException(nameof(element));
 
             Type type;
             if (!GremlinqContext.Current.TypeProvider.TryGetType(element, element.Graph, out type))
@@ -206,8 +208,8 @@ namespace Frontenac.Gremlinq
         public static IEnumerable<TResult> OfType<TResult>(this IEnumerable<IElement> elements)
             where TResult : class
         {
-            Contract.Requires(elements != null);
-            Contract.Ensures(Contract.Result<IEnumerable<TResult>>() != null);
+            if (elements == null)
+                throw new ArgumentNullException(nameof(elements));
 
             Type type;
             var context = GremlinqContext.Current;

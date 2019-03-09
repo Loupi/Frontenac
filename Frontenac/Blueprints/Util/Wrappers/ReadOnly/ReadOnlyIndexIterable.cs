@@ -1,6 +1,6 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
-using System.Diagnostics.Contracts;
 using System.Linq;
 
 namespace Frontenac.Blueprints.Util.Wrappers.ReadOnly
@@ -12,7 +12,8 @@ namespace Frontenac.Blueprints.Util.Wrappers.ReadOnly
 
         public ReadOnlyIndexIterable(ReadOnlyGraph graph, IEnumerable<IIndex> iterable)
         {
-            Contract.Requires(iterable != null);
+            if (iterable == null)
+                throw new ArgumentNullException(nameof(iterable));
 
             _graph = graph;
             _iterable = iterable;

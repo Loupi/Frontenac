@@ -1,5 +1,5 @@
-﻿using System.Collections.Generic;
-using System.Diagnostics.Contracts;
+﻿using System;
+using System.Collections.Generic;
 
 namespace Frontenac.Blueprints.Util.Wrappers.Event.Listener
 {
@@ -13,8 +13,10 @@ namespace Frontenac.Blueprints.Util.Wrappers.Event.Listener
 
         public VertexRemovedEvent(IVertex vertex, IDictionary<string, object> props)
         {
-            Contract.Requires(vertex != null);
-            Contract.Requires(props != null);
+            if (vertex == null)
+                throw new ArgumentNullException(nameof(vertex));
+            if (props == null)
+                throw new ArgumentNullException(nameof(props));
 
             _vertex = vertex;
             _props = props;
@@ -22,6 +24,8 @@ namespace Frontenac.Blueprints.Util.Wrappers.Event.Listener
 
         public void FireEvent(IEnumerator<IGraphChangedListener> eventListeners)
         {
+            EventContract.ValidateFireEvent(eventListeners);
+
             while (eventListeners.MoveNext())
             {
                 eventListeners.Current.VertexRemoved(_vertex, _props);

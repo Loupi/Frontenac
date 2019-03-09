@@ -1,0 +1,77 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>netstandard2.0</TargetFramework>
+    <RootNamespace>Frontenac.Gremlinq</RootNamespace>
+    <SignAssembly>true</SignAssembly>
+    <AssemblyOriginatorKeyFile>key.snk</AssemblyOriginatorKeyFile>
+    <Version>2.5.0.0</Version>
+    <AssemblyName>Frontenac.Gremlinq</AssemblyName>
+    <Authors>Louis-Pierre Beaumont</Authors>
+    <Company>Frontenac</Company>
+    <Product>Frontenac.Gremlinq</Product>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <Compile Include="..\Gremlinq\Contracts\ProxyFactoryContract.cs" Link="Contracts\ProxyFactoryContract.cs" />
+    <Compile Include="..\Gremlinq\Contracts\TypeProviderContract.cs" Link="Contracts\TypeProviderContract.cs" />
+    <Compile Include="..\Gremlinq\DefaultGremlinqContextFactory.cs" Link="DefaultGremlinqContextFactory.cs" />
+    <Compile Include="..\Gremlinq\DictionaryAdapterProxyFactory.cs" Link="DictionaryAdapterProxyFactory.cs" />
+    <Compile Include="..\Gremlinq\DictionaryTypeProvider.cs" Link="DictionaryTypeProvider.cs" />
+    <Compile Include="..\Gremlinq\Edge.cs" Link="Edge.cs" />
+    <Compile Include="..\Gremlinq\GraphBackedTypeProvider.cs" Link="GraphBackedTypeProvider.cs" />
+    <Compile Include="..\Gremlinq\GremlinqContext.cs" Link="GremlinqContext.cs" />
+    <Compile Include="..\Gremlinq\GremlinqHelpers.Add.cs" Link="GremlinqHelpers.Add.cs" />
+    <Compile Include="..\Gremlinq\GremlinqHelpers.As.cs" Link="GremlinqHelpers.As.cs" />
+    <Compile Include="..\Gremlinq\GremlinqHelpers.Both.cs" Link="GremlinqHelpers.Both.cs" />
+    <Compile Include="..\Gremlinq\GremlinqHelpers.BothV.cs" Link="GremlinqHelpers.BothV.cs" />
+    <Compile Include="..\Gremlinq\GremlinqHelpers.E.cs" Link="GremlinqHelpers.E.cs" />
+    <Compile Include="..\Gremlinq\GremlinqHelpers.GroupCount.cs" Link="GremlinqHelpers.GroupCount.cs" />
+    <Compile Include="..\Gremlinq\GremlinqHelpers.In.cs" Link="GremlinqHelpers.In.cs" />
+    <Compile Include="..\Gremlinq\GremlinqHelpers.Indexing.cs" Link="GremlinqHelpers.Indexing.cs" />
+    <Compile Include="..\Gremlinq\GremlinqHelpers.InE.cs" Link="GremlinqHelpers.InE.cs" />
+    <Compile Include="..\Gremlinq\GremlinqHelpers.InV.cs" Link="GremlinqHelpers.InV.cs" />
+    <Compile Include="..\Gremlinq\GremlinqHelpers.Loop.cs" Link="GremlinqHelpers.Loop.cs" />
+    <Compile Include="..\Gremlinq\GremlinqHelpers.Map.cs" Link="GremlinqHelpers.Map.cs" />
+    <Compile Include="..\Gremlinq\GremlinqHelpers.Out.cs" Link="GremlinqHelpers.Out.cs" />
+    <Compile Include="..\Gremlinq\GremlinqHelpers.OutE.cs" Link="GremlinqHelpers.OutE.cs" />
+    <Compile Include="..\Gremlinq\GremlinqHelpers.OutV.cs" Link="GremlinqHelpers.OutV.cs" />
+    <Compile Include="..\Gremlinq\GremlinqHelpers.Proxying.cs" Link="GremlinqHelpers.Proxying.cs" />
+    <Compile Include="..\Gremlinq\GremlinqHelpers.Query.cs" Link="GremlinqHelpers.Query.cs" />
+    <Compile Include="..\Gremlinq\GremlinqHelpers.V.cs" Link="GremlinqHelpers.V.cs" />
+    <Compile Include="..\Gremlinq\IEdge.cs" Link="IEdge.cs" />
+    <Compile Include="..\Gremlinq\IElement.cs" Link="IElement.cs" />
+    <Compile Include="..\Gremlinq\IgnoreAttribute.cs" Link="IgnoreAttribute.cs" />
+    <Compile Include="..\Gremlinq\IGremlinqContextFactory.cs" Link="IGremlinqContextFactory.cs" />
+    <Compile Include="..\Gremlinq\IProxyFactory.cs" Link="IProxyFactory.cs" />
+    <Compile Include="..\Gremlinq\IQuery.cs" Link="IQuery.cs" />
+    <Compile Include="..\Gremlinq\ITypeProvider.cs" Link="ITypeProvider.cs" />
+    <Compile Include="..\Gremlinq\IVertex.cs" Link="IVertex.cs" />
+    <Compile Include="..\Gremlinq\Query.cs" Link="Query.cs" />
+    <Compile Include="..\Gremlinq\RelationAccessors\EdgeRelationAccessor.cs" Link="RelationAccessors\EdgeRelationAccessor.cs" />
+    <Compile Include="..\Gremlinq\RelationAccessors\EdgeVertexPairRelationAccessor.cs" Link="RelationAccessors\EdgeVertexPairRelationAccessor.cs" />
+    <Compile Include="..\Gremlinq\RelationAccessors\EdgeVertexRelationAccessor.cs" Link="RelationAccessors\EdgeVertexRelationAccessor.cs" />
+    <Compile Include="..\Gremlinq\RelationAccessors\EdgeVertexRelationCollection.cs" Link="RelationAccessors\EdgeVertexRelationCollection.cs" />
+    <Compile Include="..\Gremlinq\RelationAccessors\ElementPropertyGetterBehavior.cs" Link="RelationAccessors\ElementPropertyGetterBehavior.cs" />
+    <Compile Include="..\Gremlinq\RelationAccessors\RelationAccessor.cs" Link="RelationAccessors\RelationAccessor.cs" />
+    <Compile Include="..\Gremlinq\RelationAccessors\VertexRelationAccessor.cs" Link="RelationAccessors\VertexRelationAccessor.cs" />
+    <Compile Include="..\Gremlinq\RelationAccessors\VertexRelationCollection.cs" Link="RelationAccessors\VertexRelationCollection.cs" />
+    <Compile Include="..\Gremlinq\RelationAttribute.cs" Link="RelationAttribute.cs" />
+    <Compile Include="..\Gremlinq\StaticGremlinqContextFactory.cs" Link="StaticGremlinqContextFactory.cs" />
+    <Compile Include="..\Gremlinq\Vertex.cs" Link="Vertex.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Blueprints-.NETSTANDARD\Blueprints.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="Contracts\" />
+    <Folder Include="RelationAccessors\" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Castle.Core" Version="4.3.1" />
+  </ItemGroup>
+
+</Project>

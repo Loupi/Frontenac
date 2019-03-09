@@ -1,5 +1,5 @@
-﻿using System.Collections.Generic;
-using System.Diagnostics.Contracts;
+﻿using System;
+using System.Collections.Generic;
 using System.IO;
 
 namespace Frontenac.Blueprints.Util.IO.GML
@@ -18,8 +18,10 @@ namespace Frontenac.Blueprints.Util.IO.GML
         public GmlParser(IGraph graph, string defaultEdgeLabel, string vertexIdKey, string edgeIdKey,
                          string edgeLabelKey)
         {
-            Contract.Requires(graph != null);
-            Contract.Requires(!string.IsNullOrWhiteSpace(defaultEdgeLabel));
+            if (graph == null)
+                throw new ArgumentNullException(nameof(graph));
+            if (string.IsNullOrWhiteSpace(defaultEdgeLabel))
+                throw new ArgumentNullException(nameof(defaultEdgeLabel));
 
             _graph = graph;
             _vertexIdKey = vertexIdKey;
@@ -30,7 +32,8 @@ namespace Frontenac.Blueprints.Util.IO.GML
 
         public void Parse(StreamTokenizer st)
         {
-            Contract.Requires(st != null);
+            if (st == null)
+                throw new ArgumentNullException(nameof(st));
 
             while (HasNext(st))
             {
@@ -49,7 +52,8 @@ namespace Frontenac.Blueprints.Util.IO.GML
 
         private void ParseGraph(StreamTokenizer st)
         {
-            Contract.Requires(st != null);
+            if (st == null)
+                throw new ArgumentNullException(nameof(st));
 
             CheckValid(st, GmlTokens.Graph);
             while (HasNext(st))
@@ -80,7 +84,8 @@ namespace Frontenac.Blueprints.Util.IO.GML
 
         private void AddNode(IDictionary<string, object> map)
         {
-            Contract.Requires(map != null);
+            if (map == null)
+                throw new ArgumentNullException(nameof(map));
 
             var id = map.JavaRemove(GmlTokens.Id);
             if (id == null)
@@ -91,7 +96,8 @@ namespace Frontenac.Blueprints.Util.IO.GML
 
         private IVertex CreateVertex(IDictionary<string, object> map, object id)
         {
-            Contract.Requires(map != null);
+            if (map == null)
+                throw new ArgumentNullException(nameof(map));
 
             var vertexId = id;
             if (_vertexIdKey != null)
@@ -106,7 +112,8 @@ namespace Frontenac.Blueprints.Util.IO.GML
 
         private void AddEdge(IDictionary<string, object> map)
         {
-            Contract.Requires(map != null);
+            if (map == null)
+                throw new ArgumentNullException(nameof(map));
 
             var source = map.JavaRemove(GmlTokens.Source);
             var target = map.JavaRemove(GmlTokens.Target);
@@ -173,8 +180,11 @@ namespace Frontenac.Blueprints.Util.IO.GML
 
         private static void AddProperties(IElement element, IEnumerable<KeyValuePair<string, object>> map)
         {
-            Contract.Requires(element != null);
-            Contract.Requires(map != null);
+            if (element == null)
+                throw new ArgumentNullException(nameof(element));
+
+            if (map == null)
+                throw new ArgumentNullException(nameof(map));
 
             foreach (var entry in map)
                 element.SetProperty(entry.Key, entry.Value);
@@ -182,9 +192,11 @@ namespace Frontenac.Blueprints.Util.IO.GML
 
         private object ParseValue(string key, StreamTokenizer st)
         {
-            Contract.Requires(!string.IsNullOrWhiteSpace(key));
-            Contract.Requires(st != null);
-            Contract.Ensures(Contract.Result<object>() != null);
+            if (string.IsNullOrWhiteSpace(key))
+                throw new ArgumentNullException(nameof(key));
+
+            if (st == null)
+                throw new ArgumentNullException(nameof(st));
 
             while (HasNext(st))
             {
@@ -210,7 +222,8 @@ namespace Frontenac.Blueprints.Util.IO.GML
 
         private static bool ParseBoolean(StreamTokenizer st)
         {
-            Contract.Requires(st != null);
+            if (st == null)
+                throw new ArgumentNullException(nameof(st));
 
             while (HasNext(st))
             {
@@ -226,25 +239,26 @@ namespace Frontenac.Blueprints.Util.IO.GML
 
         private IDictionary<string, object> ParseNode(StreamTokenizer st)
         {
-            Contract.Requires(st != null);
-            Contract.Ensures(Contract.Result<IDictionary<string, object>>() != null);
+            if (st == null)
+                throw new ArgumentNullException(nameof(st));
 
             return ParseElement(st, GmlTokens.Node);
         }
 
         private IDictionary<string, object> ParseEdge(StreamTokenizer st)
         {
-            Contract.Requires(st != null);
-            Contract.Ensures(Contract.Result<IDictionary<string, object>>() != null);
+            if (st == null)
+                throw new ArgumentNullException(nameof(st));
 
             return ParseElement(st, GmlTokens.Edge);
         }
 
         private IDictionary<string, object> ParseElement(StreamTokenizer st, string node)
         {
-            Contract.Requires(st != null);
-            Contract.Requires(!string.IsNullOrWhiteSpace(node));
-            Contract.Ensures(Contract.Result<IDictionary<string, object>>() != null);
+            if (st == null)
+                throw new ArgumentNullException(nameof(st));
+            if (string.IsNullOrWhiteSpace(node))
+                throw new ArgumentNullException(nameof(node));
 
             CheckValid(st, node);
             return ParseMap(node, st);
@@ -252,9 +266,10 @@ namespace Frontenac.Blueprints.Util.IO.GML
 
         private IDictionary<string, object> ParseMap(string node, StreamTokenizer st)
         {
-            Contract.Requires(!string.IsNullOrWhiteSpace(node));
-            Contract.Requires(st != null);
-            Contract.Ensures(Contract.Result<IDictionary<string, object>>() != null);
+            if (string.IsNullOrWhiteSpace(node))
+                throw new ArgumentNullException(nameof(node));
+            if (st == null)
+                throw new ArgumentNullException(nameof(st));
 
             var map = new Dictionary<string, object>();
             while (HasNext(st))
@@ -272,8 +287,10 @@ namespace Frontenac.Blueprints.Util.IO.GML
 
         private static void CheckValid(StreamTokenizer st, string token)
         {
-            Contract.Requires(st != null);
-            Contract.Requires(token != null);
+            if (st == null)
+                throw new ArgumentNullException(nameof(st));
+            if (token == null)
+                throw new ArgumentNullException(nameof(token));
 
             if (st.NextToken() != '[')
                 throw new IOException(string.Concat(token, " not followed by ["));
@@ -281,7 +298,8 @@ namespace Frontenac.Blueprints.Util.IO.GML
 
         private static bool HasNext(StreamTokenizer st)
         {
-            Contract.Requires(st != null);
+            if (st == null)
+                throw new ArgumentNullException(nameof(st));
 
             return st.NextToken() != StreamTokenizer.TtEof;
         }

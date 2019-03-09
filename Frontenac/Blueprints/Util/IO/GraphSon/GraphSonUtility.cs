@@ -1,6 +1,6 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
-using System.Diagnostics.Contracts;
 using System.Globalization;
 using System.IO;
 using System.Linq;
@@ -50,7 +50,8 @@ namespace Frontenac.Blueprints.Util.IO.GraphSON
 
         public GraphSonUtility(GraphSonMode mode, IElementFactory factory, ElementPropertyConfig config)
         {
-            Contract.Requires(config != null);
+            if (config == null)
+                throw new ArgumentNullException(nameof(config));
 
             _vertexPropertyKeys = config.VertexPropertyKeys;
             _edgePropertyKeys = config.EdgePropertyKeys;
@@ -83,8 +84,8 @@ namespace Frontenac.Blueprints.Util.IO.GraphSON
         /// </summary>
         public IVertex VertexFromJson(string json)
         {
-            Contract.Requires(json != null);
-            Contract.Ensures(Contract.Result<IVertex>() != null);
+            if (json == null)
+                throw new ArgumentNullException(nameof(json));
 
             var node = (JObject) JsonConvert.DeserializeObject(json);
             return VertexFromJson(node);
@@ -95,8 +96,8 @@ namespace Frontenac.Blueprints.Util.IO.GraphSON
         /// </summary>
         public IVertex VertexFromJson(Stream json)
         {
-            Contract.Requires(json != null);
-            Contract.Ensures(Contract.Result<IVertex>() != null);
+            if (json == null)
+                throw new ArgumentNullException(nameof(json));
 
             using (var reader = new StreamReader(json))
             {
@@ -110,8 +111,8 @@ namespace Frontenac.Blueprints.Util.IO.GraphSON
         /// </summary>
         public IVertex VertexFromJson(JObject json)
         {
-            Contract.Requires(json != null);
-            Contract.Ensures(Contract.Result<IVertex>() != null);
+            if (json == null)
+                throw new ArgumentNullException(nameof(json));
 
             var props = ReadProperties(json, true, _hasEmbeddedTypes);
 
@@ -132,10 +133,12 @@ namespace Frontenac.Blueprints.Util.IO.GraphSON
         /// </summary>
         public IEdge EdgeFromJson(string json, IVertex out_, IVertex in_)
         {
-            Contract.Requires(json != null);
-            Contract.Requires(out_ != null);
-            Contract.Requires(in_ != null);
-            Contract.Ensures(Contract.Result<IEdge>() != null);
+            if (json == null)
+                throw new ArgumentNullException(nameof(json));
+            if (out_ == null)
+                throw new ArgumentNullException(nameof(out_));
+            if (in_ == null)
+                throw new ArgumentNullException(nameof(in_));
 
             var node = (JObject) JsonConvert.DeserializeObject(json);
             return EdgeFromJson(node, out_, in_);
@@ -143,10 +146,12 @@ namespace Frontenac.Blueprints.Util.IO.GraphSON
 
         public IEdge EdgeFromJson(Stream json, IVertex out_, IVertex in_)
         {
-            Contract.Requires(json != null);
-            Contract.Requires(out_ != null);
-            Contract.Requires(in_ != null);
-            Contract.Ensures(Contract.Result<IEdge>() != null);
+            if (json == null)
+                throw new ArgumentNullException(nameof(json));
+            if (out_ == null)
+                throw new ArgumentNullException(nameof(out_));
+            if (in_ == null)
+                throw new ArgumentNullException(nameof(in_));
 
             using (var reader = new StreamReader(json))
             {
@@ -160,10 +165,12 @@ namespace Frontenac.Blueprints.Util.IO.GraphSON
         /// </summary>
         public IEdge EdgeFromJson(JObject json, IVertex out_, IVertex in_)
         {
-            Contract.Requires(json != null);
-            Contract.Requires(out_ != null);
-            Contract.Requires(in_ != null);
-            Contract.Ensures(Contract.Result<IEdge>() != null);
+            if (json == null)
+                throw new ArgumentNullException(nameof(json));
+            if (out_ == null)
+                throw new ArgumentNullException(nameof(out_));
+            if (in_ == null)
+                throw new ArgumentNullException(nameof(in_));
 
             var props = ReadProperties(json, true, _hasEmbeddedTypes);
             var edgeId = GetTypedValueFromJsonNode(json[GraphSonTokens.Id]);
@@ -184,8 +191,8 @@ namespace Frontenac.Blueprints.Util.IO.GraphSON
         /// </summary>
         public JObject JsonFromElement(IElement element)
         {
-            Contract.Requires(element != null);
-            Contract.Ensures(Contract.Result<JObject>() != null);
+            if (element == null)
+                throw new ArgumentNullException(nameof(element));
 
             var isEdge = element is IEdge;
             var showTypes = _mode == GraphSonMode.EXTENDED;
@@ -244,9 +251,10 @@ namespace Frontenac.Blueprints.Util.IO.GraphSON
         public static IVertex VertexFromJson(string json, IElementFactory factory, GraphSonMode mode,
                                              IEnumerable<string> propertyKeys)
         {
-            Contract.Requires(json != null);
-            Contract.Requires(factory != null);
-            Contract.Ensures(Contract.Result<IVertex>() != null);
+            if (json == null)
+                throw new ArgumentNullException(nameof(json));
+            if (factory == null)
+                throw new ArgumentNullException(nameof(factory));
 
             var graphson = new GraphSonUtility(mode, factory, propertyKeys, null);
             return graphson.VertexFromJson(json);
@@ -262,9 +270,10 @@ namespace Frontenac.Blueprints.Util.IO.GraphSON
         public static IVertex VertexFromJson(Stream json, IElementFactory factory, GraphSonMode mode,
                                              IEnumerable<string> propertyKeys)
         {
-            Contract.Requires(json != null);
-            Contract.Requires(factory != null);
-            Contract.Ensures(Contract.Result<IVertex>() != null);
+            if (json == null)
+                throw new ArgumentNullException(nameof(json));
+            if (factory == null)
+                throw new ArgumentNullException(nameof(factory));
 
             var graphson = new GraphSonUtility(mode, factory, propertyKeys, null);
             return graphson.VertexFromJson(json);
@@ -280,9 +289,10 @@ namespace Frontenac.Blueprints.Util.IO.GraphSON
         public static IVertex VertexFromJson(JObject json, IElementFactory factory, GraphSonMode mode,
                                              IEnumerable<string> propertyKeys)
         {
-            Contract.Requires(json != null);
-            Contract.Requires(factory != null);
-            Contract.Ensures(Contract.Result<IVertex>() != null);
+            if (json == null)
+                throw new ArgumentNullException(nameof(json));
+            if (factory == null)
+                throw new ArgumentNullException(nameof(factory));
 
             var graphson = new GraphSonUtility(mode, factory, propertyKeys, null);
             return graphson.VertexFromJson(json);
@@ -301,11 +311,14 @@ namespace Frontenac.Blueprints.Util.IO.GraphSON
                                          IElementFactory factory, GraphSonMode mode,
                                          IEnumerable<string> propertyKeys)
         {
-            Contract.Requires(json != null);
-            Contract.Requires(out_ != null);
-            Contract.Requires(in_ != null);
-            Contract.Requires(factory != null);
-            Contract.Ensures(Contract.Result<IEdge>() != null);
+            if (json == null)
+                throw new ArgumentNullException(nameof(json));
+            if (out_ == null)
+                throw new ArgumentNullException(nameof(out_));
+            if (in_ == null)
+                throw new ArgumentNullException(nameof(in_));
+            if (factory == null)
+                throw new ArgumentNullException(nameof(factory));
 
             var graphson = new GraphSonUtility(mode, factory, null, propertyKeys);
             return graphson.EdgeFromJson(json, out_, in_);
@@ -324,11 +337,14 @@ namespace Frontenac.Blueprints.Util.IO.GraphSON
                                          IElementFactory factory, GraphSonMode mode,
                                          IEnumerable<string> propertyKeys)
         {
-            Contract.Requires(json != null);
-            Contract.Requires(out_ != null);
-            Contract.Requires(in_ != null);
-            Contract.Requires(factory != null);
-            Contract.Ensures(Contract.Result<IEdge>() != null);
+            if (json == null)
+                throw new ArgumentNullException(nameof(json));
+            if (out_ == null)
+                throw new ArgumentNullException(nameof(out_));
+            if (in_ == null)
+                throw new ArgumentNullException(nameof(in_));
+            if (factory == null)
+                throw new ArgumentNullException(nameof(factory));
 
             var graphson = new GraphSonUtility(mode, factory, null, propertyKeys);
             return graphson.EdgeFromJson(json, out_, in_);
@@ -347,11 +363,14 @@ namespace Frontenac.Blueprints.Util.IO.GraphSON
                                          IElementFactory factory, GraphSonMode mode,
                                          IEnumerable<string> propertyKeys)
         {
-            Contract.Requires(json != null);
-            Contract.Requires(out_ != null);
-            Contract.Requires(in_ != null);
-            Contract.Requires(factory != null);
-            Contract.Ensures(Contract.Result<IEdge>() != null);
+            if (json == null)
+                throw new ArgumentNullException(nameof(json));
+            if (out_ == null)
+                throw new ArgumentNullException(nameof(out_));
+            if (in_ == null)
+                throw new ArgumentNullException(nameof(in_));
+            if (factory == null)
+                throw new ArgumentNullException(nameof(factory));
 
             var graphson = new GraphSonUtility(mode, factory, null, propertyKeys);
             return graphson.EdgeFromJson(json, out_, in_);
@@ -365,8 +384,8 @@ namespace Frontenac.Blueprints.Util.IO.GraphSON
         /// <param name="mode">The type of GraphSON to generate.</param>
         public static JObject JsonFromElement(IElement element, IEnumerable<string> propertyKeys, GraphSonMode mode)
         {
-            Contract.Requires(element != null);
-            Contract.Ensures(Contract.Result<JObject>() != null);
+            if (element == null)
+                throw new ArgumentNullException(nameof(element));
 
             var graphson = element is IEdge
                                ? new GraphSonUtility(mode, null, null, propertyKeys)
@@ -377,8 +396,8 @@ namespace Frontenac.Blueprints.Util.IO.GraphSON
         private static IDictionary<string, object> ReadProperties(IEnumerable<KeyValuePair<string, JToken>> node,
                                                                   bool ignoreReservedKeys, bool hasEmbeddedTypes)
         {
-            Contract.Requires(node != null);
-            Contract.Ensures(Contract.Result<IDictionary<string, object>>() != null);
+            if (node == null)
+                throw new ArgumentNullException(nameof(node));
 
             return node.Where(entry => !ignoreReservedKeys || !IsReservedKey(entry.Key))
                        .ToDictionary(entry => entry.Key, entry => ReadProperty(entry.Value, hasEmbeddedTypes));
@@ -387,7 +406,8 @@ namespace Frontenac.Blueprints.Util.IO.GraphSON
         private static bool IncludeReservedKey(GraphSonMode mode, string key, IEnumerable<string> propertyKeys,
                                                ElementPropertyConfig.ElementPropertiesRule rule)
         {
-            Contract.Requires(!string.IsNullOrWhiteSpace(key));
+            if (string.IsNullOrWhiteSpace(key))
+                throw new ArgumentNullException(nameof(key));
 
             // the key is always included in modes other than COMPACT. if it is COMPACT, then validate that the
             // key is in the property key list
@@ -397,7 +417,8 @@ namespace Frontenac.Blueprints.Util.IO.GraphSON
         private static bool IncludeKey(string key, IEnumerable<string> propertyKeys,
                                        ElementPropertyConfig.ElementPropertiesRule rule)
         {
-            Contract.Requires((propertyKeys != null || !(string.IsNullOrWhiteSpace(key))) || string.IsNullOrEmpty(key));
+            if(!((propertyKeys != null || !(string.IsNullOrWhiteSpace(key))) || string.IsNullOrEmpty(key)))
+                throw new ArgumentException("Invalid argument combination");
 
             if (propertyKeys == null)
             {
@@ -430,7 +451,8 @@ namespace Frontenac.Blueprints.Util.IO.GraphSON
 
         private static object ReadProperty(JToken node, bool hasEmbeddedTypes)
         {
-            Contract.Requires(node != null);
+            if (node == null)
+                throw new ArgumentNullException(nameof(node));
 
             object propertyValue = null;
 
@@ -511,16 +533,16 @@ namespace Frontenac.Blueprints.Util.IO.GraphSON
 
         private static IEnumerable ReadProperties(IEnumerable<JToken> listOfNodes, bool hasEmbeddedTypes)
         {
-            Contract.Requires(listOfNodes != null);
-            Contract.Ensures(Contract.Result<IEnumerable>() != null);
+            if (listOfNodes == null)
+                throw new ArgumentNullException(nameof(listOfNodes));
 
             return listOfNodes.Select(t => ReadProperty(t, hasEmbeddedTypes)).ToArray();
         }
 
         private static JArray CreateJsonList(IEnumerable list, IEnumerable<string> propertyKeys, bool showTypes)
         {
-            Contract.Requires(list != null);
-            Contract.Ensures(Contract.Result<JArray>() != null);
+            if (list == null)
+                throw new ArgumentNullException(nameof(list));
 
             var jsonList = new JArray();
             foreach (var item in list)
@@ -542,8 +564,8 @@ namespace Frontenac.Blueprints.Util.IO.GraphSON
 
         private static JObject CreateJsonMap(IDictionary map, IEnumerable<string> propertyKeys, bool showTypes)
         {
-            Contract.Requires(map != null);
-            Contract.Ensures(Contract.Result<JObject>() != null);
+            if (map == null)
+                throw new ArgumentNullException(nameof(map));
 
             var jsonMap = new JObject();
 
@@ -570,15 +592,18 @@ namespace Frontenac.Blueprints.Util.IO.GraphSON
 
         private static void AddObject(JContainer jsonList, object value)
         {
-            Contract.Requires(jsonList != null);
+            if (jsonList == null)
+                throw new ArgumentNullException(nameof(jsonList));
 
             jsonList.Add(value == null || value is JToken ? value : JToken.FromObject(value));
         }
 
         private static void PutObject(IDictionary<string, JToken> jsonMap, string key, object value)
         {
-            Contract.Requires(jsonMap != null);
-            Contract.Requires(!string.IsNullOrWhiteSpace(key));
+            if (jsonMap == null)
+                throw new ArgumentNullException(nameof(jsonMap));
+            if (string.IsNullOrWhiteSpace(key))
+                throw new ArgumentNullException(nameof(key));
 
             jsonMap.Put(key, (JToken) (value == null || value is JToken ? value : JToken.FromObject(value)));
         }
@@ -586,8 +611,8 @@ namespace Frontenac.Blueprints.Util.IO.GraphSON
         private static IDictionary CreatePropertyMap(IElement element, IEnumerable<string> propertyKeys,
                                                      ElementPropertyConfig.ElementPropertiesRule rule)
         {
-            Contract.Requires(element != null);
-            Contract.Ensures(Contract.Result<IDictionary>() != null);
+            if (element == null)
+                throw new ArgumentNullException(nameof(element));
 
             var map = new Dictionary<string, object>();
 

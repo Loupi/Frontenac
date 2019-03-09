@@ -1,12 +1,11 @@
-﻿using System.Collections.Generic;
-using System.Diagnostics.Contracts;
+﻿using System;
+using System.Collections.Generic;
 
 namespace Frontenac.Blueprints.Util.Wrappers.Event.Listener
 {
     /// <summary>
     ///     Base class for property changed events.
     /// </summary>
-    [ContractClass(typeof (VertexPropertyEventContract))]
     public abstract class VertexPropertyEvent : IEvent
     {
         private readonly string _key;
@@ -16,8 +15,10 @@ namespace Frontenac.Blueprints.Util.Wrappers.Event.Listener
 
         protected VertexPropertyEvent(IVertex vertex, string key, object oldValue, object newValue)
         {
-            Contract.Requires(vertex != null);
-            Contract.Requires(!string.IsNullOrWhiteSpace(key));
+            if (vertex == null)
+                throw new ArgumentNullException(nameof(vertex));
+            if (string.IsNullOrWhiteSpace(key))
+                throw new ArgumentNullException(nameof(key));
 
             _vertex = vertex;
             _key = key;
@@ -27,6 +28,8 @@ namespace Frontenac.Blueprints.Util.Wrappers.Event.Listener
 
         public void FireEvent(IEnumerator<IGraphChangedListener> eventListeners)
         {
+            EventContract.ValidateFireEvent(eventListeners);
+
             while (eventListeners.MoveNext())
             {
                 Fire(eventListeners.Current, _vertex, _key, _oldValue, _newValue);

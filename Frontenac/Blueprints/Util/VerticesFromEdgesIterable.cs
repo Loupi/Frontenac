@@ -1,6 +1,6 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
-using System.Diagnostics.Contracts;
 
 namespace Frontenac.Blueprints.Util
 {
@@ -15,7 +15,8 @@ namespace Frontenac.Blueprints.Util
 
         public VerticesFromEdgesIterable(IVertex vertex, Direction direction, params string[] labels)
         {
-            Contract.Requires(vertex != null);
+            if (vertex == null)
+                throw new ArgumentNullException(nameof(vertex));
 
             _direction = direction;
             _vertex = vertex;

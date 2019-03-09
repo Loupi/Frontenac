@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
-using System.Diagnostics.Contracts;
 
 namespace Frontenac.Blueprints.Util.Wrappers.Partition
 {
@@ -13,8 +12,10 @@ namespace Frontenac.Blueprints.Util.Wrappers.Partition
 
         public PartitionVertexIterable(IEnumerable<IVertex> iterable, PartitionGraph graph)
         {
-            Contract.Requires(iterable != null);
-            Contract.Requires(graph != null);
+            if (iterable == null)
+                throw new ArgumentNullException(nameof(iterable));
+            if (graph == null)
+                throw new ArgumentNullException(nameof(graph));
 
             _iterable = iterable;
             _graph = graph;
@@ -62,7 +63,8 @@ namespace Frontenac.Blueprints.Util.Wrappers.Partition
 
             public InnerPartitionVertexIterable(PartitionVertexIterable partitionVertexIterable)
             {
-                Contract.Requires(partitionVertexIterable != null);
+                if (partitionVertexIterable == null)
+                    throw new ArgumentNullException(nameof(partitionVertexIterable));
 
                 _partitionVertexIterable = partitionVertexIterable;
                 _itty = _partitionVertexIterable._iterable.GetEnumerator();

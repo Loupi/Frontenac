@@ -1,4 +1,5 @@
-﻿using System.Diagnostics.Contracts;
+﻿using System;
+using Frontenac.Blueprints.Contracts;
 
 namespace Frontenac.Blueprints.Util.Wrappers.ReadOnly
 {
@@ -9,14 +10,17 @@ namespace Frontenac.Blueprints.Util.Wrappers.ReadOnly
         public ReadOnlyEdge(ReadOnlyGraph innerTinkerGrapĥ, IEdge baseEdge)
             : base(innerTinkerGrapĥ, baseEdge)
         {
-            Contract.Requires(innerTinkerGrapĥ != null);
-            Contract.Requires(baseEdge != null);
+            if (innerTinkerGrapĥ == null)
+                throw new ArgumentNullException(nameof(innerTinkerGrapĥ));
+            if (baseEdge == null)
+                throw new ArgumentNullException(nameof(baseEdge));
 
             _baseEdge = baseEdge;
         }
 
         public IVertex GetVertex(Direction direction)
         {
+            EdgeContract.ValidateGetVertex(direction);
             return new ReadOnlyVertex(ReadOnlyInnerTinkerGrapĥ, _baseEdge.GetVertex(direction));
         }
 
@@ -24,7 +28,6 @@ namespace Frontenac.Blueprints.Util.Wrappers.ReadOnly
 
         public IEdge GetBaseEdge()
         {
-            Contract.Ensures(Contract.Result<IEdge>() != null);
             return _baseEdge;
         }
     }

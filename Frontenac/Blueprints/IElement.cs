@@ -1,7 +1,5 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
-using System.Diagnostics.Contracts;
-using Frontenac.Blueprints.Contracts;
 
 namespace Frontenac.Blueprints
 {
@@ -13,7 +11,6 @@ namespace Frontenac.Blueprints
     ///     Particular implementations can reduce the space of objects that can be used as values.
     ///     Typically, objects are C# primitives (e.g. string, long, int, boolean, etc.)
     /// </summary>
-    [ContractClass(typeof (ElementContract))]
 // ReSharper disable PossibleInterfaceMemberAmbiguity
     public interface IElement : IDictionary<string, object>, IDictionary
 // ReSharper restore PossibleInterfaceMemberAmbiguity

@@ -1,49 +1,30 @@
-﻿using System.Collections.Generic;
-using System.Diagnostics.Contracts;
-
+﻿using System;
 namespace Frontenac.Blueprints.Contracts
 {
-    [ContractClassFor(typeof (IQuery))]
-    public abstract class QueryContract : IQuery
+    public static class QueryContract
     {
-        public IQuery Has(string key, object value)
+        public static void ValidateHas(string key, object value)
         {
-            Contract.Requires(!string.IsNullOrWhiteSpace(key));
-            Contract.Ensures(Contract.Result<IQuery>() != null);
-            return null;
+            if (string.IsNullOrWhiteSpace(key))
+                throw new ArgumentNullException(nameof(key));
         }
 
-        public IQuery Has<T>(string key, Compare compare, T value)
+        public static void ValidateHas<T>(string key, Compare compare, T value)
         {
-            Contract.Requires(!string.IsNullOrWhiteSpace(key));
-            Contract.Ensures(Contract.Result<IQuery>() != null);
-            return null;
+            if (string.IsNullOrWhiteSpace(key))
+                throw new ArgumentNullException(nameof(key));
         }
 
-        public IQuery Interval<T>(string key, T startValue, T endValue)
+        public static void ValidateInterval<T>(string key, T startValue, T endValue)
         {
-            Contract.Requires(!string.IsNullOrWhiteSpace(key));
-            Contract.Ensures(Contract.Result<IQuery>() != null);
-            return null;
+            if (string.IsNullOrWhiteSpace(key))
+                throw new ArgumentNullException(nameof(key));
         }
 
-        public IEnumerable<IEdge> Edges()
+        public static void ValidateLimit(long max)
         {
-            Contract.Ensures(Contract.Result<IEnumerable<IEdge>>() != null);
-            return null;
-        }
-
-        public IEnumerable<IVertex> Vertices()
-        {
-            Contract.Ensures(Contract.Result<IEnumerable<IVertex>>() != null);
-            return null;
-        }
-
-        public IQuery Limit(long max)
-        {
-            Contract.Requires(max > 0);
-            Contract.Ensures(Contract.Result<IQuery>() != null);
-            return null;
+            if (max <= 0)
+                throw new ArgumentException("max must be greater than zero");
         }
     }
 }

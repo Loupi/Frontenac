@@ -1,5 +1,5 @@
-﻿using System.Collections.Generic;
-using System.Diagnostics.Contracts;
+﻿using System;
+using System.Collections.Generic;
 
 namespace Frontenac.Blueprints.Util.Wrappers.Event.Listener
 {
@@ -13,8 +13,10 @@ namespace Frontenac.Blueprints.Util.Wrappers.Event.Listener
 
         public EdgeRemovedEvent(IEdge edge, IDictionary<string, object> props)
         {
-            Contract.Requires(edge != null);
-            Contract.Requires(props != null);
+            if (edge == null)
+                throw new ArgumentNullException(nameof(edge));
+            if (props == null)
+                throw new ArgumentNullException(nameof(props));
 
             _edge = edge;
             _props = props;
@@ -22,6 +24,8 @@ namespace Frontenac.Blueprints.Util.Wrappers.Event.Listener
 
         public void FireEvent(IEnumerator<IGraphChangedListener> eventListeners)
         {
+            EventContract.ValidateFireEvent(eventListeners);
+
             while (eventListeners.MoveNext())
             {
                 eventListeners.Current.EdgeRemoved(_edge, _props);

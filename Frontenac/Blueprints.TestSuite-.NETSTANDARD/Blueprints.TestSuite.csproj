@@ -1,0 +1,67 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>netstandard2.0</TargetFramework>
+    <RootNamespace>Frontenac.Blueprints.TestSuite</RootNamespace>
+    <AssemblyName>Frontenac.Blueprints.TestSuite</AssemblyName>
+    <SignAssembly>true</SignAssembly>
+    <AssemblyOriginatorKeyFile>key.snk</AssemblyOriginatorKeyFile>
+    <Version>2.5.0.0</Version>
+    <Authors>Louis-Pierre Beaumont</Authors>
+    <Company>Frontenac</Company>
+    <Description>A .NET port of the Tinkerpop Stack. Blueprints TestSuite provides a standard testsuite for the graph libraries that implement the Blueprints property graph model.</Description>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <Compile Include="..\Blueprints.TestSuite\BaseTest.cs" Link="BaseTest.cs" />
+    <Compile Include="..\Blueprints.TestSuite\EdgeTestSuite.cs" Link="EdgeTestSuite.cs" />
+    <Compile Include="..\Blueprints.TestSuite\GraphTestSuite.cs" Link="GraphTestSuite.cs" />
+    <Compile Include="..\Blueprints.TestSuite\Impls\GraphTest.cs" Link="Impls\GraphTest.cs" />
+    <Compile Include="..\Blueprints.TestSuite\IndexableGraphTestSuite.cs" Link="IndexableGraphTestSuite.cs" />
+    <Compile Include="..\Blueprints.TestSuite\IndexTestSuite.cs" Link="IndexTestSuite.cs" />
+    <Compile Include="..\Blueprints.TestSuite\KeyIndexableGraphTestSuite.cs" Link="KeyIndexableGraphTestSuite.cs" />
+    <Compile Include="..\Blueprints.TestSuite\QueryTestSuite.cs" Link="QueryTestSuite.cs" />
+    <Compile Include="..\Blueprints.TestSuite\StorageTestSuite.cs" Link="StorageTestSuite.cs" />
+    <Compile Include="..\Blueprints.TestSuite\TestSuite.cs" Link="TestSuite.cs" />
+    <Compile Include="..\Blueprints.TestSuite\TransactionalGraphTestSuite.cs" Link="TransactionalGraphTestSuite.cs" />
+    <Compile Include="..\Blueprints.TestSuite\Util\IO\GML\GMLReaderTestSuite.cs" Link="Util\IO\GML\GMLReaderTestSuite.cs" />
+    <Compile Include="..\Blueprints.TestSuite\Util\IO\GraphML\GraphMLReaderTestSuite.cs" Link="Util\IO\GraphML\GraphMLReaderTestSuite.cs" />
+    <Compile Include="..\Blueprints.TestSuite\Util\IO\GraphSON\GraphSONReaderTestSuite.cs" Link="Util\IO\GraphSON\GraphSONReaderTestSuite.cs" />
+    <Compile Include="..\Blueprints.TestSuite\Util\IO\MockSerializable.cs" Link="Util\IO\MockSerializable.cs" />
+    <Compile Include="..\Blueprints.TestSuite\VertexTestSuite.cs" Link="VertexTestSuite.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <EmbeddedResource Include="..\Blueprints.TestSuite\Util\IO\GraphSON\graph-example-1.json" Link="Util\IO\GraphSON\graph-example-1.json" />
+    <EmbeddedResource Include="..\Blueprints.TestSuite\Util\IO\GraphSON\graph-example-2.json" Link="Util\IO\GraphSON\graph-example-2.json" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <EmbeddedResource Include="..\Blueprints.TestSuite\Util\IO\GraphML\graph-example-1.xml" Link="Util\IO\GraphML\graph-example-1.xml" />
+    <EmbeddedResource Include="..\Blueprints.TestSuite\Util\IO\GraphML\graph-example-2.xml" Link="Util\IO\GraphML\graph-example-2.xml" />
+    <EmbeddedResource Include="..\Blueprints.TestSuite\Util\IO\GraphML\graph-example-3.xml" Link="Util\IO\GraphML\graph-example-3.xml" />
+    <EmbeddedResource Include="..\Blueprints.TestSuite\Util\IO\GraphML\graph-example-4.xml" Link="Util\IO\GraphML\graph-example-4.xml" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="Impls\" />
+    <Folder Include="Util\IO\GML\" />
+    <Folder Include="Util\IO\GraphML\" />
+    <Folder Include="Util\IO\GraphSON\" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <EmbeddedResource Include="..\Blueprints.TestSuite\Util\IO\GML\graph-example-1.gml" Link="Util\IO\GML\graph-example-1.gml" />
+    <EmbeddedResource Include="..\Blueprints.TestSuite\Util\IO\GML\graph-example-2.gml" Link="Util\IO\GML\graph-example-2.gml" />
+    <EmbeddedResource Include="..\Blueprints.TestSuite\Util\IO\GML\graph-example-3.gml" Link="Util\IO\GML\graph-example-3.gml" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="NUnit" Version="3.11.0" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Blueprints-.NETSTANDARD\Blueprints.csproj" />
+  </ItemGroup>
+
+</Project>

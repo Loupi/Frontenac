@@ -1,5 +1,6 @@
-﻿using System.Diagnostics.Contracts;
+﻿using System;
 using Frontenac.Blueprints;
+using Frontenac.Blueprints.Contracts;
 using Frontenac.Blueprints.Util;
 
 namespace Frontenac.Grave
@@ -12,10 +13,14 @@ namespace Frontenac.Grave
         public GraveEdge(int id, IVertex outVertex, IVertex inVertex, string label, GraveGraph innerTinkerGrapĥ)
             : base(innerTinkerGrapĥ, id)
         {
-            Contract.Requires(outVertex != null);
-            Contract.Requires(inVertex != null);
-            Contract.Requires(!string.IsNullOrWhiteSpace(label));
-            Contract.Requires(innerTinkerGrapĥ != null);
+            if (outVertex == null)
+                throw new ArgumentNullException(nameof(outVertex));
+            if (inVertex == null)
+                throw new ArgumentNullException(nameof(inVertex));
+            if (string.IsNullOrWhiteSpace(label))
+                throw new ArgumentNullException(nameof(label));
+            if (innerTinkerGrapĥ == null)
+                throw new ArgumentNullException(nameof(innerTinkerGrapĥ));
 
             _outVertex = outVertex;
             _inVertex = inVertex;
@@ -29,6 +34,7 @@ namespace Frontenac.Grave
 
         public IVertex GetVertex(Direction direction)
         {
+            EdgeContract.ValidateGetVertex(direction);
             return direction == Direction.In ? _inVertex : _outVertex;
         }
 

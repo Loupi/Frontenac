@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
-using System.Diagnostics.Contracts;
 using System.Linq;
 
 namespace Frontenac.Blueprints.Util.Wrappers.ReadOnly
@@ -14,8 +13,10 @@ namespace Frontenac.Blueprints.Util.Wrappers.ReadOnly
 
         public ReadOnlyVertexIterable(ReadOnlyGraph graph, IEnumerable<IVertex> iterable)
         {
-            Contract.Requires(graph != null);
-            Contract.Requires(iterable != null);
+            if (graph == null)
+                throw new ArgumentNullException(nameof(graph));
+            if (iterable == null)
+                throw new ArgumentNullException(nameof(iterable));
 
             _graph = graph;
             _iterable = iterable;

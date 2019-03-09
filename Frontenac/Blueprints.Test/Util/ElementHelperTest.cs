@@ -150,10 +150,7 @@ namespace Frontenac.Blueprints.Util
             }
             catch (Exception x)
             {
-                if (x.GetType().FullName != Blueprints.GraphHelpers.ContractExceptionName)
-                {
-                    throw;
-                }
+
             }
         }
 

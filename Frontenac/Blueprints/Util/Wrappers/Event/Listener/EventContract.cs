@@ -1,14 +1,14 @@
-﻿using System.Collections.Generic;
-using System.Diagnostics.Contracts;
+﻿using System;
+using System.Collections.Generic;
 
 namespace Frontenac.Blueprints.Util.Wrappers.Event.Listener
 {
-    [ContractClassFor(typeof (IEvent))]
-    public abstract class EventContract : IEvent
+    public static class EventContract
     {
-        public void FireEvent(IEnumerator<IGraphChangedListener> eventListeners)
+        public static void ValidateFireEvent(IEnumerator<IGraphChangedListener> eventListeners)
         {
-            Contract.Requires(eventListeners != null);
+            if (eventListeners == null)
+                throw new ArgumentNullException(nameof(eventListeners));
         }
     }
 }

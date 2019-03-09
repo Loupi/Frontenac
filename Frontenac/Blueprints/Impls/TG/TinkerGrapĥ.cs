@@ -1,10 +1,10 @@
 ﻿using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
-using System.Diagnostics.Contracts;
 using System.Globalization;
 using System.IO;
 using System.Linq;
+using Frontenac.Blueprints.Contracts;
 using Frontenac.Blueprints.Util;
 
 namespace Frontenac.Blueprints.Impls.TG
@@ -79,7 +79,8 @@ namespace Frontenac.Blueprints.Impls.TG
 
         public TinkerGrapĥ(string directory, FileType fileType)
         {
-            Contract.Requires(!string.IsNullOrWhiteSpace(directory));
+            if (string.IsNullOrWhiteSpace(directory))
+                throw new ArgumentNullException(nameof(directory));
 
             VertexKeyIndex = new TinkerKeyIndex(typeof (TinkerVertex), this);
             EdgeKeyIndex = new TinkerKeyIndex(typeof (TinkerEdge), this);
@@ -118,6 +119,7 @@ namespace Frontenac.Blueprints.Impls.TG
 
         public virtual IEnumerable<IVertex> GetVertices(string key, object value)
         {
+            GraphContract.ValidateGetVertices(key, value);
             return VertexKeyIndex.GetIndexedKeys().Contains(key)
                        ? VertexKeyIndex.Get(key, value).Cast<IVertex>()
                        : new PropertyFilteredIterable<IVertex>(key, value, GetVertices());
@@ -125,6 +127,7 @@ namespace Frontenac.Blueprints.Impls.TG
 
         public virtual IEnumerable<IEdge> GetEdges(string key, object value)
         {
+            GraphContract.ValidateGetEdges(key, value);
             if (EdgeKeyIndex.GetIndexedKeys().Contains(key))
                 return EdgeKeyIndex.Get(key, value).Cast<IEdge>();
             return new PropertyFilteredIterable<IEdge>(key, value, GetEdges());
@@ -132,6 +135,8 @@ namespace Frontenac.Blueprints.Impls.TG
 
         public virtual IIndex CreateIndex(string indexName, Type indexClass, params Parameter[] indexParameters)
         {
+            IndexableGraphContract.ValidateCreateIndex(indexName, indexClass, indexParameters);
+
             if (Indices.ContainsKey(indexName))
                 throw ExceptionFactory.IndexAlreadyExists(indexName);
 
@@ -142,6 +147,8 @@ namespace Frontenac.Blueprints.Impls.TG
 
         public virtual IIndex GetIndex(string indexName, Type indexClass)
         {
+            IndexableGraphContract.ValidateGetIndex(indexName, indexClass);
+
             var index = Indices.Get(indexName);
             if (null == index)
                 return null;
@@ -157,6 +164,8 @@ namespace Frontenac.Blueprints.Impls.TG
 
         public virtual void DropIndex(string indexName)
         {
+            IndexableGraphContract.ValidateDropIndex(indexName);
+
             TinkerIndex value;
             Indices.TryRemove(indexName, out value);
         }
@@ -191,12 +200,14 @@ namespace Frontenac.Blueprints.Impls.TG
 
         public virtual IVertex GetVertex(object id)
         {
+            GraphContract.ValidateGetVertex(id);
             var idString = id.ToString();
             return InnerVertices.Get(idString);
         }
 
         public virtual IEdge GetEdge(object id)
         {
+            GraphContract.ValidateGetEdge(id);
             var idString = id.ToString();
             return Edges.Get(idString);
         }
@@ -213,6 +224,8 @@ namespace Frontenac.Blueprints.Impls.TG
 
         public virtual void RemoveVertex(IVertex vertex)
         {
+            GraphContract.ValidateRemoveVertex(vertex);
+
             foreach (var edge in vertex.GetEdges(Direction.Both))
                 RemoveEdge(edge);
 
@@ -228,6 +241,8 @@ namespace Frontenac.Blueprints.Impls.TG
 
         public virtual IEdge AddEdge(object id, IVertex outVertex, IVertex inVertex, string label)
         {
+            GraphContract.ValidateAddEdge(id, outVertex, inVertex, label);
+
             string idString = null;
             IEdge edge;
             if (null != id)
@@ -262,6 +277,8 @@ namespace Frontenac.Blueprints.Impls.TG
 
         public virtual void RemoveEdge(IEdge edge)
         {
+            GraphContract.ValidateRemoveEdge(edge);
+
             var outVertex = (TinkerVertex) edge.GetVertex(Direction.Out);
             var inVertex = (TinkerVertex) edge.GetVertex(Direction.In);
             IEdge removedEdge;
@@ -308,6 +325,8 @@ namespace Frontenac.Blueprints.Impls.TG
 
         public virtual void CreateKeyIndex(string key, Type elementClass, params Parameter[] indexParameters)
         {
+            KeyIndexableGraphContract.ValidateCreateKeyIndex(key, elementClass, indexParameters);
+
             if (typeof (IVertex).IsAssignableFrom(elementClass))
                 VertexKeyIndex.CreateKeyIndex(key);
             else
@@ -316,6 +335,8 @@ namespace Frontenac.Blueprints.Impls.TG
 
         public virtual void DropKeyIndex(string key, Type elementClass)
         {
+            KeyIndexableGraphContract.ValidateDropKeyIndex(key, elementClass);
+
             if (typeof (IVertex).IsAssignableFrom(elementClass))
                 VertexKeyIndex.DropKeyIndex(key);
             else
@@ -324,6 +345,8 @@ namespace Frontenac.Blueprints.Impls.TG
 
         public virtual IEnumerable<string> GetIndexedKeys(Type elementClass)
         {
+            KeyIndexableGraphContract.ValidateGetIndexedKeys(elementClass);
+
             return typeof (IVertex).IsAssignableFrom(elementClass)
                        ? VertexKeyIndex.GetIndexedKeys()
                        : EdgeKeyIndex.GetIndexedKeys();
@@ -356,8 +379,6 @@ namespace Frontenac.Blueprints.Impls.TG
 
         private string GetNextId()
         {
-            Contract.Ensures(Contract.Result<string>() != null);
-
             string idString;
             while (true)
             {
@@ -378,16 +399,21 @@ namespace Frontenac.Blueprints.Impls.TG
             public TinkerKeyIndex(Type indexClass, TinkerGrapĥ tinkerGrapĥ)
                 : base(null, indexClass)
             {
-                Contract.Requires(indexClass != null);
-                Contract.Requires(tinkerGrapĥ != null);
+                if (indexClass == null)
+                    throw new ArgumentNullException(nameof(indexClass));
+                if (tinkerGrapĥ == null)
+                    throw new ArgumentNullException(nameof(tinkerGrapĥ));
 
                 _tinkerGrapĥ = tinkerGrapĥ;
             }
 
             public void AutoUpdate(string key, object newValue, object oldValue, TinkerElement element)
             {
-                Contract.Requires(!string.IsNullOrWhiteSpace(key));
-                Contract.Requires(element != null);
+                if (string.IsNullOrWhiteSpace(key))
+                    throw new ArgumentNullException(nameof(key));
+
+                if (element == null)
+                    throw new ArgumentNullException(nameof(element));
 
                 if (!_indexedKeys.Contains(key)) return;
                 if (oldValue != null)
@@ -397,8 +423,11 @@ namespace Frontenac.Blueprints.Impls.TG
 
             public void AutoRemove(string key, object oldValue, TinkerElement element)
             {
-                Contract.Requires(!string.IsNullOrWhiteSpace(key));
-                Contract.Requires(element != null);
+                if (string.IsNullOrWhiteSpace(key))
+                    throw new ArgumentNullException(nameof(key));
+
+                if (element == null)
+                    throw new ArgumentNullException(nameof(element));
 
                 if (_indexedKeys.Contains(key))
                     Remove(key, oldValue, element);
@@ -406,7 +435,8 @@ namespace Frontenac.Blueprints.Impls.TG
 
             public void CreateKeyIndex(string key)
             {
-                Contract.Requires(!string.IsNullOrWhiteSpace(key));
+                if (string.IsNullOrWhiteSpace(key))
+                    throw new ArgumentNullException(nameof(key));
 
                 if (_indexedKeys.Contains(key))
                     return;
@@ -421,7 +451,8 @@ namespace Frontenac.Blueprints.Impls.TG
 
             public void DropKeyIndex(string key)
             {
-                Contract.Requires(!string.IsNullOrWhiteSpace(key));
+                if (string.IsNullOrWhiteSpace(key))
+                    throw new ArgumentNullException(nameof(key));
 
                 if (!_indexedKeys.Contains(key))
                     return;
@@ -433,9 +464,7 @@ namespace Frontenac.Blueprints.Impls.TG
 
             public IEnumerable<string> GetIndexedKeys()
             {
-                Contract.Ensures(Contract.Result<IEnumerable<string>>() != null);
-
-                return _indexedKeys?.ToArray() ?? Enumerable.Empty<string>();
+                return null != _indexedKeys ? _indexedKeys.ToArray() : Enumerable.Empty<string>();
             }
         }
     }

@@ -1,5 +1,5 @@
-﻿using System.Collections.Generic;
-using System.Diagnostics.Contracts;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using Frontenac.Blueprints;
 using Frontenac.Blueprints.Util;
@@ -10,16 +10,16 @@ namespace Frontenac.Gremlinq
     {
         public static IDictionary<string, object> Map(this IElement element)
         {
-            Contract.Requires(element != null);
-            Contract.Ensures(Contract.Result<IDictionary<string, object>>() != null);
+            if (element == null)
+                throw new ArgumentNullException(nameof(element));
 
             return element.GetProperties().ToDictionary(t => t.Key, t => t.Value);
         }
 
         public static IEnumerable<IDictionary<string, object>> Map(this IEnumerable<IElement> elements)
         {
-            Contract.Requires(elements != null);
-            Contract.Ensures(Contract.Result<IEnumerable<IDictionary<string, object>>>() != null);
+            if (elements == null)
+                throw new ArgumentNullException(nameof(elements));
 
             return elements.Select(e => e.Map());
         }

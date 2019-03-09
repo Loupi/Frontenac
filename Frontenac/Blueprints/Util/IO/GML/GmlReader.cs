@@ -1,4 +1,4 @@
-﻿using System.Diagnostics.Contracts;
+﻿using System;
 using System.IO;
 using System.Linq;
 using System.Text;
@@ -32,7 +32,8 @@ namespace Frontenac.Blueprints.Util.IO.GML
         public GmlReader(IGraph graph)
             : this(graph, DefaultLabel)
         {
-            Contract.Requires(graph != null);
+            if (graph == null)
+                throw new ArgumentNullException(nameof(graph));
         }
 
         /// <summary>
@@ -42,8 +43,10 @@ namespace Frontenac.Blueprints.Util.IO.GML
         /// <param name="defaultEdgeLabel">the default edge label to be used if the GML edge does not define a label</param>
         public GmlReader(IGraph graph, string defaultEdgeLabel)
         {
-            Contract.Requires(graph != null);
-            Contract.Requires(!string.IsNullOrWhiteSpace(defaultEdgeLabel));
+            if (graph == null)
+                throw new ArgumentNullException(nameof(graph));
+            if (string.IsNullOrWhiteSpace(defaultEdgeLabel))
+                throw new ArgumentNullException(nameof(defaultEdgeLabel));
 
             _graph = graph;
             _defaultEdgeLabel = defaultEdgeLabel;
@@ -69,12 +72,12 @@ namespace Frontenac.Blueprints.Util.IO.GML
         {
             get
             {
-                Contract.Ensures(!string.IsNullOrWhiteSpace(Contract.Result<string>()));
                 return _edgeLabelKey;
             }
             set
             {
-                Contract.Requires(!string.IsNullOrWhiteSpace(value));
+                if (string.IsNullOrWhiteSpace(value))
+                    throw new ArgumentNullException(nameof(value));
                 _edgeLabelKey = value;
             }
         }
@@ -87,7 +90,8 @@ namespace Frontenac.Blueprints.Util.IO.GML
         /// <param name="inputStream"></param>
         public void InputGraph(Stream inputStream)
         {
-            Contract.Requires(inputStream != null);
+            if (inputStream == null)
+                throw new ArgumentNullException(nameof(inputStream));
 
             InputGraph(_graph, inputStream, DefaultBufferSize, _defaultEdgeLabel,
                        VertexIdKey, EdgeIdKey, EdgeLabelKey);
@@ -101,7 +105,8 @@ namespace Frontenac.Blueprints.Util.IO.GML
         /// <param name="filename"></param>
         public void InputGraph(string filename)
         {
-            Contract.Requires(!string.IsNullOrWhiteSpace(filename));
+            if (string.IsNullOrWhiteSpace(filename))
+                throw new ArgumentNullException(nameof(filename));
 
             InputGraph(_graph, filename, DefaultBufferSize, _defaultEdgeLabel,
                        VertexIdKey, EdgeIdKey, EdgeLabelKey);
@@ -116,8 +121,10 @@ namespace Frontenac.Blueprints.Util.IO.GML
         /// <param name="bufferSize"></param>
         public void InputGraph(Stream inputStream, int bufferSize)
         {
-            Contract.Requires(inputStream != null);
-            Contract.Requires(bufferSize > 0);
+            if (inputStream == null)
+                throw new ArgumentNullException(nameof(inputStream));
+            if (bufferSize <= 0)
+                throw new ArgumentException("bufferSize must be greater than zero");
 
             InputGraph(_graph, inputStream, bufferSize, _defaultEdgeLabel,
                        VertexIdKey, EdgeIdKey, EdgeLabelKey);
@@ -132,8 +139,10 @@ namespace Frontenac.Blueprints.Util.IO.GML
         /// <param name="bufferSize"></param>
         public void InputGraph(string filename, int bufferSize)
         {
-            Contract.Requires(!string.IsNullOrWhiteSpace(filename));
-            Contract.Requires(bufferSize > 0);
+            if (string.IsNullOrWhiteSpace(filename))
+                throw new ArgumentNullException(nameof(filename));
+            if (bufferSize <= 0)
+                throw new ArgumentException("bufferSize must be greater than zero");
 
             InputGraph(_graph, filename, bufferSize, _defaultEdgeLabel,
                        VertexIdKey, EdgeIdKey, EdgeLabelKey);
@@ -146,8 +155,10 @@ namespace Frontenac.Blueprints.Util.IO.GML
         /// <param name="filename">GML file</param>
         public static void InputGraph(IGraph graph, string filename)
         {
-            Contract.Requires(graph != null);
-            Contract.Requires(!string.IsNullOrWhiteSpace(filename));
+            if (graph == null)
+    throw new ArgumentNullException(nameof(graph));
+            if (string.IsNullOrWhiteSpace(filename))
+                throw new ArgumentNullException(nameof(filename));
 
             InputGraph(graph, filename, DefaultBufferSize, DefaultLabel, GmlTokens.BlueprintsId, GmlTokens.BlueprintsId,
                        null);
@@ -160,8 +171,10 @@ namespace Frontenac.Blueprints.Util.IO.GML
         /// <param name="inputStream">GML file</param>
         public static void InputGraph(IGraph graph, Stream inputStream)
         {
-            Contract.Requires(graph != null);
-            Contract.Requires(inputStream != null);
+            if (graph == null)
+                throw new ArgumentNullException(nameof(graph));
+            if (inputStream == null)
+                throw new ArgumentNullException(nameof(inputStream));
 
             InputGraph(graph, inputStream, DefaultBufferSize, DefaultLabel, GmlTokens.BlueprintsId,
                        GmlTokens.BlueprintsId, null);
@@ -181,10 +194,14 @@ namespace Frontenac.Blueprints.Util.IO.GML
                                       string defaultEdgeLabel, string vertexIdKey, string edgeIdKey,
                                       string edgeLabelKey)
         {
-            Contract.Requires(inputGraph != null);
-            Contract.Requires(!string.IsNullOrWhiteSpace(filename));
-            Contract.Requires(bufferSize > 0);
-            Contract.Requires(!string.IsNullOrWhiteSpace(defaultEdgeLabel));
+            if (inputGraph == null)
+                throw new ArgumentNullException(nameof(inputGraph));
+            if (string.IsNullOrWhiteSpace(filename))
+                throw new ArgumentNullException(nameof(filename));
+            if (bufferSize <= 0)
+                throw new ArgumentException("bufferSize must be greater than zero");
+            if (string.IsNullOrWhiteSpace(defaultEdgeLabel))
+                throw new ArgumentNullException(nameof(defaultEdgeLabel));
 
             using (var fis = File.OpenRead(filename))
             {
@@ -197,10 +214,14 @@ namespace Frontenac.Blueprints.Util.IO.GML
                                       string defaultEdgeLabel, string vertexIdKey, string edgeIdKey,
                                       string edgeLabelKey)
         {
-            Contract.Requires(inputGraph != null);
-            Contract.Requires(inputStream != null);
-            Contract.Requires(bufferSize > 0);
-            Contract.Requires(!string.IsNullOrWhiteSpace(defaultEdgeLabel));
+            if (inputGraph == null)
+                throw new ArgumentNullException(nameof(inputGraph));
+            if (inputStream == null)
+                throw new ArgumentNullException(nameof(inputStream));
+            if (bufferSize <= 0)
+                throw new ArgumentException("bufferSize must be greater than zero");
+            if (string.IsNullOrWhiteSpace(defaultEdgeLabel))
+                throw new ArgumentNullException(nameof(defaultEdgeLabel));
 
             var graph = BatchGraph.Wrap(inputGraph, bufferSize);
 

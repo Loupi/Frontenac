@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Diagnostics.Contracts;
 using Frontenac.Blueprints;
 
@@ -9,31 +10,35 @@ namespace Frontenac.Infrastructure.Indexing
     {
         public void CreateIndex(string indexName, Parameter[] parameters)
         {
-            Contract.Requires(!string.IsNullOrWhiteSpace(indexName));
+            if (string.IsNullOrWhiteSpace(indexName))
+                throw new ArgumentNullException(nameof(indexName));
         }
 
         public long DropIndex(string indexName)
         {
-            Contract.Requires(!string.IsNullOrWhiteSpace(indexName));
+            if (string.IsNullOrWhiteSpace(indexName))
+                throw new ArgumentNullException(nameof(indexName));
             return 0;
         }
 
         public IEnumerable<string> GetIndices()
         {
-            Contract.Ensures(Contract.Result<IEnumerable<string>>() != null);
             return null;
         }
 
         public bool HasIndex(string indexName)
         {
-            Contract.Requires(!string.IsNullOrWhiteSpace(indexName));
+            if (string.IsNullOrWhiteSpace(indexName))
+                throw new ArgumentNullException(nameof(indexName));
             return true;
         }
 
         public long Set(long id, string indexName, string key, object value)
         {
-            Contract.Requires(!string.IsNullOrWhiteSpace(indexName));
-            Contract.Requires(!string.IsNullOrWhiteSpace(key));
+            if (string.IsNullOrWhiteSpace(indexName))
+                throw new ArgumentNullException(nameof(indexName));
+            if (string.IsNullOrWhiteSpace(key))
+                throw new ArgumentNullException(nameof(key));
             return 0;
         }
 
@@ -44,18 +49,22 @@ namespace Frontenac.Infrastructure.Indexing
 
         public IEnumerable<long> Get(string term, object value, int hitsLimit = 1000)
         {
-            Contract.Requires(!string.IsNullOrWhiteSpace(term));
-            Contract.Requires(hitsLimit >= 0);
-            Contract.Ensures(Contract.Result<IEnumerable<long>>() != null);
+            if (string.IsNullOrWhiteSpace(term))
+                throw new ArgumentNullException(nameof(term));
+            if (hitsLimit < 0)
+                throw new ArgumentException("hitsLimit must be greater than or equal to zero");
             return null;
         }
 
         public IEnumerable<long> Get(string indexName, string key, object value, int hitsLimit = 1000)
         {
-            Contract.Requires(!string.IsNullOrWhiteSpace(indexName));
-            Contract.Requires(!string.IsNullOrWhiteSpace(key));
-            Contract.Requires(hitsLimit >= 0);
-            Contract.Ensures(Contract.Result<IEnumerable<long>>() != null);
+            if (string.IsNullOrWhiteSpace(indexName))
+                throw new ArgumentNullException(nameof(indexName));
+
+            if (string.IsNullOrWhiteSpace(key))
+                throw new ArgumentNullException(nameof(key));
+            if (hitsLimit < 0)
+                throw new ArgumentException("hitsLimit must be greater than or equal to zero");
             return null;
         }
 
@@ -66,7 +75,8 @@ namespace Frontenac.Infrastructure.Indexing
 
         public long DeleteIndex(string indexName)
         {
-            Contract.Requires(!string.IsNullOrWhiteSpace(indexName));
+            if (string.IsNullOrWhiteSpace(indexName))
+                throw new ArgumentNullException(nameof(indexName));
             return 0;
         }
 

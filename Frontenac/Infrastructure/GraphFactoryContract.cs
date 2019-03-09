@@ -1,4 +1,5 @@
-﻿using System.Diagnostics.Contracts;
+﻿using System;
+using System.Diagnostics.Contracts;
 using Frontenac.Blueprints;
 
 namespace Frontenac.Infrastructure
@@ -8,13 +9,13 @@ namespace Frontenac.Infrastructure
     {
         public TGraph Create<TGraph>() where TGraph : IGraph
         {
-            Contract.Ensures(Contract.Result<IGraph>() != null);
             return default(TGraph);
         }
 
         public void Destroy(IGraph graph)
         {
-            Contract.Requires(graph != null);
+            if (graph == null)
+                throw new ArgumentNullException(nameof(graph));
         }
 
         public void Dispose()

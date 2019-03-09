@@ -1,5 +1,5 @@
-﻿using System.Collections.Generic;
-using System.Diagnostics.Contracts;
+﻿using System;
+using System.Collections.Generic;
 
 namespace Frontenac.Blueprints.Util.Wrappers.Event.Listener
 {
@@ -9,13 +9,16 @@ namespace Frontenac.Blueprints.Util.Wrappers.Event.Listener
 
         public EdgeAddedEvent(IEdge edge)
         {
-            Contract.Requires(edge != null);
+            if (edge == null)
+                throw new ArgumentNullException(nameof(edge));
 
             _edge = edge;
         }
 
         public void FireEvent(IEnumerator<IGraphChangedListener> eventListeners)
         {
+            EventContract.ValidateFireEvent(eventListeners);
+
             while (eventListeners.MoveNext())
             {
                 eventListeners.Current.EdgeAdded(_edge);

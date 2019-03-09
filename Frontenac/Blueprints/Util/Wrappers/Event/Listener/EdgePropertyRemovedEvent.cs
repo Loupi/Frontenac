@@ -1,4 +1,4 @@
-﻿using System.Diagnostics.Contracts;
+﻿using System;
 
 namespace Frontenac.Blueprints.Util.Wrappers.Event.Listener
 {
@@ -10,12 +10,14 @@ namespace Frontenac.Blueprints.Util.Wrappers.Event.Listener
         public EdgePropertyRemovedEvent(IEdge vertex, string key, object oldValue)
             : base(vertex, key, oldValue, null)
         {
-            Contract.Requires(vertex != null);
+            if (vertex == null)
+                throw new ArgumentNullException(nameof(vertex));
         }
 
         protected override void Fire(IGraphChangedListener listener, IEdge edge, string key, object oldValue,
                                      object newValue)
         {
+            EdgePropertyEventContract.ValidateFire(listener, edge, key, oldValue, newValue);
             listener.EdgePropertyRemoved(edge, key, oldValue);
         }
     }

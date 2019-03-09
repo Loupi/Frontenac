@@ -1,4 +1,4 @@
-﻿using System.Diagnostics.Contracts;
+﻿using System;
 using Frontenac.Infrastructure.Serializers;
 using Microsoft.Isam.Esent.Interop;
 
@@ -9,8 +9,10 @@ namespace Frontenac.Grave.Esent
         public EsentConfigTable(Session session, IContentSerializer contentSerializer)
             : base(session, contentSerializer)
         {
-            Contract.Requires(session != null);
-            Contract.Requires(contentSerializer != null);
+            if (session == null)
+                throw new ArgumentNullException(nameof(session));
+            if (contentSerializer == null)
+                throw new ArgumentNullException(nameof(contentSerializer));
 
             TableName = "Config";
         }

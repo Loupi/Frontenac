@@ -1,10 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Configuration;
-using System.Diagnostics.Contracts;
 using System.Linq;
 using System.Threading.Tasks;
 using Frontenac.Blueprints;
+using Frontenac.Blueprints.Contracts;
 using Frontenac.Blueprints.Util;
 using Frontenac.Infrastructure;
 using Frontenac.Infrastructure.Indexing;
@@ -87,12 +86,26 @@ namespace Frontenac.Redis
                           IGraphConfiguration configuration)
             :base(indexingService)
         {
+<<<<<<< HEAD
             Contract.Requires(factory != null);
             Contract.Requires(serializer != null);
             Contract.Requires(multiplexer != null);
             Contract.Requires(indexingService != null);
             Contract.Requires(configuration != null);
             
+=======
+            if (factory == null)
+                throw new ArgumentNullException(nameof(factory));
+            if (serializer == null)
+                throw new ArgumentNullException(nameof(serializer));
+            if (multiplexer == null)
+                throw new ArgumentNullException(nameof(multiplexer));
+            if (indexingService == null)
+                throw new ArgumentNullException(nameof(indexingService));
+            if (configuration == null)
+                throw new ArgumentNullException(nameof(configuration));
+
+>>>>>>> master
             _factory = factory;
             Serializer = serializer;
             Multiplexer = multiplexer;
@@ -406,7 +419,8 @@ namespace Frontenac.Redis
 
         public object GetProperty(RedisElement element, string key)
         {
-            Contract.Requires(element != null);
+            if (element == null)
+                throw new ArgumentNullException(nameof(element));
 
             var retry = 0;
 
@@ -431,7 +445,8 @@ namespace Frontenac.Redis
 
         public string GetIdentifier(RedisElement element, string suffix)
         {
-            Contract.Requires(element != null);
+            if (element == null)
+                throw new ArgumentNullException(nameof(element));
 
             var prefix = element is RedisVertex ? "vertex:" : "edge:";
             var identifier = string.Concat(prefix, element.RawId);
@@ -442,14 +457,16 @@ namespace Frontenac.Redis
 
         public string GetLabeledIdentifier(RedisElement element, string suffix, string label)
         {
-            Contract.Requires(element != null);
+            if (element == null)
+                throw new ArgumentNullException(nameof(element));
 
             return string.Concat(GetIdentifier(element, suffix), ":", label);
         }
 
         public List<string> GetPropertyKeys(RedisElement element)
         {
-            Contract.Requires(element != null);
+            if(element == null)
+                throw new ArgumentNullException(nameof(element));
 
             var retry = 0;
 
@@ -473,8 +490,11 @@ namespace Frontenac.Redis
 
         public void SetProperty(RedisElement element, string key, object value)
         {
-            Contract.Requires(element != null);
-            Contract.Requires(!string.IsNullOrWhiteSpace(key));
+            if (element == null)
+                throw new ArgumentNullException(nameof(element));
+
+            if (string.IsNullOrWhiteSpace(key))
+                throw new ArgumentNullException(nameof(key));
 
             var raw = Serializer.Serialize(value);
 
@@ -489,8 +509,11 @@ namespace Frontenac.Redis
 
         public object RemoveProperty(RedisElement element, string key)
         {
-            Contract.Requires(element != null);
-            Contract.Requires(!string.IsNullOrWhiteSpace(key));
+            if (element == null)
+                throw new ArgumentNullException(nameof(element));
+
+            if (string.IsNullOrWhiteSpace(key))
+                throw new ArgumentNullException(nameof(key));
 
             var result = GetProperty(element, key);
 
@@ -559,6 +582,8 @@ namespace Frontenac.Redis
 
         public override void DropIndex(string indexName)
         {
+            IndexableGraphContract.ValidateDropIndex(indexName);
+
             var indexStore = IndexingService as IIndexStore;
             if(indexStore != null)
                 indexStore.DropIndex(indexName);

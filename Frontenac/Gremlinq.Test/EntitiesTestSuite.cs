@@ -1,7 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Diagnostics.Contracts;
-using System.IO;
 using System.Linq;
 using System.Threading;
 using Frontenac.Blueprints;
@@ -21,7 +19,8 @@ namespace Frontenac.Gremlinq.Test
 
         private static void CreateGraphOfTheGods(IKeyIndexableGraph graph)
         {
-            Contract.Requires(graph != null);
+            if (graph == null)
+                throw new ArgumentNullException(nameof(graph));
 
             graph.CreateVertexIndex<INamedEntity, string>(t => t.Name);
             graph.CreateEdgeIndex<IBattle, GeoPoint>(t => t.Place);

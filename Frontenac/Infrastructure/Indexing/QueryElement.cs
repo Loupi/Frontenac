@@ -1,4 +1,4 @@
-﻿using System.Diagnostics.Contracts;
+﻿using System;
 
 namespace Frontenac.Infrastructure.Indexing
 {
@@ -8,7 +8,8 @@ namespace Frontenac.Infrastructure.Indexing
 
         protected QueryElement(string key)
         {
-            Contract.Requires(!string.IsNullOrWhiteSpace(key));
+            if (string.IsNullOrWhiteSpace(key))
+                throw new ArgumentNullException(nameof(key));
 
             Key = key;
         }
@@ -17,12 +18,12 @@ namespace Frontenac.Infrastructure.Indexing
         {
             get
             {
-                Contract.Ensures(Contract.Result<string>() != null);
                 return _key;
             }
             private set
             {
-                Contract.Requires(value != null);
+                if (value == null)
+                    throw new ArgumentNullException(nameof(value));
                 _key = value;
             }
         }

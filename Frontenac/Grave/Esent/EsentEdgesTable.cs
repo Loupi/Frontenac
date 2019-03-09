@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Diagnostics.Contracts;
 using System.Text;
 using Frontenac.Infrastructure.Serializers;
 using Microsoft.Isam.Esent.Interop;
@@ -16,8 +15,10 @@ namespace Frontenac.Grave.Esent
         public EsentEdgesTable(Session session, IContentSerializer contentSerializer)
             : base(session, "Edges", contentSerializer)
         {
-            Contract.Requires(session != null);
-            Contract.Requires(contentSerializer != null);
+            if (session == null)
+                throw new ArgumentNullException(nameof(session));
+            if (contentSerializer == null)
+                throw new ArgumentNullException(nameof(contentSerializer));
         }
 
         protected override JET_TABLECREATE GetTableDefinition()

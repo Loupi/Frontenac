@@ -1,5 +1,5 @@
-﻿using System.Collections.Generic;
-using System.Diagnostics.Contracts;
+﻿using System;
+using System.Collections.Generic;
 using System.Globalization;
 using System.IO;
 using System.Xml;
@@ -19,7 +19,8 @@ namespace Frontenac.Blueprints.Util.IO.GraphML
         /// <param name="graph">the graph to populate with the GraphML data</param>
         public GraphMlReader(IGraph graph)
         {
-            Contract.Requires(graph != null);
+            if (graph == null)
+                throw new ArgumentNullException(nameof(graph));
 
             _graph = graph;
         }
@@ -49,7 +50,8 @@ namespace Frontenac.Blueprints.Util.IO.GraphML
         /// <param name="graphMlInputStream">a Stream of GraphML data</param>
         public void InputGraph(Stream graphMlInputStream)
         {
-            Contract.Requires(graphMlInputStream != null);
+            if (graphMlInputStream == null)
+                throw new ArgumentNullException(nameof(graphMlInputStream));
 
             InputGraph(_graph, graphMlInputStream, 1000, VertexIdKey, EdgeIdKey, EdgeLabelKey);
         }
@@ -61,7 +63,8 @@ namespace Frontenac.Blueprints.Util.IO.GraphML
         /// <param name="filename">name of a file containing GraphML data</param>
         public void InputGraph(string filename)
         {
-            Contract.Requires(!string.IsNullOrWhiteSpace(filename));
+            if (string.IsNullOrWhiteSpace(filename))
+                throw new ArgumentNullException(nameof(filename));
 
             InputGraph(_graph, filename, 1000, VertexIdKey, EdgeIdKey, EdgeLabelKey);
         }
@@ -74,8 +77,10 @@ namespace Frontenac.Blueprints.Util.IO.GraphML
         /// <param name="bufferSize">the amount of elements to hold in memory before committing a transactions (only valid for TransactionalGraphs)</param>
         public void InputGraph(Stream graphMlInputStream, int bufferSize)
         {
-            Contract.Requires(graphMlInputStream != null);
-            Contract.Requires(bufferSize > 0);
+            if (graphMlInputStream == null)
+                throw new ArgumentNullException(nameof(graphMlInputStream));
+            if (bufferSize <= 0)
+                throw new ArgumentException("bufferSize must be greater than zero");
 
             InputGraph(_graph, graphMlInputStream, bufferSize, VertexIdKey, EdgeIdKey, EdgeLabelKey);
         }
@@ -88,8 +93,10 @@ namespace Frontenac.Blueprints.Util.IO.GraphML
         /// <param name="bufferSize">the amount of elements to hold in memory before committing a transactions (only valid for TransactionalGraphs)</param>
         public void InputGraph(string filename, int bufferSize)
         {
-            Contract.Requires(!string.IsNullOrWhiteSpace(filename));
-            Contract.Requires(bufferSize > 0);
+            if (string.IsNullOrWhiteSpace(filename))
+                throw new ArgumentNullException(nameof(filename));
+            if (bufferSize <= 0)
+                throw new ArgumentException("bufferSize must be greater than zero");
 
             InputGraph(_graph, filename, bufferSize, VertexIdKey, EdgeIdKey, EdgeLabelKey);
         }
@@ -102,8 +109,10 @@ namespace Frontenac.Blueprints.Util.IO.GraphML
         /// <param name="graphMlInputStream">a Stream of GraphML data</param>
         public static void InputGraph(IGraph inputGraph, Stream graphMlInputStream)
         {
-            Contract.Requires(inputGraph != null);
-            Contract.Requires(graphMlInputStream != null);
+            if (inputGraph == null)
+                throw new ArgumentNullException(nameof(inputGraph));
+            if (graphMlInputStream == null)
+                throw new ArgumentNullException(nameof(graphMlInputStream));
 
             InputGraph(inputGraph, graphMlInputStream, 1000, null, null, null);
         }
@@ -116,8 +125,10 @@ namespace Frontenac.Blueprints.Util.IO.GraphML
         /// <param name="filename">name of a file containing GraphML data</param>
         public static void InputGraph(IGraph inputGraph, string filename)
         {
-            Contract.Requires(inputGraph != null);
-            Contract.Requires(!string.IsNullOrWhiteSpace(filename));
+            if (inputGraph == null)
+                throw new ArgumentNullException(nameof(inputGraph));
+            if (string.IsNullOrWhiteSpace(filename))
+                throw new ArgumentNullException(nameof(filename));
 
             InputGraph(inputGraph, filename, 1000, null, null, null);
         }
@@ -135,9 +146,12 @@ namespace Frontenac.Blueprints.Util.IO.GraphML
         public static void InputGraph(IGraph inputGraph, string filename, int bufferSize, string vertexIdKey,
                                       string edgeIdKey, string edgeLabelKey)
         {
-            Contract.Requires(inputGraph != null);
-            Contract.Requires(!string.IsNullOrWhiteSpace(filename));
-            Contract.Requires(bufferSize > 0);
+            if (inputGraph == null)
+                throw new ArgumentNullException(nameof(inputGraph));
+            if (string.IsNullOrWhiteSpace(filename))
+                throw new ArgumentNullException(nameof(filename));
+            if (bufferSize <= 0)
+                throw new ArgumentException("bufferSize must be greater than zero");
 
             using (var fis = File.OpenRead(filename))
             {
@@ -158,9 +172,12 @@ namespace Frontenac.Blueprints.Util.IO.GraphML
         public static void InputGraph(IGraph inputGraph, Stream graphMlInputStream, int bufferSize, string vertexIdKey,
                                       string edgeIdKey, string edgeLabelKey)
         {
-            Contract.Requires(inputGraph != null);
-            Contract.Requires(graphMlInputStream != null);
-            Contract.Requires(bufferSize > 0);
+            if (inputGraph == null)
+                throw new ArgumentNullException(nameof(inputGraph));
+            if (graphMlInputStream == null)
+                throw new ArgumentNullException(nameof(graphMlInputStream));
+            if (bufferSize <= 0)
+                throw new ArgumentException("bufferSize must be greater than zero");
 
             using (var reader = XmlReader.Create(graphMlInputStream))
             {
@@ -329,8 +346,11 @@ namespace Frontenac.Blueprints.Util.IO.GraphML
 
         private static object TypeCastValue(string key, string value, IDictionary<string, string> keyTypes)
         {
-            Contract.Requires(!string.IsNullOrWhiteSpace(key));
-            Contract.Requires(keyTypes != null);
+            if (string.IsNullOrWhiteSpace(key))
+                throw new ArgumentNullException(nameof(key));
+
+            if (keyTypes == null)
+                throw new ArgumentNullException(nameof(keyTypes));
 
             var type = keyTypes.Get(key);
             switch (type)

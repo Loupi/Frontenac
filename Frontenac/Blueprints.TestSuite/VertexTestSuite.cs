@@ -120,12 +120,9 @@ namespace Frontenac.Blueprints
                 graph.GetVertex(null);
                 Assert.Fail();
             }
-            catch (Exception x)
+            catch (ArgumentNullException)
             {
-                if (x.GetType().FullName != GraphHelpers.ContractExceptionName)
-                {
-                    throw;
-                }
+
             }
             finally
             {
@@ -604,7 +601,7 @@ namespace Frontenac.Blueprints
             }
             catch (Exception ex)
             {
-                if (ex.GetType().FullName != GraphHelpers.ContractExceptionName)
+                if (!(x is ArgumentException))
                 {
                     throw;
                 }
@@ -632,7 +629,7 @@ namespace Frontenac.Blueprints
             }
             catch (Exception ex)
             {
-                if (ex.GetType().FullName != GraphHelpers.ContractExceptionName)
+                if (!(x is ArgumentException))
                 {
                     throw;
                 }
@@ -757,16 +754,6 @@ namespace Frontenac.Blueprints
                 try
                 {
                     v.SetProperty(StringFactory.Id, -1);
-                    Assert.False(true);
-                }
-                catch (Exception)
-                {
-                    Assert.True(true);
-                }
-
-                try
-                {
-                    v.SetProperty(ConvertId(graph, "good"), null);
                     Assert.False(true);
                 }
                 catch (Exception)

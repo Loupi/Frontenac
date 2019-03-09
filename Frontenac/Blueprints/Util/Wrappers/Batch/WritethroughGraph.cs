@@ -1,6 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Diagnostics.Contracts;
+using Frontenac.Blueprints.Contracts;
 
 namespace Frontenac.Blueprints.Util.Wrappers.Batch
 {
@@ -20,8 +20,11 @@ namespace Frontenac.Blueprints.Util.Wrappers.Batch
 
         public WritethroughGraph(IGraph graph)
         {
-            Contract.Requires(graph != null);
-            Contract.Requires(!(graph is ITransactionalGraph));
+            if (graph == null)
+                throw new ArgumentNullException(nameof(graph));
+
+            if (graph is ITransactionalGraph)
+                throw new ArgumentException("graph cannot be ITransactionalGraph");
 
             _graph = graph;
         }
@@ -57,11 +60,13 @@ namespace Frontenac.Blueprints.Util.Wrappers.Batch
 
         public IVertex GetVertex(object id)
         {
+            GraphContract.ValidateGetVertex(id);
             return _graph.GetVertex(id);
         }
 
         public void RemoveVertex(IVertex vertex)
         {
+            GraphContract.ValidateRemoveVertex(vertex);
             _graph.RemoveVertex(vertex);
         }
 
@@ -72,11 +77,14 @@ namespace Frontenac.Blueprints.Util.Wrappers.Batch
 
         public IEnumerable<IVertex> GetVertices(string key, object value)
         {
+            GraphContract.ValidateGetVertices(key, value);
             return _graph.GetVertices(key, value);
         }
 
         public IEdge AddEdge(object id, IVertex outVertex, IVertex inVertex, string label)
         {
+            GraphContract.ValidateAddEdge(id, outVertex, inVertex, label);
+
             return _graph.AddEdge(id, outVertex, inVertex, label);
         }
 

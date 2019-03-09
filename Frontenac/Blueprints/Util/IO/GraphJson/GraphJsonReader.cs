@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Diagnostics.Contracts;
 using System.IO;
 using Frontenac.Blueprints.Util.Wrappers.Batch;
 using Newtonsoft.Json;
@@ -22,18 +21,24 @@ namespace Frontenac.Blueprints.Util.IO.GraphJson
         /// /// <param name="bufferSize">the amount of elements to hold in memory before committing a transactions (only valid for TransactionalGraphs)</param>
         public static void InputGraph(IGraph graph, Stream jsonInputStream, int bufferSize = 1000)
         {
-            Contract.Requires(graph != null);
-            Contract.Requires(jsonInputStream != null);
-            Contract.Requires(bufferSize > 0);
+            if (graph == null)
+                throw new ArgumentNullException(nameof(graph));
+            if (jsonInputStream == null)
+                throw new ArgumentNullException(nameof(jsonInputStream));
+            if (bufferSize <= 0)
+                throw new ArgumentException("bufferSize must be greater than zero");
 
             InputGraph(graph, jsonInputStream, bufferSize, GraphJsonSettings.Default);
         }
 
         public static void InputGraph(IGraph inputGraph, string filename, int bufferSize = 1000)
         {
-            Contract.Requires(inputGraph != null);
-            Contract.Requires(!string.IsNullOrWhiteSpace(filename));
-            Contract.Requires(bufferSize > 0);
+            if (inputGraph == null)
+                throw new ArgumentNullException(nameof(inputGraph));
+            if (string.IsNullOrWhiteSpace(filename))
+                throw new ArgumentNullException(nameof(filename));
+            if (bufferSize <= 0)
+                throw new ArgumentException("bufferSize must be greater than zero");
 
             using (var fis = File.Open(filename, FileMode.Open))
             {
@@ -51,10 +56,14 @@ namespace Frontenac.Blueprints.Util.IO.GraphJson
         /// <param name="settings">Contains field names that the reader will use to parse the graph</param>
         public static void InputGraph(IGraph inputGraph, Stream jsonInputStream, int bufferSize, GraphJsonSettings settings)
         {
-            Contract.Requires(inputGraph != null);
-            Contract.Requires(jsonInputStream != null);
-            Contract.Requires(settings != null);
-            Contract.Requires(bufferSize > 0);
+            if (inputGraph == null)
+                throw new ArgumentNullException(nameof(inputGraph));
+            if (jsonInputStream == null)
+                throw new ArgumentNullException(nameof(jsonInputStream));
+            if (settings == null)
+                throw new ArgumentNullException(nameof(settings));
+            if (bufferSize <= 0)
+                throw new ArgumentException("bufferSize must be greater than zero");
 
             var sr = new StreamReader(jsonInputStream);
             

@@ -1,4 +1,5 @@
-﻿using System.Diagnostics.Contracts;
+﻿using System;
+using Frontenac.Blueprints.Contracts;
 
 namespace Frontenac.Blueprints.Util.Wrappers.Wrapped
 {
@@ -9,13 +10,15 @@ namespace Frontenac.Blueprints.Util.Wrappers.Wrapped
         public WrappedEdge(IEdge edge)
             : base(edge)
         {
-            Contract.Requires(edge != null);
+            if (edge == null)
+                throw new ArgumentNullException(nameof(edge));
 
             _edge = edge;
         }
 
         public IVertex GetVertex(Direction direction)
         {
+            EdgeContract.ValidateGetVertex(direction);
             return new WrappedVertex(_edge.GetVertex(direction));
         }
 
@@ -25,7 +28,6 @@ namespace Frontenac.Blueprints.Util.Wrappers.Wrapped
         {
             get
             {
-                Contract.Ensures(Contract.Result<IEdge>() != null);
                 return _edge;
             }
         }

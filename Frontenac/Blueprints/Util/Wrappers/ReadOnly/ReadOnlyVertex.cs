@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Diagnostics.Contracts;
 
 namespace Frontenac.Blueprints.Util.Wrappers.ReadOnly
 {
@@ -11,8 +10,10 @@ namespace Frontenac.Blueprints.Util.Wrappers.ReadOnly
         public ReadOnlyVertex(ReadOnlyGraph innerTinkerGrapĥ, IVertex baseVertex)
             : base(innerTinkerGrapĥ, baseVertex)
         {
-            Contract.Requires(innerTinkerGrapĥ != null);
-            Contract.Requires(baseVertex != null);
+            if (innerTinkerGrapĥ == null)
+                throw new ArgumentNullException(nameof(innerTinkerGrapĥ));
+            if (baseVertex == null)
+                throw new ArgumentNullException(nameof(baseVertex));
 
             _baseVertex = baseVertex;
         }

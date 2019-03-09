@@ -1,6 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Diagnostics.Contracts;
+using Frontenac.Blueprints.Contracts;
 
 namespace Frontenac.Blueprints.Util
 {
@@ -15,18 +15,24 @@ namespace Frontenac.Blueprints.Util
 
         public virtual IQuery Has(string key, object value)
         {
+            QueryContract.ValidateHas(key, value);
+
             HasContainers.Add(new HasContainer(key, value, Compare.Equal));
             return this;
         }
 
         public virtual IQuery Has<T>(string key, Compare compare, T value)
         {
+            QueryContract.ValidateHas(key, compare, value);
+
             HasContainers.Add(new HasContainer(key, value, compare));
             return this;
         }
 
         public virtual IQuery Interval<T>(string key, T startValue, T endValue)
         {
+            QueryContract.ValidateInterval(key, startValue, endValue);
+
             HasContainers.Add(new HasContainer(key, startValue, Compare.GreaterThanEqual));
             HasContainers.Add(new HasContainer(key, endValue, Compare.LessThan));
             return this;
@@ -37,6 +43,8 @@ namespace Frontenac.Blueprints.Util
 
         public virtual IQuery Limit(long max)
         {
+            QueryContract.ValidateLimit(max);
+
             Innerlimit = max;
             return this;
         }
@@ -49,7 +57,8 @@ namespace Frontenac.Blueprints.Util
 
             public HasContainer(string key, object value, Compare compare)
             {
-                Contract.Requires(!string.IsNullOrWhiteSpace(key));
+                if (string.IsNullOrWhiteSpace(key))
+                    throw new ArgumentNullException(nameof(key));
 
                 Key = key;
                 Value = value;
@@ -58,8 +67,8 @@ namespace Frontenac.Blueprints.Util
 
             public bool IsLegal(IElement element)
             {
-                Contract.Requires(element != null);
-                Contract.Requires(!string.IsNullOrWhiteSpace(Key));
+                if (element == null)
+                    throw new ArgumentNullException(nameof(element));
 
                 var elementValue = element.GetProperty(Key);
                 switch (Compare)

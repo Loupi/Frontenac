@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Diagnostics.Contracts;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
@@ -35,8 +34,9 @@ namespace Frontenac.Lucene
 
         public LuceneIndexingService(IIndexerFactory indexerFactory)
         {
-            Contract.Requires(indexerFactory != null);
-            
+            if (indexerFactory == null)
+                throw new ArgumentNullException(nameof(indexerFactory));
+
             _indexerFactory = indexerFactory;
         }
 
@@ -77,8 +77,8 @@ namespace Frontenac.Lucene
 
         public static FSDirectory CreateMMapDirectory(string path)
         {
-            Contract.Requires(!string.IsNullOrWhiteSpace(path));
-            Contract.Ensures(Contract.Result<FSDirectory>() != null);
+            if (string.IsNullOrWhiteSpace(path))
+                throw new ArgumentNullException(nameof(path));
 
             Directory.CreateDirectory(path);
             var directory = new MMapDirectory(new DirectoryInfo(path), new SingleInstanceLockFactory());
@@ -93,8 +93,7 @@ namespace Frontenac.Lucene
         {
             Contract.Requires(!string.IsNullOrWhiteSpace(searchQuery));
             Contract.Requires(parser != null);
-            Contract.Ensures(Contract.Result<Query>() != null);
-
+            
             Query query;
             try
             {
@@ -110,10 +109,12 @@ namespace Frontenac.Lucene
 
         private static Document CreateDocument(string idColumnName, string keyColumnName, long id, string propertyName)
         {
-            Contract.Requires(!string.IsNullOrWhiteSpace(idColumnName));
-            Contract.Requires(!string.IsNullOrWhiteSpace(keyColumnName));
-            Contract.Requires(!string.IsNullOrWhiteSpace(propertyName));
-            Contract.Ensures(Contract.Result<Document>() != null);
+            if (string.IsNullOrWhiteSpace(idColumnName))
+                throw new ArgumentNullException(nameof(idColumnName));
+            if (string.IsNullOrWhiteSpace(keyColumnName))
+                throw new ArgumentNullException(nameof(keyColumnName));
+            if (string.IsNullOrWhiteSpace(propertyName))
+                throw new ArgumentNullException(nameof(propertyName));
 
             var document = new Document();
             document.Add(new NumericField(idColumnName, Field.Store.YES, true).SetLongValue(id));
@@ -123,10 +124,12 @@ namespace Frontenac.Lucene
 
         private static Query CreateKeyQuery(string idColumnName, string keyColumnName, long id, string propertyName)
         {
-            Contract.Requires(!string.IsNullOrWhiteSpace(idColumnName));
-            Contract.Requires(!string.IsNullOrWhiteSpace(keyColumnName));
-            Contract.Requires(!string.IsNullOrWhiteSpace(propertyName));
-            Contract.Ensures(Contract.Result<Query>() != null);
+            if (string.IsNullOrWhiteSpace(idColumnName))
+                throw new ArgumentNullException(nameof(idColumnName));
+            if (string.IsNullOrWhiteSpace(keyColumnName))
+                throw new ArgumentNullException(nameof(keyColumnName));
+            if (string.IsNullOrWhiteSpace(propertyName))
+                throw new ArgumentNullException(nameof(propertyName));
 
             return new BooleanQuery
                 {
@@ -137,8 +140,8 @@ namespace Frontenac.Lucene
 
         private static string GetIdColumn(Type indexType)
         {
-            Contract.Requires(indexType != null);
-            Contract.Ensures(!string.IsNullOrWhiteSpace(Contract.Result<string>()));
+            if (indexType == null)
+                throw new ArgumentNullException(nameof(indexType));
 
             return indexType == typeof(IVertex) 
                 ? LuceneIndexingServiceParameters.Default.VertexIdColumnName 
@@ -147,8 +150,8 @@ namespace Frontenac.Lucene
 
         private static string GetKeyColumn(Type indexType)
         {
-            Contract.Requires(indexType != null);
-            Contract.Ensures(!string.IsNullOrWhiteSpace(Contract.Result<string>()));
+            if (indexType == null)
+                throw new ArgumentNullException(nameof(indexType));
 
             return indexType == typeof(IVertex) 
                 ? LuceneIndexingServiceParameters.Default.VertexKeyColumnName 
@@ -157,8 +160,8 @@ namespace Frontenac.Lucene
 
         private static string GetIndexColumn(Type indexType)
         {
-            Contract.Requires(indexType != null);
-            Contract.Ensures(!string.IsNullOrWhiteSpace(Contract.Result<string>()));
+            if (indexType == null)
+                throw new ArgumentNullException(nameof(indexType));
 
             return indexType == typeof(IVertex) 
                 ? LuceneIndexingServiceParameters.Default.VertexIndexColumnName 
@@ -173,8 +176,8 @@ namespace Frontenac.Lucene
 
         private static object GetMinValue(object value)
         {
-            Contract.Requires(value != null);
-            Contract.Ensures(Contract.Result<object>() != null);
+            if (value == null)
+                throw new ArgumentNullException(nameof(value));
 
             if (value is double || value is float)
                 return double.MinValue;
@@ -184,8 +187,8 @@ namespace Frontenac.Lucene
 
         private static object GetMaxValue(object value)
         {
-            Contract.Requires(value != null);
-            Contract.Ensures(Contract.Result<object>() != null);
+            if (value == null)
+                throw new ArgumentNullException(nameof(value));
 
             if (value is double || value is float)
                 return double.MaxValue;
@@ -312,7 +315,8 @@ namespace Frontenac.Lucene
 
         static Query CreateComparableQuery(Type indexType, ComparableQueryElement comparable)
         {
-            Contract.Requires(comparable != null);
+            if (comparable == null)
+                throw new ArgumentNullException(nameof(comparable));
 
             object min;
             object max;
@@ -438,8 +442,10 @@ namespace Frontenac.Lucene
 
         private static Query CreateQuery(string key, object value, object minValue, object maxValue, bool minInclusive, bool maxInclusive)
         {
-            Contract.Requires(((((!(Blueprints.GraphHelpers.IsNumber(value)) || !(string.IsNullOrWhiteSpace(key))) || key == null) || key.Length != 0) || value != null));
-            Contract.Ensures(Contract.Result<Query>() != null);
+            if(!(!GraphHelpers.IsNumber(value) || 
+                    !(string.IsNullOrWhiteSpace(key)) || key == null || 
+                  key.Length != 0 || value != null))
+                throw new ArgumentException("Invalid query parameters");
 
             var query = GraphHelpers.IsNumber(value)
                             ? CreateRangeQuery(key, value, minValue, maxValue, minInclusive, maxInclusive)
@@ -450,8 +456,8 @@ namespace Frontenac.Lucene
 
         private static Query WrapQuery(Type indexType, Query query, string indexName, bool isUserIndex)
         {
-            Contract.Requires(query != null);
-            Contract.Ensures(Contract.Result<Query>() != null);
+            if (query == null)
+                throw new ArgumentNullException(nameof(query));
 
             if (!string.IsNullOrWhiteSpace(indexName))
             {
@@ -474,8 +480,6 @@ namespace Frontenac.Lucene
 
         private IEnumerable<long> Fetch(Type indexType, Query query, int hitsLimit)
         {
-            Contract.Ensures(Contract.Result<IEnumerable<long>>() != null);
-
             using (var searcherToken = _searcherManager.Acquire())
             {
                 var hits = searcherToken.Searcher.Search(query, hitsLimit).ScoreDocs;
@@ -489,9 +493,10 @@ namespace Frontenac.Lucene
 
         private static Query CreateRangeQuery(string term, object value, object min, object max, bool minInclusive, bool maxInclusive)
         {
-            Contract.Requires(!string.IsNullOrWhiteSpace(term));
-            Contract.Requires(value != null);
-            Contract.Ensures(Contract.Result<Query>() != null);
+            if (string.IsNullOrWhiteSpace(term))
+                throw new ArgumentNullException(nameof(term));
+            if (value == null)
+                throw new ArgumentNullException(nameof(value));
 
             Query query;
 

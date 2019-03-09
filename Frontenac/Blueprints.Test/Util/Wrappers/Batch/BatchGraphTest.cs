@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Globalization;
+using Frontenac.Blueprints.Contracts;
 using Frontenac.Blueprints.Impls.TG;
 using NUnit.Framework;
 
@@ -129,11 +130,13 @@ namespace Frontenac.Blueprints.Util.Wrappers.Batch
 
             public IVertex GetVertex(object id)
             {
+                GraphContract.ValidateGetVertex(id);
                 return _graph.GetVertex(id);
             }
 
             public void RemoveVertex(IVertex vertex)
             {
+                GraphContract.ValidateRemoveVertex(vertex);
                 _graph.RemoveVertex(vertex);
             }
 
@@ -144,6 +147,7 @@ namespace Frontenac.Blueprints.Util.Wrappers.Batch
 
             public IEnumerable<IVertex> GetVertices(string key, object value)
             {
+                GraphContract.ValidateGetVertices(key, value);
                 return _graph.GetVertices(key, value);
             }
 

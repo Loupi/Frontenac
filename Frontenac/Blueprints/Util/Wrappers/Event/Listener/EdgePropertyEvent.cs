@@ -1,9 +1,8 @@
-﻿using System.Collections.Generic;
-using System.Diagnostics.Contracts;
+﻿using System;
+using System.Collections.Generic;
 
 namespace Frontenac.Blueprints.Util.Wrappers.Event.Listener
 {
-    [ContractClass(typeof (EdgePropertyEventContract))]
     public abstract class EdgePropertyEvent : IEvent
     {
         private readonly IEdge _edge;
@@ -13,8 +12,10 @@ namespace Frontenac.Blueprints.Util.Wrappers.Event.Listener
 
         protected EdgePropertyEvent(IEdge edge, string key, object oldValue, object newValue)
         {
-            Contract.Requires(edge != null);
-            Contract.Requires(!string.IsNullOrWhiteSpace(key));
+            if (edge == null)
+                throw new ArgumentNullException(nameof(edge));
+            if (string.IsNullOrWhiteSpace(key))
+                throw new ArgumentNullException(nameof(key));
 
             _edge = edge;
             _key = key;
@@ -24,6 +25,8 @@ namespace Frontenac.Blueprints.Util.Wrappers.Event.Listener
 
         public void FireEvent(IEnumerator<IGraphChangedListener> eventListeners)
         {
+            EventContract.ValidateFireEvent(eventListeners);
+
             while (eventListeners.MoveNext())
             {
                 Fire(eventListeners.Current, _edge, _key, _oldValue, _newValue);

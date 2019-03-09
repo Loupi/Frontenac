@@ -1,6 +1,7 @@
-﻿using System.Collections.Generic;
-using System.Diagnostics.Contracts;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
+using Frontenac.Blueprints.Contracts;
 
 namespace Frontenac.Blueprints.Util.Wrappers.Partition
 {
@@ -14,10 +15,14 @@ namespace Frontenac.Blueprints.Util.Wrappers.Partition
         public PartitionGraph(IGraph baseGraph, string partitionKey, string writePartition,
                               IEnumerable<string> readPartitions)
         {
-            Contract.Requires(baseGraph != null);
-            Contract.Requires(!string.IsNullOrWhiteSpace(partitionKey));
-            Contract.Requires(!string.IsNullOrWhiteSpace(writePartition));
-            Contract.Requires(readPartitions != null);
+            if (baseGraph == null)
+                throw new ArgumentNullException(nameof(baseGraph));
+            if (string.IsNullOrWhiteSpace(partitionKey))
+                throw new ArgumentNullException(nameof(partitionKey));
+            if (string.IsNullOrWhiteSpace(writePartition))
+                throw new ArgumentNullException(nameof(writePartition));
+            if (readPartitions == null)
+                throw new ArgumentNullException(nameof(readPartitions));
 
             BaseGraph = baseGraph;
             _partitionKey = partitionKey;
@@ -30,21 +35,24 @@ namespace Frontenac.Blueprints.Util.Wrappers.Partition
         public PartitionGraph(IGraph baseGraph, string partitionKey, string readWritePartition) :
             this(baseGraph, partitionKey, readWritePartition, new[] {readWritePartition})
         {
-            Contract.Requires(baseGraph != null);
-            Contract.Requires(!string.IsNullOrWhiteSpace(partitionKey));
-            Contract.Requires(!string.IsNullOrWhiteSpace(readWritePartition));
+            if (baseGraph == null)
+                throw new ArgumentNullException(nameof(baseGraph));
+            if (string.IsNullOrWhiteSpace(partitionKey))
+                throw new ArgumentNullException(nameof(partitionKey));
+            if (string.IsNullOrWhiteSpace(readWritePartition))
+                throw new ArgumentNullException(nameof(readWritePartition));
         }
 
         public string WritePartition
         {
             get
             {
-                Contract.Ensures(Contract.Result<string>() != null);
                 return _writePartition;
             }
             set
             {
-                Contract.Requires(value != null);
+                if (value == null)
+                    throw new ArgumentNullException(nameof(value));
                 _writePartition = value;
             }
         }
@@ -53,12 +61,12 @@ namespace Frontenac.Blueprints.Util.Wrappers.Partition
         {
             set
             {
-                Contract.Requires(value != null);
+                if (value == null)
+                    throw new ArgumentNullException(nameof(value));
                 _partitionKey = value;
             }
             get
             {
-                Contract.Ensures(Contract.Result<string>() != null);
                 return _partitionKey;
             }
         }
@@ -72,6 +80,7 @@ namespace Frontenac.Blueprints.Util.Wrappers.Partition
 
         public IVertex GetVertex(object id)
         {
+            GraphContract.ValidateGetVertex(id);
             IVertex vertex = BaseGraph.GetVertex(id);
             if (null == vertex || !IsInPartition(vertex))
                 return null;
@@ -86,11 +95,14 @@ namespace Frontenac.Blueprints.Util.Wrappers.Partition
 
         public IEnumerable<IVertex> GetVertices(string key, object value)
         {
+            GraphContract.ValidateGetVertices(key, value);
             return new PartitionVertexIterable(BaseGraph.GetVertices(key, value), this);
         }
 
         public IEdge AddEdge(object id, IVertex outVertex, IVertex inVertex, string label)
         {
+            GraphContract.ValidateAddEdge(id, outVertex, inVertex, label);
+
             var edge = new PartitionEdge(BaseGraph.AddEdge(id, 
                                                            ((PartitionVertex) outVertex).Vertex, 
                                                            ((PartitionVertex) inVertex).Vertex, 
@@ -123,6 +135,7 @@ namespace Frontenac.Blueprints.Util.Wrappers.Partition
 
         public void RemoveVertex(IVertex vertex)
         {
+            GraphContract.ValidateRemoveVertex(vertex);
             BaseGraph.RemoveVertex(((PartitionVertex) vertex).Vertex);
         }
 
@@ -147,25 +160,27 @@ namespace Frontenac.Blueprints.Util.Wrappers.Partition
 
         public IEnumerable<string> GetReadPartitions()
         {
-            Contract.Ensures(Contract.Result<IEnumerable<string>>() != null);
             return _readPartitions.ToArray();
         }
 
         public void RemoveReadPartition(string readPartition)
         {
-            Contract.Requires(readPartition != null);
+            if (readPartition == null)
+                throw new ArgumentNullException(nameof(readPartition));
             _readPartitions.Remove(readPartition);
         }
 
         public void AddReadPartition(string readPartition)
         {
-            Contract.Requires(readPartition != null);
+            if (readPartition == null)
+                throw new ArgumentNullException(nameof(readPartition));
             _readPartitions.Add(readPartition);
         }
 
         public bool IsInPartition(IElement element)
         {
-            Contract.Requires(element != null);
+            if (element == null)
+                throw new ArgumentNullException(nameof(element));
 
             string writePartition;
             var partitionElement = element as PartitionElement;

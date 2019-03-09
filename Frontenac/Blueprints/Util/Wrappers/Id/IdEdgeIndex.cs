@@ -1,6 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Diagnostics.Contracts;
+using Frontenac.Blueprints.Contracts;
 
 namespace Frontenac.Blueprints.Util.Wrappers.Id
 {
@@ -11,8 +11,10 @@ namespace Frontenac.Blueprints.Util.Wrappers.Id
 
         public IdEdgeIndex(IIndex baseIndex, IdGraph idGraph)
         {
-            Contract.Requires(baseIndex != null);
-            Contract.Requires(idGraph != null);
+            if (baseIndex == null)
+                throw new ArgumentNullException(nameof(baseIndex));
+            if (idGraph == null)
+                throw new ArgumentNullException(nameof(idGraph));
 
             IdGraph = idGraph;
             BaseIndex = baseIndex;
@@ -22,7 +24,6 @@ namespace Frontenac.Blueprints.Util.Wrappers.Id
         {
             get
             {
-                Contract.Ensures(!string.IsNullOrWhiteSpace(Contract.Result<string>()));
                 return BaseIndex.Name;
             }
         }
@@ -31,11 +32,15 @@ namespace Frontenac.Blueprints.Util.Wrappers.Id
 
         public void Put(string key, object value, IElement element)
         {
+            IndexContract.ValidatePut(key, value, element);
+
             BaseIndex.Put(key, value, GetBaseElement(element));
         }
 
         public IEnumerable<IElement> Get(string key, object value)
         {
+            IndexContract.ValidateGet(key, value);
+
             return new IdEdgeIterable(BaseIndex.Get(key, value), IdGraph);
         }
 
@@ -46,11 +51,15 @@ namespace Frontenac.Blueprints.Util.Wrappers.Id
 
         public long Count(string key, object value)
         {
+            IndexContract.ValidateCount(key, value);
+
             return BaseIndex.Count(key, value);
         }
 
         public void Remove(string key, object value, IElement element)
         {
+            IndexContract.ValidateRemove(key, value, element);
+
             BaseIndex.Remove(key, value, GetBaseElement(element));
         }
 
@@ -61,8 +70,8 @@ namespace Frontenac.Blueprints.Util.Wrappers.Id
 
         private static IEdge GetBaseElement(IElement e)
         {
-            Contract.Requires(e is IdEdge);
-            Contract.Ensures(Contract.Result<IEdge>() != null);
+            if(!(e is IdEdge))
+                throw new ArgumentException("e must be of type IEdge");
 
             return ((IdEdge) e).GetBaseEdge();
         }

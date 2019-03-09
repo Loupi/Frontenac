@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Linq;
 using System.Collections.Generic;
-using System.Diagnostics.Contracts;
 using Frontenac.Blueprints;
 
 namespace Frontenac.Infrastructure.Indexing
@@ -15,8 +14,10 @@ namespace Frontenac.Infrastructure.Indexing
 
         public IndexCollection(string indicesColumnName, Type indexType, bool isUserIndex, IndexingService indexingService)
         {
-            Contract.Requires(!string.IsNullOrWhiteSpace(indicesColumnName));
-            Contract.Requires(indexingService != null);
+            if (string.IsNullOrWhiteSpace(indicesColumnName))
+                throw new ArgumentNullException(nameof(indicesColumnName));
+            if (indexingService == null)
+                throw new ArgumentNullException(nameof(indexingService));
 
             _indicesColumnName = indicesColumnName;
             _indexingService = indexingService;

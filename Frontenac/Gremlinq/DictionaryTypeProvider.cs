@@ -1,8 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Diagnostics.Contracts;
 using System.Linq;
 using Frontenac.Blueprints;
+using Frontenac.Gremlinq.Contracts;
 
 namespace Frontenac.Gremlinq
 {
@@ -16,8 +16,10 @@ namespace Frontenac.Gremlinq
 
         public DictionaryTypeProvider(string typePropertyName, IDictionary<int, Type> elementTypes)
         {
-            Contract.Requires(!string.IsNullOrEmpty(typePropertyName));
-            Contract.Requires(elementTypes != null);
+            if (string.IsNullOrEmpty(typePropertyName))
+                throw new ArgumentNullException(nameof(typePropertyName));
+            if (elementTypes == null)
+                throw new ArgumentNullException(nameof(elementTypes));
 
             _typePropertyName = typePropertyName;
             _elementIdsToTypes = new Dictionary<int, Type>(elementTypes);
@@ -26,6 +28,8 @@ namespace Frontenac.Gremlinq
 
         public virtual void SetType(IElement element, Type type)
         {
+            TypeProviderContract.ValidateSetType(element, type);
+
             int id;
             if(!_elementTypesToIds.TryGetValue(type, out id))
                 throw new KeyNotFoundException(type.AssemblyQualifiedName);
@@ -35,6 +39,8 @@ namespace Frontenac.Gremlinq
 
         public virtual bool TryGetType(IDictionary<string, object> element, IGraph graph, out Type type)
         {
+            TypeProviderContract.ValidateTryGetType(element);
+
             object id;
             if (!element.TryGetValue(_typePropertyName, out id) || !GraphHelpers.IsNumber(id))
             {

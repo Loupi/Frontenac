@@ -1,13 +1,10 @@
 ﻿using System.Collections.Generic;
-using System.Diagnostics.Contracts;
-using Frontenac.Blueprints.Contracts;
 
 namespace Frontenac.Blueprints
 {
     /// <summary>
     ///     A Graph is a container object for a collection of vertices and a collection edges.
     /// </summary>
-    [ContractClass(typeof (GraphContract))]
     public interface IGraph
     {
         /// <summary>

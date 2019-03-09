@@ -1,8 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Diagnostics.Contracts;
 using System.Linq;
 using Frontenac.Blueprints;
+using Frontenac.Blueprints.Contracts;
 
 namespace Frontenac.Infrastructure.Indexing
 {
@@ -15,8 +15,10 @@ namespace Frontenac.Infrastructure.Indexing
 
         public IndexQuery(IGraph graph, IndexingService indexingService)
         {
-            Contract.Requires(graph != null);
-            Contract.Requires(indexingService != null);
+            if (graph == null)
+                throw new ArgumentNullException(nameof(graph));
+            if (indexingService == null)
+                throw new ArgumentNullException(nameof(indexingService));
 
             _graph = graph;
             _indexingService = indexingService;
@@ -24,16 +26,15 @@ namespace Frontenac.Infrastructure.Indexing
 
         public IQuery Has<T>(string key, Compare compare, T value)
         {
+            QueryContract.ValidateHas(key, compare, value);
+
             _queryElements.Add(new ComparableQueryElement(key, compare, value));
             return this;
         }
 
         public IQuery Interval<T>(string key, T startValue, T endValue)
         {
-            // ReSharper disable CompareNonConstrainedGenericWithNull
-            Contract.Assume(startValue != null);
-            Contract.Assume(endValue != null);
-            // ReSharper restore CompareNonConstrainedGenericWithNull
+            QueryContract.ValidateInterval(key, startValue, endValue);
 
             _queryElements.Add(new IntervalQueryElement(key, startValue, endValue));
             return this;
@@ -41,12 +42,16 @@ namespace Frontenac.Infrastructure.Indexing
 
         public IQuery Limit(long max)
         {
+            QueryContract.ValidateLimit(max);
+
             _limit = max;
             return this;
         }
 
         public IQuery Has(string key, object value)
         {
+            QueryContract.ValidateHas(key, value);
+
             return Has(key, Compare.Equal, value as IComparable<object>);
         }
 

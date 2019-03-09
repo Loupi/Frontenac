@@ -1,6 +1,6 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
-using System.Diagnostics.Contracts;
 using System.Linq;
 
 namespace Frontenac.Blueprints.Util.Wrappers.Partition
@@ -12,8 +12,10 @@ namespace Frontenac.Blueprints.Util.Wrappers.Partition
 
         public PartitionIndexIterable(IEnumerable<IIndex> iterable, PartitionGraph graph)
         {
-            Contract.Requires(iterable != null);
-            Contract.Requires(graph != null);
+            if (iterable == null)
+                throw new ArgumentNullException(nameof(iterable));
+            if (graph == null)
+                throw new ArgumentNullException(nameof(graph));
 
             _iterable = iterable;
             _graph = graph;

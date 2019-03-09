@@ -1,4 +1,4 @@
-﻿using System.Diagnostics.Contracts;
+﻿using System;
 
 namespace Frontenac.Blueprints.Util.IO.GraphSON
 {
@@ -12,13 +12,16 @@ namespace Frontenac.Blueprints.Util.IO.GraphSON
 
         public GraphElementFactory(IGraph graph)
         {
-            Contract.Requires(graph != null);
+            if (graph == null)
+                throw new ArgumentNullException(nameof(graph));
 
             _graph = graph;
         }
 
         public IEdge CreateEdge(object id, IVertex out_, IVertex in_, string label)
         {
+            ElementFactoryContract.ValidateCreateEdge(id, out_, in_, label);
+
             return _graph.AddEdge(id, out_, in_, label);
         }
 

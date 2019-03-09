@@ -1,25 +1,23 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Diagnostics.Contracts;
 using Frontenac.Blueprints;
 
 namespace Frontenac.Gremlinq.Contracts
 {
-    [ContractClassFor(typeof (ITypeProvider))]
-    public abstract class TypeProviderContract : ITypeProvider
+    public static class TypeProviderContract
     {
-        public void SetType(IElement element, Type type)
+        public static void ValidateSetType(IElement element, Type type)
         {
-            Contract.Requires(element != null);
-            Contract.Requires(type != null);
+            if (element == null)
+                throw new ArgumentNullException(nameof(element));
+
+            if (type == null)
+                throw new ArgumentNullException(nameof(type));
         }
 
-        public bool TryGetType(IDictionary<string, object> element, IGraph graph, out Type type)
+        public static void ValidateTryGetType(IElement element)
         {
-            Contract.Requires(element != null);
-            Contract.Requires(graph != null);
-            type = null;
-            return false;
+            if (element == null)
+                throw new ArgumentNullException(nameof(element));
         }
 
         public IEnumerable<IVertex> GetVerticesOfType(IGraph graph, Type type)

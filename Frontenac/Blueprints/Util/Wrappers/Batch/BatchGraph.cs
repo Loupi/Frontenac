@@ -1,9 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics;
-using System.Diagnostics.Contracts;
 using Frontenac.Blueprints.Util.Wrappers.Batch.Cache;
 using System.Linq;
+using Frontenac.Blueprints.Contracts;
 
 namespace Frontenac.Blueprints.Util.Wrappers.Batch
 {
@@ -57,9 +57,10 @@ namespace Frontenac.Blueprints.Util.Wrappers.Batch
         /// the more memory is required but the faster the loading process.</param>
         public BatchGraph(ITransactionalGraph graph, VertexIdType type, long bufferSize)
         {
-            Contract.Requires(graph != null);
-            Contract.Requires(bufferSize > 0);
-            Contract.Ensures(_baseGraph != null);
+            if (graph == null)
+                throw new ArgumentNullException(nameof(graph));
+            if (bufferSize <= 0)
+                throw new ArgumentException("bufferSize must be greater than zero");
 
             _baseGraph = graph;
             _bufferSize = bufferSize;
@@ -76,7 +77,8 @@ namespace Frontenac.Blueprints.Util.Wrappers.Batch
         public BatchGraph(ITransactionalGraph graph)
             : this(graph, VertexIdType.Object, DefaultBufferSize)
         {
-            Contract.Requires(graph != null);
+            if (graph == null)
+                throw new ArgumentNullException(nameof(graph));
         }
 
         /// <summary>
@@ -128,6 +130,7 @@ namespace Frontenac.Blueprints.Util.Wrappers.Batch
         /// </note>
         public IVertex GetVertex(object id)
         {
+            GraphContract.ValidateGetVertex(id);
             if ((_previousOutVertexId != null) && (_previousOutVertexId == id))
                 return new BatchVertex(_previousOutVertexId, this);
             var v = RetrieveFromCache(id);
@@ -169,6 +172,8 @@ namespace Frontenac.Blueprints.Util.Wrappers.Batch
 
         public IEdge AddEdge(object id, IVertex outVertex, IVertex inVertex, string label)
         {
+            GraphContract.ValidateAddEdge(id, outVertex, inVertex, label);
+
             if (!(outVertex is BatchVertex) || !(inVertex is BatchVertex))
                 throw new ArgumentException("Given element was not created in this baseGraph");
             NextElement();
@@ -198,6 +203,7 @@ namespace Frontenac.Blueprints.Util.Wrappers.Batch
 
         public void RemoveVertex(IVertex vertex)
         {
+            GraphContract.ValidateRemoveVertex(vertex);
             throw RetrievalNotSupported();
         }
 
@@ -208,6 +214,7 @@ namespace Frontenac.Blueprints.Util.Wrappers.Batch
 
         public IEnumerable<IVertex> GetVertices(string key, object value)
         {
+            GraphContract.ValidateGetVertices(key, value);
             throw RetrievalNotSupported();
         }
 
@@ -244,8 +251,8 @@ namespace Frontenac.Blueprints.Util.Wrappers.Batch
         /// <returns>a BatchGraph wrapping the provided baseGraph</returns>
         public static BatchGraph Wrap(IGraph graph)
         {
-            Contract.Requires(graph != null);
-            Contract.Ensures(Contract.Result<BatchGraph>() != null);
+            if (graph == null)
+                throw new ArgumentNullException(nameof(graph));
 
             var wrap = graph as BatchGraph;
             if (wrap != null) return wrap;
@@ -264,9 +271,10 @@ namespace Frontenac.Blueprints.Util.Wrappers.Batch
         /// <returns>a BatchGraph wrapping the provided baseGraph</returns>
         public static BatchGraph Wrap(IGraph graph, long buffer)
         {
-            Contract.Requires(graph != null);
-            Contract.Requires(buffer > 0);
-            Contract.Ensures(Contract.Result<BatchGraph>() != null);
+            if (graph == null)
+                throw new ArgumentNullException(nameof(graph));
+            if (buffer <= 0)
+                throw new ArgumentException("buffer must be greater than zero");
 
             var wrap = graph as BatchGraph;
             if (wrap != null) return wrap;
@@ -368,7 +376,8 @@ namespace Frontenac.Blueprints.Util.Wrappers.Batch
 
         private IVertex RetrieveFromCache(object externalId)
         {
-            Contract.Requires(externalId != null);
+            if (externalId == null)
+                throw new ArgumentNullException(nameof(externalId));
 
             var internal_ = _cache.GetEntry(externalId);
             var cache = internal_ as IVertex;
@@ -386,7 +395,8 @@ namespace Frontenac.Blueprints.Util.Wrappers.Batch
 
         private IVertex GetCachedVertex(object externalId)
         {
-            Contract.Requires(externalId != null);
+            if (externalId == null)
+                throw new ArgumentNullException(nameof(externalId));
 
             var v = RetrieveFromCache(externalId);
 
@@ -395,9 +405,10 @@ namespace Frontenac.Blueprints.Util.Wrappers.Batch
 
         protected IEdge AddEdgeSupport(IVertex outVertex, IVertex inVertex, string label)
         {
-            Contract.Requires(outVertex != null);
-            Contract.Requires(inVertex != null);
-            Contract.Ensures(Contract.Result<IEdge>() != null);
+            if (outVertex == null)
+                throw new ArgumentNullException(nameof(outVertex));
+            if (inVertex == null)
+                throw new ArgumentNullException(nameof(inVertex));
 
             return AddEdge(null, outVertex, inVertex, label);
         }
@@ -418,13 +429,15 @@ namespace Frontenac.Blueprints.Util.Wrappers.Batch
 
             public BatchEdge(BatchGraph batchInnerTinkerGrapĥ):base(batchInnerTinkerGrapĥ)
             {
-                Contract.Requires(batchInnerTinkerGrapĥ != null);
+                if (batchInnerTinkerGrapĥ == null)
+                    throw new ArgumentNullException(nameof(batchInnerTinkerGrapĥ));
 
                 _batchInnerTinkerGrapĥ = batchInnerTinkerGrapĥ;
             }
 
             public IVertex GetVertex(Direction direction)
             {
+                EdgeContract.ValidateGetVertex(direction);
                 return GetWrappedEdge().GetVertex(direction);
             }
 
@@ -432,6 +445,7 @@ namespace Frontenac.Blueprints.Util.Wrappers.Batch
 
             public override void SetProperty(string key, object value)
             {
+                ElementContract.ValidateSetProperty(key, value);
                 GetWrappedEdge().SetProperty(key, value);
             }
 
@@ -439,6 +453,8 @@ namespace Frontenac.Blueprints.Util.Wrappers.Batch
 
             public override object GetProperty(string key)
             {
+                ElementContract.ValidateGetProperty(key);
+
                 return GetWrappedEdge().GetProperty(key);
             }
 
@@ -449,6 +465,7 @@ namespace Frontenac.Blueprints.Util.Wrappers.Batch
 
             public override object RemoveProperty(string key)
             {
+                ElementContract.ValidateRemoveProperty(key);
                 return GetWrappedEdge().RemoveProperty(key);
             }
 
@@ -459,9 +476,6 @@ namespace Frontenac.Blueprints.Util.Wrappers.Batch
 
             private IEdge GetWrappedEdge()
             {
-                Contract.Requires(this == _batchInnerTinkerGrapĥ._currentEdge);
-                Contract.Ensures(Contract.Result<IEdge>() != null);
-
                 return _batchInnerTinkerGrapĥ._currentEdgeCached;
             }
 
@@ -478,9 +492,10 @@ namespace Frontenac.Blueprints.Util.Wrappers.Batch
 
             public BatchVertex(object id, BatchGraph batchInnerTinkerGrapĥ):base(batchInnerTinkerGrapĥ)
             {
-                Contract.Requires(id != null);
-                Contract.Requires(batchInnerTinkerGrapĥ != null);
-                Contract.Ensures(_batchInnerTinkerGrapĥ != null);
+                if (id == null)
+                    throw new ArgumentNullException(nameof(id));
+                if (batchInnerTinkerGrapĥ == null)
+                    throw new ArgumentNullException(nameof(batchInnerTinkerGrapĥ));
 
                 if (id == null) throw new ArgumentNullException(nameof(id));
                 _externalId = id;
@@ -514,11 +529,14 @@ namespace Frontenac.Blueprints.Util.Wrappers.Batch
 
             public IEdge AddEdge(object id, string label, IVertex inVertex)
             {
+                VertexContract.ValidateAddEdge(id, label, inVertex);
+
                 return _batchInnerTinkerGrapĥ.AddEdgeSupport(this, inVertex, label);
             }
 
             public override void SetProperty(string key, object value)
             {
+                ElementContract.ValidateSetProperty(key, value);
                 var cachedVertex = _batchInnerTinkerGrapĥ.GetCachedVertex(_externalId);
                 cachedVertex?.SetProperty(key, value);
             }
@@ -527,6 +545,7 @@ namespace Frontenac.Blueprints.Util.Wrappers.Batch
 
             public override object GetProperty(string key)
             {
+                ElementContract.ValidateGetProperty(key);
                 object result  = null;
                 var chachedVertex = _batchInnerTinkerGrapĥ.GetCachedVertex(_externalId);
                 if(chachedVertex != null)
@@ -542,6 +561,7 @@ namespace Frontenac.Blueprints.Util.Wrappers.Batch
 
             public override object RemoveProperty(string key)
             {
+                ElementContract.ValidateRemoveProperty(key);
                 object result = null;
                 var cachedVertex = _batchInnerTinkerGrapĥ.GetCachedVertex(_externalId);
                 if(cachedVertex != null)

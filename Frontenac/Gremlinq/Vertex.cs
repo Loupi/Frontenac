@@ -1,4 +1,4 @@
-﻿using System.Diagnostics.Contracts;
+﻿using System;
 using Frontenac.Blueprints;
 using Frontenac.Blueprints.Util.Wrappers.Wrapped;
 
@@ -8,7 +8,8 @@ namespace Frontenac.Gremlinq
     {
         internal Vertex(IVertex vertex, TModel model):base(vertex)
         {
-            Contract.Requires(vertex != null);
+            if (vertex == null)
+                throw new ArgumentNullException(nameof(vertex));
 
             Model = model;
         }

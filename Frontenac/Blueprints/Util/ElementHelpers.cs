@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel;
-using System.Diagnostics.Contracts;
 using System.Linq;
 
 namespace Frontenac.Blueprints.Util
@@ -18,10 +17,13 @@ namespace Frontenac.Blueprints.Util
         /// <param name="value">the value of the property</param>
         public static void ValidateProperty(this IElement element, string key, object value)
         {
-            Contract.Requires(element != null);
-            Contract.Requires(!string.IsNullOrWhiteSpace(key));
+            if (element == null)
+                throw new ArgumentNullException(nameof(element));
 
-            if (null == key)
+            if (string.IsNullOrWhiteSpace(key))
+                throw new ArgumentNullException(nameof(key));
+
+            if (string.IsNullOrWhiteSpace(key))
                 throw ExceptionFactory.PropertyKeyCanNotBeNull();
             if (key.Equals(StringFactory.Id))
                 throw ExceptionFactory.PropertyKeyIdIsReserved();
@@ -40,8 +42,10 @@ namespace Frontenac.Blueprints.Util
         /// <param name="to">the element to copy properties to</param>
         public static void CopyProperties(this IElement from, IElement to)
         {
-            Contract.Requires(from != null);
-            Contract.Requires(to != null);
+            if (@from == null)
+                throw new ArgumentNullException(nameof(@from));
+            if (to == null)
+                throw new ArgumentNullException(nameof(to));
 
             foreach (var key in from.GetPropertyKeys())
                 to.SetProperty(key, from.GetProperty(key));
@@ -53,7 +57,8 @@ namespace Frontenac.Blueprints.Util
         /// <param name="elements">the elements to remove properties from</param>
         public static void RemoveProperties(this IEnumerable<IElement> elements)
         {
-            Contract.Requires(elements != null);
+            if (elements == null)
+                throw new ArgumentNullException(nameof(elements));
 
             foreach (var element in elements)
             {
@@ -69,8 +74,11 @@ namespace Frontenac.Blueprints.Util
         /// <param name="elements">the elements to remove the property from</param>
         public static void RemoveProperty(this IEnumerable<IElement> elements, string key)
         {
-            Contract.Requires(!string.IsNullOrWhiteSpace(key));
-            Contract.Requires(elements != null);
+            if (string.IsNullOrWhiteSpace(key))
+                throw new ArgumentNullException(nameof(key));
+
+            if (elements == null)
+                throw new ArgumentNullException(nameof(elements));
 
             foreach (var element in elements)
                 element.RemoveProperty(key);
@@ -85,9 +93,12 @@ namespace Frontenac.Blueprints.Util
         /// <param name="elements">the elements to rename</param>
         public static void RenameProperty(this IEnumerable<IElement> elements, string oldKey, string newKey)
         {
-            Contract.Requires(!string.IsNullOrWhiteSpace(oldKey));
-            Contract.Requires(!string.IsNullOrWhiteSpace(newKey));
-            Contract.Requires(elements != null);
+            if (string.IsNullOrWhiteSpace(oldKey))
+                throw new ArgumentNullException(nameof(oldKey));
+            if (string.IsNullOrWhiteSpace(newKey))
+                throw new ArgumentNullException(nameof(newKey));
+            if (elements == null)
+                throw new ArgumentNullException(nameof(elements));
 
             foreach (var element in elements)
             {
@@ -106,9 +117,13 @@ namespace Frontenac.Blueprints.Util
         /// <param name="elements">the elements to have their property typecasted</param>
         public static void TypecastProperty(this IEnumerable<IElement> elements, string key, Type classCast)
         {
-            Contract.Requires(!string.IsNullOrWhiteSpace(key));
-            Contract.Requires(classCast != null);
-            Contract.Requires(elements != null);
+            if (string.IsNullOrWhiteSpace(key))
+                throw new ArgumentNullException(nameof(key));
+
+            if (classCast == null)
+                throw new ArgumentNullException(nameof(classCast));
+            if (elements == null)
+                throw new ArgumentNullException(nameof(elements));
 
             foreach (var element in elements)
             {
@@ -144,8 +159,10 @@ namespace Frontenac.Blueprints.Util
         /// <returns>whether the two elements have equal properties</returns>
         public static bool HaveEqualProperties(this IElement a, IElement b)
         {
-            Contract.Requires(a != null);
-            Contract.Requires(b != null);
+            if (a == null)
+                throw new ArgumentNullException(nameof(a));
+            if (b == null)
+                throw new ArgumentNullException(nameof(b));
 
             var aKeys = a.GetPropertyKeys().ToArray();
             var bKeys = b.GetPropertyKeys().ToArray();
@@ -181,8 +198,8 @@ namespace Frontenac.Blueprints.Util
         /// <returns>a clone of the properties of the element</returns>
         public static IDictionary<string, object> GetProperties(this IElement element)
         {
-            Contract.Requires(element != null);
-            Contract.Ensures(Contract.Result<IDictionary<string, object>>() != null);
+            if (element == null)
+                throw new ArgumentNullException(nameof(element));
 
             return element.GetPropertyKeys().ToDictionary(key => key, element.GetProperty);
         }
@@ -194,8 +211,11 @@ namespace Frontenac.Blueprints.Util
         /// <param name="properties">the properties to set as a IDictionary&lt;string, object></param>
         public static void SetProperties(this IElement element, IDictionary<string, object> properties)
         {
-            Contract.Requires(element != null);
-            Contract.Requires(properties != null);
+            if (element == null)
+                throw new ArgumentNullException(nameof(element));
+
+            if (properties == null)
+                throw new ArgumentNullException(nameof(properties));
 
             foreach (var property in properties)
                 element.SetProperty(property.Key, property.Value);
@@ -209,9 +229,14 @@ namespace Frontenac.Blueprints.Util
         /// <param name="keysValues">the key value pairs of the properties</param>
         public static void SetProperties(this IElement element, params object[] keysValues)
         {
-            Contract.Requires(element != null);
-            Contract.Requires(keysValues != null);
-            Contract.Requires(keysValues.Length%2 == 0);
+            if (element == null)
+                throw new ArgumentNullException(nameof(element));
+
+            if (keysValues == null)
+                throw new ArgumentNullException(nameof(keysValues));
+
+            if (keysValues.Length%2 != 0)
+                throw new ArgumentException("keysValues length must be even");
 
             for (var i = 0; i < keysValues.Length; i = i + 2)
                 element.SetProperty((string) keysValues[i], keysValues[i + 1]);
@@ -243,8 +268,10 @@ namespace Frontenac.Blueprints.Util
         /// <returns>Whether the two elements have equal ids</returns>
         public static bool HaveEqualIds(this IElement a, IElement b)
         {
-            Contract.Requires(a != null);
-            Contract.Requires(b != null);
+            if (a == null)
+                throw new ArgumentNullException(nameof(a));
+            if (b == null)
+                throw new ArgumentNullException(nameof(b));
 
             return a.Id.Equals(b.Id);
         }

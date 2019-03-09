@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Diagnostics.Contracts;
 using System.Linq;
 
 namespace Frontenac.Gremlinq
@@ -13,11 +12,15 @@ namespace Frontenac.Gremlinq
             Func<IVertex<TInModel>, IEnumerable<IVertex<TInModel>>> loopFunction,
             int nbIterations)
         {
-            Contract.Requires(element != null);
-            Contract.Requires(startPointSelector != null);
-            Contract.Requires(loopFunction != null);
-            Contract.Requires(nbIterations > 0);
-            Contract.Ensures(Contract.Result<IEnumerable<IVertex<TInModel>>>() != null);
+            if (element == null)
+                throw new ArgumentNullException(nameof(element));
+
+            if (startPointSelector == null)
+                throw new ArgumentNullException(nameof(startPointSelector));
+            if (loopFunction == null)
+                throw new ArgumentNullException(nameof(loopFunction));
+            if (nbIterations <= 0)
+                throw new ArgumentException("nbIterations must be greater than zero");
 
             var next = (IEnumerable<IVertex<TInModel>>)new[] { element };
 
@@ -32,10 +35,13 @@ namespace Frontenac.Gremlinq
             Func<IVertex<TInModel>, IVertex<TInModel>> loopFunction,
             int nbIterations)
         {
-            Contract.Requires(element != null);
-            Contract.Requires(loopFunction != null);
-            Contract.Requires(nbIterations > 0);
-            Contract.Ensures(Contract.Result<IEnumerable<IVertex<TInModel>>>() != null);
+            if (element == null)
+                throw new ArgumentNullException(nameof(element));
+
+            if (loopFunction == null)
+                throw new ArgumentNullException(nameof(loopFunction));
+            if (nbIterations <= 0)
+                throw new ArgumentException("nbIterations must be greater than zero");
 
             var next = (IEnumerable<IVertex<TInModel>>)new[] { element };
 
@@ -50,10 +56,12 @@ namespace Frontenac.Gremlinq
             Func<IVertex<TInModel>, IVertex<TInModel>> loopFunction,
             int nbIterations)
         {
-            Contract.Requires(elements != null);
-            Contract.Requires(loopFunction != null);
-            Contract.Requires(nbIterations > 0);
-            Contract.Ensures(Contract.Result<IEnumerable<IVertex<TInModel>>>() != null);
+            if (elements == null)
+                throw new ArgumentNullException(nameof(elements));
+            if (loopFunction == null)
+                throw new ArgumentNullException(nameof(loopFunction));
+            if (nbIterations <= 0)
+                throw new ArgumentException("nbIterations must be greater than zero");
 
             return elements.SelectMany(t => t.Loop(loopFunction, nbIterations));
         }

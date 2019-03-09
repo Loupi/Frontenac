@@ -1,4 +1,4 @@
-﻿using System.Diagnostics.Contracts;
+﻿using System;
 using System.Linq;
 
 namespace Frontenac.Blueprints.Util
@@ -18,10 +18,12 @@ namespace Frontenac.Blueprints.Util
         public static IVertex AddUniqueVertex(this IIndexableGraph graph, object id, IIndex index, string uniqueKey,
                                               object uniqueValue)
         {
-            Contract.Requires(graph != null);
-            Contract.Requires(index != null);
-            Contract.Requires(!string.IsNullOrWhiteSpace(uniqueKey));
-            Contract.Ensures(Contract.Result<IVertex>() != null);
+            if (graph == null)
+                throw new ArgumentNullException(nameof(graph));
+            if (index == null)
+                throw new ArgumentNullException(nameof(index));
+            if (string.IsNullOrWhiteSpace(uniqueKey))
+                throw new ArgumentNullException(nameof(uniqueKey));
 
             var result = (IVertex) index.Get(uniqueKey, uniqueValue).FirstOrDefault();
             if (result == null)

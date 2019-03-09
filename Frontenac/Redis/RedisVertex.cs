@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Diagnostics.Contracts;
 using Frontenac.Blueprints;
+using Frontenac.Blueprints.Contracts;
 using Frontenac.Blueprints.Util;
 
 namespace Frontenac.Redis
@@ -11,7 +11,8 @@ namespace Frontenac.Redis
         public RedisVertex(long id, RedisGraph innerTinkerGrapĥ) 
             : base(id, innerTinkerGrapĥ)
         {
-            Contract.Requires(innerTinkerGrapĥ != null);
+            if (innerTinkerGrapĥ == null)
+                throw new ArgumentNullException(nameof(innerTinkerGrapĥ));
         }
 
         public IEnumerable<IEdge> GetEdges(Direction direction, params string[] labels)
@@ -43,6 +44,8 @@ namespace Frontenac.Redis
 
         public IEdge AddEdge(object id, string label, IVertex inVertex)
         {
+            VertexContract.ValidateAddEdge(id, label, inVertex);
+
             return Graph.AddEdge(id, this, inVertex, label);
         }
 

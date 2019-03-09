@@ -1,8 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Diagnostics.Contracts;
 using System.Linq;
 using Frontenac.Blueprints;
+using Frontenac.Blueprints.Contracts;
 using Frontenac.Infrastructure.Indexing;
 
 namespace Frontenac.Grave
@@ -22,8 +22,10 @@ namespace Frontenac.Grave
         public GraveTransactionalIndex(Index index, TransactionalIndexCollection indexCollection, 
                                        TransactionalIndexCollection userIndexCollection)
         {
-            Contract.Requires(index != null);
-            Contract.Requires(indexCollection != null);
+            if (index == null)
+                throw new ArgumentNullException(nameof(index));
+            if (indexCollection == null)
+                throw new ArgumentNullException(nameof(indexCollection));
 
             _index = index;
             _indexCollection = indexCollection;
@@ -32,6 +34,8 @@ namespace Frontenac.Grave
 
         public virtual void Put(string key, object value, IElement element)
         {
+            IndexContract.ValidatePut(key, value, element);
+
             List<KeyValuePair<object, IElement>> putBuffer;
             if (!_putBuffer.TryGetValue(key, out putBuffer))
             {
@@ -43,6 +47,8 @@ namespace Frontenac.Grave
 
         public virtual long Count(string key, object value)
         {
+            IndexContract.ValidateCount(key, value);
+
             List<KeyValuePair<object, IElement>> putBuffer;
             var result = _putBuffer.TryGetValue(key, out putBuffer) ?
                 putBuffer.Where(t => t.Key == value).Select(t => t.Value) :
@@ -64,6 +70,8 @@ namespace Frontenac.Grave
 
         public virtual IEnumerable<IElement> Get(string key, object value)
         {
+            IndexContract.ValidateGet(key, value);
+
             List<KeyValuePair<object, IElement>> putBuffer;
             var result = _putBuffer.TryGetValue(key, out putBuffer) ? 
                 putBuffer.Where(t => t.Key == value)
@@ -89,6 +97,8 @@ namespace Frontenac.Grave
 
         public virtual void Remove(string key, object value, IElement element)
         {
+            IndexContract.ValidateRemove(key, value, element);
+
             List<KeyValuePair<object, IElement>> putBuffer;
             var nbPutRemoved = 0;
             if (_putBuffer.TryGetValue(key, out putBuffer))

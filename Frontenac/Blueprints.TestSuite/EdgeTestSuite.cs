@@ -191,12 +191,9 @@ namespace Frontenac.Blueprints
                     graph.GetEdge(null);
                     Assert.Fail();
                 }
-                catch (Exception x)
+                catch (ArgumentNullException)
                 {
-                    if (x.GetType().FullName != GraphHelpers.ContractExceptionName)
-                    {
-                        throw;
-                    }
+                    
                 }
 
                 Assert.Null(graph.GetEdge("asbv"));
@@ -752,7 +749,7 @@ namespace Frontenac.Blueprints
                 }
                 catch (Exception x)
                 {
-                    if (x.GetType().FullName != GraphHelpers.ContractExceptionName)
+                    if (!(x is ArgumentException))
                     {
                         throw;
                     }
@@ -836,16 +833,6 @@ namespace Frontenac.Blueprints
                 try
                 {
                     edge.SetProperty(StringFactory.Label, "friend");
-                    Assert.False(true);
-                }
-                catch (Exception)
-                {
-                    Assert.True(true);
-                }
-
-                try
-                {
-                    edge.SetProperty(ConvertId(graph, "good"), null);
                     Assert.False(true);
                 }
                 catch (Exception)

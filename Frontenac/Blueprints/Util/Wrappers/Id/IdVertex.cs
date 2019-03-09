@@ -1,5 +1,5 @@
-﻿using System.Collections.Generic;
-using System.Diagnostics.Contracts;
+﻿using System;
+using System.Collections.Generic;
 
 namespace Frontenac.Blueprints.Util.Wrappers.Id
 {
@@ -10,8 +10,10 @@ namespace Frontenac.Blueprints.Util.Wrappers.Id
         public IdVertex(IVertex baseVertex, IdGraph idInnerTinkerGrapĥ)
             : base(baseVertex, idInnerTinkerGrapĥ, idInnerTinkerGrapĥ.GetSupportVertexIds())
         {
-            Contract.Requires(baseVertex != null);
-            Contract.Requires(idInnerTinkerGrapĥ != null);
+            if (baseVertex == null)
+                throw new ArgumentNullException(nameof(baseVertex));
+            if (idInnerTinkerGrapĥ == null)
+                throw new ArgumentNullException(nameof(idInnerTinkerGrapĥ));
 
             _baseVertex = baseVertex;
         }
@@ -50,7 +52,6 @@ namespace Frontenac.Blueprints.Util.Wrappers.Id
 
         public IVertex GetBaseVertex()
         {
-            Contract.Ensures(Contract.Result<IVertex>() != null);
             return _baseVertex;
         }
 

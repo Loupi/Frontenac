@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Diagnostics.Contracts;
 using Frontenac.Blueprints;
 using Frontenac.Infrastructure.Serializers;
 using Microsoft.Isam.Esent.Interop;
@@ -13,14 +12,18 @@ namespace Frontenac.Grave.Esent
         public EsentVertexTable(Session session, IContentSerializer contentSerializer)
             : base(session, "Vertices", contentSerializer)
         {
-            Contract.Requires(session != null);
-            Contract.Requires(contentSerializer != null);
+            if (session == null)
+                throw new ArgumentNullException(nameof(session));
+            if (contentSerializer == null)
+                throw new ArgumentNullException(nameof(contentSerializer));
         }
 
         public void AddEdge(int vertexId, Direction direction, string label, int edgeId, int targetId)
         {
-            Contract.Requires(direction != Direction.Both);
-            Contract.Requires(!string.IsNullOrWhiteSpace(label));
+            if (direction == Direction.Both)
+                throw new ArgumentException("direction cannot equal Direction.Both");
+            if (string.IsNullOrWhiteSpace(label))
+                throw new ArgumentNullException(nameof(label));
 
             if (!SetCursor(vertexId)) return;
 
@@ -31,7 +34,8 @@ namespace Frontenac.Grave.Esent
 
         private void WriteEdgeContent(string labelColumn, int? edgeId, int? targetId, int iTag)
         {
-            Contract.Requires(!string.IsNullOrWhiteSpace(labelColumn));
+            if (string.IsNullOrWhiteSpace(labelColumn))
+                throw new ArgumentNullException(nameof(labelColumn));
 
             using (var transaction = new Transaction(Session))
             {
@@ -60,8 +64,10 @@ namespace Frontenac.Grave.Esent
 
         public void DeleteEdge(int vertexId, Direction direction, string label, int edgeId, int targetId)
         {
-            Contract.Requires(direction != Direction.Both);
-            Contract.Requires(!string.IsNullOrWhiteSpace(label));
+            if (direction == Direction.Both)
+                throw new ArgumentException("direction cannot equal Direction.Both");
+            if (string.IsNullOrWhiteSpace(label))
+                throw new ArgumentNullException(nameof(label));
 
             if (!SetCursor(vertexId)) return;
 
@@ -83,8 +89,10 @@ namespace Frontenac.Grave.Esent
 
         public bool SetEdgeCursor(int vertexId, string label, Direction direction, int edgeId, int targetId)
         {
-            Contract.Requires(direction != Direction.Both);
-            Contract.Requires(!string.IsNullOrWhiteSpace(label));
+            if (direction == Direction.Both)
+                throw new ArgumentException("direction cannot equal Direction.Both");
+            if (string.IsNullOrWhiteSpace(label))
+                throw new ArgumentNullException(nameof(label));
 
             if (!SetCursor(vertexId)) return false;
 
@@ -95,7 +103,8 @@ namespace Frontenac.Grave.Esent
 
         private bool SetEdgeCursor(string edgeLabel, int edgeId, int targetId)
         {
-            Contract.Requires(!string.IsNullOrWhiteSpace(edgeLabel));
+            if (string.IsNullOrWhiteSpace(edgeLabel))
+                throw new ArgumentNullException(nameof(edgeLabel));
 
 // ReSharper disable RedundantCast
             var key = (ulong) edgeId << 32 | (ulong) (long) targetId;
@@ -112,7 +121,8 @@ namespace Frontenac.Grave.Esent
 
         private void CreateEdgeColumn(string columnName)
         {
-            Contract.Requires(!string.IsNullOrWhiteSpace(columnName));
+            if (string.IsNullOrWhiteSpace(columnName))
+                throw new ArgumentNullException(nameof(columnName));
 
             if (!CreateColumn(columnName, VistaColtyp.LongLong,
                 ColumndefGrbit.ColumnMultiValued | ColumndefGrbit.ColumnTagged)) return;
@@ -123,8 +133,8 @@ namespace Frontenac.Grave.Esent
 
         public int CountEdges(int vertexId, string labelName)
         {
-            Contract.Requires(!string.IsNullOrWhiteSpace(labelName));
-            Contract.Ensures(Contract.Result<int>() >= 0);
+            if (string.IsNullOrWhiteSpace(labelName))
+                throw new ArgumentNullException(nameof(labelName));
 
             if (!SetCursor(vertexId)) return 0;
             var retrievecolumn = new JET_RETRIEVECOLUMN {columnid = Columns[labelName], itagSequence = 0};
@@ -134,8 +144,8 @@ namespace Frontenac.Grave.Esent
 
         public IEnumerable<long> GetEdges(int vertexId, string labelName)
         {
-            Contract.Requires(!string.IsNullOrWhiteSpace(labelName));
-            Contract.Ensures(Contract.Result<IEnumerable<long>>() != null);
+            if (string.IsNullOrWhiteSpace(labelName))
+                throw new ArgumentNullException(nameof(labelName));
 
             var nbEdges = CountEdges(vertexId, labelName);
             var columnId = Columns[labelName];

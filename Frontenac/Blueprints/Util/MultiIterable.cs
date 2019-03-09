@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
-using System.Diagnostics.Contracts;
 using System.Linq;
 
 namespace Frontenac.Blueprints.Util
@@ -17,7 +16,8 @@ namespace Frontenac.Blueprints.Util
 
         public MultiIterable(IEnumerable<IEnumerable<TS>> iterables)
         {
-            Contract.Requires(iterables != null);
+            if (iterables == null)
+                throw new ArgumentNullException(nameof(iterables));
 
             _iterables = iterables;
         }

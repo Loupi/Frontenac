@@ -1,6 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Diagnostics.Contracts;
+using Frontenac.Blueprints.Contracts;
 
 namespace Frontenac.Blueprints.Util.Wrappers.ReadOnly
 {
@@ -13,11 +13,14 @@ namespace Frontenac.Blueprints.Util.Wrappers.ReadOnly
         public ReadOnlyKeyIndexableGraph(IKeyIndexableGraph baseGraph)
             : base((IIndexableGraph)baseGraph)
         {
-            Contract.Requires(baseGraph != null);
+            if (baseGraph == null)
+                throw new ArgumentNullException(nameof(baseGraph));
         }
 
         public void DropKeyIndex(string key, Type elementClass)
         {
+            KeyIndexableGraphContract.ValidateDropKeyIndex(key, elementClass);
+
             throw new InvalidOperationException(ReadOnlyTokens.MutateErrorMessage);
         }
 
@@ -28,6 +31,8 @@ namespace Frontenac.Blueprints.Util.Wrappers.ReadOnly
 
         public IEnumerable<string> GetIndexedKeys(Type elementClass)
         {
+            KeyIndexableGraphContract.ValidateGetIndexedKeys(elementClass);
+
             return ((IKeyIndexableGraph) BaseGraph).GetIndexedKeys(elementClass);
         }
     }

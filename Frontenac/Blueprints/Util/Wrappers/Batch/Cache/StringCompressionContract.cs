@@ -1,15 +1,13 @@
-﻿using System.Diagnostics.Contracts;
+﻿using System;
 
 namespace Frontenac.Blueprints.Util.Wrappers.Batch.Cache
 {
-    [ContractClassFor(typeof (StringCompression))]
-    public abstract class StringCompressionContract : StringCompression
+    public static class StringCompressionContract
     {
-        public override string Compress(string input)
+        public static void ValidateCompress(string input)
         {
-            Contract.Requires(input != null);
-            Contract.Ensures(Contract.Result<string>() != null);
-            return null;
+            if (input == null)
+                throw new ArgumentNullException(nameof(input));
         }
     }
 }

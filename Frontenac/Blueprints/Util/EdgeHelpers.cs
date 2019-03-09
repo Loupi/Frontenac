@@ -1,5 +1,5 @@
-﻿using System.Collections.Generic;
-using System.Diagnostics.Contracts;
+﻿using System;
+using System.Collections.Generic;
 
 namespace Frontenac.Blueprints.Util
 {
@@ -16,10 +16,12 @@ namespace Frontenac.Blueprints.Util
         /// <returns>the newly created edge</returns>
         public static IEdge RelabelEdge(this IEdge oldEdge, IGraph graph, object newId, string newLabel)
         {
-            Contract.Requires(graph != null);
-            Contract.Requires(oldEdge != null);
-            Contract.Requires(!string.IsNullOrWhiteSpace(newLabel));
-            Contract.Ensures(Contract.Result<IEdge>() != null);
+            if (graph == null)
+                throw new ArgumentNullException(nameof(graph));
+            if (oldEdge == null)
+                throw new ArgumentNullException(nameof(oldEdge));
+            if (string.IsNullOrWhiteSpace(newLabel))
+                throw new ArgumentNullException(nameof(newLabel));
 
             var outVertex = oldEdge.GetVertex(Direction.Out);
             var inVertex = oldEdge.GetVertex(Direction.In);
@@ -38,9 +40,12 @@ namespace Frontenac.Blueprints.Util
         /// <param name="newLabel">the label of the new edge</param>
         public static void RelabelEdges(this IEnumerable<IEdge> oldEdges, IGraph graph, string newLabel)
         {
-            Contract.Requires(graph != null);
-            Contract.Requires(oldEdges != null);
-            Contract.Requires(!string.IsNullOrWhiteSpace(newLabel));
+            if (graph == null)
+                throw new ArgumentNullException(nameof(graph));
+            if (oldEdges == null)
+                throw new ArgumentNullException(nameof(oldEdges));
+            if (string.IsNullOrWhiteSpace(newLabel))
+                throw new ArgumentNullException(nameof(newLabel));
 
             foreach (var oldEdge in oldEdges)
             {

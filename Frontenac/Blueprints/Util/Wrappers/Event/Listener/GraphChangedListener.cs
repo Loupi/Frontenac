@@ -1,5 +1,4 @@
 ﻿using System.Collections.Generic;
-using System.Diagnostics.Contracts;
 
 namespace Frontenac.Blueprints.Util.Wrappers.Event.Listener
 {
@@ -8,7 +7,6 @@ namespace Frontenac.Blueprints.Util.Wrappers.Event.Listener
     ///     Implementations of this interface should be added to the list of listeners on the addListener method on
     ///     the eventInnerTinkerGrapĥ.
     /// </summary>
-    [ContractClass(typeof (GraphChangedListenerContract))]
     public interface IGraphChangedListener
     {
         /// <summary>

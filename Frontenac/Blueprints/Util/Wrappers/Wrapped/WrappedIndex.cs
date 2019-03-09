@@ -1,6 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Diagnostics.Contracts;
+using Frontenac.Blueprints.Contracts;
 
 namespace Frontenac.Blueprints.Util.Wrappers.Wrapped
 {
@@ -10,7 +10,8 @@ namespace Frontenac.Blueprints.Util.Wrappers.Wrapped
 
         public WrappedIndex(IIndex rawIndex)
         {
-            Contract.Requires(rawIndex != null);
+            if (rawIndex == null)
+                throw new ArgumentNullException(nameof(rawIndex));
 
             RawIndex = rawIndex;
         }
@@ -21,11 +22,15 @@ namespace Frontenac.Blueprints.Util.Wrappers.Wrapped
 
         public long Count(string key, object value)
         {
+            IndexContract.ValidateCount(key, value);
+
             return RawIndex.Count(key, value);
         }
 
         public void Remove(string key, object value, IElement element)
         {
+            IndexContract.ValidateRemove(key, value, element);
+
             var wrappedElement = element as WrappedElement;
             if (wrappedElement != null)
                 RawIndex.Remove(key, value, wrappedElement.Element);
@@ -33,6 +38,8 @@ namespace Frontenac.Blueprints.Util.Wrappers.Wrapped
 
         public void Put(string key, object value, IElement element)
         {
+            IndexContract.ValidatePut(key, value, element);
+
             var wrappedElement = element as WrappedElement;
             if (wrappedElement != null)
                 RawIndex.Put(key, value, wrappedElement.Element);
@@ -40,6 +47,8 @@ namespace Frontenac.Blueprints.Util.Wrappers.Wrapped
 
         public IEnumerable<IElement> Get(string key, object value)
         {
+            IndexContract.ValidateGet(key, value);
+
             return RawIndex.Get(key, value);
         }
 

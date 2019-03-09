@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using Frontenac.Blueprints.Contracts;
 
 namespace Frontenac.Blueprints.Impls.TG
 {
@@ -51,11 +52,13 @@ namespace Frontenac.Blueprints.Impls.TG
 
         public IVertex GetVertex(object id)
         {
+            GraphContract.ValidateGetVertex(id);
             return _graph.GetVertex(id);
         }
 
         public void RemoveVertex(IVertex vertex)
         {
+            GraphContract.ValidateRemoveVertex(vertex);
             _graph.RemoveVertex(vertex);
         }
 
@@ -66,11 +69,13 @@ namespace Frontenac.Blueprints.Impls.TG
 
         public IEnumerable<IVertex> GetVertices(string key, object value)
         {
+            GraphContract.ValidateGetVertices(key, value);
             return _graph.GetVertices(key, value);
         }
 
         public IEdge AddEdge(object id, IVertex outVertex, IVertex inVertex, string label)
         {
+            GraphContract.ValidateAddEdge(id, outVertex, inVertex, label);
             return _graph.AddEdge(id, outVertex, inVertex, label);
         }
 

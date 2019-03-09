@@ -1,6 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Diagnostics.Contracts;
+using Frontenac.Blueprints.Contracts;
 
 namespace Frontenac.Blueprints.Util.Wrappers.Id
 {
@@ -12,8 +12,10 @@ namespace Frontenac.Blueprints.Util.Wrappers.Id
 
         protected IdElement(IElement baseElement, IdGraph idInnerTinkerGrapĥ, bool propertyBased):base(idInnerTinkerGrapĥ)
         {
-            Contract.Requires(baseElement != null);
-            Contract.Requires(idInnerTinkerGrapĥ != null);
+            if (baseElement == null)
+                throw new ArgumentNullException(nameof(baseElement));
+            if (idInnerTinkerGrapĥ == null)
+                throw new ArgumentNullException(nameof(idInnerTinkerGrapĥ));
 
             BaseElement = baseElement;
             IdInnerTinkerGrapĥ = idInnerTinkerGrapĥ;
@@ -43,6 +45,8 @@ namespace Frontenac.Blueprints.Util.Wrappers.Id
 
         public override void SetProperty(string key, object value)
         {
+            ElementContract.ValidateSetProperty(key, value);
+
             if (PropertyBased && key == IdGraph.Id)
                 throw new ArgumentException(string.Concat("Unable to set value for reserved property ", IdGraph.Id));
 
@@ -51,6 +55,7 @@ namespace Frontenac.Blueprints.Util.Wrappers.Id
 
         public override object RemoveProperty(string key)
         {
+            ElementContract.ValidateRemoveProperty(key);
             if (PropertyBased && key == IdGraph.Id)
                 throw new ArgumentException(string.Concat("Unable to remove value for reserved property ", IdGraph.Id));
 

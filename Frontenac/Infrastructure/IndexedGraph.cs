@@ -1,8 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Diagnostics.Contracts;
 using System.Linq;
 using Frontenac.Blueprints;
+using Frontenac.Blueprints.Contracts;
 using Frontenac.Blueprints.Util;
 using Frontenac.Infrastructure.Indexing;
 
@@ -42,13 +42,15 @@ namespace Frontenac.Infrastructure
 
         protected IndexedGraph(IndexingService indexingService)
         {
-            Contract.Requires(indexingService != null);
+            if (indexingService == null)
+                throw new ArgumentNullException(nameof(indexingService));
             IndexingService = indexingService;
         }
 
         protected void Init(IGraphConfiguration configuration)
         {
-            Contract.Requires(configuration != null);
+            if (configuration == null)
+                throw new ArgumentNullException(nameof(configuration));
             IndexingService.Initialize(configuration);
             var indexStore = IndexingService as IIndexStore ?? (IIndexStore)this;
             IndexingService.LoadFromStore(indexStore);
@@ -67,6 +69,8 @@ namespace Frontenac.Infrastructure
 
         public virtual IEnumerable<IEdge> GetEdges(string key, object value)
         {
+            GraphContract.ValidateGetEdges(key, value);
+
             if (!IndexingService.EdgeIndices.HasIndex(key))
                 return new PropertyFilteredIterable<IEdge>(key, value, GetEdges());
 
@@ -77,6 +81,8 @@ namespace Frontenac.Infrastructure
 
         public virtual IEnumerable<IVertex> GetVertices(string key, object value)
         {
+            GraphContract.ValidateGetVertices(key, value);
+
             if (!IndexingService.VertexIndices.HasIndex(key))
                 return new PropertyFilteredIterable<IVertex>(key, value, GetVertices());
 
@@ -88,20 +94,30 @@ namespace Frontenac.Infrastructure
 
         public virtual void RemoveEdge(IEdge edge)
         {
-            var id = edge.Id.ToInt64();
-            var generation = IndexingService.EdgeIndices.DeleteDocuments(id);
+            GraphContract.ValidateRemoveEdge(edge);
+
+            var id = edge.Id.TryToInt64();
+            if(!id.HasValue)
+                throw new InvalidOperationException();
+            var generation = IndexingService.EdgeIndices.DeleteDocuments(id.Value);
             UpdateGeneration(generation);
         }
 
         public virtual void RemoveVertex(IVertex vertex)
         {
-            var id = vertex.Id.ToInt64();
-            var generation = IndexingService.VertexIndices.DeleteDocuments(id);
+            GraphContract.ValidateRemoveVertex(vertex);
+
+            var id = vertex.Id.TryToInt64();
+            if (!id.HasValue)
+                throw new InvalidOperationException();
+            var generation = IndexingService.VertexIndices.DeleteDocuments(id.Value);
             UpdateGeneration(generation);
         }
 
         public virtual IIndex CreateIndex(string indexName, Type indexClass, params Parameter[] indexParameters)
         {
+            IndexableGraphContract.ValidateCreateIndex(indexName, indexClass, indexParameters);
+
             if (GetIndices(typeof(IVertex), true).HasIndex(indexName) ||
                 GetIndices(typeof(IEdge), true).HasIndex(indexName))
                 throw ExceptionFactory.IndexAlreadyExists(indexName);
@@ -114,6 +130,8 @@ namespace Frontenac.Infrastructure
 
         public virtual IIndex GetIndex(string indexName, Type indexClass)
         {
+            IndexableGraphContract.ValidateGetIndex(indexName, indexClass);
+
             var indexCollection = GetIndices(indexClass, true);
             var userIndexCollection = GetIndices(indexClass, false);
             return indexCollection.HasIndex(indexName)
@@ -137,12 +155,15 @@ namespace Frontenac.Infrastructure
 
         protected virtual IIndex CreateIndexObject(string indexName, Type indexType, IIndexCollection indexCollection, IIndexCollection userIndexCollection)
         {
-            Contract.Requires(!string.IsNullOrWhiteSpace(indexName));
+            if (string.IsNullOrWhiteSpace(indexName))
+                throw new ArgumentNullException(nameof(indexName));
             return new Index(indexName, indexType, this, this, IndexingService);
         }
 
         public virtual void DropIndex(string indexName)
         {
+            IndexableGraphContract.ValidateDropIndex(indexName);
+
             long generation = -1;
             if (GetIndices(typeof(IVertex), true).HasIndex(indexName))
                 generation = GetIndices(typeof(IVertex), true).DropIndex(indexName);
@@ -155,8 +176,11 @@ namespace Frontenac.Infrastructure
 
         protected IIndexCollection GetIndices(Type indexType, bool isUserIndex)
         {
-            Contract.Requires(indexType != null);
-            Contract.Requires(indexType.IsAssignableFrom(typeof(IVertex)) || indexType.IsAssignableFrom(typeof(IEdge)));
+            if (indexType == null)
+                throw new ArgumentNullException(nameof(indexType));
+            if (!(indexType.IsAssignableFrom(typeof(IVertex)) ||
+                  indexType.IsAssignableFrom(typeof(IEdge))))
+                throw new ArgumentException("indexType must be assignable from IVertex of IEdge");
 
             if (isUserIndex)
                 return indexType == typeof(IVertex)
@@ -178,6 +202,8 @@ namespace Frontenac.Infrastructure
 
         public virtual void DropKeyIndex(string key, Type elementClass)
         {
+            KeyIndexableGraphContract.ValidateDropKeyIndex(key, elementClass);
+
             var generation = GetIndices(elementClass, false).DropIndex(key);
             if (generation != -1)
                 UpdateGeneration(generation);
@@ -185,6 +211,8 @@ namespace Frontenac.Infrastructure
 
         public virtual void CreateKeyIndex(string key, Type elementClass, params Parameter[] indexParameters)
         {
+            KeyIndexableGraphContract.ValidateCreateKeyIndex(key, elementClass, indexParameters);
+
             var indices = GetIndices(elementClass, false);
             if (indices.HasIndex(key)) return;
 
@@ -198,13 +226,16 @@ namespace Frontenac.Infrastructure
 
         public virtual IEnumerable<string> GetIndexedKeys(Type elementClass)
         {
+            KeyIndexableGraphContract.ValidateGetIndexedKeys(elementClass);
+
             var indices = GetIndices(elementClass, false).GetIndices();
             return indices;
         }
 
         protected virtual IEnumerable<IEdge> IterateEdges(string key, object value)
         {
-            Contract.Requires(!string.IsNullOrWhiteSpace(key));
+            if (string.IsNullOrWhiteSpace(key))
+                throw new ArgumentNullException(nameof(key));
 
             var edgeIds = IndexingService.EdgeIndices.Get(key, key, value);
             return edgeIds.Select(edgeId => GetEdge(edgeId)).Where(edge => edge != null);
@@ -218,7 +249,8 @@ namespace Frontenac.Infrastructure
 
         public virtual void SetIndexedKeyValue(IElement element, string key, object value)
         {
-            Contract.Requires(!string.IsNullOrWhiteSpace(key));
+            if (string.IsNullOrWhiteSpace(key))
+                throw new ArgumentNullException(nameof(key));
 
             var type = element is IVertex ? typeof(IVertex) : typeof(IEdge);
             var indices = GetIndices(type, false);

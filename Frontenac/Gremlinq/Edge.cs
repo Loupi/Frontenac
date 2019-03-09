@@ -1,4 +1,4 @@
-﻿using System.Diagnostics.Contracts;
+﻿using System;
 using Frontenac.Blueprints;
 using Frontenac.Blueprints.Util.Wrappers.Wrapped;
 
@@ -8,7 +8,8 @@ namespace Frontenac.Gremlinq
     {
         public Edge(IEdge edge, TModel model) : base(edge)
         {
-            Contract.Requires(edge != null);
+            if (edge == null)
+                throw new ArgumentNullException(nameof(edge));
 
             Model = model;
         }

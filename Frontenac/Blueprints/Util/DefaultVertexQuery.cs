@@ -1,6 +1,6 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
-using System.Diagnostics.Contracts;
 using System.Linq;
 
 namespace Frontenac.Blueprints.Util
@@ -15,7 +15,8 @@ namespace Frontenac.Blueprints.Util
 
         public DefaultVertexQuery(IVertex vertex)
         {
-            Contract.Requires(vertex != null);
+            if (vertex == null)
+                throw new ArgumentNullException(nameof(vertex));
 
             _vertex = vertex;
         }
@@ -62,7 +63,8 @@ namespace Frontenac.Blueprints.Util
 
             public DefaultVertexQueryIterable(DefaultVertexQuery defaultVertexQuery, bool forVertex)
             {
-                Contract.Requires(defaultVertexQuery != null);
+                if (defaultVertexQuery == null)
+                    throw new ArgumentNullException(nameof(defaultVertexQuery));
 
                 _defaultVertexQuery = defaultVertexQuery;
                 _forVertex = forVertex;

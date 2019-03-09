@@ -18,7 +18,8 @@ namespace Frontenac.Infrastructure.Indexing
 
         public IIndexCollection Create(string indicesColumnName, Type indexType, bool isUserIndex)
         {
-            Contract.Requires(!string.IsNullOrWhiteSpace(indicesColumnName));
+            if (string.IsNullOrWhiteSpace(indicesColumnName))
+                throw new ArgumentNullException(nameof(indicesColumnName));
             return new IndexCollection(indicesColumnName, indexType, isUserIndex, this);
         }
 
@@ -32,7 +33,8 @@ namespace Frontenac.Infrastructure.Indexing
 
         public void LoadFromStore(IIndexStore indexStore)
         {
-            Contract.Requires(indexStore != null);
+            if (indexStore == null)
+                throw new ArgumentNullException(nameof(indexStore));
             IndexStore = indexStore;
             IndexStore.LoadIndices();
 
@@ -44,23 +46,28 @@ namespace Frontenac.Infrastructure.Indexing
 
         public void CreateIndexOfType(string indexName, string indexColumn, Parameter[] parameters)
         {
-            Contract.Requires(!string.IsNullOrWhiteSpace(indexName));
-            Contract.Requires(!string.IsNullOrWhiteSpace(indexColumn));
+            if (string.IsNullOrWhiteSpace(indexName))
+                throw new ArgumentNullException(nameof(indexName));
+            if (string.IsNullOrWhiteSpace(indexColumn))
+                throw new ArgumentNullException(nameof(indexColumn));
 
             IndexStore.CreateIndex(indexName, indexColumn, parameters);
         }
 
         public List<string> GetIndicesOfType(string indexType)
         {
-            Contract.Requires(!string.IsNullOrWhiteSpace(indexType));
+            if (string.IsNullOrWhiteSpace(indexType))
+                throw new ArgumentNullException(nameof(indexType));
 
             return IndexStore.GetIndices(indexType);
         }
 
         public long DropIndexOfType(string indexName, string indexColumn, Type indexType, bool isUserIndex)
         {
-            Contract.Requires(!string.IsNullOrWhiteSpace(indexName));
-            Contract.Requires(!string.IsNullOrWhiteSpace(indexColumn));
+            if (string.IsNullOrWhiteSpace(indexName))
+                throw new ArgumentNullException(nameof(indexName));
+            if (string.IsNullOrWhiteSpace(indexColumn))
+                throw new ArgumentNullException(nameof(indexColumn));
 
             return IndexStore.DeleteIndex(this, indexName, indexColumn, indexType, isUserIndex);
         }

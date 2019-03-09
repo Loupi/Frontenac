@@ -1,5 +1,5 @@
-﻿using System.Collections.Generic;
-using System.Diagnostics.Contracts;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 
 namespace Frontenac.Blueprints.Util
@@ -15,8 +15,10 @@ namespace Frontenac.Blueprints.Util
         /// <returns>whether the two vertices are semantically the same </returns>
         public static bool HaveEqualNeighborhood(this IVertex a, IVertex b, bool checkIdEquality)
         {
-            Contract.Requires(a != null);
-            Contract.Requires(b != null);
+            if (a == null)
+                throw new ArgumentNullException(nameof(a));
+            if (b == null)
+                throw new ArgumentNullException(nameof(b));
 
             if (checkIdEquality && !a.HaveEqualIds(b))
                 return false;
@@ -33,8 +35,10 @@ namespace Frontenac.Blueprints.Util
         /// <returns>whether the two vertices have the same edge sets</returns>
         public static bool HaveEqualEdges(this IVertex a, IVertex b, bool checkIdEquality)
         {
-            Contract.Requires(a != null);
-            Contract.Requires(b != null);
+            if (a == null)
+                throw new ArgumentNullException(nameof(a));
+            if (b == null)
+                throw new ArgumentNullException(nameof(b));
 
             var aEdgeSet = new HashSet<IEdge>(a.GetEdges(Direction.Out));
             var bEdgeSet = new HashSet<IEdge>(b.GetEdges(Direction.Out));
@@ -57,8 +61,10 @@ namespace Frontenac.Blueprints.Util
         private static bool HasEqualEdgeSets(this ICollection<IEdge> aEdgeSet, ICollection<IEdge> bEdgeSet,
                                              bool checkIdEquality)
         {
-            Contract.Requires(aEdgeSet != null);
-            Contract.Requires(bEdgeSet != null);
+            if (aEdgeSet == null)
+                throw new ArgumentNullException(nameof(aEdgeSet));
+            if (bEdgeSet == null)
+                throw new ArgumentNullException(nameof(bEdgeSet));
 
             if (aEdgeSet.Count != bEdgeSet.Count)
                 return false;

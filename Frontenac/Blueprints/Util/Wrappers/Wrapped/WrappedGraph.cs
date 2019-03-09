@@ -1,5 +1,6 @@
-﻿using System.Collections.Generic;
-using System.Diagnostics.Contracts;
+﻿using System;
+using System.Collections.Generic;
+using Frontenac.Blueprints.Contracts;
 
 namespace Frontenac.Blueprints.Util.Wrappers.Wrapped
 {
@@ -13,7 +14,8 @@ namespace Frontenac.Blueprints.Util.Wrappers.Wrapped
 
         public WrappedGraph(IGraph baseGraph)
         {
-            Contract.Requires(baseGraph != null);
+            if (baseGraph == null)
+                throw new ArgumentNullException(nameof(baseGraph));
 
             BaseGraph = baseGraph;
             Features = BaseGraph.Features.CopyFeatures();
@@ -27,6 +29,7 @@ namespace Frontenac.Blueprints.Util.Wrappers.Wrapped
 
         public IVertex GetVertex(object id)
         {
+            GraphContract.ValidateGetVertex(id);
             var vertex = BaseGraph.GetVertex(id);
             return null == vertex ? null : new WrappedVertex(vertex);
         }
@@ -38,6 +41,7 @@ namespace Frontenac.Blueprints.Util.Wrappers.Wrapped
 
         public IEnumerable<IVertex> GetVertices(string key, object value)
         {
+            GraphContract.ValidateGetVertices(key, value);
             return new WrappedVertexIterable(BaseGraph.GetVertices(key, value));
         }
 
@@ -71,6 +75,7 @@ namespace Frontenac.Blueprints.Util.Wrappers.Wrapped
 
         public void RemoveVertex(IVertex vertex)
         {
+            GraphContract.ValidateRemoveVertex(vertex);
             BaseGraph.RemoveVertex(((WrappedVertex) vertex).Vertex);
         }
 

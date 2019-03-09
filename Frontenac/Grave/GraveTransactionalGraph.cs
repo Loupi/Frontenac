@@ -1,10 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Diagnostics.Contracts;
 using System.Linq;
 using System.Threading;
 using System.Transactions;
 using Frontenac.Blueprints;
+using Frontenac.Blueprints.Contracts;
 using Frontenac.Grave.Esent;
 using Frontenac.Infrastructure;
 using Frontenac.Infrastructure.Indexing;
@@ -77,10 +77,14 @@ namespace Frontenac.Grave
                                        IGraphConfiguration configuration)
             : base(factory, instance, indexingService, configuration)
         {
-            Contract.Requires(factory != null);
-            Contract.Requires(instance != null);
-            Contract.Requires(indexingService != null);
-            Contract.Requires(configuration != null);
+            if (factory == null)
+                throw new ArgumentNullException(nameof(factory));
+            if (instance == null)
+                throw new ArgumentNullException(nameof(instance));
+            if (indexingService == null)
+                throw new ArgumentNullException(nameof(indexingService));
+            if (configuration == null)
+                throw new ArgumentNullException(nameof(configuration));
         }
 
         #region IDisposable
@@ -260,6 +264,8 @@ namespace Frontenac.Grave
 
         public override IIndex CreateIndex(string indexName, Type indexClass, params Parameter[] indexParameters)
         {
+            IndexableGraphContract.ValidateCreateIndex(indexName, indexClass, indexParameters);
+
             using (EnterTransactionContext())
             {
                 return base.CreateIndex(indexName, indexClass, indexParameters);
@@ -268,6 +274,8 @@ namespace Frontenac.Grave
 
         public override IIndex GetIndex(string indexName, Type indexClass)
         {
+            IndexableGraphContract.ValidateGetIndex(indexName, indexClass);
+
             using (EnterTransactionContext())
             {
                 return base.GetIndex(indexName, indexClass);
@@ -287,6 +295,8 @@ namespace Frontenac.Grave
 
         public override void CreateKeyIndex(string key, Type elementClass, params Parameter[] indexParameters)
         {
+            KeyIndexableGraphContract.ValidateCreateKeyIndex(key, elementClass, indexParameters);
+
             using (EnterTransactionContext())
             {
                 base.CreateKeyIndex(key, elementClass, indexParameters);
@@ -295,6 +305,8 @@ namespace Frontenac.Grave
 
         public override IEnumerable<string> GetIndexedKeys(Type elementClass)
         {
+            KeyIndexableGraphContract.ValidateGetIndexedKeys(elementClass);
+
             using (EnterTransactionContext())
             {
                 foreach (var key in base.GetIndexedKeys(elementClass))
@@ -306,6 +318,8 @@ namespace Frontenac.Grave
 
         public override void DropIndex(string indexName)
         {
+            IndexableGraphContract.ValidateDropIndex(indexName);
+
             using (EnterTransactionContext())
             {
                 base.DropIndex(indexName);
@@ -314,6 +328,8 @@ namespace Frontenac.Grave
 
         public override void DropKeyIndex(string key, Type elementClass)
         {
+            KeyIndexableGraphContract.ValidateDropKeyIndex(key, elementClass);
+
             using (EnterTransactionContext())
             {
                 base.DropKeyIndex(key, elementClass);
@@ -360,6 +376,9 @@ namespace Frontenac.Grave
 
         public override void SetProperty(GraveElement element, string key, object value)
         {
+            if (string.IsNullOrWhiteSpace(key))
+                throw new ArgumentException("Key cannot be null or empty");
+
             using (EnterTransactionContext())
             {
                 base.SetProperty(element, key, value);

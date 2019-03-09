@@ -1,91 +1,54 @@
-﻿using System.Collections.Generic;
-using System.Diagnostics.Contracts;
+﻿using System;
 
 namespace Frontenac.Blueprints.Contracts
 {
-    [ContractClassFor(typeof (IGraph))]
-    public abstract class GraphContract : IGraph
+    public static class GraphContract
     {
-        public Features Features
+        public static void ValidateGetVertex(object id)
         {
-            get
-            {
-                Contract.Ensures(Contract.Result<Features>() != null);
-                return null;
-            }
+            if (id == null)
+                throw new ArgumentNullException(nameof(id));
         }
 
-        public IVertex AddVertex(object id)
+        public static void ValidateRemoveVertex(IVertex vertex)
         {
-            Contract.Ensures(Contract.Result<IVertex>() != null);
-            return null;
+            if (vertex == null)
+                throw new ArgumentNullException(nameof(vertex));
+        }
+        
+
+        public static void ValidateGetVertices(string key, object value)
+        {
+            if (string.IsNullOrWhiteSpace(key))
+                throw new ArgumentNullException(nameof(key));
         }
 
-        public IVertex GetVertex(object id)
+        public static void ValidateAddEdge(object id, IVertex outVertex, IVertex inVertex, string label)
         {
-            Contract.Requires(id != null);
-            return null;
+            if (outVertex == null)
+                throw new ArgumentNullException(nameof(outVertex));
+            if (inVertex == null)
+                throw new ArgumentNullException(nameof(inVertex));
+            if (string.IsNullOrWhiteSpace(label))
+                throw new ArgumentNullException(nameof(label));
         }
 
-        public void RemoveVertex(IVertex vertex)
+        public static void ValidateGetEdge(object id)
         {
-            Contract.Requires(vertex != null);
+            if (id == null)
+                throw new ArgumentNullException(nameof(id));
         }
 
-        public IEnumerable<IVertex> GetVertices()
+        public static void ValidateRemoveEdge(IEdge edge)
         {
-            Contract.Ensures(Contract.Result<IEnumerable<IVertex>>() != null);
-            return null;
+            if (edge == null)
+                throw new ArgumentNullException(nameof(edge));
         }
-
-        public IEnumerable<IVertex> GetVertices(string key, object value)
+        
+        public static void ValidateGetEdges(string key, object value)
         {
-            Contract.Requires(!string.IsNullOrWhiteSpace(key));
-            Contract.Ensures(Contract.Result<IEnumerable<IVertex>>() != null);
-            return null;
-        }
-
-        public IEdge AddEdge(object id, IVertex outVertex, IVertex inVertex, string label)
-        {
-            Contract.Requires(outVertex != null);
-            Contract.Requires(inVertex != null);
-            Contract.Requires(!string.IsNullOrWhiteSpace(label));
-            Contract.Ensures(Contract.Result<IEdge>() != null);
-            return null;
-        }
-
-        public IEdge GetEdge(object id)
-        {
-            Contract.Requires(id != null);
-            return null;
-        }
-
-        public void RemoveEdge(IEdge edge)
-        {
-            Contract.Requires(edge != null);
-        }
-
-        public IEnumerable<IEdge> GetEdges()
-        {
-            Contract.Ensures(Contract.Result<IEnumerable<IEdge>>() != null);
-            return null;
-        }
-
-        public IEnumerable<IEdge> GetEdges(string key, object value)
-        {
-            Contract.Requires(!string.IsNullOrWhiteSpace(key));
-            Contract.Ensures(Contract.Result<IEnumerable<IEdge>>() != null);
-            return null;
-        }
-
-        public IQuery Query()
-        {
-            Contract.Ensures(Contract.Result<IQuery>() != null);
-            return null;
-        }
-
-        public void Shutdown()
-        {
+            if (string.IsNullOrWhiteSpace(key))
+                throw new ArgumentNullException(nameof(key));
         }
     }
 }
