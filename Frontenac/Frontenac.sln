@@ -38,6 +38,10 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Redis", "Redis\Redis.csproj
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Redis.Test", "Redis.Test\Redis.Test.csproj", "{1B7B96D7-6E15-43E5-A7D9-C516F414AA77}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MmGraph", "MmGraph\MmGraph.csproj", "{A1177FDD-602F-44EB-8597-3B94B66E6AC0}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MmGraph.Test", "MmGraph.Test\MmGraph.Test.csproj", "{621116C7-B8C6-4EC7-AFC9-9ED21D1414A9}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug (.NET 4.0)|Any CPU = Debug (.NET 4.0)|Any CPU
@@ -158,6 +162,22 @@ Global
 		{1B7B96D7-6E15-43E5-A7D9-C516F414AA77}.Release (.NET 4.0)|Any CPU.Build.0 = Release|Any CPU
 		{1B7B96D7-6E15-43E5-A7D9-C516F414AA77}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{1B7B96D7-6E15-43E5-A7D9-C516F414AA77}.Release|Any CPU.Build.0 = Release|Any CPU
+		{A1177FDD-602F-44EB-8597-3B94B66E6AC0}.Debug (.NET 4.0)|Any CPU.ActiveCfg = Debug|Any CPU
+		{A1177FDD-602F-44EB-8597-3B94B66E6AC0}.Debug (.NET 4.0)|Any CPU.Build.0 = Debug|Any CPU
+		{A1177FDD-602F-44EB-8597-3B94B66E6AC0}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{A1177FDD-602F-44EB-8597-3B94B66E6AC0}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{A1177FDD-602F-44EB-8597-3B94B66E6AC0}.Release (.NET 4.0)|Any CPU.ActiveCfg = Release|Any CPU
+		{A1177FDD-602F-44EB-8597-3B94B66E6AC0}.Release (.NET 4.0)|Any CPU.Build.0 = Release|Any CPU
+		{A1177FDD-602F-44EB-8597-3B94B66E6AC0}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{A1177FDD-602F-44EB-8597-3B94B66E6AC0}.Release|Any CPU.Build.0 = Release|Any CPU
+		{621116C7-B8C6-4EC7-AFC9-9ED21D1414A9}.Debug (.NET 4.0)|Any CPU.ActiveCfg = Debug|Any CPU
+		{621116C7-B8C6-4EC7-AFC9-9ED21D1414A9}.Debug (.NET 4.0)|Any CPU.Build.0 = Debug|Any CPU
+		{621116C7-B8C6-4EC7-AFC9-9ED21D1414A9}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{621116C7-B8C6-4EC7-AFC9-9ED21D1414A9}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{621116C7-B8C6-4EC7-AFC9-9ED21D1414A9}.Release (.NET 4.0)|Any CPU.ActiveCfg = Release|Any CPU
+		{621116C7-B8C6-4EC7-AFC9-9ED21D1414A9}.Release (.NET 4.0)|Any CPU.Build.0 = Release|Any CPU
+		{621116C7-B8C6-4EC7-AFC9-9ED21D1414A9}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{621116C7-B8C6-4EC7-AFC9-9ED21D1414A9}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

@@ -1,0 +1,107 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="14.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProjectGuid>{A1177FDD-602F-44EB-8597-3B94B66E6AC0}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>MmGraph</RootNamespace>
+    <AssemblyName>MmGraph</AssemblyName>
+    <TargetFrameworkVersion>v4.6.1</TargetFrameworkVersion>
+    <FileAlignment>512</FileAlignment>
+    <TargetFrameworkProfile />
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup>
+    <SignAssembly>true</SignAssembly>
+  </PropertyGroup>
+  <PropertyGroup>
+    <AssemblyOriginatorKeyFile>key.snk</AssemblyOriginatorKeyFile>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="System" />
+    <Reference Include="System.Core" />
+    <Reference Include="Microsoft.CSharp" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="Database\Records\BaseRecord.cs" />
+    <Compile Include="Database\Records\EdgeRecord.cs" />
+    <Compile Include="Database\Records\IndexRecord.cs" />
+    <Compile Include="Database\Records\PropertyRecord.cs" />
+    <Compile Include="Database\Records\BlockRecord.cs" />
+    <Compile Include="Database\Records\PropertyType.cs" />
+    <Compile Include="Database\Records\StringBlockRecord.cs" />
+    <Compile Include="Database\Repositories\BlockRepository.cs" />
+    <Compile Include="Database\Repositories\EdgeRepository.cs" />
+    <Compile Include="Database\Repositories\IdGenerator.cs" />
+    <Compile Include="Database\Repositories\IndexRepository.cs" />
+    <Compile Include="Database\Win32\Memory.cs" />
+    <Compile Include="Database\Repositories\MemoryMappedRepository.cs" />
+    <Compile Include="Database\Records\VertexRecord.cs" />
+    <Compile Include="Database\Repositories\PropertyRepository.cs" />
+    <Compile Include="Database\Repositories\StringRepository.cs" />
+    <Compile Include="Database\Repositories\VertexRepository.cs" />
+    <Compile Include="Database\Win32\Address.cs" />
+    <Compile Include="Database\Win32\ExpandableMemoryMappedFile.cs" />
+    <Compile Include="Database\Win32\Win32FileMapping.cs" />
+    <Compile Include="Edge.cs" />
+    <Compile Include="GraphConfiguration.cs" />
+    <Compile Include="Installer.cs" />
+    <Compile Include="LabelManager.cs" />
+    <Compile Include="Element.cs" />
+    <Compile Include="Graph.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Properties\Settings.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTimeSharedInput>True</DesignTimeSharedInput>
+      <DependentUpon>Settings.settings</DependentUpon>
+    </Compile>
+    <Compile Include="PropertyManager.cs" />
+    <Compile Include="Vertex.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="app.config" />
+    <None Include="key.snk" />
+    <None Include="Properties\Settings.settings">
+      <Generator>SettingsSingleFileGenerator</Generator>
+      <LastGenOutput>Settings.Designer.cs</LastGenOutput>
+    </None>
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\Blueprints\Blueprints.csproj">
+      <Project>{42ed5d37-0e20-4fc3-b6b1-f38a08283c30}</Project>
+      <Name>Blueprints</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Infrastructure\Infrastructure.csproj">
+      <Project>{f3a4e6dc-bb03-409d-9bde-71bc122d9008}</Project>
+      <Name>Infrastructure</Name>
+    </ProjectReference>
+  </ItemGroup>
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
+  -->
+</Project>
